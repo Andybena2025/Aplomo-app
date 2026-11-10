@@ -2,6 +2,6 @@
 # Copia este archivo como db.properties y cambia los valores.
 # db.properties esta en .gitignore: nunca subas la clave real.
 
-db.url=jdbc:mysql://localhost:3306/rula_db?useSSL=false&serverTimezone=America/Bogota&characterEncoding=UTF-8
+db.url=jdbc:mysql://localhost:3306/rula_ergonomia?useSSL=false&serverTimezone=America/Bogota&characterEncoding=UTF-8
 db.usuario=app_rula
 db.clave=CambiarEstaClave123
