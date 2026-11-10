@@ -1,0 +1,810 @@
+                   Especificación de Casos de Uso
+                                  Sistema RULA – Evaluación Ergonómica
+
+
+
+Qué es este documento
+Describe, en una tabla por caso, los 29 casos de uso de los diagramas aprobados (Parte A: CU5-01 a CU5-
+14; Parte B: CU5-15 a CU5-29). Cada tabla dice quién lo usa, qué debe pasar antes, los pasos normales, qué
+pasa si algo sale distinto y cómo queda el sistema al final.
+
+
+
+Actores                                 Cómo leer cada tabla                  Agrupación
+ Ingeniero Industrial   rol               Precondición: lo que debe             Acceso y administración
+Administrador: gestiona todo el           ser cierto antes.                     Fase 1 · Diagnóstico
+sistema (RF-002).                         Flujo principal: pasos                Fase 2 · Planeación
+                                          cuando todo sale bien.                Fase 3 · Ejecución
+ Usuario    solo inicia sesión,           Flujos alternos: el número            Fase 4 · Cierre y consultas
+cierra sesión, cambia su                  indica el paso donde se
+contraseña y consulta (RF-024).           desvía (3a = paso 3).               «include»: CU5-20 → CU5-21 y
+                                          Postcondición: cómo                 CU5-22; CU5-29 → CU5-28.
+                                          queda el sistema.
+
+
+
+Índice
+
+ CU5-01      Iniciar sesión                    RF-001a   Acceso y                   Ingeniero Industrial
+                                                         administración             Usuario
+
+ CU5-02      Cerrar sesión                     RF-001b   Acceso y                   Ingeniero Industrial
+                                                         administración             Usuario
+
+ CU5-03      Cambiar contraseña                RF-001c   Acceso y                   Ingeniero Industrial
+                                                         administración             Usuario
+
+ CU5-04      Administrar usuarios              RF-003    Acceso y                   Ingeniero Industrial
+                                                         administración
+
+ CU5-05      Crear y consultar empresas        RF-004    Fase 1 · Diagnóstico       Ingeniero Industrial
+
+ CU5-06      Registrar sedes                   RF-005    Fase 1 · Diagnóstico       Ingeniero Industrial
+
+ CU5-07      Registrar salones                 RF-006    Fase 1 · Diagnóstico       Ingeniero Industrial
+
+ CU5-08      Registrar áreas y cargos          RF-007    Fase 1 · Diagnóstico       Ingeniero Industrial
+
+ CU5-09      Registrar puestos de trabajo      RF-008    Fase 1 · Diagnóstico       Ingeniero Industrial
+
+ CU5-10      Editar empresas, sedes,           RF-009a   Fase 1 · Diagnóstico       Ingeniero Industrial
+             salones y puestos
+
+ CU5-11      Desactivar y reactivar            RF-028    Fase 1 · Diagnóstico       Ingeniero Industrial
+             registros
+
+ CU5-12      Solicitar una reserva             RF-011    Fase 2 · Planeación        Ingeniero Industrial
+
+ CU5-13      Editar reservas                   RF-009b   Fase 2 · Planeación        Ingeniero Industrial
+
+ CU5-14      Gestionar reservas según su       RF-012    Fase 2 · Planeación        Ingeniero Industrial
+             estado
+
+ CU5-15      Iniciar una visita                RF-013a   Fase 3 · Ejecución         Ingeniero Industrial
+CU5-16     Elegir el puesto y la postura a          RF-014         Fase 3 · Ejecución             Ingeniero Industrial
+           estudiar
+
+CU5-17     Anotar las condiciones del               RF-015         Fase 3 · Ejecución             Ingeniero Industrial
+           puesto
+
+CU5-18     Subir varias fotos del puesto            RF-016         Fase 3 · Ejecución             Ingeniero Industrial
+
+CU5-19     Medir los ángulos de cada                RF-017         Fase 3 · Ejecución             Ingeniero Industrial
+           foto
+
+CU5-20     Calcular los puntos RULA de              RF-018         Fase 3 · Ejecución             Ingeniero Industrial
+           cada foto
+
+CU5-21     Sumar puntos por actividad               RF-019         Fase 3 · Ejecución             Ingeniero Industrial
+           muscular y carga
+
+CU5-22     Mostrar el nivel de riesgo               RF-020         Fase 3 · Ejecución             Ingeniero Industrial
+           (semáforo)
+
+CU5-23     Guardar el análisis de cada              RF-021         Fase 3 · Ejecución             Ingeniero Industrial
+           foto
+
+CU5-24     Finalizar una visita                     RF-013b        Fase 3 · Ejecución             Ingeniero Industrial
+
+CU5-25     Gestionar pendientes de                  RF-022         Fase 4 · Cierre y              Ingeniero Industrial
+           arreglo                                                 consultas
+
+CU5-26     Registrar y gestionar                    RF-023b        Fase 4 · Cierre y              Ingeniero Industrial
+           sugerencias                                             consultas
+
+CU5-27     Ver, buscar y filtrar en cada            RF-024         Fase 4 · Cierre y              Ingeniero Industrial
+           sección                                                 consultas                      Usuario
+
+CU5-28     Calificar las sedes y la                 RF-025         Fase 4 · Cierre y              Ingeniero Industrial
+           empresa                                                 consultas
+
+CU5-29     Generar el informe general               RF-026         Fase 4 · Cierre y              Ingeniero Industrial
+           de la empresa en PDF                                    consultas
+
+
+     Proyecto Nuclear 6.0 · Matriz de requisitos v6 · Fase de Diseño · Basado en los diagramas de casos de uso aprobados
+CU5-01 · Iniciar sesión                                                                    Acceso y administración · RF-001a
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)               Usuario
+
+Descripción                  Permite a una persona con cuenta activa entrar al sistema con su correo y
+                             contraseña.
+
+Precondiciones                   La persona tiene una cuenta ACTIVA.
+                                 No hay una sesión abierta en ese navegador.
+
+Flujo principal              1. El actor abre la página de ingreso.
+                             2. El actor escribe su correo y su contraseña y pulsa «Ingresar».
+                             3. El sistema verifica que la cuenta exista, esté activa y que la contraseña
+                                coincida.
+                             4. El sistema abre la sesión y muestra el menú según el rol (RF-002).
+
+Flujos alternos                  3a. Datos incorrectos: el sistema muestra «Correo o contraseña incorrectos» sin
+                                 decir cuál falló y suma un intento fallido.
+                                 3b. 5 intentos fallidos seguidos: el sistema bloquea el ingreso por 15 minutos
+                                 (propuesta).
+                                 4a. Contraseña temporal: el sistema obliga a cambiarla antes de seguir (CU5-
+                                 03).
+
+Postcondición                    La sesión queda abierta y el actor solo ve las opciones de su rol.
+
+Relaciones                   —
+
+
+CU5-02 · Cerrar sesión                                                                     Acceso y administración · RF-001b
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)               Usuario
+
+Descripción                  Termina la sesión cuando el actor lo pide o después de 30 minutos sin actividad.
+
+Precondiciones                   El actor tiene una sesión abierta.
+
+Flujo principal              1. El actor pulsa «Cerrar sesión».
+                             2. El sistema cierra la sesión.
+                             3. El sistema muestra la página de ingreso.
+
+Flujos alternos                  1a. 30 minutos sin actividad (propuesta): el sistema cierra la sesión solo y
+                                 muestra el aviso «Tu sesión se cerró por inactividad».
+
+Postcondición                    Las direcciones internas ya no se abren sin volver a ingresar.
+
+Relaciones                   —
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-03 · Cambiar contraseña                                                                Acceso y administración · RF-001c
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)               Usuario
+
+Descripción                  Permite al actor cambiar su contraseña escribiendo la actual y la nueva.
+
+Precondiciones                   El actor tiene una sesión abierta (o entró con contraseña temporal).
+
+Flujo principal              1. El actor abre «Cambiar contraseña».
+                             2. El actor escribe la contraseña actual, la nueva y la confirmación.
+                             3. El sistema verifica la contraseña actual y que la nueva cumpla las reglas (RNF-
+                                004).
+                             4. El sistema guarda la nueva contraseña cifrada y confirma el cambio.
+
+Flujos alternos                  3a. La contraseña actual no coincide: el sistema avisa y no guarda.
+                                 3b. La nueva no cumple las reglas o la confirmación no coincide: el sistema dice
+                                 qué corregir.
+
+Postcondición                    La contraseña queda cambiada; si era temporal, deja de serlo.
+
+Relaciones                   —
+
+
+CU5-04 · Administrar usuarios                                                                Acceso y administración · RF-003
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Permite crear, editar, activar y desactivar cuentas, con nombre, correo, teléfono,
+                             cargo y rol.
+
+Precondiciones                   El actor inició sesión como Administrador.
+
+Flujo principal              1. El actor abre la sección «Usuarios».
+                             2. El actor elige «Nuevo usuario» y escribe nombre, correo, teléfono, cargo y rol; si
+                                el rol es Usuario, elige la empresa a la que pertenece.
+                             3. El sistema revisa que el correo no exista (RF-010).
+                             4. El sistema crea la cuenta con una contraseña temporal y la muestra en la lista.
+
+Flujos alternos                  2a. Editar: el actor cambia los datos de una cuenta y guarda.
+                                 2b. Activar o desactivar: el actor cambia el estado; una cuenta desactivada no
+                                 entra, pero su historial se conserva.
+                                 2c. Desactivar al último Administrador activo: el sistema no lo permite
+                                 (propuesta).
+                                 3a. Correo repetido: el sistema avisa cuál es la cuenta existente y no guarda.
+
+Postcondición                    La cuenta queda creada o actualizada con su rol.
+
+Relaciones                   —
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-05 · Crear y consultar empresas                                                               Fase 1 · Diagnóstico · RF-004
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Registra una empresa cliente con nombre y NIT, y datos opcionales de contacto.
+
+Precondiciones                   El actor inició sesión como Administrador.
+
+Flujo principal              1. El actor abre «Empresas» y pulsa «Nueva empresa».
+                             2. El actor escribe nombre y NIT (obligatorios) y, si quiere, descripción, teléfono,
+                                correo y persona de contacto.
+                             3. El sistema revisa duplicados (RF-010).
+                             4. El sistema guarda la empresa como activa y la muestra en la tabla.
+
+Flujos alternos                  1a. Consultar: el actor busca y abre una empresa existente (CU5-27).
+                                 3a. NIT repetido: el sistema muestra la empresa existente y no guarda.
+                                 3b. Nombre parecido a otra empresa (sin contar mayúsculas, tildes, espacios ni
+                                 sufijos como S.A.S., Ltda. o S.A.): el sistema solo avisa.
+
+Postcondición                    La empresa queda registrada y lista para sus sedes, áreas y cargos.
+
+Relaciones                   —
+
+
+CU5-06 · Registrar sedes                                                                          Fase 1 · Diagnóstico · RF-005
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Registra las sedes de una empresa con nombre, dirección, ciudad, teléfono, horario
+                             y descripción.
+
+Precondiciones                   La empresa existe y está activa.
+
+Flujo principal              1. El actor abre la empresa y pulsa «Nueva sede».
+                             2. El actor escribe nombre, dirección, ciudad, teléfono, horario y descripción
+                                (máximo 200 caracteres).
+                             3. El sistema revisa que el nombre no se repita en esa empresa (RF-010).
+                             4. El sistema guarda la sede dentro de la empresa.
+
+Flujos alternos                  2a. Descripción de más de 200 caracteres: el sistema pide acortarla.
+                                 3a. Nombre repetido en la empresa: el sistema avisa y no guarda.
+
+Postcondición                    La sede queda registrada y lista para sus salones.
+
+Relaciones                   —
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-07 · Registrar salones                                                                        Fase 1 · Diagnóstico · RF-006
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Registra los salones de una sede con nombre, descripción, piso y capacidad de
+                             puestos.
+
+Precondiciones                   La sede existe y está activa.
+
+Flujo principal              1. El actor abre la sede y pulsa «Nuevo salón».
+                             2. El actor escribe nombre, descripción (máximo 200 caracteres), piso y capacidad
+                                de puestos.
+                             3. El sistema revisa que el nombre no se repita en esa sede (RF-010).
+                             4. El sistema guarda el salón dentro de la sede.
+
+Flujos alternos                  2a. Descripción de más de 200 caracteres: el sistema pide acortarla.
+                                 3a. Nombre repetido en la sede: el sistema avisa y no guarda.
+
+Postcondición                    El salón queda registrado y listo para sus puestos.
+
+Relaciones                   —
+
+
+CU5-08 · Registrar áreas y cargos                                                                 Fase 1 · Diagnóstico · RF-007
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Registra las áreas de una empresa y sus cargos, indicando si cada cargo es
+                             Operativo, Administrativo u Otro.
+
+Precondiciones                   La empresa existe y está activa.
+
+Flujo principal              1. El actor abre la empresa y pulsa «Nueva área».
+                             2. El actor escribe el nombre del área y guarda.
+                             3. El actor agrega los cargos de la empresa con su nombre y tipo (Operativo,
+                                Administrativo u Otro).
+                             4. El sistema revisa que los nombres no se repitan en la empresa (RF-010) y los
+                                guarda.
+
+Flujos alternos                  4a. Nombre repetido: el sistema avisa y no guarda.
+
+Postcondición                    Las áreas y cargos quedan disponibles para asignarlos a los puestos (opcional).
+
+Relaciones                   —
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-09 · Registrar puestos de trabajo                                                             Fase 1 · Diagnóstico · RF-008
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Registra los puestos de un salón con número, descripción, tipo, ubicación y, de
+                             forma opcional, área y cargo.
+
+Precondiciones                   El salón existe y está activo.
+
+Flujo principal              1. El actor abre el salón y pulsa «Nuevo puesto».
+                             2. El actor escribe número, descripción, tipo (escritorio, mesa, mostrador u otro) y
+                                ubicación, y si quiere elige área y cargo.
+                             3. El sistema revisa que el número no se repita en ese salón (RF-010).
+                             4. El sistema guarda el puesto sin evaluar todavía.
+
+Flujos alternos                  3a. Número repetido en el salón: el sistema avisa y no guarda.
+
+Postcondición                    El puesto queda listo para ser evaluado en una visita.
+
+Relaciones                   —
+
+
+CU5-10 · Editar empresas, sedes, salones y puestos                                              Fase 1 · Diagnóstico · RF-009a
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Permite corregir los datos de empresas, sedes, salones y puestos ya creados,
+                             excepto su ID.
+
+Precondiciones                   El registro existe.
+
+Flujo principal              1. El actor busca el registro y pulsa «Editar».
+                             2. El actor cambia los datos permitidos.
+                             3. El sistema vuelve a revisar duplicados si cambió el NIT, el nombre o el número
+                                (RF-010).
+                             4. El sistema guarda los cambios.
+
+Flujos alternos                  2a. El actor intenta cambiar el ID: el campo no se puede editar.
+                                 3a. El cambio crea un duplicado: el sistema avisa y no guarda.
+
+Postcondición                    El registro queda actualizado con el mismo ID.
+
+Relaciones                   —
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-11 · Desactivar y reactivar registros                                                         Fase 1 · Diagnóstico · RF-028
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Desactiva o reactiva empresas, sedes, salones, áreas, cargos y puestos en lugar de
+                             borrarlos.
+
+Precondiciones                   El registro existe.
+
+Flujo principal              1. El actor busca el registro y pulsa «Desactivar».
+                             2. El sistema pide confirmar.
+                             3. El actor confirma.
+                             4. El sistema marca el registro como inactivo y lo quita de las listas para elegir.
+
+Flujos alternos                  1a. Reactivar: el actor abre un registro inactivo y pulsa «Reactivar»; vuelve a
+                                 aparecer en las listas.
+                                 3a. El actor cancela: no cambia nada.
+
+Postcondición                    El historial, las visitas y las evaluaciones del registro se conservan y se pueden
+                                 consultar.
+
+Relaciones                   —
+
+
+CU5-12 · Solicitar una reserva                                                                     Fase 2 · Planeación · RF-011
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Registra la fecha y el horario de visita acordados con la empresa, con sede, salón y
+                             categoría.
+
+Precondiciones                   La fecha ya se acordó con la empresa por fuera del sistema.
+
+Flujo principal              1. El actor abre «Reservas» y pulsa «Nueva reserva».
+                             2. El actor elige empresa, sede y salón, y escribe fecha, hora de inicio, hora de fin,
+                                categoría y, si quiere, descripción y notas.
+                             3. El sistema valida que la fecha sea hoy o posterior, que la hora de fin sea
+                                posterior a la de inicio y que no haya otra reserva igual (RF-010).
+                             4. El sistema asigna un código único (por ejemplo R-0001) y guarda la reserva en
+                                estado ESPERANDO.
+
+Flujos alternos                  2a. La empresa, la sede o el salón no existen: el actor los crea desde la misma
+                                 pantalla sin perder lo escrito.
+                                 3a. Fecha u horas no válidas o reserva repetida: el sistema dice qué corregir y
+                                 no guarda.
+
+Postcondición                    La reserva queda en ESPERANDO con su código.
+
+Relaciones                   —
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-13 · Editar reservas                                                                         Fase 2 · Planeación · RF-009b
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Permite cambiar fecha, horas, categoría, descripción y notas de una reserva
+                             ESPERANDO o EN COLA.
+
+Precondiciones                   La reserva está en ESPERANDO o EN COLA.
+
+Flujo principal              1. El actor abre la reserva y pulsa «Editar».
+                             2. El actor cambia fecha, horas, categoría, descripción o notas.
+                             3. El sistema valida los datos y guarda.
+
+Flujos alternos                  1a. La reserva está FINALIZADA o CANCELADA: el botón «Editar» no aparece.
+                                 2a. El actor intenta cambiar código, empresa, sede, salón o estado: esos
+                                 campos no se editan.
+
+Postcondición                    La reserva queda actualizada con su mismo código y estado.
+
+Relaciones                   —
+
+
+CU5-14 · Gestionar reservas según su estado                                                        Fase 2 · Planeación · RF-012
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Cambia el estado de una reserva solo por las transiciones permitidas.
+
+Precondiciones                   La reserva existe y no está en un estado final.
+
+Flujo principal              1. El actor abre una reserva en ESPERANDO y pulsa «Aceptar».
+                             2. El sistema la pasa a EN COLA y guarda fecha, hora y quién hizo el cambio.
+
+Flujos alternos                  1a. Cancelar: desde ESPERANDO o EN COLA el actor pulsa «Cancelar», escribe
+                                 el motivo (obligatorio) y la reserva pasa a CANCELADA.
+                                 1b. FINALIZADA: la reserva cambia sola al finalizar la visita (CU5-24).
+                                 1c. Reserva FINALIZADA o CANCELADA: no se puede cambiar (estados finales).
+
+Postcondición                    La reserva queda en su nuevo estado con el registro del cambio.
+
+Relaciones                   —
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-15 · Iniciar una visita                                                                        Fase 3 · Ejecución · RF-013a
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Inicia la visita a partir de una reserva EN COLA y guarda la hora real de inicio.
+
+Precondiciones                   La reserva está EN COLA y todavía no tiene visita.
+
+Flujo principal              1. El actor abre la reserva y pulsa «Iniciar visita».
+                             2. El sistema crea la visita, guarda la hora real de inicio y la deja EN CURSO.
+
+Flujos alternos                  1a. La reserva no está EN COLA o ya tiene una visita: el botón no aparece.
+
+Postcondición                    La visita queda EN CURSO y se pueden crear evaluaciones.
+
+Relaciones                   —
+
+
+CU5-16 · Elegir el puesto y la postura a estudiar                                                    Fase 3 · Ejecución · RF-014
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Crea la evaluación de un puesto dentro de la visita, con la postura elegida, el
+                             criterio, el motivo y el tiempo.
+
+Precondiciones                   La visita está EN CURSO.
+
+Flujo principal              1. El actor pulsa «Nueva evaluación» y elige el puesto.
+                             2. El actor describe la postura y elige el criterio (más inadecuada o mayor tiempo
+                                de exposición).
+                             3. El actor escribe el motivo y los minutos por jornada (1 a 720).
+                             4. El sistema guarda la evaluación con la metodología RULA.
+
+Flujos alternos                  3a. Falta el criterio, el motivo o el tiempo, o el tiempo está fuera de 1 a 720: el
+                                 sistema dice qué corregir.
+
+Postcondición                    La evaluación queda creada y lista para condiciones y fotos.
+
+Relaciones                   —
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-17 · Anotar las condiciones del puesto                                                           Fase 3 · Ejecución · RF-015
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Registra con casillas Sí o No las condiciones del puesto que afectan a la persona, y
+                             otras observaciones.
+
+Precondiciones                   La evaluación existe.
+
+Flujo principal              1. El actor marca Sí o No en: escritorio muy alto, pantalla muy alta, pies colgando,
+                                apoyapiés, silla con apoyabrazos y silla regulable.
+                             2. El actor escribe otras observaciones si las hay.
+                             3. El sistema guarda las condiciones.
+
+Flujos alternos                  2a. Sin observaciones: el campo puede quedar vacío.
+
+Postcondición                    Las condiciones quedan guardadas y alimentan las sugerencias (RF-023a).
+
+Relaciones                   —
+
+
+CU5-18 · Subir varias fotos del puesto                                                               Fase 3 · Ejecución · RF-016
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Sube una o varias fotos de la postura con su vista y descripción, después de
+                             marcar la aceptación de la persona.
+
+Precondiciones                   La evaluación existe.
+                                 A la persona se le explicó el estudio por fuera del sistema.
+
+Flujo principal              1. El actor marca la casilla «A la persona se le explicó el estudio y aceptó las
+                                fotos».
+                             2. El actor elige una o varias fotos y, para cada una, la vista (frente, perfil u otra) y
+                                una descripción.
+                             3. El sistema valida formato JPG o PNG, tamaño hasta 5 MB y máximo 10 fotos.
+                             4. El sistema guarda cada foto con un nombre único.
+
+Flujos alternos                  1a. La persona no acepta: no se suben fotos y la evaluación queda «Sin registro
+                                 fotográfico».
+                                 3a. Archivo no válido o más de 10 fotos: el sistema dice cuál no se subió y por
+                                 qué.
+
+Postcondición                    Las fotos quedan guardadas en la evaluación y listas para medir.
+
+Relaciones                   —
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-19 · Medir los ángulos de cada foto                                                              Fase 3 · Ejecución · RF-017
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Calcula el ángulo de cada parte del cuerpo a partir de 3 puntos marcados sobre la
+                             foto ampliada.
+
+Precondiciones                   La foto está guardada en la evaluación.
+
+Flujo principal              1. El actor abre la foto ampliada y elige la parte del cuerpo y el lado.
+                             2. El actor marca 3 puntos sobre la foto.
+                             3. El sistema calcula y muestra el ángulo.
+                             4. El actor marca con casillas lo que la foto no muestra (hombro elevado, cabeza
+                                rotada, giro de muñeca, apoyo y piernas).
+
+Flujos alternos                  3a. El actor corrige moviendo los puntos o escribiendo el ángulo a mano.
+                                 3b. Falta un dato o el valor es imposible: el sistema no calcula y lo indica.
+
+Postcondición                    Los ángulos de la foto quedan listos para el cálculo RULA.
+
+Relaciones                   —
+
+
+CU5-20 · Calcular los puntos RULA de cada foto                                                       Fase 3 · Ejecución · RF-018
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Asigna puntos a cada parte del cuerpo, obtiene el Grupo A (Tabla A), el Grupo B
+                             (Tabla B) y el puntaje final con la Tabla C.
+
+Precondiciones                   Los ángulos de la foto están medidos (CU5-19).
+
+Flujo principal              1. El actor pulsa «Calcular».
+                             2. El sistema asigna los puntos de cada segmento según su ángulo y ajustes.
+                             3. El sistema obtiene el puntaje del Grupo A y del Grupo B con las tablas
+                                guardadas en MySQL (RF-027).
+                             4. El sistema incluye CU5-21: suma actividad muscular y carga.
+                             5. El sistema obtiene el puntaje final de 1 a 7 con la Tabla C.
+                             6. El sistema incluye CU5-22: muestra el nivel de riesgo.
+                             7. El sistema muestra el cálculo antes de guardar.
+
+Flujos alternos                  2a. Falta un dato: el sistema indica cuál y no calcula.
+
+Postcondición                    El puntaje final y su nivel quedan listos para guardarse (CU5-23).
+
+Relaciones                   «include» CU5-21 y «include» CU5-22
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-21 · Sumar puntos por actividad muscular y carga                                                 Fase 3 · Ejecución · RF-019
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Suma 1 punto por postura estática o repetitiva y de 0 a 3 puntos por carga o
+                             fuerza a los Grupos A y B.
+
+Precondiciones                   Se está ejecutando CU5-20 (caso incluido).
+
+Flujo principal              1. El actor indica si la postura es estática (más de 1 minuto) o repetitiva (más de 4
+                                veces por minuto).
+                             2. El actor elige el tipo de carga o fuerza.
+                             3. El sistema suma los puntos a los Grupos A y B antes de aplicar la Tabla C.
+
+Flujos alternos                  2a. Golpes o fuerzas bruscas: el sistema suma 3 puntos.
+
+Postcondición                    Los Grupos A y B quedan con su actividad y carga sumadas.
+
+Relaciones                   Incluido por CU5-20
+
+
+CU5-22 · Mostrar el nivel de riesgo (semáforo)                                                       Fase 3 · Ejecución · RF-020
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Convierte el puntaje final en Verde, Amarillo o Rojo, con nombre, acción y el nivel
+                             oficial de RULA al lado.
+
+Precondiciones                   Se está ejecutando CU5-20 (caso incluido) y hay puntaje final.
+
+Flujo principal              1. El sistema busca el rango del puntaje en los niveles guardados (Verde 1–2,
+                                Amarillo 3–4, Rojo 5–7).
+                             2. El sistema muestra el color con su nombre y su acción.
+                             3. El sistema muestra al lado el nivel oficial de RULA (1–2 Nivel 1, 3–4 Nivel 2, 5–6
+                                Nivel 3, 7 Nivel 4).
+
+Flujos alternos                  —
+
+Postcondición                    El resultado se ve con color y texto, no solo con color.
+
+Relaciones                   Incluido por CU5-20
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-23 · Guardar el análisis de cada foto                                                            Fase 3 · Ejecución · RF-021
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Guarda un análisis independiente por foto con el lado, los puntos, el puntaje final y
+                             el nivel de riesgo.
+
+Precondiciones                   El cálculo de la foto está hecho (CU5-20).
+
+Flujo principal              1. El actor pulsa «Guardar análisis».
+                             2. El sistema guarda el análisis de esa foto sin mezclarlo con el de otras.
+                             3. El sistema actualiza en el puesto el puntaje más alto de su última evaluación.
+                             4. Si el resultado es Rojo, el sistema agrega el puesto a pendientes de arreglo
+                                (CU5-25).
+
+Flujos alternos                  1a. La foto ya tenía análisis: se crea uno nuevo; nada se reemplaza.
+
+Postcondición                    El análisis queda guardado y el puesto muestra su último puntaje y color.
+
+Relaciones                   —
+
+
+CU5-24 · Finalizar una visita                                                                      Fase 3 · Ejecución · RF-013b
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Cierra la visita con la hora real de fin, las notas y la calificación final.
+
+Precondiciones                   La visita está EN CURSO y tiene al menos una evaluación guardada.
+
+Flujo principal              1. El actor pulsa «Finalizar visita» y escribe las notas.
+                             2. El sistema guarda la hora real de fin.
+                             3. El sistema calcula la calificación final (promedio de los puestos evaluados,
+                                propuesta).
+                             4. El sistema deja la visita FINALIZADA y pasa la reserva a FINALIZADA.
+
+Flujos alternos                  1a. No hay evaluaciones guardadas: el sistema no deja finalizar y lo explica.
+
+Postcondición                    La visita y su reserva quedan FINALIZADAS con calificación.
+
+Relaciones                   —
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-25 · Gestionar pendientes de arreglo                                                  Fase 4 · Cierre y consultas · RF-022
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Administra la lista de puestos en Rojo con descripción, prioridad y fecha límite, y
+                             los marca como Arreglados.
+
+Precondiciones                   Hay al menos un puesto cuyo análisis quedó en Rojo.
+
+Flujo principal              1. El actor abre «Pendientes de arreglo».
+                             2. El sistema muestra los pendientes con puesto, puntaje y fecha, ordenables por
+                                prioridad o fecha.
+                             3. El actor escribe qué hay que arreglar, la prioridad y la fecha límite.
+                             4. Cuando la empresa arregla el puesto, el actor lo marca como ARREGLADO.
+
+Flujos alternos                  2a. El puesto se evalúa otra vez: el pendiente anterior no se borra.
+
+Postcondición                    El pendiente queda actualizado o ARREGLADO, con su historial.
+
+Relaciones                   —
+
+
+CU5-26 · Registrar y gestionar sugerencias                                              Fase 4 · Cierre y consultas · RF-023b
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Edita, quita o escribe sugerencias y cambia su estado; parte de las sugerencias
+                             automáticas del sistema (RF-023a).
+
+Precondiciones                   La evaluación tiene un análisis guardado.
+
+Flujo principal              1. El sistema muestra las «Sugerencias del sistema» según los puntos y las
+                                condiciones del puesto.
+                             2. El actor edita, quita o escribe sugerencias con título, descripción, tipo, prioridad
+                                y fecha límite.
+                             3. El actor cambia el estado (Pendiente, En proceso o Hecha) cuando la empresa
+                                avanza.
+                             4. El sistema guarda las sugerencias.
+
+Flujos alternos                  1a. No hay reglas que apliquen: el análisis se entrega igual, sin sugerencias
+                                 automáticas.
+                                 2a. Nivel Amarillo o Rojo sin sugerencias: el sistema pide dejar al menos una
+                                 (propuesta).
+                                 3a. Todas las sugerencias del puesto quedan Hechas: el actor registra una
+                                 reserva de Reevaluación (CU5-12).
+
+Postcondición                    Las sugerencias quedan guardadas con su estado.
+
+Relaciones                   —
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-27 · Ver, buscar y filtrar en cada sección                                            Fase 4 · Cierre y consultas · RF-024
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)               Usuario
+
+Descripción                  Muestra en cada sección una tabla que se puede ordenar, buscar y filtrar.
+
+Precondiciones                   El actor tiene una sesión abierta.
+
+Flujo principal              1. El actor abre una sección (empresas, áreas y cargos, sedes, salones, puestos,
+                                reservas, visitas, evaluaciones, pendientes o sugerencias).
+                             2. El sistema muestra la tabla y cuántos resultados hay.
+                             3. El actor busca, ordena o filtra por empresa, área, cargo, sede, salón, número de
+                                puesto, fecha, puntaje, nivel de riesgo o estado.
+                             4. El sistema actualiza la tabla.
+
+Flujos alternos                  1a. Rol Usuario: ve, busca y ordena, sin botones de crear, editar ni cambiar
+                                 estado.
+                                 3a. Sin resultados: el sistema muestra «0 resultados».
+
+Postcondición                    El actor ve la información que buscaba; no cambia ningún dato.
+
+Relaciones                   —
+
+
+CU5-28 · Calificar las sedes y la empresa                                                 Fase 4 · Cierre y consultas · RF-025
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Calcula la calificación RULA de cada sede y, si hay dos sedes o más, la calificación
+                             general de la empresa.
+
+Precondiciones                   La sede tiene al menos una visita finalizada.
+
+Flujo principal              1. El sistema toma el puntaje más alto de cada puesto evaluado.
+                             2. El sistema promedia los puestos de cada visita y las visitas de cada sede.
+                             3. Si la empresa tiene dos sedes o más, el sistema promedia las sedes.
+                             4. El sistema muestra cada calificación con su color (promedio redondeado,
+                                propuesta).
+
+Flujos alternos                  3a. Una sola sede: no se calcula calificación general.
+
+Postcondición                    Las calificaciones quedan listas para el informe (CU5-29).
+
+Relaciones                   Incluido por CU5-29
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+CU5-29 · Generar el informe general de la empresa en                                        Fase 4 · Cierre y consultas · RF-
+PDF                                                                                         026
+
+
+Actor(es)                      Ingeniero Industrial (rol Administrador)
+
+Descripción                  Genera, descarga e imprime el informe de la empresa con sus sedes, puestos,
+                             calificaciones, estadísticas y sugerencias.
+
+Precondiciones                   La empresa tiene al menos una visita finalizada.
+
+Flujo principal              1. El actor abre la empresa y pulsa «Generar informe».
+                             2. El sistema incluye CU5-28: califica las sedes y la empresa.
+                             3. El sistema reúne por sede: visitas, detalle de puestos, calificación con
+                                descripción de peligros, estadísticas y sugerencias.
+                             4. El sistema genera el PDF con la empresa y la fecha de generación.
+                             5. El actor lo descarga o lo imprime.
+
+Flujos alternos                  1a. Sin visitas finalizadas: el sistema no genera el informe y lo explica.
+                                 2a. Una sola sede: el informe indica que no hay calificación general.
+
+Postcondición                    El informe PDF queda generado y se entiende impreso en blanco y negro.
+
+Relaciones                   «include» CU5-28
+
+       Especificación de Casos de Uso · Sistema RULA – Evaluación Ergonómica · Proyecto Nuclear 6.0 · Matriz de requisitos v6
+

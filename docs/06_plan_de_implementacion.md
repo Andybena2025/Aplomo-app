@@ -1,0 +1,23 @@
+# Plan de implementación (un paso a la vez, con el OK de Andy)
+
+Cada paso termina con algo que **se puede abrir y probar**. Al terminar un paso: compila, corre `mvn test`, explica en español sencillo qué se hizo, di cómo probarlo y **espera el OK** antes de seguir.
+
+Fecha límite del PMV: **27 de noviembre de 2026**. Si el tiempo no alcanza, los pasos 1 a 8 son la columna vertebral; del 9 en adelante se recortan en ese orden.
+
+| Paso | Qué se construye | Requisitos | Cómo se prueba |
+|---|---|---|---|
+| 0 | Proyecto Maven, `pom.xml` con las 3 dependencias, `App.java` que abre el puerto 8080 y muestra una página con el estilo del mock. `config/db.properties.ejemplo`. `.gitignore` con `config/db.properties` y `fotos/`. Correr el script SQL en MySQL. | RNF-001, RNF-008 | Abrir http://localhost:8080 y ver la página oscura de APLOMO. En MySQL, `SHOW TABLES` muestra 21 tablas. |
+| 1 | Conexión JDBC + `TablasRula` + `MotorRula` + `MedidorAngulos` con **pruebas unitarias** (todas las combinaciones de las tablas y los casos de `03_metodo_rula.md`). Todavía sin pantallas. | RF-018, RF-019, RF-020, RF-027, RNF-010, RNF-011 | `mvn test` en verde. |
+| 2 | Iniciar sesión, cerrar sesión, cambiar contraseña, contraseña temporal, bloqueo por intentos, cierre a los 30 minutos, permisos por rol. | RF-001a, RF-001b, RF-001c, RF-002, RNF-004 | Entrar con `admin@rula.local` / `Cambiar2026`: obliga a cambiar la contraseña. 5 intentos malos bloquean 15 minutos. |
+| 3 | Usuarios: crear (con contraseña temporal y empresa si es Usuario), editar, activar y desactivar. No desactivar al último Administrador. | RF-003, RF-010 | Crear un Usuario, entrar con él y comprobar que no ve botones de crear. |
+| 4 | Empresas, sedes, salones, áreas, cargos y puestos: crear, consultar, editar, desactivar y reactivar, con aviso de duplicados. | RF-004 a RF-010, RF-028, RNF-009 | Crear una empresa con un NIT repetido: aparece el aviso y no se guarda. |
+| 5 | Reservas: crear (código R-0001), editar, aceptar, cancelar con motivo. Bitácora de cambios de estado. | RF-011, RF-009b, RF-012, RNF-005 | Una reserva pasa de Esperando a En cola; una Cancelada ya no se puede editar. |
+| 6 | Visitas: iniciar desde una reserva En cola; ver sus evaluaciones; finalizar (al menos 1 evaluación, notas, calificación = promedio, reserva Finalizada). | RF-013a, RF-013b | No deja finalizar sin evaluaciones. |
+| 7 | Asistente de evaluación pasos 1 a 3: puesto y postura, condiciones, aceptación y subida de fotos (carpeta del servidor, validaciones, "Sin registro fotográfico"). | RF-014, RF-015, RF-016, RNF-006 | Subir 11 fotos o un PDF da un error claro. Un Usuario que abre la dirección de una foto ve "Acceso denegado". |
+| 8 | Pasos 4 a 6: canvas para marcar y arrastrar puntos (mouse y dedo), ángulos, ajustes, actividad, carga, resultado con semáforo y nivel oficial, guardar un análisis por foto. | RF-017, RF-018 a RF-021 | Los 10 casos a mano dan el mismo puntaje en la pantalla. |
+| 9 | Pendientes de arreglo (automáticos al guardar un Rojo; marcar Arreglado) y estados Verde = Aceptable, Amarillo = En observación. | RF-022 | Un análisis Rojo aparece solo en Pendientes. |
+| 10 | Sugerencias: crear `docs/base_de_datos/datos_sugerencias.sql` con las reglas de `regla_sugerencia` (la tabla está vacía; tomar las ideas de `sugerencias()` en el mock y de los ejemplos de la clienta), proponerlas al guardar y dejar que el Administrador las edite, quite, escriba y cambie de estado. | RF-023a, RF-023b | Un puesto con pies colgando y tronco ≥ 3 propone "reposapiés o bajar la silla". |
+| 11 | Consultas con tablas que se ordenan, buscan y filtran, para los dos roles (el Usuario solo su empresa y visitas Finalizadas). | RF-024 | El Usuario de la empresa A no ve nada de la empresa B, aunque escriba la dirección a mano. |
+| 12 | Calificación de sedes y empresa + informe general para imprimir o guardar como PDF (debe entenderse en blanco y negro). | RF-025, RF-026 | El informe de una empresa con 1 sola sede dice que no hay calificación general. |
+| 13 | Pulido: mensajes (RNF-007), "cargando" en acciones de más de 1 segundo (RNF-003), prueba del flujo completo en Chrome, Edge y Firefox (RNF-008), datos de demostración (opcional: las empresas del mock, incluida la Corporación Universitaria Empresarial Alexander von Humboldt con sus 3 sedes). | RNF-002, RNF-003, RNF-007, RNF-008 | Recorrido completo en los 3 navegadores. |
+| 14 | Opcional, solo si sobra tiempo: detección automática de puntos con MediaPipe Pose como en el mock, que el Administrador revisa y corrige. | Valor agregado (no es requisito) | — |

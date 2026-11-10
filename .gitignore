@@ -1,0 +1,37 @@
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Java / Maven
+target/
+*.class
+*.jar
+
+# Configuracion con credenciales (nunca subir)
+config/db.properties
+
+# Fotos subidas por los usuarios
+fotos/
+
+# Archivos del mock (se quedan en disco pero no van al repo del software real)
+index.html
+build.py
+CHANGELOG.md
+.nojekyll
+versiones/
+src/app.src.html
+src/img/
+
+# Python
+__pycache__/
+*.pyc
+
+# Temporales
+*.log
+*.tmp

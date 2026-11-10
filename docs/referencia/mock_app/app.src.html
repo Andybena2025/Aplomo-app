@@ -1,0 +1,1543 @@
+<title>APLOMO.</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap">
+<style>
+/* Layout: app de una columna (máx. 1080px) con barra superior fija; login a pantalla completa con la foto de portada. Identidad Obsidian & Ivory, solo modo oscuro por decisión del equipo. */
+:root{
+  --bg:#0B0B0C; --card:#151517; --card2:#1C1C1F; --line:#2B2B2F; --line2:#3A3A40;
+  --ivory:#EDE6D8; --plat:#C9CCD2; --muted:#9E998F; --ink:#0B0B0C;
+  --verde:#34C759; --amarillo:#FFCC00; --rojo:#FF453A;
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{color:var(--ivory);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+h1,h2,h3{font-family:var(--serif);font-weight:400;margin:0;text-wrap:balance;letter-spacing:.01em}
+h1{font-size:clamp(34px,6vw,48px);line-height:1.05}
+h2{font-size:30px;line-height:1.1}
+h3{font-size:22px;line-height:1.2}
+p{margin:0}
+a{color:var(--ivory)}
+button,input,select,textarea{font:inherit;color:inherit}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media (pointer:coarse){input,select,textarea{font-size:16px}} /* iPad/iPhone: evita el zoom automático al tocar un campo */
+:focus-visible{outline:2px solid var(--plat);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.num{font-variant-numeric:tabular-nums}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
+.card.flat{background:transparent}
+.hr{height:1px;background:var(--line);margin:4px 0}
+/* botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;border:1px solid var(--line2);background:transparent;padding:10px 18px;cursor:pointer;font-size:14px;font-weight:500;color:var(--ivory);text-decoration:none;white-space:nowrap}
+.btn:hover{border-color:var(--plat)}
+.btn.p{background:var(--ivory);color:var(--ink);border-color:var(--ivory)}
+.btn.p:hover{background:#fff}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn.danger{border-color:#5a2a27;color:#ffb1aa}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.link{background:none;border:0;padding:0;color:var(--plat);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+/* formularios */
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-size:12px;letter-spacing:.06em;color:var(--muted)}
+.input,select.input,textarea.input{background:var(--card2);border:1px solid var(--line2);border-radius:10px;padding:11px 13px;width:100%}
+.input:focus{border-color:var(--plat);outline:none}
+textarea.input{min-height:76px;resize:vertical}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--card2)}
+.check input{margin-top:3px;accent-color:#EDE6D8}
+.check b{font-weight:500}
+.err{color:#ffb1aa;font-size:13px}
+.ok{color:#a8e6b8;font-size:13px}
+.hint{font-size:12px;color:var(--muted)}
+/* semáforo */
+.pill{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:3px 11px 3px 9px;font-size:12px;font-weight:600;border:1px solid;white-space:nowrap}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.pill.VERDE{color:var(--verde);border-color:rgba(52,199,89,.35);background:rgba(52,199,89,.08)}
+.pill.AMARILLO{color:var(--amarillo);border-color:rgba(255,204,0,.35);background:rgba(255,204,0,.08)}
+.pill.ROJO{color:var(--rojo);border-color:rgba(255,69,58,.4);background:rgba(255,69,58,.08)}
+.tag{display:inline-block;border:1px solid var(--line2);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--plat);white-space:nowrap}
+.tag.warn{border-color:#5c4b14;color:#f5d86b}
+.tag.good{border-color:#1f4d2b;color:#9fe3b0}
+/* barra superior */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(11,11,12,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:18px;min-height:64px;flex-wrap:wrap;padding-block:8px}
+.nav{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none}
+.nav button{background:none;border:0;padding:8px 12px;border-radius:999px;color:var(--muted);cursor:pointer;font-size:14px;white-space:nowrap}
+.nav button.on{color:var(--ivory);background:var(--card2)}
+.who{display:flex;align-items:center;gap:10px;font-size:13px}
+.who .avatar{width:30px;height:30px;border-radius:50%;background:var(--card2);border:1px solid var(--line2);display:grid;place-items:center;font-size:12px;color:var(--plat)}
+@media (max-width:720px){.nav{order:3;flex-basis:100%}.who .meta{display:none}}
+main{padding-block:28px 64px}
+.pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+/* tablas */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-weight:500;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--card2)}
+/* tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line2);background:transparent;border-radius:999px;padding:6px 14px;cursor:pointer;color:var(--muted);font-size:13px}
+.tabs button.on{background:var(--ivory);color:var(--ink);border-color:var(--ivory)}
+/* login */
+.login{min-height:100vh;display:grid;grid-template-columns:1.25fr 1fr}
+.login .hero{position:relative;background:#000 76% center/cover no-repeat;min-height:280px}
+.login .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,11,12,.92) 0%,rgba(11,11,12,.6) 45%,rgba(11,11,12,.1) 100%)}
+.login .hero .in{position:absolute;inset:auto 0 0 0;padding:48px max(28px,env(safe-area-inset-left,0px));z-index:1;display:flex;flex-direction:column;gap:14px}
+.login .form{display:flex;flex-direction:column;justify-content:center;gap:22px;padding:40px max(28px,env(safe-area-inset-right,0px)) 40px 28px;max-width:500px;width:100%;margin:0 auto}
+.tagline{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--plat)}
+.demoBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.demoBtns .btn{flex-direction:column;gap:2px;border-radius:12px;padding:10px 6px;white-space:normal;text-align:center}
+.demoBtns .btn small{color:var(--muted);font-weight:400;font-size:11px}
+@media (max-width:820px){.login{grid-template-columns:1fr}.login .hero{min-height:300px}.login .hero .in{padding:24px 20px}.login .form{padding:24px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}}
+/* logo */
+.lockup{display:inline-flex;align-items:flex-end;font-family:var(--serif);color:var(--ivory);line-height:1;letter-spacing:.07em;white-space:nowrap}
+/* kpis */
+.kpi{display:flex;flex-direction:column;gap:4px}
+.kpi b{font-family:var(--serif);font-weight:400;font-size:40px;line-height:1}
+/* árbol empresa */
+.tree{display:flex;flex-direction:column;gap:12px}
+.sede{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--card)}
+.salon{border-left:1px solid var(--line2);margin:12px 0 0 6px;padding-left:16px}
+.puesto{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);flex-wrap:wrap}
+.puesto:last-child{border-bottom:0}
+.inline-form{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.inline-form .input{flex:1;min-width:160px}
+/* asistente */
+.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:22px}
+.steps div{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--muted);min-width:0}
+.steps div i{display:block;height:3px;border-radius:2px;background:var(--line2)}
+.steps div.on{color:var(--ivory)}.steps div.on i,.steps div.done i{background:var(--ivory)}
+.steps span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:620px){.steps span{display:none}}
+.wizfoot{display:flex;justify-content:space-between;gap:12px;margin-top:24px;flex-wrap:wrap}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.thumb{position:relative;border:1px solid var(--line2);border-radius:10px;overflow:hidden;cursor:pointer;background:#000;aspect-ratio:3/4}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .cap{position:absolute;inset:auto 0 0 0;padding:6px 8px;font-size:11px;background:linear-gradient(transparent,rgba(0,0,0,.85))}
+.thumb.sel{border-color:var(--ivory);box-shadow:0 0 0 2px var(--ivory)}
+.hideSm{}@media (max-width:520px){.hideSm{display:none}}
+.guia{border:1px solid var(--line2);background:var(--card2);border-radius:14px;padding:12px 14px}
+.guia summary{cursor:pointer;font-weight:500;color:var(--ivory)}
+.guia .in{display:grid;grid-template-columns:240px minmax(0,1fr);gap:16px;align-items:start;margin-top:12px}
+.guia canvas{width:100%;height:auto;border-radius:10px;display:block}
+.guia ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--plat)}
+.guia ol b{color:var(--ivory);font-weight:500}
+@media (max-width:620px){.guia .in{grid-template-columns:1fr}.guia canvas{max-width:320px}}
+.measure{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:820px){.measure{grid-template-columns:1fr}}
+.canvasbox{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line2);background:#000;touch-action:none}
+.canvasbox canvas{display:block;width:100%;height:auto;cursor:crosshair;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.seglist{display:flex;flex-direction:column;gap:8px}
+.seg{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card2)}
+.seg .deg{font-variant-numeric:tabular-nums;font-size:18px;font-family:var(--serif)}
+.seg .pts{font-size:12px;color:var(--muted);min-width:64px;text-align:right}
+.result{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+.score{width:132px;height:132px;border-radius:50%;display:grid;place-items:center;border:2px solid;font-family:var(--serif);font-size:64px;line-height:1}
+.score.VERDE{color:var(--verde)}.score.AMARILLO{color:var(--amarillo)}.score.ROJO{color:var(--rojo)}
+@media (max-width:560px){.result{grid-template-columns:1fr;justify-items:start}}
+.sug{display:flex;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.sug:last-child{border-bottom:0}
+.sug::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--plat);margin-top:9px}
+/* toast */
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ivory);color:var(--ink);padding:11px 18px;border-radius:999px;font-size:14px;font-weight:500;opacity:0;transition:.25s;pointer-events:none;z-index:50;max-width:calc(100% - 32px)}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+.empty{border:1px dashed var(--line2);border-radius:14px;padding:28px;text-align:center;color:var(--muted)}
+.banner{border:1px solid var(--line2);background:var(--card2);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--plat)}
+/* hoja imprimible (PDF): papel marfil, tinta negra */
+.sheetwrap{overflow-x:auto;background:#1a1a1d;border:1px solid var(--line);border-radius:14px;padding:20px}
+.sheet{width:794px;margin:0 auto;background:#FBF8F2;color:#141414;font-family:var(--sans);font-size:12px;line-height:1.5;padding:44px 48px}
+.sheet h1,.sheet h2,.sheet h3{color:#141414}
+.sheet h1{font-size:34px}.sheet h2{font-size:22px}.sheet h3{font-size:17px}
+.sheet .sm{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#6d675c}
+.sheet table{font-size:11px}
+.sheet th{color:#6d675c;border-bottom:1px solid #d9d2c3;padding:7px 8px;font-size:9px}
+.sheet td{border-bottom:1px solid #e6e0d3;padding:7px 8px}
+.sheet .box{border:1px solid #d9d2c3;border-radius:8px;padding:12px 14px}
+.sheet .pill{background:none}
+.sheet .pill.VERDE{color:#1d7a35;border-color:#1d7a35}.sheet .pill.AMARILLO{color:#8a6a00;border-color:#b38900}.sheet .pill.ROJO{color:#b3261e;border-color:#b3261e}
+.sheet .sg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sheet .bigscore{font-family:var(--serif);font-size:54px;line-height:1}
+.sheet img{max-width:100%;border-radius:6px}
+.sheet .foot{margin-top:24px;padding-top:10px;border-top:1px solid #d9d2c3;display:flex;justify-content:space-between;font-size:9px;color:#6d675c}
+.opts{display:flex;flex-wrap:wrap;gap:8px}.opt{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:14px;color:var(--plat)}
+.opt input{position:absolute;opacity:0;pointer-events:none}.opt.on{background:var(--ivory);color:var(--ink);border-color:var(--ivory)}.opt:focus-within{outline:2px solid var(--plat);outline-offset:2px}
+.check.aj.on{border-color:rgba(237,230,216,.5)}details.card>summary{cursor:pointer;list-style:none}details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::before{content:"+ ";color:var(--muted)}details.card[open]>summary::before{content:"− "}
+.opt .pts{font-size:12px;opacity:.65;margin-left:4px}.porque{margin:0;padding:12px 14px;list-style:none;border-left:2px solid var(--line2);display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--plat)}.porque .tag{align-self:flex-start}
+.slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.slot{display:flex;flex-direction:column;gap:10px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px}.slot.lista{border-color:rgba(52,199,89,.55)}
+.slotTop{display:flex;justify-content:space-between;align-items:center;gap:8px}.slot.lista .slotTop .tag{color:var(--verde);border-color:rgba(52,199,89,.5)}
+.slotImg{position:relative;aspect-ratio:4/5;border-radius:10px;overflow:hidden;background:#000}.slotImg img{width:100%;height:100%;object-fit:cover;display:block}
+.slotImg .zoom{width:100%;height:100%;background-size:520% auto;background-position:73% 25%}
+.slotLbl{position:absolute;top:8px;left:8px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;background:rgba(11,11,12,.72);padding:3px 8px;border-radius:999px;color:var(--plat)}
+.slotDia{position:absolute;right:8px;bottom:8px;width:44%;background:rgba(11,11,12,.82);border:1px solid rgba(237,230,216,.18);border-radius:10px;padding:4px;backdrop-filter:blur(6px)}.slotDia svg{display:block;width:100%}
+.slotReglas{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--plat)}
+.espejo{transform:scaleX(-1)}.otroLado{text-align:left;background:transparent;border:1px dashed var(--line2);border-radius:14px;padding:14px 16px;color:var(--ivory);cursor:pointer;font:inherit}.otroLado:hover{border-color:var(--plat)}
+/* Portada con medición */
+.login .hero{overflow:hidden}
+.login .hero .pz{position:absolute;z-index:1;pointer-events:none}
+.login .hero .in{z-index:2}
+.pz-svg{width:100%;height:100%;display:block;overflow:visible}
+.pz-svg .sk{stroke:#EDE6D8;stroke-width:2;stroke-linecap:round;opacity:.92;stroke-dasharray:1;stroke-dashoffset:1;animation:pzDraw 1.1s .3s cubic-bezier(.6,0,.2,1) forwards}
+.pz-svg .sk2{stroke:#EDE6D8;stroke-width:1.4;stroke-linecap:round;opacity:.45;stroke-dasharray:1;stroke-dashoffset:1;animation:pzDraw 1.1s .3s cubic-bezier(.6,0,.2,1) forwards}
+.pz-svg .gd{stroke:#C9CCD2;stroke-width:1;stroke-dasharray:.06 .05;opacity:0;animation:pzFade .6s 1.2s forwards}
+.pz-svg .arc{fill:none;stroke:#FFCC00;stroke-width:1.6;stroke-dasharray:1;stroke-dashoffset:1;animation:pzDraw .7s 1.3s ease-out forwards}
+.pz-svg .plumb{stroke:#EDE6D8;stroke-width:1;stroke-dasharray:3 6;opacity:0;animation:pzFade 1s .1s forwards}
+.pz-svg .bob{fill:#EDE6D8;opacity:0;animation:pzFade 1s .1s forwards}
+.pz-svg .jt{fill:#0B0B0C;stroke:#EDE6D8;stroke-width:2;opacity:0;animation:pzFade .4s 1s forwards}
+.pz-svg .lb{opacity:0;animation:pzFade .6s 1.6s forwards}
+.pz-svg .lt{font:600 10.5px var(--sans,Inter,sans-serif);letter-spacing:.2em;fill:#C9CCD2}
+.pz-svg .lv{font:400 21px var(--serif,Georgia,serif);fill:#EDE6D8}
+@keyframes pzDraw{to{stroke-dashoffset:0}}@keyframes pzFade{to{opacity:1}}
+.pz-card{position:absolute;z-index:2;top:32px;left:32px;background:rgba(11,11,12,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(237,230,216,.18);border-radius:14px;padding:14px 18px;min-width:190px;opacity:0;animation:pzFade .8s 2s forwards}
+.pz-card .k{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#9E998F}
+.pz-card .n{font-family:var(--serif,Georgia,serif);font-size:40px;line-height:1.1;color:#EDE6D8}
+.pz-card .nv{display:flex;align-items:center;gap:8px;font-size:13px;color:#C9CCD2}
+.pz-card .nv i{width:9px;height:9px;border-radius:50%;background:#FFCC00;display:inline-block}
+@media (max-width:820px){.pz-card{display:none}.pz-svg .lb{display:none}}
+</style>
+
+<div id="app"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+'use strict';
+/* =========================================================================
+   APLOMO. · Prototipo funcional del PMV (mock app)
+   Proyecto Nuclear · Universidad Alexander von Humboldt · 2026-2
+   Requisitos: Notion 5.0 (v5). Cada pantalla indica sus RF en comentarios.
+   Datos de demostración en el navegador (localStorage). Sin servidor.
+   ========================================================================= */
+
+/* ---------- Fotos de demostración (generadas con IA, sin personas reales) ---------- */
+const IMG={
+  foto1:'__FOTO1__', foto2:'__FOTO2__', foto3:'__FOTO3__',
+  foto4:'__FOTO4__', foto5:'__FOTO5__', portada:'__FOTO6__'
+};
+const IMG_MUESTRA={perfil:'__MUESTRA_PERFIL__',frente:'__MUESTRA_FRENTE__',detalle:'__MUESTRA_DETALLE__'}; // fotos de muestra por tipo de toma (si no hay, se usan las fotos de ejemplo)
+const IMG_INFO={
+  foto1:{w:900,h:1204,nombre:'Ensamble · perfil',vista:'Lateral'},
+  foto2:{w:900,h:1350,nombre:'Ensamble · frente',vista:'Frontal'},
+  foto3:{w:900,h:1350,nombre:'Control de calidad · perfil',vista:'Lateral'},
+  foto4:{w:900,h:1204,nombre:'Estación ajustable · perfil',vista:'Lateral'},
+  foto5:{w:900,h:1204,nombre:'Bodega · levantamiento',vista:'Lateral'}
+};
+/* Puntos de ejemplo (en píxeles de la foto) para el botón "Cargar puntos de ejemplo" */
+const DEMO_PX={
+  foto1:{cadera:[290,520],hombro:[395,270],codo:[500,335],muneca:[605,325],nudillos:[640,340],cabeza:[520,190]},
+  foto3:{cadera:[330,700],hombro:[360,420],codo:[385,580],muneca:[505,600],nudillos:[545,600],cabeza:[465,258]},
+  foto4:{cadera:[345,600],hombro:[355,300],codo:[415,480],muneca:[540,497],nudillos:[580,505],cabeza:[392,138]},
+  foto5:{cadera:[250,450],hombro:[560,390],codo:[540,570],muneca:[580,750],nudillos:[610,820],cabeza:[650,225]}
+};
+function demoPuntos(key){const d=DEMO_PX[key],i=IMG_INFO[key];if(!d)return null;const L={};for(const k in d)L[k]={x:d[k][0]/i.w,y:d[k][1]/i.h};return L;}
+
+/* ---------- Detección automática de postura (RF-017 · IA MediaPipe Pose de Google, corre en el navegador) ---------- */
+const MP_URL='https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/';
+const CORONILLA={arriba:1.2,atras:0.9}; // la IA da oreja y nariz; la coronilla se estima desde ellas
+let MP=null,MP_R=null;
+function cargarScript(src){return new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.crossOrigin='anonymous';s.onload=ok;s.onerror=()=>no(new Error('red'));document.head.appendChild(s)})}
+let MP_ERR='';
+const conTiempo=(pr,ms,t)=>Promise.race([pr,new Promise((_,no)=>setTimeout(()=>no(new Error(t)),ms))]);
+async function poseLista(){
+  if(MP)return MP;
+  let base=null;
+  // 1) archivos del modelo publicados junto a la app (misma dirección); 2) CDN público
+  for(const b of ['mp/',MP_URL]){try{if(!window.Pose)await conTiempo(cargarScript(b+'pose.js'),15000,'tiempo');base=b;break}catch(e){MP_ERR='no cargó '+b+'pose.js'}}
+  if(!base||!window.Pose)throw new Error(MP_ERR||'sin Pose');
+  const p=new window.Pose({locateFile:f=>base+f+(base==='mp/'&&/\.(data|tflite|binarypb)$/.test(f)?'.wasm':'')}); // los datos del modelo se publican con extensión servible
+  p.setOptions({modelComplexity:1,staticImageMode:true,smoothLandmarks:false,minDetectionConfidence:.5});
+  p.onResults(r=>{MP_R=r});
+  try{await conTiempo(p.initialize(),45000,'el modelo tardó demasiado')}catch(e){MP_ERR=(e&&e.message||String(e)).slice(0,140);throw e}
+  MP=p;return p;
+}
+async function detectarPuntos(src){
+  const p=await poseLista();
+  const im=new Image();im.src=src;await im.decode();
+  MP_R=null;await p.send({image:im});
+  const L=MP_R&&MP_R.poseLandmarks;if(!L)return null;
+  const v=i=>L[i].visibility||0;
+  const der=(v(14)+v(16)+v(20))>=(v(13)+v(15)+v(19)); // se usa el lado del cuerpo más visible
+  const I=der?{c:24,h:12,co:14,m:16,n:20,p:18,o:8}:{c:23,h:11,co:13,m:15,n:19,p:17,o:7};
+  const w=im.width,h=im.height,P=i=>({x:clamp(L[i].x,0,1),y:clamp(L[i].y,0,1)});
+  const oreja={x:L[I.o].x*w,y:L[I.o].y*h},nariz={x:L[0].x*w,y:L[0].y*h};
+  let ux=oreja.x-nariz.x,uy=oreja.y-nariz.y;const n=Math.hypot(ux,uy)||1;ux/=n;uy/=n;
+  let px=uy,py=-ux;if(py>0){px=-px;py=-py}
+  const cab={x:clamp((oreja.x+(CORONILLA.arriba*px+CORONILLA.atras*ux)*n)/w,0,1),y:clamp((oreja.y+(CORONILLA.arriba*py+CORONILLA.atras*uy)*n)/h,0,1)};
+  const nud={x:clamp((L[I.n].x+L[I.p].x)/2,0,1),y:clamp((L[I.n].y+L[I.p].y)/2,0,1)}; // nudillos = entre índice y meñique
+  const raw=L.map(q=>({x:+q.x.toFixed(4),y:+q.y.toFixed(4),v:+(q.visibility||0).toFixed(2)})); // los 33 puntos, para sugerir ajustes en el paso 5
+  return {L:{cadera:P(I.c),hombro:P(I.h),codo:P(I.co),muneca:P(I.m),nudillos:nud,cabeza:cab},mira:nariz.x>oreja.x?'Derecho':'Izquierdo',raw};
+}
+async function autoDetectar(f,forzar){
+  if(!f||f.ia==='cargando'||f.vista==='Detalle')return;
+  const lat=f.vista==='Lateral';
+  if(!forzar&&(lat?f.L:f.raw))return;
+  f.ia='cargando';if(lat)render();
+  try{
+    const r=await conTiempo(detectarPuntos(fotoSrc(f)),60000,'la detección tardó demasiado');
+    if(!r){f.ia='nada';if(lat)toast('No se encontró una persona en la foto. Marca los puntos a mano.')}
+    else if(lat&&f.cara==='otro'){f.L=r.L;f.raw=r.raw;f.ia='ok';f.mira=r.mira}
+    else if(lat){f.L=r.L;f.raw=r.raw;f.ia='ok';if(W&&W.lado!==r.mira){W.lado=r.mira;toast('Lado ajustado a '+r.mira+' según la foto')}}
+    else{f.raw=r.raw;f.ia='ok'}
+  }catch(e){f.ia='error';MP_ERR=MP_ERR||(e&&e.message||String(e)).slice(0,140)}
+  if(R.v==='wizard'&&W&&(W.paso===4||W.paso===5))render();
+}
+
+/* ---------- Puntos del cuerpo que se marcan sobre la foto (RF-017) ---------- */
+const MARCAS=[
+  {k:'cadera',t:'Cadera'},{k:'hombro',t:'Hombro'},{k:'codo',t:'Codo'},
+  {k:'muneca',t:'Muñeca'},{k:'nudillos',t:'Nudillos'},{k:'cabeza',t:'Coronilla (parte alta de la cabeza)'}
+];
+/* ---------- Guía con foto de ejemplo (dónde va cada punto y cómo tomar la foto) ---------- */
+const GUIA_PUNTOS=[
+  ['Cadera','el hueso de la cadera, donde el cuerpo se dobla (a la altura del bolsillo)'],
+  ['Hombro','el centro de la articulación del hombro'],
+  ['Codo','la punta del codo'],
+  ['Muñeca','el centro de la muñeca'],
+  ['Nudillos','los nudillos, en la base de los dedos'],
+  ['Coronilla','la parte más alta de la cabeza']];
+const GUIA_SEG={
+  TODOS:{t:'Los 6 puntos',pts:['cadera','hombro','codo','muneca','nudillos','cabeza'],
+    que:'Los 6 puntos se marcan en este orden. Cada ángulo usa 3 de ellos; elige un segmento arriba para ver qué buscar en cada uno.',
+    tips:GUIA_PUNTOS.map(([t,d],n)=>`<b>${n+1} · ${t}</b>: ${d}.`),rula:''},
+  TRONCO:{t:'Tronco (espalda)',pts:['cadera','hombro'],vert:true,
+    que:'Cuánto se inclina la espalda hacia adelante. La línea cadera → hombro representa la columna y se compara con una línea vertical.',
+    tips:['<b>1 · Cadera</b>: el hueso de la cadera, donde el cuerpo se dobla; suele quedar un poco debajo del cinturón, no en la cintura del pantalón.','<b>2 · Hombro</b>: el centro de la articulación, no el borde de la camisa ni el cuello.','Si la espalda está curva, la línea va igual de cadera a hombro: RULA mide la inclinación general, no la curva.'],
+    rula:'Erguido = 1 · hasta 20° = 2 · 20° a 60° = 3 · más de 60° = 4. Ajustes del paso 5: tronco girado o inclinado de lado (+1).'},
+  CUELLO:{t:'Cuello',pts:['cadera','hombro','cabeza'],
+    que:'Cuánto se dobla la cabeza respecto a la espalda (no respecto al piso). Se compara la línea hombro → coronilla con la línea de la espalda.',
+    tips:['<b>6 · Coronilla</b>: el punto más alto de la cabeza, no la frente ni la nariz.','Si la persona mira hacia abajo, la coronilla queda adelante del hombro (flexión); si mira hacia arriba, queda atrás (extensión).'],
+    rula:'0° a 10° = 1 · 10° a 20° = 2 · más de 20° = 3 · cabeza hacia atrás (extensión) = 4. Ajustes: cuello girado o inclinado de lado (+1).'},
+  BRAZO:{t:'Brazo',pts:['cadera','hombro','codo'],
+    que:'Cuánto se levanta el brazo (del hombro al codo) hacia adelante o hacia atrás, medido desde la línea de la espalda.',
+    tips:['<b>2 · Hombro</b>: el centro de la articulación, donde gira el brazo.','<b>3 · Codo</b>: la punta del codo.','Brazo pegado al cuerpo ≈ 0°; brazo estirado al frente a la altura del hombro ≈ 90°.'],
+    rula:'Hasta 20° = 1 · 20° a 45° = 2 · 45° a 90° = 3 · más de 90° = 4 · hacia atrás más de 20° = 2. Ajustes: hombro elevado o brazo separado (+1), brazo apoyado (−1).'},
+  ANTEBRAZO:{t:'Antebrazo',pts:['hombro','codo','muneca'],
+    que:'Cuánto se dobla el codo: el ángulo entre el brazo y el antebrazo (del codo a la muñeca).',
+    tips:['<b>3 · Codo</b>: la punta del codo.','<b>4 · Muñeca</b>: el centro de la muñeca, donde se dobla la mano (no el reloj).','Brazo colgando recto ≈ 0°; antebrazo horizontal con el brazo abajo ≈ 90°.'],
+    rula:'60° a 100° = 1 · menos de 60° o más de 100° = 2. Ajuste: el antebrazo cruza la línea media del cuerpo o sale hacia afuera (+1).'},
+  MUNECA:{t:'Muñeca',pts:['codo','muneca','nudillos'],
+    que:'Cuánto se dobla la mano hacia arriba o hacia abajo respecto al antebrazo.',
+    tips:['<b>4 · Muñeca</b>: el centro de la muñeca.','<b>5 · Nudillos</b>: la base de los dedos, no la punta.','Mano en línea recta con el antebrazo = 0° (neutra).'],
+    rula:'Neutra = 1 · hasta 15° = 2 · más de 15° = 3. Ajustes: muñeca desviada de lado (+1) y giro de muñeca cerca del extremo (giro 2).'}
+};
+const GUIA_ORDEN=['TODOS','TRONCO','CUELLO','BRAZO','ANTEBRAZO','MUNECA'];
+function guiaHTML(tipo){
+  const lado=W?W.lado:'Derecho',mira=lado==='Derecho'?'derecha':'izquierda';
+  if(tipo==='foto'){
+    return `<details class="guia" open><summary>Cómo tomar la foto · ejemplo</summary>
+    <div class="in"><canvas class="guiaCv" data-seg="TODOS" aria-label="Foto de ejemplo"></canvas><ol>
+    <li><b>De perfil</b>: lado ${lado.toLowerCase()} hacia la cámara, el trabajador mirando hacia la <b>${mira}</b> de la foto.</li>
+    <li><b>Cuerpo completo</b>: que se vean la cabeza y los pies.</li><li>Cámara a la <b>altura de la cintura</b>, a 2 o 3 metros, sin inclinarla.</li>
+    <li>El trabajador en su <b>postura habitual</b>, haciendo la tarea.</li><li>Ropa que deje ver hombro, codo y muñeca.</li>
+    <li>Para los ajustes del paso 5, toma también una foto <b>de frente</b>.</li></ol></div></details>`;
+  }
+  const k=(W&&W.guiaSeg)||'TODOS',g=GUIA_SEG[k];
+  return `<details class="guia" open><summary>Guía de puntos · qué buscar en cada segmento</summary>
+    <div class="tabs" style="margin-top:10px">${GUIA_ORDEN.map(x=>`<button class="${x===k?'on':''}" data-act="guiaSeg" data-k="${x}">${GUIA_SEG[x].t}</button>`).join('')}</div>
+    <div class="in"><canvas class="guiaCv" data-seg="${k}" aria-label="Ejemplo de ${g.t}"></canvas>
+    <div class="stack" style="gap:8px"><div class="small">${g.que}</div><ul class="small muted" style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">${g.tips.map(t=>`<li>${t}</li>`).join('')}</ul>
+    ${g.rula?`<div class="hint"><b>Puntos RULA:</b> ${g.rula}</div>`:''}
+    <div class="hint">Ejemplo con el trabajador mirando hacia la ${mira}, como en tu foto.</div></div></div></details>`;
+}
+function montarGuia(){
+  const espejo=W&&W.lado==='Izquierdo';
+  document.querySelectorAll('.guiaCv').forEach(cv=>{
+    const g=GUIA_SEG[cv.dataset.seg]||GUIA_SEG.TODOS;
+    const img=new Image();img.onload=()=>{
+      const i=IMG_INFO.foto4,todos=cv.dataset.seg==='TODOS';const L=demoPuntos('foto4');
+      // recorte: foto completa para "todos"; acercamiento al segmento para los demás
+      let bx=0,by=0,bw=img.naturalWidth,bh=img.naturalHeight;
+      if(!todos){const xs=g.pts.map(k=>L[k].x*bw),ys=g.pts.map(k=>L[k].y*bh);const cx=(Math.min(...xs)+Math.max(...xs))/2,cy=(Math.min(...ys)+Math.max(...ys))/2;
+        const lado=Math.min(bw,bh,Math.max(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys))*1.6+bw*.12);
+        bx=clamp(cx-lado/2,0,bw-lado);by=clamp(cy-lado/2+(g.vert?-lado*.1:0),0,bh-lado);bw=bh=lado}
+      const cw=320,ch=Math.round(cw*bh/bw);cv.width=cw;cv.height=ch;const ctx=cv.getContext('2d');
+      ctx.save();if(espejo){ctx.translate(cw,0);ctx.scale(-1,1)}ctx.drawImage(img,bx,by,bw,bh,0,0,cw,ch);ctx.restore();
+      const P=k=>{const x=(L[k].x*img.naturalWidth-bx)/bw*cw,y=(L[k].y*img.naturalHeight-by)/bh*ch;return {x:espejo?cw-x:x,y}};
+      const linea=(a,b,on)=>{const tr=(c,w)=>{ctx.beginPath();ctx.moveTo(P(a).x,P(a).y);ctx.lineTo(P(b).x,P(b).y);ctx.strokeStyle=c;ctx.lineWidth=w;ctx.stroke()};if(on){tr('rgba(11,11,12,.75)',6);tr('#EDE6D8',3)}else tr('rgba(237,230,216,.35)',1.5)};
+      const cad=[['cadera','hombro'],['hombro','codo'],['codo','muneca'],['muneca','nudillos'],['hombro','cabeza']];
+      cad.forEach(([a,b])=>linea(a,b,todos||(g.pts.includes(a)&&g.pts.includes(b))));
+      if(g.vert){const c=P('cadera');ctx.save();ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.x,c.y-150);ctx.strokeStyle='rgba(11,11,12,.75)';ctx.lineWidth=5;ctx.stroke();ctx.strokeStyle='#C9CCD2';ctx.lineWidth=2.5;ctx.stroke();ctx.restore()}
+      if(g.pts.length===3&&!todos){const v=P(g.pts[1]),a=P(g.pts[0]),b=P(g.pts[2]);const a1=Math.atan2(a.y-v.y,a.x-v.x),a2=Math.atan2(b.y-v.y,b.x-v.x);let d=a2-a1;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;ctx.beginPath();ctx.arc(v.x,v.y,22,a1,a1+d,d<0);ctx.strokeStyle='#EDE6D8';ctx.lineWidth=2;ctx.stroke()}
+      MARCAS.forEach((m,n)=>{const on=g.pts.includes(m.k);const p=P(m.k);ctx.beginPath();ctx.arc(p.x,p.y,on?11:5,0,7);ctx.fillStyle=on?'#EDE6D8':'rgba(237,230,216,.5)';ctx.fill();
+        if(on){ctx.lineWidth=2;ctx.strokeStyle='#0B0B0C';ctx.stroke();ctx.fillStyle='#0B0B0C';ctx.font='700 13px Inter, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(n+1),p.x,p.y+1)}});
+    };img.src=IMG.foto4;
+  });
+}
+const SEGMENTOS=[
+  {k:'BRAZO',t:'Brazo',p:'Cadera · Hombro · Codo'},
+  {k:'ANTEBRAZO',t:'Antebrazo',p:'Hombro · Codo · Muñeca'},
+  {k:'MUNECA',t:'Muñeca',p:'Codo · Muñeca · Nudillos'},
+  {k:'CUELLO',t:'Cuello',p:'Cadera · Hombro · Coronilla'},
+  {k:'TRONCO',t:'Tronco',p:'Cadera · Hombro · vertical'}
+];
+
+/* =========================================================================
+   MOTOR RULA (RF-018, RF-019, RF-020, RF-027) · tablas oficiales A, B y C
+   ========================================================================= */
+const TABLE_A=[ // fila=(brazo-1)*3+(antebrazo-1); col=(muñeca-1)*2+(giro-1)
+[1,2,2,2,2,3,3,3],[2,2,2,2,3,3,3,3],[2,3,3,3,3,3,4,4],
+[2,3,3,3,3,4,4,4],[3,3,3,3,3,4,4,4],[3,4,4,4,4,4,5,5],
+[3,3,4,4,4,4,5,5],[3,4,4,4,4,4,5,5],[4,4,4,4,4,5,5,5],
+[4,4,4,4,4,5,5,5],[4,4,4,4,4,5,5,5],[4,4,4,5,5,5,6,6],
+[5,5,5,5,5,6,6,7],[5,6,6,6,6,7,7,7],[6,6,6,7,7,7,7,8],
+[7,7,7,7,7,8,8,9],[8,8,8,8,8,9,9,9],[9,9,9,9,9,9,9,9]];
+const TABLE_B=[ // fila=cuello-1; col=(tronco-1)*2+(piernas-1)
+[1,3,2,3,3,4,5,5,6,6,7,7],[2,3,2,3,4,5,5,5,6,7,7,7],[3,3,3,4,4,5,5,6,6,7,7,7],
+[5,5,5,6,6,7,7,7,7,7,8,8],[7,7,7,7,7,8,8,8,8,8,8,8],[8,8,8,8,8,8,8,9,9,9,9,9]];
+const TABLE_C=[[1,2,3,3,4,5,5],[2,2,3,4,4,5,5],[3,3,3,4,4,5,6],[3,3,3,4,5,6,6],
+[4,4,4,5,6,7,7],[4,4,5,6,6,7,7],[5,5,6,6,7,7,7],[5,5,6,7,7,7,7]];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const NEUTRO=5; // supuesto del PMV: menos de 5° se considera posición neutra
+
+/* Ángulos a partir de los puntos marcados. lado 'Derecho' = el trabajador mira hacia la derecha de la foto */
+const miraDe=(f,ev)=>f.mira||(ev||W).lado; // hacia dónde mira el trabajador en esa foto (la del otro lado mira al revés)
+function medirAngulos(L,w,h,lado){
+  if(!L||MARCAS.some(m=>!L[m.k]))return null;
+  const P={};for(const m of MARCAS)P[m.k]={x:L[m.k].x*w,y:L[m.k].y*h};
+  const dir=lado==='Izquierdo'?-1:1;
+  const sub=(a,b)=>({x:a.x-b.x,y:a.y-b.y});
+  const ang=(u,v)=>{const c=(u.x*v.x+u.y*v.y)/(Math.hypot(u.x,u.y)*Math.hypot(v.x,v.y)||1);return Math.acos(clamp(c,-1,1))*180/Math.PI};
+  const cross=(u,v)=>u.x*v.y-u.y*v.x;
+  const r=Math.round;
+  const d=sub(P.cadera,P.hombro),a=sub(P.codo,P.hombro);
+  const brazo={grados:r(ang(d,a)),sentido:cross(d,a)*dir<0?'Flexión':'Extensión'};
+  const ante={grados:r(180-ang(sub(P.hombro,P.codo),sub(P.muneca,P.codo)))};
+  const mun={grados:r(180-ang(sub(P.codo,P.muneca),sub(P.nudillos,P.muneca)))};
+  const t=sub(P.hombro,P.cadera),hd=sub(P.cabeza,P.hombro);
+  const cg=r(ang(t,hd));
+  const cuello={grados:cg,sentido:(cross(t,hd)*dir>0||cg<=NEUTRO)?'Flexión':'Extensión'};
+  const tg=r(ang(t,{x:0,y:-1}));
+  const tronco={grados:tg,sentido:(t.x*dir>=0||tg<=NEUTRO)?'Flexión':'Extensión'};
+  return {BRAZO:brazo,ANTEBRAZO:ante,MUNECA:mun,CUELLO:cuello,TRONCO:tronco};
+}
+
+/* Puntuación de cada segmento + tablas */
+function calcularRULA(m,ev){
+  const aj=ev.aj||{},act=ev.act||{},carga=ev.carga||{};
+  const g=k=>m[k]||{grados:0,sentido:'Flexión'};
+  const b=g('BRAZO');
+  let brazo=b.sentido==='Extensión'?(b.grados<=20?1:2):(b.grados<=20?1:b.grados<=45?2:b.grados<=90?3:4);
+  brazo+=(aj.hombroElevado?1:0)+(aj.brazoAbducido?1:0)-(aj.brazoApoyado?1:0);brazo=clamp(brazo,1,6);
+  const an=g('ANTEBRAZO');let ante=(an.grados>=60&&an.grados<=100)?1:2;ante+=aj.antebrazoCruza?1:0;ante=clamp(ante,1,3);
+  const w=g('MUNECA');let mun=w.grados<=NEUTRO?1:w.grados<=15?2:3;mun+=aj.munecaDesviada?1:0;mun=clamp(mun,1,4);
+  const giro=aj.giroExtremo?2:1;
+  const n=g('CUELLO');let cue=n.sentido==='Extensión'?4:n.grados<=10?1:n.grados<=20?2:3;
+  cue+=(aj.cuelloGirado?1:0)+(aj.cuelloInclinado?1:0);cue=clamp(cue,1,6);
+  const tr=g('TRONCO');let tro=tr.grados<=NEUTRO?1:tr.grados<=20?2:tr.grados<=60?3:4;
+  tro+=(aj.troncoGirado?1:0)+(aj.troncoInclinado?1:0);tro=clamp(tro,1,6);
+  const pier=ev.piernas===false?2:1;
+  // Actividad muscular y carga se puntúan por separado para el grupo A (brazos) y el grupo B (cuello, tronco, piernas)
+  const igual=ev.bIgual!==false;
+  const actB=igual?act:(ev.actB||{}),cargaB=igual?carga:(ev.cargaB||{});
+  const muscDe=x=>(x.estatica||x.repetitiva)?1:0;
+  const fuerzaDe=c=>{const kg=+c.kg||0;if(c.golpes)return 3;if(kg<2)return 0;if(kg<=10)return c.tipo==='Intermitente'?1:2;return c.tipo==='Intermitente'?2:3};
+  const muscA=muscDe(act),muscB=muscDe(actB),fuerzaA=fuerzaDe(carga),fuerzaB=fuerzaDe(cargaB);
+  const musc=Math.max(muscA,muscB),fuerza=Math.max(fuerzaA,fuerzaB);
+  const A=TABLE_A[(brazo-1)*3+(ante-1)][(mun-1)*2+(giro-1)];
+  const B=TABLE_B[cue-1][(tro-1)*2+(pier-1)];
+  const C=A+muscA+fuerzaA,D=B+muscB+fuerzaB;
+  const final=TABLE_C[clamp(C,1,8)-1][clamp(D,1,7)-1];
+  const nivel=final<=2?1:final<=4?2:final<=6?3:4;
+  return {seg:{BRAZO:brazo,ANTEBRAZO:ante,MUNECA:mun,GIRO:giro,CUELLO:cue,TRONCO:tro,PIERNAS:pier},musc,fuerza,muscA,muscB,fuerzaA,fuerzaB,A,B,C,D,final,nivel,color:colorDe(final)};
+}
+/* Semáforo de 3 colores + nivel oficial (RF-020) */
+function colorDe(p){return p<=2?'VERDE':p<=4?'AMARILLO':'ROJO'}
+const COLOR_TXT={VERDE:'Verde',AMARILLO:'Amarillo',ROJO:'Rojo'};
+const NIVEL_TXT={1:'Postura aceptable',2:'Pueden requerirse cambios; conviene profundizar el estudio',3:'Se requiere rediseñar la tarea pronto',4:'Se requieren cambios urgentes en la tarea'};
+function pill(res){if(!res)return '<span class="tag">Sin resultado</span>';return `<span class="pill ${res.color}">${res.final} · ${COLOR_TXT[res.color]} · Nivel ${res.nivel}</span>`}
+
+/* Sugerencias automáticas del sistema (RF-023a, solo lectura) */
+function sugerencias(res,ev){
+  const s=[],g=res.seg;
+  const levanta=g.TRONCO>=4&&res.fuerza>=2;
+  if(levanta)s.push('Elevar la carga del piso: estibas, mesas elevadoras o estanterías entre la altura de la rodilla y del hombro.');
+  if(g.BRAZO>=3&&!levanta)s.push('Bajar la superficie de trabajo o subir la plataforma del operario para que los codos queden a la altura de la mesa.');
+  if(g.BRAZO>=3&&!levanta)s.push('Acercar las piezas a la zona de alcance cómodo: a menos de 40 cm del borde de la mesa.');
+  if(ev.aj&&ev.aj.hombroElevado)s.push('Evitar trabajar con los hombros elevados: ajustar la altura de la mesa a la altura del codo.');
+  if(g.ANTEBRAZO>=2&&!levanta)s.push('Ajustar la altura de trabajo para que el codo quede entre 60° y 100°.');
+  if(g.MUNECA>=3)s.push('Usar herramientas y sujeciones que permitan mantener la muñeca recta.');
+  if(g.CUELLO===4)s.push('Ubicar la carga y el punto de mirada a la altura de los ojos para no levantar la cabeza.');
+  else if(g.CUELLO>=3)s.push('Elevar o inclinar la pieza, o usar una lupa articulada, para no flexionar el cuello más de 20°.');
+  if(g.TRONCO>=4&&res.fuerza>=2)s.push('Capacitar en levantamiento seguro (rodillas flexionadas, espalda recta y carga pegada al cuerpo) y usar ayudas mecánicas para cargas de más de 10 kg.');
+  else if(g.TRONCO>=3)s.push('Evitar inclinar el tronco: subir la superficie si es baja o acercar el trabajo al cuerpo.');
+  if(g.PIERNAS===2)s.push('Instalar tapete antifatiga y permitir apoyo equilibrado en ambos pies.');
+  if(res.musc)s.push('Programar pausas activas cada hora y rotación de tareas.');
+  if(!s.length)s.push('Mantener las condiciones actuales del puesto y reevaluar en 6 meses.');
+  return s;
+}
+
+/* Evalúa una evaluación completa: un resultado por foto lateral; el del puesto es el más alto (RF-021) */
+function evaluar(ev){
+  const porFoto=[];
+  if(!ev.sinFotos){
+    for(const f of ev.fotos||[]){
+      if(f.vista!=='Lateral')continue;
+      const m=medirAngulos(f.L,f.w,f.h,miraDe(f,ev));
+      if(m)porFoto.push({fotoId:f.id,med:m,res:calcularRULA(m,ev)});
+    }
+  }else if(ev.manual){
+    const m={};for(const s of SEGMENTOS){const v=ev.manual[s.k]||{};m[s.k]={grados:+v.grados||0,sentido:v.sentido||'Flexión'}}
+    porFoto.push({fotoId:null,med:m,res:calcularRULA(m,ev)});
+  }
+  if(!porFoto.length)return {porFoto,res:null,sug:[]};
+  const peor=porFoto.reduce((a,b)=>b.res.final>a.res.final?b:a);
+  return {porFoto,res:peor.res,med:peor.med,sug:sugerencias(peor.res,ev)};
+}
+
+/* =========================================================================
+   ESTADO Y DATOS DE DEMOSTRACIÓN
+   ========================================================================= */
+const KEY='aplomo_pmv_v3'; // v3: cliente Universidad Alexander von Humboldt y fotos por casilla
+const PASS='Aplomo2026';
+let S=null;
+const hoy=()=>new Date().toISOString().slice(0,10);
+const masDias=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+const uid=p=>p+Math.random().toString(36).slice(2,8);
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){/* sin almacenamiento: la demo sigue en memoria */}}
+function load(){try{const t=localStorage.getItem(KEY);if(t){S=JSON.parse(t);return}}catch(e){}S=seed()}
+
+function seed(){
+  const st={v:1,sesion:null,
+    usuarios:[
+      {id:'u1',nombre:'Johan Zapata',correo:'johan@aplomo.co',rol:'ADMIN',estado:'Activo',cargo:'Ingeniero de software'},
+      {id:'u2',nombre:'Andrés Benavides',correo:'andres@aplomo.co',rol:'EVALUADOR',vinculacion:'Empleado',estado:'Activo',cargo:'Ingeniero industrial'},
+      {id:'u3',nombre:'Valentina Ríos',correo:'valentina@aplomo.co',rol:'EVALUADOR',vinculacion:'Independiente',estado:'Activo',cargo:'Ingeniera industrial',tarjeta:'IND-63210'},
+      {id:'u4',nombre:'Laura Romero',correo:'laura@ensamblesq.co',rol:'USUARIO',estado:'Activo',empresaId:'e1',cargo:'Jefe de seguridad y salud en el trabajo'},
+      {id:'u5',nombre:'Mateo Giraldo',correo:'mateo.giraldo@correo.co',rol:'EVALUADOR',vinculacion:'Independiente',estado:'Pendiente',cargo:'Ingeniero industrial',tarjeta:'IND-70115'}
+    ],
+    empresas:[
+      {id:'e1',nombre:'Ensambles del Quindío S.A.S.',nit:'900.456.789-1',sector:'Manufactura de componentes',ciudad:'Armenia',contacto:'Laura Romero',
+        sedes:[{id:'s1',nombre:'Planta Armenia',direccion:'Km 3 vía al Edén',salones:[
+          {id:'l1',nombre:'Línea de ensamble A',puestos:[
+            {id:'p1',nombre:'Puesto 1 · Estación ajustable',tarea:'Ensamble de piezas pequeñas'},
+            {id:'p2',nombre:'Puesto 2 · Control de calidad',tarea:'Inspección visual de componentes'},
+            {id:'p4',nombre:'Puesto 4 · Ensamble de precisión',tarea:'Ensamble de mecanismos en mesa alta'}]},
+          {id:'l2',nombre:'Bodega de producto terminado',puestos:[
+            {id:'p6',nombre:'Puesto 6 · Bodega',tarea:'Levantamiento de cajas desde el piso'}]}]}]},
+      {id:'e2',nombre:'Muebles Cafeteros S.A.S.',nit:'901.222.333-4',sector:'Fabricación de muebles',ciudad:'Pereira',contacto:'Andrés Ocampo',
+        sedes:[{id:'s2',nombre:'Planta Dosquebradas',direccion:'Zona industrial La Badea',salones:[
+          {id:'l3',nombre:'Taller de lijado',puestos:[{id:'p7',nombre:'Puesto 1 · Lijado manual',tarea:'Lijado de tableros'}]}]}]},
+      // Cliente con datos reales de sedes (direcciones publicadas en unihumboldt.edu.co); puestos y resultados son de demostración
+      {id:'e3',nombre:'Corporación Universitaria Empresarial Alexander von Humboldt',nit:'NIT de demostración',sector:'Educación superior',ciudad:'Armenia',contacto:'Oficina de Seguridad y Salud en el Trabajo',
+        sedes:[
+          {id:'s3',nombre:'Sede principal',direccion:'Avenida Bolívar N° 1-189, Armenia',salones:[
+            {id:'l4',nombre:'Laboratorio de Métodos y Movimientos',puestos:[
+              {id:'p8',nombre:'Puesto 1 · Mesa de ensamble didáctico',tarea:'Ensamble de piezas en prácticas de laboratorio'},
+              {id:'p9',nombre:'Puesto 2 · Estación de medición',tarea:'Medición de piezas con calibrador'}]},
+            {id:'l5',nombre:'Biblioteca',puestos:[{id:'p10',nombre:'Puesto 3 · Préstamo y devolución',tarea:'Atención en mostrador y acomodo de libros'}]}]},
+          {id:'s4',nombre:'Sede Alcázar',direccion:'Calle 4N # 13-05, Armenia',salones:[
+            {id:'l6',nombre:'Mantenimiento',puestos:[{id:'p11',nombre:'Puesto 1 · Taller de mantenimiento',tarea:'Reparación de mobiliario en banco de trabajo'}]},
+            {id:'l7',nombre:'Cafetería',puestos:[{id:'p12',nombre:'Puesto 2 · Barra de servicio',tarea:'Preparación y entrega de pedidos'}]}]},
+          {id:'s5',nombre:'Sede Anova (Medicina)',direccion:'Carrera 13 # 15N-46, Edificio Anova, Armenia',salones:[
+            {id:'l8',nombre:'Laboratorio de simulación clínica',puestos:[{id:'p13',nombre:'Puesto 1 · Preparación de material',tarea:'Alistamiento de material clínico en mesón'}]},
+            {id:'l9',nombre:'Admisiones',puestos:[{id:'p14',nombre:'Puesto 2 · Atención al público',tarea:'Atención en ventanilla, de pie'}]}]}]}
+    ],
+    reservas:[
+      {id:'r1',empresaId:'e1',sedeId:'s1',fecha:masDias(-18),hora:'08:00',evaluadorId:'u2',estado:'Finalizada',visitaId:'v1',notas:'Primera visita de diagnóstico'},
+      {id:'r2',empresaId:'e1',sedeId:'s1',fecha:hoy(),hora:'09:00',evaluadorId:'u2',estado:'En cola',notas:'Evaluar el puesto de ensamble de precisión'},
+      {id:'r3',empresaId:'e2',sedeId:'s2',fecha:masDias(5),hora:'14:00',evaluadorId:'u2',estado:'Esperando',notas:''},
+      {id:'r4',empresaId:'e3',sedeId:'s5',fecha:masDias(-7),hora:'10:00',evaluadorId:'u2',estado:'Finalizada',visitaId:'v2',notas:'Diagnóstico del laboratorio de simulación'},
+      {id:'r5',empresaId:'e3',sedeId:'s3',fecha:hoy(),hora:'14:00',evaluadorId:'u2',estado:'En cola',notas:'Laboratorio de Métodos y Movimientos'},
+      {id:'r6',empresaId:'e3',sedeId:'s4',fecha:masDias(3),hora:'08:30',evaluadorId:'u2',estado:'Esperando',notas:'Mantenimiento y cafetería'}
+    ],
+    visitas:[{id:'v1',reservaId:'r1',empresaId:'e1',sedeId:'s1',estado:'Finalizada',inicio:masDias(-18),fin:masDias(-18),evaluadorId:'u2'},
+      {id:'v2',reservaId:'r4',empresaId:'e3',sedeId:'s5',estado:'Finalizada',inicio:masDias(-7),fin:masDias(-7),evaluadorId:'u2'}],
+    evaluaciones:[]
+  };
+  const base={visitaId:'v1',empresaId:'e1',sedeId:'s1',evaluadorId:'u2',fecha:masDias(-18),lado:'Derecho',postura:'De pie',aceptaFotos:true,sinFotos:false,aj:{},piernas:true};
+  const mk=(id,puestoId,salonId,foto,extra)=>{
+    const i=IMG_INFO[foto];
+    const ev=Object.assign({},base,{id,puestoId,salonId,fotos:[{id:id+'f',src:foto,vista:'Lateral',w:i.w,h:i.h,L:demoPuntos(foto)}]},extra);
+    const r=evaluar(ev);ev.porFoto=r.porFoto;ev.res=r.res;ev.sug=r.sug;return ev;
+  };
+  st.evaluaciones.push(
+    mk('ev1','p1','l1','foto4',{tarea:'Ensamble de piezas pequeñas en estación a la altura del codo',horas:8,codigo:'OP-014',act:{estatica:false,repetitiva:false},carga:{kg:0.3,tipo:'Intermitente',golpes:false},cond:{altura:'98 cm (ajustable)',ajustable:true,antifatiga:true,iluminacion:true,obs:'Estación ajustada a la altura del codo de la operaria.'}}),
+    mk('ev2','p2','l1','foto3',{tarea:'Inspección visual de componentes en mesa baja',horas:8,codigo:'OP-022',act:{estatica:true,repetitiva:false},carga:{kg:0.5,tipo:'Intermitente',golpes:false},cond:{altura:'86 cm',ajustable:false,antifatiga:false,iluminacion:true,obs:'La mesa queda por debajo del codo.'}}),
+    mk('ev4','p13','l8','foto4',{visitaId:'v2',empresaId:'e3',sedeId:'s5',fecha:masDias(-7),tarea:'Alistamiento de material clínico en mesón a la altura del codo',horas:6,codigo:'AN-007',act:{estatica:false,repetitiva:false},carga:{kg:0.5,tipo:'Intermitente',golpes:false},cond:{altura:'95 cm',ajustable:true,antifatiga:true,iluminacion:true,obs:'Mesón a la altura del codo; buena iluminación.'}}),
+    mk('ev5','p14','l9','foto3',{visitaId:'v2',empresaId:'e3',sedeId:'s5',fecha:masDias(-7),tarea:'Atención en ventanilla con el mostrador por debajo del codo',horas:8,codigo:'AN-012',act:{estatica:true,repetitiva:false},carga:{kg:0,tipo:'Intermitente',golpes:false},cond:{altura:'88 cm',ajustable:false,antifatiga:false,iluminacion:true,obs:'El mostrador obliga a inclinar el cuello para escribir.'}}),
+    mk('ev3','p6','l2','foto5',{tarea:'Levantar cajas de 15 kg desde el piso hasta la estantería',horas:6,codigo:'OP-031',act:{estatica:false,repetitiva:true},carga:{kg:15,tipo:'Intermitente',golpes:false},cond:{altura:'Piso (0 cm)',ajustable:false,antifatiga:false,iluminacion:true,obs:'Las cajas se apilan directamente en el piso.'}})
+  );
+  return st;
+}
+
+/* ---------- utilidades ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fdate=d=>{if(!d)return '';const [y,m,dd]=d.split('-');const M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];return `${+dd} ${M[+m-1]} ${y}`};
+let toastT;function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2600)}
+const yo=()=>S.usuarios.find(u=>u.id===S.sesion);
+const emp=id=>S.empresas.find(e=>e.id===id);
+function sedeDe(eid,sid){const e=emp(eid);return e&&e.sedes.find(s=>s.id===sid)}
+function puestoInfo(pid){for(const e of S.empresas)for(const s of e.sedes)for(const l of s.salones)for(const p of l.puestos)if(p.id===pid)return {e,s,l,p};return null}
+const fotoSrc=f=>IMG[f.src]||(f.src==='mDetalle'?IMG_MUESTRA.detalle:f.src);
+const ROL_TXT={ADMIN:'Administrador',EVALUADOR:'Evaluador',USUARIO:'Usuario de la empresa'};
+const passOk=p=>p.length>=8&&/[A-Za-z]/.test(p)&&/\d/.test(p); // RNF-005
+
+/* ---------- logo C: la A es la medición ---------- */
+function glyphA(stroke,w){return `<line x1="50" y1="10" x2="16" y2="90" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round"/><line x1="50" y1="10" x2="84" y2="90" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round"/><path d="M31.2,54.2 A48,48 0 0 0 68.8,54.2" fill="none" stroke="${stroke}" stroke-width="${w*.55}" stroke-dasharray="${w*.9} ${w*.9}" opacity=".85"/><line x1="50" y1="10" x2="50" y2="64" stroke="${stroke}" stroke-width="${w*.4}"/><path d="M47.84,64 h4.32 v2.16 L55.04,70.48 L50,82.72 L44.96,70.48 L47.84,66.16 Z" fill="${stroke}"/><circle cx="50" cy="10" r="${w*.9}" fill="${stroke}"/>`}
+function logo(h,color){color=color||'#EDE6D8';return `<span class="lockup" style="font-size:${h}px;color:${color}" aria-label="APLOMO."><svg width="${h*.78}" height="${h*.78}" viewBox="0 0 100 100" style="margin-bottom:${h*.19}px;margin-right:${h*.03}px" aria-hidden="true">${glyphA(color,4)}</svg><span>PLOMO.</span></span>`}
+
+/* =========================================================================
+   NAVEGACIÓN
+   ========================================================================= */
+let R={v:'login'};
+let W=null; // borrador del asistente
+/* Historial: botón Atrás de la app y botón Atrás del navegador/celular */
+let HIST=[],HIST_OK=true;
+function go(v,extra){
+  const nuevo=Object.assign({v},extra||{});
+  if(R&&R.v&&R.v!=='registrado'&&v!=='login'&&JSON.stringify(R)!==JSON.stringify(nuevo)){HIST.push(R);if(HIST.length>40)HIST.shift();try{history.pushState({aplomo:HIST.length},'')}catch(e){HIST_OK=false}}
+  R=nuevo;render();window.scrollTo(0,0)}
+function atras(desdeNavegador){
+  if(!desdeNavegador&&HIST_OK&&HIST.length){try{history.back();return}catch(e){}}
+  const prev=HIST.pop();if(!prev)return;
+  R=prev;render();window.scrollTo(0,0)}
+/* Guarda en el historial: en la pantalla de inicio, el botón Atrás del navegador no saca de la app */
+function guardaHistorial(){try{history.pushState({aplomo:'inicio'},'')}catch(e){HIST_OK=false}}
+window.addEventListener('popstate',()=>{if(HIST.length){atras(true);return}
+  if(S.sesion){guardaHistorial();toast('Ya estás en el inicio. Para cerrar sesión usa Salir.')}});
+/* Cada evaluador ve solo sus reservas, visitas y evaluaciones */
+function mio(x){return x.evaluadorId===S.sesion}
+function inicioDe(u){return u.rol==='ADMIN'?'usuarios':u.rol==='USUARIO'?'mis':'inicio'}
+const MENU={ADMIN:[['usuarios','Usuarios']],EVALUADOR:[['inicio','Inicio'],['empresas','Empresas'],['reservas','Reservas'],['resultados','Resultados']],USUARIO:[['mis','Resultados']]};
+const SECCION={empresa:'empresas',visita:'inicio',wizard:'inicio',detalle:'resultados',pdf:null};
+
+function shell(inner){
+  const u=yo();
+  const cur=SECCION[R.v]!==undefined?(SECCION[R.v]||R.from||''):R.v;
+  const ini=u.nombre.split(' ').map(x=>x[0]).slice(0,2).join('');
+  return `<header class="top"><div class="wrap">
+    <div class="row" style="gap:10px;flex-wrap:nowrap">${HIST.length?'<button class="btn sm" data-act="atras" aria-label="Volver a la pantalla anterior">←<span class="hideSm"> Atrás</span></button>':'<button class="btn sm" disabled title="Ya estás en el inicio" aria-label="Atrás (ya estás en el inicio)" style="opacity:.35;cursor:default">←<span class="hideSm"> Atrás</span></button>'}<button class="link" style="text-decoration:none" data-go="${inicioDe(u)}" aria-label="Ir al inicio">${logo(26)}</button></div>
+    <nav class="nav" aria-label="Menú principal">${MENU[u.rol].map(([v,t])=>`<button class="${cur===v?'on':''}" data-go="${v}">${t}</button>`).join('')}</nav>
+    <div class="who"><div class="meta" style="text-align:right"><div>${esc(u.nombre)}</div><div class="muted small">${ROL_TXT[u.rol]}${u.vinculacion?' · '+u.vinculacion:''}</div></div><div class="avatar">${esc(ini)}</div><button class="btn sm" data-act="salir">Salir</button></div>
+  </div></header><main class="wrap">${inner}</main>`;
+}
+
+function render(){
+  const app=$('#app');
+  const u=S.sesion&&yo();
+  if(!u&&!['login','registro','registrado'].includes(R.v))R={v:'login'};
+  const V={login:vLogin,registro:vRegistro,registrado:vRegistrado,usuarios:vUsuarios,inicio:vInicio,empresas:vEmpresas,empresa:vEmpresa,
+    reservas:vReservas,visita:vVisita,wizard:vWizard,resultados:vResultados,detalle:vDetalle,pdf:vPdf,mis:vMis};
+  // Control de permisos por rol (RF-002)
+  const PERM={ADMIN:['usuarios'],EVALUADOR:['inicio','empresas','empresa','reservas','visita','wizard','resultados','detalle','pdf'],USUARIO:['mis','pdf']};
+  if(u&&!PERM[u.rol].includes(R.v)){R={v:inicioDe(u)}}
+  const html=(V[R.v]||vLogin)();
+  app.innerHTML=u?shell(html):html;
+  if(R.v==='wizard'&&W&&(W.paso===3||W.paso===4))montarGuia();
+  if(R.v==='wizard'&&W&&W.paso===5)W.fotos.filter(x=>x.vista==='Frontal'&&!x.raw&&!x.ia).forEach(x=>setTimeout(()=>autoDetectar(x),0));
+  if(R.v==='wizard'&&W&&W.paso===4){montarLienzo();const f=W.fotos.find(x=>x.id===W.fotoActiva);if(f&&!f.L&&!f.ia)setTimeout(()=>autoDetectar(f),0)}
+  if(R.v==='detalle')montarDetalle();
+  if(R.v==='pdf')montarPdf();
+  if(R.v==='login')montarLoginPortada();
+}
+
+/* =========================================================================
+   P1 · INICIAR SESIÓN (RF-001a, RF-002)
+   ========================================================================= */
+/* Portada con medición (P1): dibuja sobre la foto de portada los puntos, ángulos y la plomada;
+   los grados y el puntaje salen del mismo motor RULA de la app (medirAngulos + calcularRULA). */
+const PORTADA_W=1400,PORTADA_H=933,PORTADA_POSX=.76;
+const PORTADA_PTS={cabeza:[1066,32],hombro:[1024,182],codo:[1052,314],muneca:[1122,322],nudillos:[1160,314],cadera:[1020,410],rodilla:[1024,598],tobillo:[1012,770]};
+/* Ejemplo de portada: ensamble de piezas pequeñas, tarea repetitiva, carga menor a 2 kg */
+const PORTADA_EV={act:{repetitiva:true},carga:{kg:0}};
+function portadaRULA(){const L={};for(const k of ['cadera','hombro','codo','muneca','nudillos','cabeza'])L[k]={x:PORTADA_PTS[k][0]/PORTADA_W,y:PORTADA_PTS[k][1]/PORTADA_H};const m=medirAngulos(L,PORTADA_W,PORTADA_H,'Derecho');return{m,res:calcularRULA(m,PORTADA_EV)}}
+function pzAng(v){return Math.atan2(v[1],v[0])*180/Math.PI}
+function pzSub(a,b){return[a[0]-b[0],a[1]-b[1]]}
+function pzArco(c,r,a1,a2){const p=a=>[c[0]+r*Math.cos(a*Math.PI/180),c[1]+r*Math.sin(a*Math.PI/180)];let d=a2-a1;while(d>180)d-=360;while(d<-180)d+=360;const s=p(a1),e=p(a1+d);return `M${s[0]},${s[1]} A${r},${r} 0 0 ${d>0?1:0} ${e[0]},${e[1]}`}
+function portadaSVG(mode){
+  const P=PORTADA_PTS,up=[0,-1],down=[0,1];
+  const tr=pzSub(P.hombro,P.cadera),ua=pzSub(P.codo,P.hombro),fa=pzSub(P.muneca,P.codo),ha=pzSub(P.nudillos,P.muneca),nk=pzSub(P.cabeza,P.hombro);
+  const M=portadaRULA().m,A={cuello:M.CUELLO.grados,tronco:M.TRONCO.grados,brazo:M.BRAZO.grados,antebrazo:M.ANTEBRAZO.grados,muneca:M.MUNECA.grados};
+  const R=x=>Math.round(x);
+  const ln=(a,b,cls)=>`<line class="${cls||'sk'}" pathLength="1" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`;
+  const ext=(o,v,len)=>{const m=Math.hypot(v[0],v[1]);return[o[0]+v[0]/m*len,o[1]+v[1]/m*len]};
+  const lab=(x,y,t,v,anchor)=>`<g class="lb" transform="translate(${x},${y})"><text class="lt" text-anchor="${anchor||'start'}">${t}</text><text class="lv" y="17" text-anchor="${anchor||'start'}">${v}°</text></g>`;
+  const ar=(c,r,v1,v2)=>`<path class="arc" pathLength="1" d="${pzArco(c,r,pzAng(v1),pzAng(v2))}"/>`;
+  let s='';
+  // Plomada: línea vertical por la cadera (la marca APLOMO)
+  const plX=P.cadera[0];
+  s+=`<line class="plumb" x1="${plX}" y1="20" x2="${plX}" y2="800"/><path class="bob" d="M${plX-6},800 L${plX+6},800 L${plX},816 Z"/>`;
+  if(mode!=='puntos'){
+    s+=ln(P.cadera,P.hombro)+ln(P.hombro,P.cabeza)+ln(P.hombro,P.codo)+ln(P.codo,P.muneca)+ln(P.muneca,P.nudillos)+ln(P.cadera,P.rodilla,'sk2')+ln(P.rodilla,P.tobillo,'sk2');
+    s+=ln(P.codo,ext(P.codo,ua,46),'gd')+ln(P.muneca,ext(P.muneca,fa,34),'gd');
+    s+=ar(P.hombro,44,tr,nk)+ar(P.hombro,64,[-tr[0],-tr[1]],ua)+ar(P.codo,32,ua,fa)+ar(P.muneca,22,fa,ha);
+    s+=lab(P.cabeza[0]-100,P.cabeza[1]+50,'CUELLO',R(A.cuello),'end');
+    s+=lab(P.hombro[0]-74,P.hombro[1]+64,'BRAZO',R(A.brazo),'end');
+    s+=lab(P.codo[0]-50,P.codo[1]+40,'ANTEBRAZO',R(A.antebrazo),'end');
+    s+=lab(P.nudillos[0]+18,P.nudillos[1]+34,'MUÑECA',R(A.muneca));
+    s+=lab(plX-24,470,'TRONCO',R(A.tronco),'end');
+  }
+  const pts=['cabeza','hombro','codo','muneca','nudillos','cadera','rodilla','tobillo'];
+  s+=pts.map(k=>`<circle class="jt" cx="${P[k][0]}" cy="${P[k][1]}" r="5"/>`).join('');
+  return `<svg class="pz-svg" viewBox="0 0 ${PORTADA_W} ${PORTADA_H}" aria-hidden="true">${s}</svg>`;
+}
+function montarPortada(mode){
+  const h=document.querySelector('.login .hero');if(!h)return;
+  h.classList.add('pz-'+mode);
+  const box=document.createElement('div');box.className='pz';box.innerHTML=portadaSVG(mode);h.appendChild(box);
+  const fit=()=>{const W=h.clientWidth,H=h.clientHeight,k=Math.max(W/PORTADA_W,H/PORTADA_H),iw=PORTADA_W*k,ih=PORTADA_H*k;
+    Object.assign(box.style,{width:iw+'px',height:ih+'px',left:((W-iw)*PORTADA_POSX)+'px',top:((H-ih)*.5)+'px'})};
+  fit();new ResizeObserver(fit).observe(h);
+}
+function montarLoginPortada(){
+  montarPortada('full');
+}
+
+function vLogin(){
+  return `<div class="login">
+  <section class="hero" style="background-image:url('${IMG.portada}')" aria-label="Portada">
+    <div class="in">${logo(64)}<div class="tagline">Ergonomía con precisión</div>
+    <p class="muted" style="max-width:420px">Evaluación ergonómica de puestos de trabajo con el método RULA: fotos, ángulos, puntaje y resultados en un solo lugar.</p></div>
+  </section>
+  <section class="form">
+    <div class="stack" style="gap:6px"><span class="eyebrow">Prototipo funcional · PMV</span><h2>Iniciar sesión</h2></div>
+    <form id="fLogin" class="stack" novalidate>
+      <div class="field"><label for="lgCorreo">Correo</label><input class="input" id="lgCorreo" type="email" autocomplete="username" placeholder="nombre@empresa.co"></div>
+      <div class="field"><label for="lgPass">Contraseña <span class="tag">Sin contraseña · mock app</span></label><input class="input" id="lgPass" type="password" autocomplete="current-password" placeholder="Sin contraseña (mock app)"></div>
+      <div id="lgErr" class="err" role="alert"></div>
+      <button class="btn p" type="submit">Entrar</button>
+    </form>
+    <div class="stack" style="gap:10px"><span class="eyebrow">Entrar como (demo)</span>
+      <div class="demoBtns">
+        <button class="btn" data-act="demo" data-uid="u1">Administrador<small>Johan Zapata</small></button>
+        <button class="btn" data-act="demo" data-uid="u2">Evaluador<small>Andrés Benavides</small></button>
+        <button class="btn" data-act="demo" data-uid="u4">Usuario<small>Laura Romero · Ensambles</small></button>
+      </div>
+      <p class="hint"><b>Sin contraseña (mock app):</b> toca un botón, o pulsa Entrar con los campos vacíos para entrar como Evaluador.</p>
+    </div>
+    <div class="hr"></div>
+    <p class="small">¿Eres evaluador independiente? <button class="link" data-go="registro">Crea tu cuenta</button></p>
+    <div class="row small muted" id="reset"><button class="link" data-act="reset1">Reiniciar demo</button><span>Vuelve a los datos iniciales.</span></div>
+  </section></div>`;
+}
+function login(correo,pass){
+  const u=S.usuarios.find(x=>x.correo.toLowerCase()===correo.trim().toLowerCase());
+  /* Mock app: la contraseña no se verifica. Sin correo entra como Evaluador demo. */
+  if(!correo.trim())return login('andres@aplomo.co','');
+  if(!u)return 'No encontramos una cuenta con ese correo. Usa un botón de demo o deja el correo vacío para entrar como Evaluador.';
+  if(u.estado==='Pendiente')return 'Tu cuenta está Pendiente de aprobación. El Administrador debe aprobarla antes de que puedas entrar.';
+  if(u.estado==='Rechazada')return 'Tu solicitud de cuenta fue rechazada. Comunícate con el Administrador.';
+  S.sesion=u.id;save();go(inicioDe(u));HIST=[];guardaHistorial();render();toast('Hola, '+u.nombre.split(' ')[0]);return '';
+}
+
+/* =========================================================================
+   P2 · REGISTRO DE EVALUADOR INDEPENDIENTE (RF-029)
+   ========================================================================= */
+function vRegistro(){
+  return `<main class="wrap" style="max-width:640px;padding-block:40px 64px">
+  <div class="stack">
+    <button class="link" data-go="login">← Volver a iniciar sesión</button>
+    ${logo(34)}
+    <div><span class="eyebrow">Registro</span><h2>Evaluador independiente</h2>
+    <p class="muted" style="margin-top:6px">Tu cuenta queda Pendiente de aprobación hasta que el Administrador la revise.</p></div>
+    <form id="fReg" class="stack card" novalidate>
+      <div class="grid2">
+        <div class="field"><label for="rgNombre">Nombre completo</label><input class="input" id="rgNombre" autocomplete="name"></div>
+        <div class="field"><label for="rgCedula">Cédula</label><input class="input" id="rgCedula" inputmode="numeric"></div>
+        <div class="field"><label for="rgCorreo">Correo</label><input class="input" id="rgCorreo" type="email" autocomplete="email"></div>
+        <div class="field"><label for="rgTel">Teléfono</label><input class="input" id="rgTel" inputmode="tel"></div>
+        <div class="field"><label for="rgProf">Profesión</label><select class="input" id="rgProf"><option>Ingeniero industrial</option><option>Fisioterapeuta</option><option>Especialista en SST</option></select></div>
+        <div class="field"><label for="rgTarjeta">Tarjeta profesional</label><input class="input" id="rgTarjeta"></div>
+        <div class="field"><label for="rgPass">Contraseña</label><input class="input" id="rgPass" type="password" autocomplete="new-password"><span class="hint">Sin contraseña (mock app). En la app real: mínimo 8 caracteres, con letras y números.</span></div>
+        <div class="field"><label for="rgPass2">Repite la contraseña</label><input class="input" id="rgPass2" type="password" autocomplete="new-password"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="rgDatos" checked><span>Autorizo el tratamiento de mis datos personales (Ley 1581 de 2012).</span></label>
+      <div id="rgErr" class="err" role="alert"></div>
+      <button class="btn p" type="submit">Enviar solicitud</button>
+    </form>
+  </div></main>`;
+}
+function vRegistrado(){
+  return `<main class="wrap" style="max-width:560px;padding-block:72px">
+  <div class="card stack" style="padding:32px">${logo(34)}
+    <span class="tag warn" style="align-self:flex-start">Pendiente de aprobación</span>
+    <h2>Recibimos tu solicitud</h2>
+    <p class="muted">${esc(R.nombre||'')}, el Administrador revisará tus datos. Cuando apruebe la cuenta podrás entrar con tu correo y tu contraseña.</p>
+    <button class="btn p" data-go="login" style="align-self:flex-start">Volver a iniciar sesión</button>
+  </div></main>`;
+}
+
+/* =========================================================================
+   P3 · USUARIOS (Administrador · RF-003, RF-029) — no ve fotos ni evaluaciones (RNF-006)
+   ========================================================================= */
+function vUsuarios(){
+  const f=R.filtro||'Todos';
+  const lista=S.usuarios.filter(u=>f==='Todos'||(f==='Pendientes'?u.estado==='Pendiente':u.rol===f));
+  const pend=S.usuarios.filter(u=>u.estado==='Pendiente').length;
+  return `<div class="pagehead"><div><span class="eyebrow">Administración</span><h1>Usuarios</h1></div>
+    <button class="btn p" data-act="nuevoUsuario">Nueva cuenta</button></div>
+  ${pend?`<div class="banner" style="margin-bottom:16px">${pend} ${pend===1?'cuenta espera':'cuentas esperan'} aprobación.</div>`:''}
+  ${R.nuevo?formUsuario():''}
+  <div class="tabs" style="margin-bottom:14px">${['Todos','Pendientes','EVALUADOR','USUARIO','ADMIN'].map(t=>`<button class="${f===t?'on':''}" data-act="filtroU" data-f="${t}">${t==='EVALUADOR'?'Evaluadores':t==='USUARIO'?'Usuarios de empresa':t==='ADMIN'?'Administradores':t}</button>`).join('')}</div>
+  <div class="tablewrap"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th></th></tr></thead><tbody>
+  ${lista.map(u=>`<tr><td><div>${esc(u.nombre)}</div><div class="muted small">${esc(u.cargo||'')}${u.tarjeta?' · TP '+esc(u.tarjeta):''}</div></td>
+    <td class="small">${esc(u.correo)}</td>
+    <td>${ROL_TXT[u.rol]}${u.vinculacion?`<div class="muted small">${u.vinculacion}</div>`:''}${u.empresaId?`<div class="muted small">${esc(emp(u.empresaId)?.nombre||'')}</div>`:''}</td>
+    <td><span class="tag ${u.estado==='Activo'?'good':u.estado==='Pendiente'?'warn':''}">${u.estado}</span></td>
+    <td style="text-align:right;white-space:nowrap">${u.estado==='Pendiente'?`<button class="btn sm p" data-act="aprobar" data-id="${u.id}">Aprobar</button> <button class="btn sm danger" data-act="rechazar" data-id="${u.id}">Rechazar</button>`:''}</td></tr>`).join('')||`<tr><td colspan="5" class="muted">No hay cuentas en este filtro.</td></tr>`}
+  </tbody></table></div>
+  <p class="hint" style="margin-top:12px">El Administrador gestiona cuentas; no realiza evaluaciones ni ve fotos.</p>`;
+}
+function formUsuario(){
+  return `<form id="fUsr" class="card stack" style="margin-bottom:18px" novalidate><h3>Nueva cuenta</h3>
+  <div class="grid2">
+    <div class="field"><label for="nuNombre">Nombre</label><input class="input" id="nuNombre"></div>
+    <div class="field"><label for="nuCorreo">Correo</label><input class="input" id="nuCorreo" type="email"></div>
+    <div class="field"><label for="nuRol">Rol</label><select class="input" id="nuRol"><option value="EVALUADOR">Evaluador · Empleado</option><option value="USUARIO">Usuario de la empresa</option></select></div>
+    <div class="field"><label for="nuEmp">Empresa (solo Usuario)</label><select class="input" id="nuEmp">${S.empresas.map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}</select></div>
+  </div><div id="nuErr" class="err" role="alert"></div>
+  <div class="row"><button class="btn p" type="submit">Crear cuenta</button><button class="btn" type="button" data-act="cancelUsuario">Cancelar</button><span class="hint">En la demo no se pide contraseña.</span></div></form>`;
+}
+
+/* =========================================================================
+   P4 · INICIO DEL EVALUADOR (RF-013a)
+   ========================================================================= */
+function vInicio(){
+  const u=yo();
+  const curso=S.visitas.filter(v=>v.estado==='En curso'&&mio(v));
+  const cola=S.reservas.filter(r=>r.estado==='En cola'&&mio(r));
+  const esp=S.reservas.filter(r=>r.estado==='Esperando'&&mio(r));
+  const rojos=S.evaluaciones.filter(e=>e.res&&e.res.color==='ROJO'&&mio(e)).length;
+  return `<div class="pagehead"><div><span class="eyebrow">${fdate(hoy())}</span><h1>Hola, ${esc(u.nombre.split(' ')[0])}</h1></div>
+    <button class="btn p" data-go="reservas">Nueva reserva</button></div>
+  <div class="grid3" style="margin-bottom:24px">
+    <div class="card kpi"><span class="eyebrow">Visitas en curso</span><b class="num">${curso.length}</b></div>
+    <div class="card kpi"><span class="eyebrow">Reservas en cola</span><b class="num">${cola.length}</b></div>
+    <div class="card kpi"><span class="eyebrow">Evaluaciones</span><b class="num">${S.evaluaciones.filter(mio).length}</b></div>
+    <div class="card kpi"><span class="eyebrow">Puestos en Rojo</span><b class="num" style="color:var(--rojo)">${rojos}</b></div>
+  </div>
+  <div class="grid2">
+    <section class="stack"><h3>Visitas en curso</h3>
+      ${curso.map(v=>`<div class="card row between"><div><div>${esc(emp(v.empresaId).nombre)}</div><div class="muted small">${esc(sedeDe(v.empresaId,v.sedeId).nombre)} · desde ${fdate(v.inicio)}</div></div><button class="btn p sm" data-act="abrirVisita" data-id="${v.id}">Continuar</button></div>`).join('')||'<div class="empty">No hay visitas en curso. Inicia una desde una reserva En cola.</div>'}
+    </section>
+    <section class="stack"><h3>Reservas</h3>
+      ${cola.map(r=>tarjetaReserva(r)).join('')}${esp.map(r=>tarjetaReserva(r)).join('')}
+      ${!cola.length&&!esp.length?'<div class="empty">No hay reservas pendientes.</div>':''}
+    </section>
+  </div>`;
+}
+function tarjetaReserva(r){
+  const e=emp(r.empresaId),s=sedeDe(r.empresaId,r.sedeId);
+  const acc=r.estado==='Esperando'?`<button class="btn sm p" data-act="aceptar" data-id="${r.id}">Aceptar</button> <button class="btn sm" data-act="cancelarR" data-id="${r.id}">Cancelar</button>`
+    :r.estado==='En cola'?`<button class="btn sm p" data-act="iniciarVisita" data-id="${r.id}">Iniciar visita</button>`
+    :r.estado==='Finalizada'&&r.visitaId?`<button class="btn sm" data-act="verResultadosEmp" data-id="${r.empresaId}">Ver resultados</button>`:'';
+  return `<div class="card stack" style="gap:10px"><div class="row between"><div><div>${esc(e.nombre)}</div><div class="muted small">${esc(s.nombre)} · ${fdate(r.fecha)} · ${r.hora}</div></div><span class="tag ${r.estado==='En cola'?'good':r.estado==='Esperando'?'warn':''}">${r.estado}</span></div>
+  ${r.notas?`<p class="small muted">${esc(r.notas)}</p>`:''}${r.motivo?`<p class="small muted">Motivo de cancelación: ${esc(r.motivo)}</p>`:''}
+  ${R.cancelando===r.id?`<form class="inline-form" id="fCancel" data-id="${r.id}"><input class="input" id="cnMotivo" placeholder="Motivo de la cancelación"><button class="btn sm danger" type="submit">Confirmar cancelación</button></form>`:(acc?`<div class="row">${acc}</div>`:'')}</div>`;
+}
+
+/* =========================================================================
+   P5 · EMPRESAS (RF-004, RF-010, RF-024)
+   ========================================================================= */
+function vEmpresas(){
+  const q=(R.q||'').toLowerCase();
+  const lista=S.empresas.filter(e=>!q||e.nombre.toLowerCase().includes(q)||e.nit.includes(q)||e.ciudad.toLowerCase().includes(q));
+  return `<div class="pagehead"><div><span class="eyebrow">Clientes</span><h1>Empresas</h1></div><button class="btn p" data-act="nuevaEmpresa">Nueva empresa</button></div>
+  ${R.nueva?`<form id="fEmp" class="card stack" style="margin-bottom:18px" novalidate><h3>Nueva empresa</h3><div class="grid2">
+    <div class="field"><label for="neNombre">Razón social</label><input class="input" id="neNombre"></div>
+    <div class="field"><label for="neNit">NIT</label><input class="input" id="neNit" placeholder="900.000.000-0"></div>
+    <div class="field"><label for="neSector">Sector</label><input class="input" id="neSector"></div>
+    <div class="field"><label for="neCiudad">Ciudad</label><input class="input" id="neCiudad"></div>
+    <div class="field"><label for="neContacto">Persona de contacto</label><input class="input" id="neContacto"></div></div>
+    <div id="neErr" class="err" role="alert"></div><div class="row"><button class="btn p" type="submit">Guardar empresa</button><button class="btn" type="button" data-act="cancelEmpresa">Cancelar</button></div></form>`:''}
+  <div class="field" style="max-width:420px;margin-bottom:16px"><label for="bqEmp">Buscar por nombre, NIT o ciudad</label><input class="input" id="bqEmp" value="${esc(R.q||'')}" placeholder="Buscar…"></div>
+  <div class="grid2">${lista.map(e=>{const n=e.sedes.reduce((a,s)=>a+s.salones.reduce((b,l)=>b+l.puestos.length,0),0);
+    const evs=S.evaluaciones.filter(x=>x.empresaId===e.id).length;
+    return `<button class="card stack" style="text-align:left;cursor:pointer;gap:10px" data-act="abrirEmpresa" data-id="${e.id}"><div class="row between"><h3>${esc(e.nombre)}</h3><span class="muted">→</span></div>
+    <div class="muted small">NIT ${esc(e.nit)} · ${esc(e.sector)} · ${esc(e.ciudad)}</div>
+    <div class="row small"><span class="tag">${e.sedes.length} ${e.sedes.length===1?'sede':'sedes'}</span><span class="tag">${n} ${n===1?'puesto':'puestos'}</span><span class="tag">${evs} ${evs===1?'evaluación':'evaluaciones'}</span></div></button>`}).join('')||'<div class="empty">No encontramos empresas con esa búsqueda.</div>'}</div>`;
+}
+
+/* =========================================================================
+   P6 · DETALLE DE EMPRESA: Sede → Salón → Puesto (RF-005, RF-006, RF-008) + acceso (RF-003)
+   ========================================================================= */
+function vEmpresa(){
+  const e=emp(R.id);if(!e)return '<div class="empty">Empresa no encontrada.</div>';
+  const acceso=S.usuarios.filter(u=>u.rol==='USUARIO'&&u.empresaId===e.id);
+  return `<button class="link" data-go="empresas">← Empresas</button>
+  <div class="pagehead" style="margin-top:12px"><div><span class="eyebrow">NIT ${esc(e.nit)} · ${esc(e.ciudad)}</span><h1>${esc(e.nombre)}</h1><p class="muted">${esc(e.sector)} · Contacto: ${esc(e.contacto||'—')}</p></div>
+  <button class="btn" data-act="verResultadosEmp" data-id="${e.id}">Ver resultados</button></div>
+  <div class="grid2" style="align-items:start">
+  <section class="stack"><div class="row between"><h3>Sedes, salones y puestos</h3></div>
+  <div class="tree">${e.sedes.map(s=>`<div class="sede"><div class="row between"><div><b style="font-weight:500">${esc(s.nombre)}</b><div class="muted small">${esc(s.direccion||'')}</div></div><span class="tag">Sede</span></div>
+    ${s.salones.map(l=>`<div class="salon"><div class="row between"><span>${esc(l.nombre)}</span><span class="muted small">Salón</span></div>
+      ${l.puestos.map(p=>{const ult=S.evaluaciones.filter(x=>x.puestoId===p.id).slice(-1)[0];return `<div class="puesto"><div><div>${esc(p.nombre)}</div><div class="muted small">${esc(p.tarea||'')}</div></div>${ult?pill(ult.res):'<span class="tag">Sin evaluar</span>'}</div>`}).join('')}
+      <form class="inline-form" data-form="puesto" data-e="${e.id}" data-s="${s.id}" data-l="${l.id}"><input class="input" name="n" placeholder="Nuevo puesto (ej. Puesto 8 · Empaque)"><input class="input" name="t" placeholder="Tarea principal"><button class="btn sm" type="submit">Agregar puesto</button></form></div>`).join('')}
+    <form class="inline-form" data-form="salon" data-e="${e.id}" data-s="${s.id}"><input class="input" name="n" placeholder="Nuevo salón (ej. Línea de ensamble B)"><button class="btn sm" type="submit">Agregar salón</button></form>
+  </div>`).join('')}
+  <form class="inline-form card" data-form="sede" data-e="${e.id}"><input class="input" name="n" placeholder="Nueva sede"><input class="input" name="d" placeholder="Dirección"><button class="btn sm" type="submit">Agregar sede</button></form></div></section>
+  <section class="stack"><h3>Acceso de la empresa</h3>
+    <div class="card stack" style="gap:10px"><p class="small muted">La empresa ve solo sus propios resultados de visitas Finalizadas, sin fotos.</p>
+    ${acceso.map(u=>`<div class="row between"><div><div>${esc(u.nombre)}</div><div class="muted small">${esc(u.correo)}</div></div><span class="tag ${u.estado==='Activo'?'good':''}">${u.estado}</span></div>`).join('')||'<p class="small">Esta empresa todavía no tiene acceso.</p>'}
+    <form class="inline-form" data-form="acceso" data-e="${e.id}"><input class="input" name="n" placeholder="Nombre del contacto"><input class="input" name="c" type="email" placeholder="Correo"><button class="btn sm" type="submit">Crear acceso</button></form></div>
+  </section></div>`;
+}
+
+/* =========================================================================
+   P7 · RESERVAS (RF-011, RF-012, RF-013a)
+   ========================================================================= */
+function vReservas(){
+  const t=R.tab||'Esperando';
+  const est=['Esperando','En cola','Finalizada','Cancelada'];
+  const lista=S.reservas.filter(r=>r.estado===t&&mio(r)).sort((a,b)=>a.fecha<b.fecha?-1:1);
+  const e0=S.empresas[0];
+  return `<div class="pagehead"><div><span class="eyebrow">Agenda</span><h1>Reservas</h1></div><button class="btn p" data-act="nuevaReserva">Nueva reserva</button></div>
+  ${R.nueva?`<form id="fRes" class="card stack" style="margin-bottom:18px" novalidate><h3>Nueva reserva</h3><div class="grid2">
+    <div class="field"><label for="nrEmp">Empresa</label><select class="input" id="nrEmp">${S.empresas.map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}</select></div>
+    <div class="field"><label for="nrSede">Sede</label><select class="input" id="nrSede">${e0.sedes.map(s=>`<option value="${s.id}">${esc(s.nombre)}</option>`).join('')}</select></div>
+    <div class="field"><label for="nrFecha">Fecha</label><input class="input" id="nrFecha" type="date" value="${masDias(1)}"></div>
+    <div class="field"><label for="nrHora">Hora</label><input class="input" id="nrHora" type="time" value="08:00"></div></div>
+    <div class="field"><label for="nrNotas">Notas</label><input class="input" id="nrNotas" placeholder="Qué puestos se van a evaluar"></div>
+    <div id="nrErr" class="err" role="alert"></div><div class="row"><button class="btn p" type="submit">Crear reserva</button><button class="btn" type="button" data-act="cancelReserva">Cancelar</button><span class="hint">La reserva nace en estado Esperando.</span></div></form>`:''}
+  <div class="tabs" style="margin-bottom:16px">${est.map(x=>`<button class="${t===x?'on':''}" data-act="tabRes" data-t="${x}">${x} <span class="num">(${S.reservas.filter(r=>r.estado===x&&mio(r)).length})</span></button>`).join('')}</div>
+  <div class="grid2">${lista.map(tarjetaReserva).join('')||`<div class="empty">No hay reservas en estado ${t}.</div>`}</div>
+  <p class="hint" style="margin-top:14px">Flujo: Esperando → Aceptar → En cola → Iniciar visita → Finalizada (automática al finalizar la visita).</p>`;
+}
+
+/* =========================================================================
+   P8 · VISITA EN CURSO (RF-013a, RF-013b)
+   ========================================================================= */
+function vVisita(){
+  const v=S.visitas.find(x=>x.id===R.id);if(!v)return '<div class="empty">Visita no encontrada.</div>';
+  const e=emp(v.empresaId),s=sedeDe(v.empresaId,v.sedeId);
+  const evs=S.evaluaciones.filter(x=>x.visitaId===v.id);
+  return `<button class="link" data-go="inicio">← Inicio</button>
+  <div class="pagehead" style="margin-top:12px"><div><span class="eyebrow">Visita ${v.estado} · ${fdate(v.inicio)}</span><h1>${esc(e.nombre)}</h1><p class="muted">${esc(s.nombre)}</p></div>
+  ${v.estado==='En curso'?(R.confirmFin?`<div class="row"><span class="small">¿Finalizar la visita? La empresa verá los resultados.</span><button class="btn p" data-act="finalizarVisita" data-id="${v.id}">Sí, finalizar</button><button class="btn" data-act="noFin">No</button></div>`:`<button class="btn p" data-act="confirmFin" ${evs.length?'':'disabled'}>Finalizar visita</button>`):'<span class="tag good">Finalizada</span>'}</div>
+  ${!evs.length&&v.estado==='En curso'?'<div class="banner" style="margin-bottom:16px">Evalúa al menos un puesto para poder finalizar la visita.</div>':''}
+  <div class="stack">${s.salones.map(l=>`<div class="card stack" style="gap:6px"><div class="row between"><h3>${esc(l.nombre)}</h3><span class="muted small">Salón</span></div>
+    ${l.puestos.map(p=>{const ev=evs.find(x=>x.puestoId===p.id);const ne=(S.noEvaluados||[]).find(x=>x.visitaId===v.id&&x.puestoId===p.id);return `<div class="puesto"><div><div>${esc(p.nombre)}</div><div class="muted small">${esc(p.tarea||'')}</div></div>
+    <div class="row">${ev?`${pill(ev.res)}<button class="btn sm" data-act="verEval" data-id="${ev.id}">Ver</button>`:ne&&!ev?`<span class="tag">No evaluado · sin consentimiento</span>${v.estado==='En curso'?`<button class="btn sm" data-act="evaluar" data-p="${p.id}" data-l="${l.id}" data-v="${v.id}">Reintentar</button>`:''}`:(v.estado==='En curso'?`<button class="btn sm p" data-act="evaluar" data-p="${p.id}" data-l="${l.id}" data-v="${v.id}">Evaluar puesto</button>`:'<span class="tag">Sin evaluar</span>')}</div></div>`}).join('')}</div>`).join('')}</div>`;
+}
+
+/* =========================================================================
+   P9 · ASISTENTE DE EVALUACIÓN EN 6 PASOS (RF-014 a RF-021, RF-023a) · RNF-002 pasos y botón Atrás
+   ========================================================================= */
+const PASOS=['Puesto y postura','Condiciones','Fotos','Ángulos','Ajustes y carga','Resultado'];
+function nuevoBorrador(v,p,l){
+  const info=puestoInfo(p);
+  return {paso:1,visitaId:v,puestoId:p,salonId:l,empresaId:info.e.id,sedeId:info.s.id,evaluadorId:S.sesion,fecha:hoy(),
+    tarea:info.p.tarea||'',postura:'De pie',horas:8,lado:'Derecho',codigo:'',
+    cond:{altura:'',ajustable:false,antifatiga:false,iluminacion:true,obs:''},
+    aceptaFotos:false,sinFotos:false,fotos:[],fotoActiva:null,
+    manual:{BRAZO:{grados:0,sentido:'Flexión'},ANTEBRAZO:{grados:80},MUNECA:{grados:0},CUELLO:{grados:0,sentido:'Flexión'},TRONCO:{grados:0}},
+    aj:{},act:{estatica:false,repetitiva:false},carga:{kg:0,tipo:'Intermitente',golpes:false},piernas:true,err:''};
+}
+function vWizard(){
+  if(!W)return '<div class="empty">No hay una evaluación abierta.</div>';
+  const info=puestoInfo(W.puestoId);
+  const steps=`<div class="steps" aria-label="Pasos">${PASOS.map((t,i)=>`<div class="${i+1===W.paso?'on':i+1<W.paso?'done':''}"><i></i><span>${i+1} · ${t}</span></div>`).join('')}</div>`;
+  const body=[null,paso1,paso2,paso3,paso4,paso5,paso6][W.paso]();
+  const foot=`<div class="wizfoot"><button class="btn" data-act="wAtras">${W.paso===1?'Cancelar':'← Atrás'}</button>
+    ${W.paso<6?`<button class="btn p" data-act="wSig">Siguiente →</button>`:`<div class="row"><button class="btn" data-act="wFicha">Ver ficha PDF</button><button class="btn p" data-act="wGuardar">Guardar evaluación</button></div>`}</div>`;
+  return `<div class="pagehead"><div><span class="eyebrow">${esc(info.e.nombre)} · ${esc(info.l.nombre)}</span><h1>${esc(info.p.nombre)}</h1></div><span class="tag">Paso ${W.paso} de 6</span></div>
+  ${steps}<section class="card stack">${body}${W.err?`<div class="err" role="alert">${esc(W.err)}</div>`:''}</section>${foot}`;
+}
+function paso1(){return `<h2>Puesto y postura</h2><p class="muted small">RF-014 · Datos del puesto, la postura y el tiempo de exposición. No se registran datos personales del trabajador.</p>
+  <div class="grid2">
+  <div class="field"><label for="w_tarea">Tarea que se observa</label><input class="input" id="w_tarea" data-w="tarea" value="${esc(W.tarea)}"></div>
+  <div class="field"><label for="w_codigo">Código del trabajador (anónimo)</label><input class="input" id="w_codigo" data-w="codigo" value="${esc(W.codigo)}" placeholder="OP-000"></div>
+  <div class="field"><label for="w_postura">Postura principal</label><select class="input" id="w_postura" data-w="postura">${['De pie','Sentado','Alternada'].map(x=>`<option ${W.postura===x?'selected':''}>${x}</option>`).join('')}</select></div>
+  <div class="field"><label for="w_horas">Horas por jornada en esta tarea</label><input class="input num" id="w_horas" type="number" min="0" max="12" step="0.5" data-w="horas" value="${W.horas}"></div>
+  <div class="field"><label for="w_lado">Lado del cuerpo evaluado</label><select class="input" id="w_lado" data-w="lado">${['Derecho','Izquierdo'].map(x=>`<option ${W.lado===x?'selected':''}>${x}</option>`).join('')}</select><span class="hint">Derecho: en la foto lateral el trabajador mira hacia la derecha.</span></div>
+  </div>`}
+const CONDICIONES=[['ajustable','Superficie de altura ajustable'],['antifatiga','Tapete antifatiga'],['iluminacion','Iluminación adecuada'],
+  ['espacio','Espacio suficiente para moverse'],['alcance','Herramientas y materiales al alcance'],['silla','Silla o apoyo para alternar'],
+  ['pausas','Pausas activas durante la jornada'],['ambiente','Ruido o temperatura molestos']];
+function paso2(){const c=W.cond;return `<h2>Condiciones del puesto</h2><p class="muted small">RF-015 · Cómo es el puesto donde se trabaja. Marca lo que veas y escribe cualquier otra observación.</p>
+  <div class="field" style="max-width:320px"><label for="w_altura">Altura de la superficie de trabajo</label><input class="input" id="w_altura" data-c="altura" value="${esc(c.altura)}" placeholder="ej. 105 cm"></div>
+  <span class="eyebrow">Qué hay en el puesto</span>
+  <div class="opts">${CONDICIONES.map(([k,t])=>`<label class="opt ${c[k]?'on':''}"><input type="checkbox" data-c="${k}" ${c[k]?'checked':''}><span>${t}</span></label>`).join('')}</div>
+  <div class="field"><label for="w_obs">Observaciones del puesto</label><textarea class="input" id="w_obs" data-c="obs" rows="5" placeholder="Escribe lo que veas: cómo está organizado el puesto, qué le molesta al trabajador, qué cambiarías… ej. Las piezas quedan al fondo de la mesa y el trabajador se estira para alcanzarlas.">${esc(c.obs)}</textarea></div>`}
+function paso3(){
+  const co=W.noAcepta?'no':W.aceptaFotos?'fotos':W.sinFotos?'sin':'';
+  const op=(v,t,h)=>`<label class="check"><input type="radio" name="w_consent" data-consent="${v}" ${co===v?'checked':''}><span><b>${t}</b><br><span class="hint">${h}</span></span></label>`;
+  return `<h2>Consentimiento y fotos</h2><p class="muted small">RF-016 · Antes de tomar fotos, pregunta al trabajador y marca su respuesta. Las fotos de una persona son datos personales sensibles (Ley 1581 de 2012): sin su autorización no se pueden tomar.</p>
+  <span class="eyebrow">Respuesta del trabajador</span>
+  ${op('fotos','Acepta la evaluación y el registro fotográfico','Las fotos solo las ve el evaluador; la empresa recibe los resultados sin fotos.')}
+  ${op('sin','Acepta la evaluación, pero no las fotos','RULA es un método de observación: los ángulos se miden a simple vista o con goniómetro y se escriben en el paso 4.')}
+  ${op('no','No acepta ser evaluado','La evaluación de este puesto termina aquí y queda registrada como No evaluado · sin consentimiento.')}
+  ${co==='no'?`<div class="banner" role="alert">El trabajador no aceptó. No se toman fotos ni medidas. <div class="row" style="margin-top:10px"><button class="btn p sm" data-act="noConsent">Terminar: puesto no evaluado</button></div></div>`:''}
+  ${co!=='fotos'?'':fotosSlotsHTML()}`;
+}
+
+/* ---------- Paso 3 · Las 3 fotos que pide RULA (alzado, perfil y detalle), todas a la vista ---------- */
+const SLOTS=[
+  {k:'perfil',vista:'Lateral',t:'Perfil',req:true,demo:'foto1',para:'Mide los ángulos: tronco, cuello, brazo, antebrazo y muñeca.',
+   reglas:['Cámara <b>a 90°</b>, apuntando al costado del trabajador: así los ángulos salen en su tamaño real.','A la <b>altura de la cadera</b>, a 2–3 m, sin inclinar el celular.','<b>Cuerpo completo</b>, en el momento de más esfuerzo de la tarea.']},
+  {k:'frente',vista:'Frontal',t:'Frente',req:true,demo:'foto2',para:'Revisa los ajustes del paso 5: hombros, brazos separados, inclinaciones y pies.',
+   reglas:['Cámara <b>de frente</b>, apuntando al pecho del trabajador.','Misma altura y distancia que la de perfil (cadera, 2–3 m).','<b>Cuerpo completo</b>, en el mismo momento de la tarea.']},
+  {k:'detalle',vista:'Detalle',t:'Detalle de mano y muñeca',req:false,demo:'detalle',para:'Muestra si la muñeca está doblada o girada, algo que no se ve en el cuerpo completo.',
+   reglas:['Cámara <b>encima de la mano</b>, a unos 50 cm, apuntando hacia abajo.','Que se vean la <b>mano, la muñeca</b> y el inicio del antebrazo.','Mientras manipula la pieza o la herramienta.']}];
+/* Diagrama visto desde arriba: dónde va la cámara respecto al trabajador */
+function diagramaSlot(k){
+  const cam=(x,y,rot)=>`<g transform="translate(${x},${y}) rotate(${rot})"><rect x="-9" y="-6" width="18" height="12" rx="3" fill="#EDE6D8"/><circle cx="0" cy="0" r="3.4" fill="#0B0B0C"/><path d="M9,-3 L17,-7 L17,7 L9,3Z" fill="rgba(237,230,216,.35)"/></g>`;
+  const persona=`<rect x="52" y="26" width="16" height="40" rx="8" fill="none" stroke="#C9CCD2" stroke-width="1.5"/><circle cx="60" cy="46" r="7" fill="#C9CCD2"/><path d="M67,42 L73,46 L67,50Z" fill="#C9CCD2"/><text x="20" y="49" font-size="7" fill="#9E998F">trabajador</text>`;
+  if(k==='perfil')return `<svg viewBox="0 0 120 92" aria-hidden="true">${persona}<line x1="60" y1="58" x2="60" y2="78" stroke="#9E998F" stroke-dasharray="3 3"/>${cam(60,84,-90)}<text x="66" y="72" font-size="8" fill="#9E998F">2–3 m · 90°</text><text x="4" y="12" font-size="8" fill="#9E998F">VISTA DESDE ARRIBA</text></svg>`;
+  if(k==='frente')return `<svg viewBox="0 0 120 92" aria-hidden="true">${persona}<line x1="72" y1="46" x2="96" y2="46" stroke="#9E998F" stroke-dasharray="3 3"/>${cam(104,46,180)}<text x="74" y="38" font-size="8" fill="#9E998F">2–3 m</text><text x="4" y="12" font-size="8" fill="#9E998F">VISTA DESDE ARRIBA</text></svg>`;
+  return `<svg viewBox="0 0 120 92" aria-hidden="true"><line x1="14" y1="74" x2="106" y2="74" stroke="#9E998F" stroke-width="2"/><path d="M30,70 L62,70 Q72,70 76,64 L84,62 Q88,62 86,66 L80,70" fill="none" stroke="#C9CCD2" stroke-width="3" stroke-linecap="round"/><line x1="68" y1="34" x2="68" y2="58" stroke="#9E998F" stroke-dasharray="3 3"/>${cam(68,24,90)}<text x="74" y="48" font-size="8" fill="#9E998F">≈ 50 cm</text><text x="4" y="12" font-size="8" fill="#9E998F">VISTA DE LADO</text></svg>`;
+}
+const fotoSlot=(k,cara)=>W.fotos.find(f=>f.slot===k&&(f.cara||'principal')===cara);
+function muestraSlot(sl){
+  if(IMG_MUESTRA[sl.k])return `<img src="${IMG_MUESTRA[sl.k]}" alt="Muestra de la foto de ${sl.t.toLowerCase()}">`;
+  if(sl.k==='detalle')return `<div class="zoom" style="background-image:url('${IMG.foto1}')" role="img" aria-label="Muestra: acercamiento a la mano y la muñeca"></div>`;
+  return `<img src="${IMG[sl.demo]}" alt="Muestra de la foto de ${sl.t.toLowerCase()}">`;
+}
+function fotosSlotsHTML(){
+  const cara=W.p3cara||'principal',otro=cara==='otro';
+  const listas=SLOTS.filter(sl=>fotoSlot(sl.k,cara)).length;
+  const nOtro=W.fotos.filter(f=>f.cara==='otro').length;
+  const card=sl=>{
+    if(otro&&sl.k==='frente'){const fp=fotoSlot('frente','principal');
+      return `<div class="slot ${fp?'lista':''}"><div class="slotTop"><span class="eyebrow">2 · Frente</span><span class="tag">${fp?'✓ Sirve para los dos lados':'Pendiente'}</span></div>
+      <div class="slotImg">${fp?`<img src="${fotoSrc(fp)}" alt="Foto de frente">`:muestraSlot(sl)}<span class="slotLbl">${fp?'La misma foto':'Muestra'}</span></div>
+      <p class="small" style="margin:0">La foto de frente muestra los dos lados del cuerpo a la vez, así que no hace falta repetirla.</p>${fp?'':'<p class="hint">Tómala en el lado principal.</p>'}</div>`}
+    const f=fotoSlot(sl.k,cara),id=sl.k+(otro?'_o':'');
+    return `<div class="slot ${f?'lista':''}"><div class="slotTop"><span class="eyebrow">${SLOTS.indexOf(sl)+1} · ${sl.t}</span><span class="tag">${f?'✓ Lista':sl.req?'Obligatoria':'Recomendada'}</span></div>
+    <div class="slotImg">${f?`<img src="${fotoSrc(f)}" alt="Tu foto de ${sl.t.toLowerCase()}"><span class="slotLbl">Tu foto</span>`:`<div class="${otro?'espejo':''}" style="width:100%;height:100%">${muestraSlot(sl)}</div><span class="slotLbl">Muestra${otro?' · otro lado':''}</span>`}<div class="slotDia">${diagramaSlot(sl.k)}</div></div>
+    <p class="small" style="margin:0">${sl.para}</p>
+    <ul class="slotReglas">${sl.reglas.map(r=>`<li>${r}</li>`).join('')}</ul>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:auto">
+      <label class="btn sm" for="w_cam_${id}">Tomar foto</label><input id="w_cam_${id}" data-slot="${sl.k}" type="file" accept="image/*" capture="environment" hidden>
+      <label class="btn sm ${f?'':'p'}" for="w_file_${id}">${f?'Cambiar':'Subir foto'}</label><input id="w_file_${id}" data-slot="${sl.k}" type="file" accept="image/*" hidden>
+      ${f?`<button class="link" data-act="quitarFoto" data-id="${f.id}">Quitar</button>`:`<button class="link" data-act="slotDemo" data-slot="${sl.k}">Usar ejemplo (demo)</button>`}
+    </div></div>`};
+  return `<div class="stack" style="gap:12px">
+    ${otro?`<div class="row between"><div><span class="eyebrow">Otro lado del cuerpo</span><h3 style="margin:4px 0 0">Las mismas fotos, del otro lado</h3><p class="small muted" style="margin:4px 0 0">Ahora el trabajador mira hacia el otro lado: perfil y detalle de nuevo; la de frente ya sirve.</p></div><button class="btn sm" data-act="p3cara" data-c="principal">← Volver al lado principal</button></div>`
+      :`<div><span class="eyebrow">Fotos necesarias · ${listas} de 3</span><h3 style="margin:4px 0 0">Necesitas 3 fotos: 2 obligatorias y 1 recomendada</h3><p class="small muted" style="margin:4px 0 0">RULA pide tomas de perfil, de frente y de detalle. Tómalas como en cada muestra.</p></div>`}
+    <div class="slots">${SLOTS.map(card).join('')}</div>
+    ${otro?'':`<button class="otroLado" data-act="p3cara" data-c="otro"><b>+ Otro lado del cuerpo</b>${nOtro?` <span class="tag">${nOtro} foto${nOtro>1?'s':''} ✓</span>`:''}<br><span class="hint">Solo si dudas cuál lado tiene más carga. RULA: “en caso de duda es preferible analizar los dos lados”.</span></button>`}
+    <details class="hint"><summary>Más fotos de ejemplo (demo)</summary><div class="gallery" style="margin-top:8px">${Object.keys(IMG_INFO).map(k=>`<button class="thumb" data-act="addDemo" data-k="${k}" aria-label="Usar ${IMG_INFO[k].nombre}"><img src="${IMG[k]}" alt=""><div class="cap">${IMG_INFO[k].nombre}</div></button>`).join('')}</div></details>
+    <p class="hint">Las muestras y las fotos de ejemplo fueron generadas con IA para la demostración; no son trabajadores reales.</p></div>`;
+}
+function paso4(){
+  if(W.sinFotos){
+    return `<h2>Ángulos (sin fotos)</h2><p class="muted small">RF-017 · Escribe los ángulos medidos a simple vista o con goniómetro.</p>${guiaHTML('puntos')}
+    <div class="seglist">${SEGMENTOS.map(s=>{const v=W.manual[s.k];return `<div class="seg"><div><div>${s.t}</div><div class="hint">${s.p}</div></div>
+      ${'sentido' in v?`<select class="input" style="width:auto" data-m="${s.k}" data-f="sentido"><option ${v.sentido==='Flexión'?'selected':''}>Flexión</option><option ${v.sentido==='Extensión'?'selected':''}>Extensión</option></select>`:'<span></span>'}
+      <input class="input num" style="width:90px" type="number" min="0" max="180" data-m="${s.k}" data-f="grados" value="${v.grados}" aria-label="Grados de ${s.t}"></div>`}).join('')}</div>`;
+  }
+  const lat=W.fotos.filter(f=>f.vista==='Lateral');
+  if(!W.fotos.length)return `<h2>Ángulos</h2><div class="empty">Agrega al menos una foto en el paso 3.</div>`;
+  if(!W.fotoActiva||!W.fotos.find(f=>f.id===W.fotoActiva))W.fotoActiva=(lat[0]||W.fotos[0]).id;
+  const f=W.fotos.find(x=>x.id===W.fotoActiva);
+  const sig=MARCAS.find(m=>!f.L||!f.L[m.k]);
+  const med=f.vista==='Lateral'?medirAngulos(f.L,f.w,f.h,miraDe(f)):null;
+  const ia=f.ia;
+  const iaMsg=ia==='cargando'?'<div class="banner" role="status">Detectando la postura con IA… (la primera vez descarga el modelo, unos segundos)</div>'
+    :ia==='ok'?'<div class="banner" role="status">Puntos detectados con IA. Revísalos: si alguno quedó mal, arrástralo a su lugar.</div>'
+    :ia==='error'?'<div class="banner" role="alert">No se pudo cargar la IA en esta vista. Marca los 6 puntos tocando la foto, guiándote por el ejemplo.<br><span class="hint">Detalle técnico: '+esc(MP_ERR||'desconocido')+'</span></div>'
+    :ia==='nada'?'<div class="banner" role="alert">La IA no encontró a la persona. Marca los 6 puntos tocando la foto.</div>':'';
+  return `<h2>Ángulos con 3 puntos</h2><p class="muted small">RF-017 · La IA detecta los 6 puntos del cuerpo y calcula cada ángulo con 3 puntos. El evaluador revisa y puede arrastrar un punto para corregirlo.</p>${iaMsg}${f.vista==='Lateral'?guiaHTML('puntos'):''}
+  ${W.fotos.length>1?`<div class="tabs">${W.fotos.map((x,i)=>`<button class="${x.id===f.id?'on':''}" data-act="fotoActiva" data-id="${x.id}">${x.slot?(SLOTS.find(z=>z.k===x.slot).t.split(' ')[0]):'Foto '+(i+1)+' · '+x.vista}${x.cara==='otro'?' · otro lado':''}</button>`).join('')}</div>`:''}
+  <div class="measure"><div class="stack" style="gap:10px">
+    <div class="canvasbox"><canvas id="lienzo" aria-label="Foto para marcar los puntos"></canvas></div>
+    ${f.vista==='Lateral'?`<div class="row"><button class="btn sm p" data-act="ptsIA" ${ia==='cargando'?'disabled':''}>${f.L&&ia==='ok'?'Volver a detectar':'Detectar postura (IA)'}</button><button class="btn sm" data-act="ptsUndo">Deshacer</button><button class="btn sm" data-act="ptsClear">Borrar puntos</button>${DEMO_PX[f.src]&&(ia==='error'||ia==='nada')?'<button class="btn sm" data-act="ptsDemo">Puntos de ejemplo</button>':''}</div>`:''}
+  </div><div class="stack" style="gap:10px">
+    ${f.vista==='Lateral'?`<div class="banner" id="sigPunto">${sig?`Toca: <b>${sig.t}</b> (${MARCAS.indexOf(sig)+1} de 6)`:'Listo: los 6 puntos están marcados.'}</div>
+    <div class="seglist" id="seglist">${segListHTML(med)}</div>`
+    :f.vista==='Detalle'?`<div class="banner">Foto de detalle: úsala para revisar en el paso 5 si la muñeca está doblada hacia un lado o muy girada. Los ángulos se miden en la foto de perfil.</div>`:`<div class="banner">Foto de frente: la app la usa en el paso 5 para revisar sola los hombros, los brazos separados y las inclinaciones. Los ángulos se miden en la foto de perfil.</div>`}
+  </div></div>`;
+}
+function segListHTML(med){
+  const tmp=med?calcularRULA(med,W):null;
+  return SEGMENTOS.map(s=>{const m=med&&med[s.k];return `<div class="seg"><div><div>${s.t}${m&&m.sentido&&m.sentido==='Extensión'?' <span class="tag">extensión</span>':''}</div><div class="hint">${s.p}</div></div><span class="deg">${m?m.grados+'°':'—'}</span><span class="pts">${tmp?tmp.seg[s.k]+' pts':''}</span></div>`}).join('');
+}
+/* ---------- Paso 5 · Ajustes sugeridos por la app (IA) + 2 preguntas ---------- */
+const AJ_DEF=[
+  ['hombroElevado','Hombro levantado','+1 al brazo'],['brazoAbducido','Brazo separado del cuerpo','+1 al brazo'],
+  ['antebrazoCruza','Antebrazo cruza el cuerpo o sale hacia un lado','+1 al antebrazo'],
+  ['cuelloInclinado','Cabeza inclinada hacia un lado','+1 al cuello'],['cuelloGirado','Cuello girado','+1 al cuello'],
+  ['troncoInclinado','Tronco inclinado hacia un lado','+1 al tronco'],
+  ['brazoApoyado','Brazo apoyado o persona recostada','−1 al brazo'],['munecaDesviada','Muñeca doblada hacia un lado','+1 a la muñeca'],
+  ['giroExtremo','Muñeca muy girada','giro = 2'],['troncoGirado','Tronco girado','+1 al tronco']];
+/* Reglas para sugerir ajustes a partir de los 33 puntos de la IA (umbrales de RULA donde existen; los demás, supuestos del equipo) */
+function sugerirAjustes(ev){
+  const out={},r=Math.round;
+  const ang=(u,v)=>Math.acos(clamp((u.x*v.x+u.y*v.y)/((Math.hypot(u.x,u.y)*Math.hypot(v.x,v.y))||1),-1,1))*180/Math.PI;
+  const linea=(a,b)=>Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI;
+  const pts=f=>{const P=i=>({x:f.raw[i].x*f.w,y:f.raw[i].y*f.h,v:f.raw[i].v});return P};
+  const fr=ev.fotos.find(f=>f.vista==='Frontal'&&f.raw);
+  if(fr){const P=pts(fr),ls=P(11),rs=P(12),lh=P(23),rh=P(24),le=P(7),re=P(8),n=P(0);
+    const sw=Math.hypot(ls.x-rs.x,ls.y-rs.y)||1,mS={x:(ls.x+rs.x)/2,y:(ls.y+rs.y)/2},mH={x:(lh.x+rh.x)/2,y:(lh.y+rh.y)/2};
+    const abajo={x:mH.x-mS.x,y:mH.y-mS.y};
+    if(sw/Math.hypot(abajo.x,abajo.y)>.45){ // de verdad es una foto de frente
+      const t=ang({x:-abajo.x,y:-abajo.y},{x:0,y:-1});
+      out.troncoInclinado={on:t>10,why:`Tronco inclinado ${r(t)}° hacia un lado (cuenta desde 10°)`};
+      if(le.v>.5&&re.v>.5){let c=Math.abs(linea(le,re)-linea(ls,rs))%180;if(c>90)c=180-c;
+        out.cuelloInclinado={on:c>10,why:`Cabeza inclinada ${r(c)}° respecto a los hombros (cuenta desde 10°)`};
+        const g=Math.abs(n.x-(le.x+re.x)/2)/(Math.abs(le.x-re.x)||1);
+        out.cuelloGirado={on:g>.3,why:g>.3?'La nariz no está centrada entre las orejas: la cabeza está girada':'La nariz está centrada entre las orejas: cabeza de frente'}}
+      const lados=[[ls,le,P(13),P(15)],[rs,re,P(14),P(16)]];
+      const el=Math.min(...lados.map(([h,o])=>(h.y-o.y)/sw));
+      out.hombroElevado={on:el<.25,why:el<.25?'Los hombros quedan muy cerca de las orejas: hombro levantado':'Distancia normal entre hombros y orejas'};
+      const ab=Math.max(...lados.filter(x=>x[2].v>.5).map(([h,,c])=>ang({x:c.x-h.x,y:c.y-h.y},abajo)),0);
+      out.brazoAbducido={on:ab>20,why:`Brazo separado ${r(ab)}° del cuerpo (cuenta desde 20°)`};
+      const cruza=lados.some(([h,,,m])=>m.v>.5&&(Math.sign(m.x-mS.x)!==Math.sign(h.x-mS.x)&&Math.abs(m.x-mS.x)>.1*sw||Math.abs(m.x-mS.x)>Math.abs(h.x-mS.x)+.5*sw));
+      out.antebrazoCruza={on:cruza,why:cruza?'Una mano pasa al otro lado del cuerpo o sale hacia afuera':'Las manos trabajan frente al cuerpo'};
+    }}
+  const fp=[fr,...ev.fotos.filter(f=>f.vista==='Lateral'&&f.raw)].filter(Boolean).find(f=>f.raw[27].v>.5&&f.raw[28].v>.5);
+  if(fp){const P=pts(fp),a=P(27),b=P(28),c=P(23),d=P(24);const dy=Math.abs(a.y-b.y)/(Math.hypot((a.x+b.x-c.x-d.x)/2,(a.y+b.y-c.y-d.y)/2)||1);
+    out.piernas={on:dy<.25,why:dy<.25?'Los dos pies están en el piso a la misma altura':'Un pie está levantado o el peso no está repartido'}}
+  return out;
+}
+function aplicarSugerencias(){
+  if(!W)return;W.ajTocado=W.ajTocado||{};const s=sugerirAjustes(W);W.ajAuto=s;
+  for(const k in s){if(W.ajTocado[k])continue;if(k==='piernas')W.piernas=s[k].on;else W.aj[k]=s[k].on}
+}
+function paso5(){
+  aplicarSugerencias();
+  const a=W.aj,S5=W.ajAuto||{},r=evaluar(W);
+  const esOn=k=>k==='piernas'?W.piernas===false:!!a[k];
+  const chip=(k,t,pts)=>`<label class="opt ${esOn(k)?'on':''}"><input type="checkbox" data-aj="${k==='piernas'?'piernasMal':k}" ${esOn(k)?'checked':''}><span>${t} <span class="pts">${pts}</span></span></label>`;
+  const DEF=[...AJ_DEF,['piernas','Pies sin apoyo o peso en una pierna','piernas = 2']];
+  const auto=DEF.filter(d=>S5[d[0]]),resto=DEF.filter(d=>!S5[d[0]]);
+  const porque=auto.filter(d=>esOn(d[0])).map(d=>`<li><b>${d[1]}:</b> ${W.ajTocado&&W.ajTocado[d[0]]?'marcado por el evaluador':esc(S5[d[0]].why)}</li>`).join('');
+  const frontal=W.fotos.find(f=>f.vista==='Frontal');
+  const aviso=W.sinFotos?'<div class="banner">Evaluación sin fotos: marca los ajustes que observes en “Otros ajustes”.</div>'
+    :!frontal?'<div class="banner">Agrega una <b>foto de frente</b> en el paso 3 y la app revisará sola los hombros, los brazos y la inclinación de la cabeza y el tronco.</div>'
+    :frontal.ia==='cargando'?'<div class="banner" role="status">Revisando la foto de frente con IA…</div>'
+    :frontal.ia==='error'||frontal.ia==='nada'?'<div class="banner" role="alert">No se pudo revisar la foto de frente: marca los ajustes en “Otros ajustes”.</div>':'';
+  const actV=W.act.estatica?'estatica':W.act.repetitiva?'repetitiva':'no';
+  const opt=(q,v,t,cur)=>`<label class="opt ${cur===v?'on':''}"><input type="radio" name="q_${q}" data-q="${q}" value="${v}" ${cur===v?'checked':''}><span>${t}</span></label>`;
+  return `<h2>Ajustes y carga</h2><p class="muted small">RF-018 y RF-019 · La app ya marcó lo que vio en las fotos. Revísalo, responde 2 preguntas y sigue.</p>
+  ${r.res?`<div class="banner num" id="parcial">Vista previa: Puntuación A ${r.res.A} · B ${r.res.B} · C ${r.res.C} · D ${r.res.D} → ${pill(r.res)}</div>`:'<div class="banner">Marca los puntos en el paso 4 para ver la vista previa.</div>'}
+  <div class="card stack" style="gap:10px"><span class="eyebrow">1 · Lo que la app vio en las fotos</span>${aviso}
+    ${auto.length?`<div class="opts">${auto.map(d=>chip(...d)).join('')}</div>
+    ${porque?`<ul class="porque"><span class="tag">IA</span> ${porque}</ul>`:'<p class="hint">✓ La app no encontró ajustes que sumen puntos.</p>'}
+    <p class="hint">Marcado = suma puntos. Toca un ajuste para marcarlo o quitarlo.</p>`:''}
+  </div>
+  <div class="card stack" style="gap:14px"><span class="eyebrow">2 · Dos preguntas</span>
+    <div class="stack" style="gap:8px"><b>¿El trabajador mantiene la postura más de 1 minuto o repite el movimiento más de 4 veces por minuto?</b>
+      <div class="opts">${opt('act','no','No',actV)}${opt('act','estatica','Sí, mantiene la postura',actV)}${opt('act','repetitiva','Sí, repite el movimiento',actV)}</div></div>
+    <div class="stack" style="gap:8px"><b>¿Cuánto pesa lo que sostiene o mueve?</b>
+      <div class="row" style="gap:10px;align-items:center"><input class="input num" style="width:110px" id="w_kg" type="number" min="0" step="0.5" value="${W.carga.kg}" aria-label="Peso en kilogramos"><span class="muted">kg</span>
+      <div class="opts">${opt('tipo','Intermitente','De vez en cuando',W.carga.tipo==='Intermitente'?'Intermitente':'x')}${opt('tipo','Estática o repetida','Todo el tiempo o repetido',W.carga.tipo!=='Intermitente'?'Estática o repetida':'x')}</div></div>
+      <span class="hint">Menos de 2 kg no suma puntos.</span></div>
+  </div>
+  <details class="card" id="p5mas" ${W.p5mas||W.bIgual===false?'open':''}><summary><span class="eyebrow">3 · Otros ajustes (opcional)</span> <span class="hint">· solo si los ves en el puesto</span></summary>
+    <div class="stack" style="gap:12px;margin-top:12px"><div class="opts">${resto.map(d=>chip(...d)).join('')}
+    <label class="opt ${W.carga.golpes?'on':''}"><input type="checkbox" id="w_golpes" ${W.carga.golpes?'checked':''}><span>Golpes o fuerzas bruscas <span class="pts">fuerza = 3</span></span></label></div>
+    <label class="check"><input type="checkbox" id="w_bIgual" ${W.bIgual!==false?'checked':''}><span><b>Cuello, tronco y piernas tienen la misma actividad y carga que los brazos</b><br><span class="hint">RULA puntúa la actividad y la carga por separado para cada grupo. Desmárcalo si son distintas (por ejemplo, la carga la sostienen solo las manos).</span></span></label>
+    ${W.bIgual===false?bloqueCarga('B'):''}</div>
+  </details>
+  `;
+}
+function bloqueCarga(g){
+  const act=g==='A'?W.act:(W.actB=W.actB||{estatica:false,repetitiva:false});
+  const c=g==='A'?W.carga:(W.cargaB=W.cargaB||{kg:0,tipo:'Intermitente',golpes:false});
+  const sx=g==='A'?'':'B';
+  return `<span class="eyebrow">${g==='A'?'Grupo A · brazos y muñecas: actividad muscular y carga':'Grupo B · cuello, tronco y piernas: actividad muscular y carga'}</span><div class="grid2">
+  <label class="check"><input type="checkbox" data-act2="estatica" data-g="${g}" ${act.estatica?'checked':''}><span><b>Postura estática más de 1 minuto</b><br><span class="hint">+1</span></span></label>
+  <label class="check"><input type="checkbox" data-act2="repetitiva" data-g="${g}" ${act.repetitiva?'checked':''}><span><b>Acción repetida más de 4 veces por minuto</b><br><span class="hint">+1</span></span></label>
+  <div class="field"><label for="w_kg${sx}">Peso de la carga (kg)</label><input class="input num" id="w_kg${sx}" type="number" min="0" step="0.5" value="${c.kg}"></div>
+  <div class="field"><label for="w_tipo${sx}">Tipo de carga</label><select class="input" id="w_tipo${sx}"><option ${c.tipo==='Intermitente'?'selected':''}>Intermitente</option><option ${c.tipo!=='Intermitente'?'selected':''}>Estática o repetida</option></select></div>
+  <label class="check"><input type="checkbox" id="w_golpes${sx}" ${c.golpes?'checked':''}><span><b>Golpes o fuerzas bruscas</b><br><span class="hint">Fuerza = 3</span></span></label></div>
+  <p class="hint">Carga: menos de 2 kg = 0 · 2 a 10 kg intermitente = +1 · 2 a 10 kg estática o repetida = +2 · más de 10 kg intermitente = +2 · más de 10 kg estática o repetida, o golpes = +3.</p>`;
+}
+function paso6(){
+  const r=evaluar(W);W.porFoto=r.porFoto;W.res=r.res;W.sug=r.sug;
+  if(!r.res)return `<h2>Resultado</h2><div class="empty">Faltan ángulos. Vuelve al paso 4 y marca los 6 puntos en al menos una foto lateral.</div>`;
+  return resultadoHTML(W,true);
+}
+function resultadoHTML(ev,enWizard){
+  const r=ev.res;
+  const lat=(ev.fotos||[]).filter(f=>f.vista==='Lateral');
+  return `<div class="result"><div class="score ${r.color}" aria-label="Puntaje ${r.final}">${r.final}</div>
+    <div class="stack" style="gap:8px"><span class="eyebrow">Puntaje RULA final</span>${pill(r)}<h3>${NIVEL_TXT[r.nivel]}</h3>
+    <p class="muted small">Semáforo: Verde 1–2 · Amarillo 3–4 · Rojo 5–7. Nivel de acción oficial de RULA (1 a 4).</p></div></div>
+  <div class="tablewrap"><table class="num"><thead><tr><th>Grupo</th><th>Segmento</th><th>Ángulo</th><th>Puntos</th></tr></thead><tbody>
+    ${['BRAZO','ANTEBRAZO','MUNECA'].map((k,i)=>`<tr><td>${i===0?'A':''}</td><td>${SEGMENTOS.find(s=>s.k===k).t}</td><td>${angTxt(ev,k)}</td><td>${r.seg[k]}</td></tr>`).join('')}
+    <tr><td></td><td>Giro de muñeca</td><td>—</td><td>${r.seg.GIRO}</td></tr>
+    ${['CUELLO','TRONCO'].map((k,i)=>`<tr><td>${i===0?'B':''}</td><td>${SEGMENTOS.find(s=>s.k===k).t}</td><td>${angTxt(ev,k)}</td><td>${r.seg[k]}</td></tr>`).join('')}
+    <tr><td></td><td>Piernas</td><td>—</td><td>${r.seg.PIERNAS}</td></tr>
+    <tr><td colspan="3">Puntuación A (tabla A) · B (tabla B)</td><td>${r.A} · ${r.B}</td></tr>
+    <tr><td colspan="3">Grupo A · actividad muscular + carga</td><td>+${r.muscA??r.musc} · +${r.fuerzaA??r.fuerza}</td></tr>
+    <tr><td colspan="3">Grupo B · actividad muscular + carga</td><td>+${r.muscB??r.musc} · +${r.fuerzaB??r.fuerza}</td></tr>
+    <tr><td colspan="3">Puntuación C · D → tabla C</td><td>${r.C} · ${r.D}</td></tr>
+  </tbody></table></div>
+  ${lat.length>1||(ev.porFoto&&ev.porFoto.length>1)?`<div class="stack" style="gap:8px"><span class="eyebrow">Análisis por foto (RF-021)</span>${ev.porFoto.map((p,i)=>`<div class="row between"><span>Foto lateral ${i+1}</span>${pill(p.res)}</div>`).join('')}<p class="hint">El puntaje del puesto es el más alto de sus fotos.</p></div>`:''}
+  <div class="stack" style="gap:4px"><span class="eyebrow">Sugerencias del sistema (RF-023a)</span>${(ev.sug||[]).map(s=>`<div class="sug">${esc(s)}</div>`).join('')}</div>`;
+}
+function angTxt(ev,k){
+  const p=ev.porFoto&&ev.porFoto.find(x=>x.res===ev.res)||ev.porFoto&&ev.porFoto[0];
+  const m=p&&p.med&&p.med[k];if(!m)return '—';
+  return m.grados+'°'+(m.sentido==='Extensión'?' ext.':'');
+}
+
+/* ---------- lienzo para marcar puntos ---------- */
+let LZ=null;
+function dibujar(ctx,img,L,cw,ch,lado,opts){
+  opts=opts||{};
+  ctx.clearRect(0,0,cw,ch);ctx.drawImage(img,0,0,cw,ch);
+  if(!L)return;
+  const P={};for(const m of MARCAS)if(L[m.k])P[m.k]={x:L[m.k].x*cw,y:L[m.k].y*ch};
+  const s=cw/600;
+  const line=(a,b,dash)=>{if(!P[a]||!P[b])return;ctx.save();ctx.setLineDash(dash?[6*s,6*s]:[]);ctx.beginPath();ctx.moveTo(P[a].x,P[a].y);ctx.lineTo(P[b].x,P[b].y);ctx.stroke();ctx.restore()};
+  ctx.lineWidth=Math.max(2,2.4*s);ctx.strokeStyle=opts.ink||'#EDE6D8';ctx.lineCap='round';
+  line('cadera','hombro');line('hombro','codo');line('codo','muneca');line('muneca','nudillos');line('hombro','cabeza');
+  if(P.cadera){ctx.save();ctx.strokeStyle=opts.ink2||'rgba(201,204,210,.75)';ctx.setLineDash([5*s,6*s]);ctx.lineWidth=1.5*s;ctx.beginPath();ctx.moveTo(P.cadera.x,P.cadera.y);ctx.lineTo(P.cadera.x,P.cadera.y-160*s);ctx.stroke();ctx.restore()}
+  const iw=opts.iw,ih=opts.ih;
+  const med=MARCAS.every(m=>P[m.k])?medirAngulos(L,iw,ih,lado):null;
+  const arc=(v,a,b,txt)=>{if(!P[v]||!P[a]||!P[b])return;const a1=Math.atan2(P[a].y-P[v].y,P[a].x-P[v].x),a2=Math.atan2(P[b].y-P[v].y,P[b].x-P[v].x);let d=a2-a1;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+    const rr=26*s;ctx.save();ctx.strokeStyle=opts.ink2||'#C9CCD2';ctx.setLineDash([3*s,3*s]);ctx.lineWidth=1.6*s;ctx.beginPath();ctx.arc(P[v].x,P[v].y,rr,a1,a1+d,d<0);ctx.stroke();ctx.restore();
+    if(txt){const am=a1+d/2,tx=P[v].x+Math.cos(am)*(rr+16*s),ty=P[v].y+Math.sin(am)*(rr+16*s);ctx.save();ctx.font=`600 ${13*s}px Inter, sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';const w=ctx.measureText(txt).width+10*s;ctx.fillStyle=opts.chip||'rgba(11,11,12,.85)';ctx.fillRect(tx-w/2,ty-9*s,w,18*s);ctx.fillStyle=opts.ink||'#EDE6D8';ctx.fillText(txt,tx,ty);ctx.restore()}};
+  if(med){arc('hombro','cadera','codo',med.BRAZO.grados+'°');
+    const ext=k=>({x:2*P[k].x,y:2*P[k].y});
+    // antebrazo y muñeca: arco contra la prolongación del segmento anterior
+    P._e1={x:P.codo.x+(P.codo.x-P.hombro.x)*.4,y:P.codo.y+(P.codo.y-P.hombro.y)*.4};arc('codo','_e1','muneca',med.ANTEBRAZO.grados+'°');
+    P._e2={x:P.muneca.x+(P.muneca.x-P.codo.x)*.4,y:P.muneca.y+(P.muneca.y-P.codo.y)*.4};arc('muneca','_e2','nudillos',med.MUNECA.grados+'°');
+    P._e3={x:P.hombro.x+(P.hombro.x-P.cadera.x)*.4,y:P.hombro.y+(P.hombro.y-P.cadera.y)*.4};arc('hombro','_e3','cabeza',med.CUELLO.grados+'°');
+    P._v={x:P.cadera.x,y:P.cadera.y-100};arc('cadera','_v','hombro',med.TRONCO.grados+'°');}
+  for(const m of MARCAS){if(!P[m.k])continue;if(opts.activo===m.k){ctx.beginPath();ctx.arc(P[m.k].x,P[m.k].y,16*s,0,Math.PI*2);ctx.fillStyle='rgba(237,230,216,.18)';ctx.fill();ctx.lineWidth=1.5*s;ctx.strokeStyle=opts.ink||'#EDE6D8';ctx.stroke()}ctx.beginPath();ctx.arc(P[m.k].x,P[m.k].y,6.5*s,0,Math.PI*2);ctx.fillStyle=opts.dot||'#0B0B0C';ctx.fill();ctx.lineWidth=2.4*s;ctx.strokeStyle=opts.ink||'#EDE6D8';ctx.stroke()}
+}
+function montarLienzo(){
+  const cv=$('#lienzo');if(!cv)return;const f=W.fotos.find(x=>x.id===W.fotoActiva);if(!f)return;
+  const img=new Image();img.onload=()=>{
+    const box=cv.parentElement.getBoundingClientRect();const cw=Math.round(Math.min(box.width,900));const ch=Math.round(cw*f.h/f.w);
+    const dpr=window.devicePixelRatio||1;cv.width=cw*dpr;cv.height=ch*dpr;cv.style.aspectRatio=`${f.w}/${f.h}`;
+    const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
+    LZ={cv,ctx,img,cw,ch,f,drag:null};redibujar();
+    if(f.vista!=='Lateral')return;
+    const pos=e=>{const r=cv.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}};
+    // dedo (iPad/celular): radio de agarre más grande; si ya están los 6 puntos, agarra el más cercano
+    cv.onpointerdown=e=>{e.preventDefault();const p=pos(e);f.L=f.L||{};const r=cv.getBoundingClientRect();const dedo=e.pointerType!=='mouse';
+      let near=null,best=1e9;for(const m of MARCAS){const q=f.L[m.k];if(!q)continue;const d=Math.hypot((q.x-p.x)*r.width,(q.y-p.y)*r.height);if(d<best){best=d;near=m.k}}
+      const sig=MARCAS.find(m=>!f.L[m.k]);
+      if(near&&(best<(dedo?44:22)||(!sig&&best<(dedo?90:40)))){LZ.drag=near;try{cv.setPointerCapture(e.pointerId)}catch(_){}redibujar();return}
+      if(!sig)return;f.L[sig.k]=p;refrescarMedicion()};
+    cv.onpointermove=e=>{if(!LZ.drag)return;e.preventDefault();const p=pos(e);f.L[LZ.drag]={x:clamp(p.x,0,1),y:clamp(p.y,0,1)};refrescarMedicion()};
+    cv.onpointerup=cv.onpointercancel=cv.onlostpointercapture=()=>{if(!LZ.drag)return;LZ.drag=null;redibujar()};
+    cv.addEventListener('touchmove',e=>{if(LZ&&LZ.drag)e.preventDefault()},{passive:false});
+    cv.addEventListener('contextmenu',e=>e.preventDefault());
+  };img.src=fotoSrc(f);
+}
+function redibujar(){if(!LZ)return;dibujar(LZ.ctx,LZ.img,LZ.f.L,LZ.cw,LZ.ch,miraDe(LZ.f),{iw:LZ.f.w,ih:LZ.f.h,activo:LZ.drag})}
+function refrescarMedicion(){
+  redibujar();const f=LZ.f;const med=medirAngulos(f.L,f.w,f.h,miraDe(f));
+  const sl=$('#seglist');if(sl)sl.innerHTML=segListHTML(med);
+  const sig=MARCAS.find(m=>!f.L||!f.L[m.k]);const b=$('#sigPunto');if(b)b.innerHTML=sig?`Toca: <b>${sig.t}</b> (${MARCAS.indexOf(sig)+1} de 6)`:'Listo: los 6 puntos están marcados.';
+}
+/* imagen de una foto con sus puntos (para detalle y PDF) */
+function fotoMarcada(f,lado,opts){return new Promise(res=>{const img=new Image();img.onload=()=>{const cw=600,ch=Math.round(600*f.h/f.w);const c=document.createElement('canvas');c.width=cw;c.height=ch;dibujar(c.getContext('2d'),img,f.L,cw,ch,lado,Object.assign({iw:f.w,ih:f.h},opts||{}));res(c.toDataURL('image/jpeg',.86))};img.src=fotoSrc(f)})}
+
+/* =========================================================================
+   P10 · RESULTADOS (Evaluador · RF-030, RF-024, RF-026 simplificado)
+   ========================================================================= */
+function vResultados(){
+  const fe=R.emp||'',fc=R.color||'';
+  const lista=S.evaluaciones.filter(e=>mio(e)&&(!fe||e.empresaId===fe)&&(!fc||(e.res&&e.res.color===fc))).sort((a,b)=>a.fecha<b.fecha?1:-1);
+  return `<div class="pagehead"><div><span class="eyebrow">Pestaña Resultados</span><h1>Resultados</h1></div>
+    <button class="btn p" data-act="informe" data-id="${fe||S.empresas[0].id}">Descargar resultados (PDF)</button></div>
+  <div class="row" style="margin-bottom:16px;align-items:flex-end">
+    <div class="field" style="min-width:220px"><label for="frEmp">Empresa</label><select class="input" id="frEmp"><option value="">Todas</option>${S.empresas.map(e=>`<option value="${e.id}" ${fe===e.id?'selected':''}>${esc(e.nombre)}</option>`).join('')}</select></div>
+    <div class="field" style="min-width:160px"><label for="frColor">Semáforo</label><select class="input" id="frColor"><option value="">Todos</option>${['VERDE','AMARILLO','ROJO'].map(c=>`<option value="${c}" ${fc===c?'selected':''}>${COLOR_TXT[c]}</option>`).join('')}</select></div>
+  </div>
+  <div class="tablewrap"><table><thead><tr><th>Fecha</th><th>Empresa · Sede</th><th>Puesto</th><th>Resultado</th><th>Visita</th></tr></thead><tbody>
+  ${lista.map(ev=>{const i=puestoInfo(ev.puestoId);const v=S.visitas.find(x=>x.id===ev.visitaId);return `<tr class="click" data-act="verEval" data-id="${ev.id}" tabindex="0"><td class="num">${fdate(ev.fecha)}</td><td>${esc(i.e.nombre)}<div class="muted small">${esc(i.s.nombre)}</div></td><td>${esc(i.p.nombre)}</td><td>${pill(ev.res)}</td><td><span class="tag ${v&&v.estado==='Finalizada'?'good':''}">${v?v.estado:''}</span></td></tr>`}).join('')||'<tr><td colspan="5" class="muted">No hay evaluaciones con estos filtros.</td></tr>'}
+  </tbody></table></div>
+  ${!fe?'<p class="hint" style="margin-top:12px">Elige una empresa para descargar su informe. Sin filtro se descarga el de la primera empresa.</p>':''}`;
+}
+
+/* =========================================================================
+   P11 · DETALLE DE EVALUACIÓN (RF-021, RF-031)
+   ========================================================================= */
+function vDetalle(){
+  const ev=S.evaluaciones.find(x=>x.id===R.id);if(!ev)return '<div class="empty">Evaluación no encontrada.</div>';
+  const i=puestoInfo(ev.puestoId);const u=S.usuarios.find(x=>x.id===ev.evaluadorId);
+  return `<button class="link" data-act="volver">← Volver</button>
+  <div class="pagehead" style="margin-top:12px"><div><span class="eyebrow">${esc(i.e.nombre)} · ${esc(i.s.nombre)} · ${esc(i.l.nombre)}</span><h1>${esc(i.p.nombre)}</h1>
+  <p class="muted">${fdate(ev.fecha)} · Evaluó ${esc(u?u.nombre:'')} · Trabajador ${esc(ev.codigo||'—')}</p></div>
+  <button class="btn p" data-act="ficha" data-id="${ev.id}">Ficha PDF</button></div>
+  <div class="grid2" style="align-items:start">
+    <section class="stack"><span class="eyebrow">Fotos con ángulos</span>
+      ${ev.sinFotos?'<div class="empty">Evaluación sin registro fotográfico.</div>':ev.fotos.map(f=>`<figure class="stack" style="gap:6px;margin:0"><img id="img_${f.id}" alt="Foto ${f.vista} con ángulos" style="border-radius:12px;border:1px solid var(--line2);background:#000" src="${fotoSrc(f)}"><figcaption class="hint">Vista ${f.vista.toLowerCase()}</figcaption></figure>`).join('')}
+      <div class="card stack" style="gap:6px"><span class="eyebrow">Puesto y condiciones</span>
+        <p class="small">${esc(ev.tarea||'')} · ${esc(ev.postura)} · ${ev.horas} h por jornada · lado ${ev.lado.toLowerCase()}</p>
+        <p class="small muted">Superficie: ${esc(ev.cond?.altura||'—')} · ${ev.cond?.ajustable?'ajustable':'no ajustable'} · ${ev.cond?.antifatiga?'con':'sin'} tapete antifatiga${CONDICIONES.slice(3).filter(([k])=>ev.cond?.[k]).map(([,t])=>' · '+t.toLowerCase()).join('')}${ev.cond?.obs?' · '+esc(ev.cond.obs):''}</p>
+        <p class="small muted">Carga: ${ev.carga?.kg||0} kg ${ev.carga?.tipo?.toLowerCase()||''}${ev.act?.estatica?' · postura estática':''}${ev.act?.repetitiva?' · acción repetida':''}${ev.bIgual===false?` · cuello y tronco: ${ev.cargaB?.kg||0} kg ${ev.cargaB?.tipo?.toLowerCase()||''}${ev.actB?.estatica?' · postura estática':''}${ev.actB?.repetitiva?' · acción repetida':''}`:''}</p></div>
+    </section>
+    <section class="card stack">${resultadoHTML(ev)}</section>
+  </div>`;
+}
+function montarDetalle(){
+  const ev=S.evaluaciones.find(x=>x.id===R.id);if(!ev||ev.sinFotos)return;
+  for(const f of ev.fotos){if(f.vista!=='Lateral'||!f.L)continue;fotoMarcada(f,miraDe(f,ev)).then(u=>{const el=document.getElementById('img_'+f.id);if(el)el.src=u})}
+}
+
+/* =========================================================================
+   P12 · FICHA / INFORME PDF (RF-031, RF-026 simplificado)
+   ========================================================================= */
+function vPdf(){
+  const u=yo();
+  const titulo=R.tipo==='ficha'?'Ficha de evaluación':'Informe de resultados';
+  return `<button class="link" data-act="volver">← Volver</button>
+  <div class="pagehead" style="margin-top:12px"><div><span class="eyebrow">${R.tipo==='ficha'?'RF-031':'RF-026 simplificado'} · vista previa</span><h1>${titulo}</h1>
+  <p class="muted">${u.rol==='USUARIO'?'Versión para la empresa: sin fotos.':'Incluye las fotos con los ángulos.'}</p></div>
+  <div class="row"><button class="btn p" data-act="descargarPdf" id="btnPdf">Descargar PDF</button></div></div>
+  <div id="pdfMsg" class="hint" style="margin-bottom:10px"></div>
+  <div class="sheetwrap"><div class="sheet" id="sheet"><p class="sm">Preparando…</p></div></div>`;
+}
+async function montarPdf(){
+  const el=$('#sheet');if(!el)return;
+  const conFotos=yo().rol!=='USUARIO';
+  const head=(t,sub)=>`<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid #141414;padding-bottom:14px;margin-bottom:18px">${logo(34,'#141414')}<div style="text-align:right"><div class="sm">${t}</div><div style="font-size:11px">${sub}</div></div></div>`;
+  const foot=`<div class="foot"><span>APLOMO. · Ergonomía con precisión · Método RULA (McAtamney y Corlett, 1993)</span><span>Generado el ${fdate(hoy())} · Prototipo PMV con datos de demostración</span></div>`;
+  const tablaSeg=ev=>{const r=ev.res;return `<table class="num"><thead><tr><th>Segmento</th><th>Ángulo</th><th>Puntos</th></tr></thead><tbody>${['BRAZO','ANTEBRAZO','MUNECA','CUELLO','TRONCO'].map(k=>`<tr><td>${SEGMENTOS.find(s=>s.k===k).t}</td><td>${angTxt(ev,k)}</td><td>${r.seg[k]}</td></tr>`).join('')}<tr><td>Giro de muñeca · Piernas</td><td>—</td><td>${r.seg.GIRO} · ${r.seg.PIERNAS}</td></tr><tr><td>A · B · C · D</td><td></td><td>${r.A} · ${r.B} · ${r.C} · ${r.D}</td></tr></tbody></table>`};
+  if(R.tipo==='ficha'){
+    const ev=S.evaluaciones.find(x=>x.id===R.id)||(W&&W.id===R.id?W:null);if(!ev||!ev.res){el.innerHTML='<p>Sin datos.</p>';return}
+    const i=puestoInfo(ev.puestoId);const ev_u=S.usuarios.find(x=>x.id===ev.evaluadorId);
+    let fotos='';
+    if(conFotos&&!ev.sinFotos){const urls=await Promise.all(ev.fotos.map(f=>f.vista==='Lateral'&&f.L?fotoMarcada(f,miraDe(f,ev)):Promise.resolve(fotoSrc(f))));fotos=`<div class="sg" style="margin-top:14px">${urls.map((u,k)=>`<figure style="margin:0"><img src="${u}" alt=""><figcaption class="sm" style="margin-top:4px">Vista ${ev.fotos[k].vista.toLowerCase()}</figcaption></figure>`).join('')}</div>`}
+    el.innerHTML=`${head('Ficha de evaluación RULA',fdate(ev.fecha))}
+      <h1>${esc(i.p.nombre)}</h1><p style="margin:4px 0 16px">${esc(i.e.nombre)} · NIT ${esc(i.e.nit)} · ${esc(i.s.nombre)} · ${esc(i.l.nombre)}</p>
+      <div class="sg"><div class="box"><div class="sm">Resultado</div><div style="display:flex;gap:14px;align-items:center;margin-top:6px"><span class="bigscore">${ev.res.final}</span><div>${pill(ev.res)}<div style="margin-top:6px">${NIVEL_TXT[ev.res.nivel]}</div></div></div></div>
+      <div class="box"><div class="sm">Puesto</div><p style="margin-top:6px">${esc(ev.tarea||'')}<br>${esc(ev.postura)} · ${ev.horas} h por jornada · lado ${ev.lado.toLowerCase()}<br>Trabajador: ${esc(ev.codigo||'—')} · Evaluador: ${esc(ev_u?ev_u.nombre:'')}</p></div></div>
+      <div class="sg" style="margin-top:14px"><div>${tablaSeg(ev)}</div><div class="box"><div class="sm">Sugerencias</div><ul style="margin:6px 0 0;padding-left:16px">${ev.sug.map(s=>`<li style="margin-bottom:4px">${esc(s)}</li>`).join('')}</ul></div></div>
+      ${fotos}${foot}`;
+  }else{
+    const e=emp(R.id);const evs=S.evaluaciones.filter(x=>x.empresaId===e.id&&x.res&&(yo().rol!=='USUARIO'||S.visitas.find(v=>v.id===x.visitaId)?.estado==='Finalizada'));
+    const cuenta={VERDE:0,AMARILLO:0,ROJO:0};evs.forEach(x=>cuenta[x.res.color]++);
+    el.innerHTML=`${head('Informe de resultados',fdate(hoy()))}
+      <h1>${esc(e.nombre)}</h1><p style="margin:4px 0 16px">NIT ${esc(e.nit)} · ${esc(e.ciudad)} · ${evs.length} ${evs.length===1?'puesto evaluado':'puestos evaluados'}</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">${['VERDE','AMARILLO','ROJO'].map(c=>`<div class="box"><div class="sm">${COLOR_TXT[c]}</div><div class="bigscore" style="font-size:38px">${cuenta[c]}</div></div>`).join('')}</div>
+      <table class="num"><thead><tr><th>Fecha</th><th>Sede · Salón</th><th>Puesto</th><th>Resultado</th><th>Acción</th></tr></thead><tbody>
+      ${evs.map(x=>{const i=puestoInfo(x.puestoId);return `<tr><td>${fdate(x.fecha)}</td><td>${esc(i.s.nombre)}<br>${esc(i.l.nombre)}</td><td>${esc(i.p.nombre)}</td><td>${pill(x.res)}</td><td>${NIVEL_TXT[x.res.nivel]}</td></tr>`}).join('')||'<tr><td colspan="5">Sin evaluaciones finalizadas.</td></tr>'}</tbody></table>
+      ${evs.map(x=>{const i=puestoInfo(x.puestoId);return `<div class="box" style="margin-top:12px;page-break-inside:avoid"><div style="display:flex;justify-content:space-between;gap:10px"><h3>${esc(i.p.nombre)}</h3>${pill(x.res)}</div><ul style="margin:6px 0 0;padding-left:16px">${x.sug.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>`}).join('')}
+      <p style="margin-top:14px;font-size:10px;color:#6d675c">Calificación por sede y por empresa: fuera del alcance del PMV (RF-025, siguiente iteración).</p>${foot}`;
+  }
+}
+async function descargarPdf(){
+  const btn=$('#btnPdf'),msg=$('#pdfMsg');btn.disabled=true;msg.textContent='Generando el PDF…';
+  try{
+    if(!window.html2canvas||!window.jspdf)throw new Error('lib');
+    const el=$('#sheet');
+    const canvas=await html2canvas(el,{scale:2,backgroundColor:'#FBF8F2',useCORS:true});
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:'pt',format:'a4'});
+    const pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight();
+    const pxPerPt=canvas.width/pw;const pagePx=Math.floor(ph*pxPerPt);
+    if(canvas.height<=pagePx*1.12){const k=Math.min(1,pagePx/canvas.height),w=pw*k;pdf.addImage(canvas.toDataURL('image/jpeg',.9),'JPEG',(pw-w)/2,0,w,canvas.height/pxPerPt*k)}
+    else for(let y=0,n=0;y<canvas.height;y+=pagePx,n++){
+      const h=Math.min(pagePx,canvas.height-y);const c=document.createElement('canvas');c.width=canvas.width;c.height=pagePx;const x=c.getContext('2d');x.fillStyle='#FBF8F2';x.fillRect(0,0,c.width,c.height);x.drawImage(canvas,0,y,canvas.width,h,0,0,canvas.width,h);
+      if(n)pdf.addPage();pdf.addImage(c.toDataURL('image/jpeg',.9),'JPEG',0,0,pw,ph);
+    }
+    const nombre=(R.tipo==='ficha'?'Ficha_RULA_':'Informe_RULA_')+(R.tipo==='ficha'?(puestoInfo((S.evaluaciones.find(x=>x.id===R.id)||W).puestoId).p.nombre):emp(R.id).nombre).replace(/[^\wÁÉÍÓÚáéíóúÑñ]+/g,'_')+'.pdf';
+    const blob=pdf.output('blob');
+    const dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;
+    if(dl){try{await dl.save({filename:nombre,data:blob});msg.textContent='PDF listo: '+nombre;toast('PDF descargado')}catch(e){msg.textContent=e&&e.code==='declined'?'Descarga cancelada.':'No se pudo guardar el PDF en esta vista. Abre el archivo .html de la app en tu navegador para descargarlo.'}}
+    else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();a.remove();msg.textContent='PDF listo: '+nombre;toast('PDF descargado')}
+  }catch(e){msg.textContent='No se pudo generar el PDF. Revisa la conexión a internet (la app carga dos librerías para crear el PDF) e inténtalo de nuevo.'}
+  btn.disabled=false;
+}
+
+/* =========================================================================
+   P13 · RESULTADOS DE MI EMPRESA (Usuario · RF-030, RNF-006, RF-031)
+   ========================================================================= */
+function vMis(){
+  const u=yo();const e=emp(u.empresaId);
+  const evs=S.evaluaciones.filter(x=>x.empresaId===e.id&&x.res&&S.visitas.find(v=>v.id===x.visitaId)?.estado==='Finalizada');
+  const cuenta={VERDE:0,AMARILLO:0,ROJO:0};evs.forEach(x=>cuenta[x.res.color]++);
+  const abierto=R.abierto;
+  return `<div class="pagehead"><div><span class="eyebrow">Resultados de mi empresa</span><h1>${esc(e.nombre)}</h1><p class="muted">Solo visitas Finalizadas. Por privacidad, la empresa no ve las fotos de los trabajadores.</p></div>
+    <button class="btn p" data-act="informe" data-id="${e.id}">Descargar PDF</button></div>
+  <div class="grid3" style="margin-bottom:22px">${['VERDE','AMARILLO','ROJO'].map(c=>`<div class="card kpi"><span class="pill ${c}" style="align-self:flex-start">${COLOR_TXT[c]}</span><b class="num">${cuenta[c]}</b><span class="muted small">${cuenta[c]===1?'puesto':'puestos'}</span></div>`).join('')}</div>
+  <div class="stack">${evs.map(x=>{const i=puestoInfo(x.puestoId);const op=abierto===x.id;return `<div class="card stack" style="gap:12px"><div class="row between"><div><h3>${esc(i.p.nombre)}</h3><div class="muted small">${esc(i.s.nombre)} · ${esc(i.l.nombre)} · ${fdate(x.fecha)}</div></div><div class="row">${pill(x.res)}<button class="btn sm" data-act="abrirMis" data-id="${x.id}" aria-expanded="${op}">${op?'Cerrar':'Ver detalle'}</button></div></div>
+    ${op?`<div class="grid2"><div class="stack" style="gap:6px"><span class="eyebrow">${NIVEL_TXT[x.res.nivel]}</span><div class="tablewrap"><table class="num"><tbody>${['BRAZO','ANTEBRAZO','MUNECA','CUELLO','TRONCO'].map(k=>`<tr><td>${SEGMENTOS.find(s=>s.k===k).t}</td><td>${x.res.seg[k]} pts</td></tr>`).join('')}</tbody></table></div></div>
+    <div class="stack" style="gap:4px"><span class="eyebrow">Qué hacer</span>${x.sug.map(s=>`<div class="sug small">${esc(s)}</div>`).join('')}<button class="btn sm" style="align-self:flex-start;margin-top:8px" data-act="ficha" data-id="${x.id}">Ficha PDF</button></div></div>`:''}</div>`}).join('')||'<div class="empty">Todavía no hay visitas finalizadas para tu empresa.</div>'}</div>`;
+}
+
+/* =========================================================================
+   EVENTOS
+   ========================================================================= */
+document.addEventListener('click',async e=>{
+  const g=e.target.closest('[data-go]');if(g){e.preventDefault();go(g.dataset.go);return}
+  const t=e.target.closest('[data-act]');if(!t)return;
+  const a=t.dataset.act,id=t.dataset.id;
+  const A={
+    demo(){const u=S.usuarios.find(x=>x.id=== t.dataset.uid);login(u.correo,u.pass||PASS)},
+    salir(){S.sesion=null;W=null;save();go('login');HIST=[];toast('Sesión cerrada')},
+    reset1(){$('#reset').innerHTML='<span>¿Borrar todos los cambios y volver a los datos iniciales?</span><button class="btn sm danger" data-act="reset2">Sí, reiniciar</button>'},
+    reset2(){try{localStorage.removeItem(KEY)}catch(x){}S=seed();W=null;save();go('login');toast('Demo reiniciada')},
+    nuevoUsuario(){R.nuevo=true;render()},cancelUsuario(){R.nuevo=false;render()},
+    filtroU(){R.filtro=t.dataset.f;render()},
+    aprobar(){const u=S.usuarios.find(x=>x.id===id);u.estado='Activo';save();render();toast(u.nombre+' ya puede entrar')},
+    rechazar(){const u=S.usuarios.find(x=>x.id===id);u.estado='Rechazada';save();render();toast('Solicitud rechazada')},
+    nuevaEmpresa(){R.nueva=true;render()},cancelEmpresa(){R.nueva=false;render()},
+    abrirEmpresa(){go('empresa',{id})},
+    nuevaReserva(){R.nueva=true;render()},cancelReserva(){R.nueva=false;render()},
+    tabRes(){R.tab=t.dataset.t;render()},
+    aceptar(){const r=S.reservas.find(x=>x.id===id);r.estado='En cola';save();render();toast('Reserva aceptada: En cola')},
+    cancelarR(){R.cancelando=id;render()},
+    iniciarVisita(){const r=S.reservas.find(x=>x.id===id);const v={id:uid('v'),reservaId:r.id,empresaId:r.empresaId,sedeId:r.sedeId,estado:'En curso',inicio:hoy(),evaluadorId:S.sesion};r.visitaId=v.id;S.visitas.push(v);save();go('visita',{id:v.id});toast('Visita En curso')},
+    abrirVisita(){go('visita',{id})},
+    confirmFin(){R.confirmFin=true;render()},noFin(){R.confirmFin=false;render()},
+    finalizarVisita(){const v=S.visitas.find(x=>x.id===id);v.estado='Finalizada';v.fin=hoy();const r=S.reservas.find(x=>x.id===v.reservaId);if(r)r.estado='Finalizada';save();go('resultados',{emp:v.empresaId});toast('Visita finalizada. La empresa ya ve los resultados.')},
+    evaluar(){W=nuevoBorrador(t.dataset.v,t.dataset.p,t.dataset.l);go('wizard')},
+    verEval(){go('detalle',{id,back:R})},
+    verResultadosEmp(){go('resultados',{emp:id})},
+    atras(){atras()},
+    volver(){if(HIST.length){atras();return}const b=R.back;if(b){R=b;render();window.scrollTo(0,0)}else go(inicioDe(yo()))},
+    ficha(){go('pdf',{tipo:'ficha',id,back:R})},
+    informe(){go('pdf',{tipo:'informe',id,back:R})},
+    descargarPdf(){descargarPdf()},
+    abrirMis(){R.abierto=R.abierto===id?null:id;render()},
+    // asistente
+    noConsent(){S.noEvaluados=S.noEvaluados||[];S.noEvaluados.push({id:uid('ne'),visitaId:W.visitaId,puestoId:W.puestoId,fecha:hoy(),evaluadorId:S.sesion,motivo:'Sin consentimiento del trabajador'});save();const v=W.visitaId;W=null;go('visita',{id:v});toast('Puesto registrado como No evaluado')},
+    wAtras(){W.err='';if(W.paso===1){const v=W.visitaId;W=null;go('visita',{id:v});return}W.paso--;render();window.scrollTo(0,0)},
+    wSig(){W.err=validarPaso();if(W.err){render();return}W.paso++;render();window.scrollTo(0,0)},
+    wGuardar(){guardarEval()},
+    wFicha(){const r=evaluar(W);if(!r.res)return;const tmp=Object.assign({},W,{id:'tmp',porFoto:r.porFoto,res:r.res,sug:r.sug});W.id='tmp';Object.assign(W,tmp);go('pdf',{tipo:'ficha',id:'tmp',back:{v:'wizard'}})},
+    addDemo(){const k=t.dataset.k,i=IMG_INFO[k];ponerFoto(i.vista==='Lateral'?'perfil':'frente',{src:k,w:i.w,h:i.h});toast('Foto de ejemplo agregada')},
+    slotDemo(){const sl=SLOTS.find(x=>x.k===t.dataset.slot);if(sl.k==='detalle'){IMG.mDetalle=IMG_MUESTRA.detalle;ponerFoto('detalle',{src:'mDetalle',w:900,h:1125});toast('Ejemplo agregado')}else{const i=IMG_INFO[sl.demo];ponerFoto(sl.k,{src:sl.demo,w:i.w,h:i.h});toast('Foto de ejemplo agregada')}},
+    p3cara(){W.p3cara=t.dataset.c;render();window.scrollTo(0,0)},
+    quitarFoto(){W.fotos=W.fotos.filter(f=>f.id!==id);render()},
+    fotoActiva(){W.fotoActiva=id;render()},
+    ptsDemo(){const f=W.fotos.find(x=>x.id===W.fotoActiva);f.L=demoPuntos(f.src);render()},
+    guiaSeg(){W.guiaSeg=t.dataset.k;render()},
+    ptsIA(){const f=W.fotos.find(x=>x.id===W.fotoActiva);autoDetectar(f,true)},
+    ptsUndo(){const f=W.fotos.find(x=>x.id===W.fotoActiva);if(!f.L)return;const last=[...MARCAS].reverse().find(m=>f.L[m.k]);if(last)delete f.L[last.k];render()},
+    ptsClear(){const f=W.fotos.find(x=>x.id===W.fotoActiva);f.L=null;f.ia='manual';render()}
+  };
+  if(A[a]){e.preventDefault();await A[a]()}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('tr.click')){e.target.click()}});
+function validarPaso(){
+  if(W.paso===1&&!W.tarea.trim())return 'Escribe la tarea que se observa.';
+  if(W.paso===3){
+    if(W.noAcepta)return 'El trabajador no aceptó ser evaluado: toca "Terminar: puesto no evaluado".';
+    if(!W.sinFotos&&!W.aceptaFotos)return 'Marca la respuesta del trabajador antes de continuar: sin su consentimiento no se puede seguir.';
+    if(!W.sinFotos){const falta=SLOTS.filter(sl=>sl.req&&!fotoSlot(sl.k,'principal')).map(sl=>sl.t);if(falta.length)return 'Faltan fotos obligatorias: '+falta.join(' y ')+'. Tómalas como en la muestra.'}
+  }
+  if(W.paso===4&&!W.sinFotos){const ok=W.fotos.some(f=>f.vista==='Lateral'&&medirAngulos(f.L,f.w,f.h,miraDe(f)));if(!ok)return 'Marca los 6 puntos en al menos una foto lateral.'}
+  return '';
+}
+function guardarEval(){
+  const r=evaluar(W);if(!r.res){W.err='Faltan ángulos para calcular el puntaje.';render();return}
+  const ev={id:uid('ev'),visitaId:W.visitaId,empresaId:W.empresaId,sedeId:W.sedeId,salonId:W.salonId,puestoId:W.puestoId,evaluadorId:W.evaluadorId,fecha:W.fecha,
+    tarea:W.tarea,postura:W.postura,horas:+W.horas,lado:W.lado,codigo:W.codigo,cond:W.cond,aceptaFotos:W.aceptaFotos,sinFotos:W.sinFotos,
+    fotos:W.sinFotos?[]:W.fotos.map(f=>({id:f.id,src:f.src,vista:f.vista,w:f.w,h:f.h,L:f.L})),manual:W.sinFotos?W.manual:null,
+    aj:W.aj,act:W.act,carga:W.carga,bIgual:W.bIgual!==false,actB:W.actB,cargaB:W.cargaB,piernas:W.piernas,porFoto:r.porFoto,res:r.res,sug:r.sug};
+  S.evaluaciones.push(ev);
+  const ok=(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(x){return false}})();
+  const v=W.visitaId;W=null;go('visita',{id:v});
+  toast(ok?`Evaluación guardada: ${ev.res.final} · ${COLOR_TXT[ev.res.color]}`:'Evaluación guardada en esta sesión (el navegador no tiene espacio para conservarla).');
+}
+
+/* formularios y campos */
+document.addEventListener('submit',e=>{
+  const f=e.target;e.preventDefault();
+  if(f.id==='fLogin'){const m=login($('#lgCorreo').value,$('#lgPass').value);if(m)$('#lgErr').textContent=m;return}
+  if(f.id==='fReg'){
+    const v=k=>$('#'+k).value.trim();
+    let m='';
+    /* Mock app: nada bloquea; los campos vacíos se llenan con datos demo */
+    const n=S.usuarios.length+1;
+    if(!v('rgNombre'))$('#rgNombre').value='Evaluador Independiente '+n;
+    if(!v('rgCorreo'))$('#rgCorreo').value='independiente'+n+'@demo.co';
+    if(!v('rgTarjeta'))$('#rgTarjeta').value='IND-'+(70000+n);
+    if(S.usuarios.some(u=>u.correo.toLowerCase()===v('rgCorreo').toLowerCase()))m='Ya existe una cuenta con ese correo.';
+    if(m){$('#rgErr').textContent=m;return}
+    S.usuarios.push({id:uid('u'),nombre:v('rgNombre'),correo:v('rgCorreo'),rol:'EVALUADOR',vinculacion:'Independiente',estado:'Pendiente',cargo:v('rgProf'),tarjeta:v('rgTarjeta'),pass:$('#rgPass').value});
+    save();go('registrado',{nombre:v('rgNombre').split(' ')[0]});return;
+  }
+  if(f.id==='fUsr'){
+    const n=$('#nuNombre').value.trim(),c=$('#nuCorreo').value.trim(),rol=$('#nuRol').value;
+    if(!n||!/^\S+@\S+\.\S+$/.test(c)){$('#nuErr').textContent='Escribe el nombre y un correo válido.';return}
+    if(S.usuarios.some(u=>u.correo.toLowerCase()===c.toLowerCase())){$('#nuErr').textContent='Ya existe una cuenta con ese correo.';return}
+    S.usuarios.push({id:uid('u'),nombre:n,correo:c,rol,estado:'Activo',vinculacion:rol==='EVALUADOR'?'Empleado':undefined,empresaId:rol==='USUARIO'?$('#nuEmp').value:undefined});
+    R.nuevo=false;save();render();toast('Cuenta creada');return;
+  }
+  if(f.id==='fEmp'){
+    const v=k=>$('#'+k).value.trim();
+    if(!v('neNombre')||!v('neNit')){$('#neErr').textContent='La razón social y el NIT son obligatorios.';return}
+    if(S.empresas.some(x=>x.nit.replace(/\D/g,'')===v('neNit').replace(/\D/g,''))){$('#neErr').textContent='Ya existe una empresa con ese NIT (RF-010).';return}
+    S.empresas.push({id:uid('e'),nombre:v('neNombre'),nit:v('neNit'),sector:v('neSector')||'—',ciudad:v('neCiudad')||'—',contacto:v('neContacto'),sedes:[]});
+    R.nueva=false;save();render();toast('Empresa creada');return;
+  }
+  if(f.id==='fRes'){
+    const fe=$('#nrFecha').value;if(!fe){$('#nrErr').textContent='Elige una fecha.';return}
+    const s=$('#nrSede').value;if(!s){$('#nrErr').textContent='La empresa no tiene sedes. Agrega una sede primero.';return}
+    S.reservas.push({id:uid('r'),empresaId:$('#nrEmp').value,sedeId:s,fecha:fe,hora:$('#nrHora').value,evaluadorId:S.sesion,estado:'Esperando',notas:$('#nrNotas').value.trim()});
+    R.nueva=false;R.tab='Esperando';save();render();toast('Reserva creada: Esperando');return;
+  }
+  if(f.id==='fCancel'){const r=S.reservas.find(x=>x.id===f.dataset.id);const m=$('#cnMotivo').value.trim();if(!m){$('#cnMotivo').focus();return}r.estado='Cancelada';r.motivo=m;R.cancelando=null;save();render();toast('Reserva cancelada');return}
+  const fd=f.dataset.form;if(!fd)return;
+  const val=n=>(f.elements[n]&&f.elements[n].value||'').trim();
+  const e2=emp(f.dataset.e);
+  if(fd==='sede'){if(!val('n'))return;e2.sedes.push({id:uid('s'),nombre:val('n'),direccion:val('d'),salones:[]});toast('Sede agregada')}
+  if(fd==='salon'){if(!val('n'))return;sedeDe(e2.id,f.dataset.s).salones.push({id:uid('l'),nombre:val('n'),puestos:[]});toast('Salón agregado')}
+  if(fd==='puesto'){if(!val('n'))return;sedeDe(e2.id,f.dataset.s).salones.find(l=>l.id===f.dataset.l).puestos.push({id:uid('p'),nombre:val('n'),tarea:val('t')});toast('Puesto agregado')}
+  if(fd==='acceso'){const c=val('c');if(!val('n')||!/^\S+@\S+\.\S+$/.test(c)){toast('Escribe el nombre y un correo válido');return}if(S.usuarios.some(u=>u.correo.toLowerCase()===c.toLowerCase())){toast('Ya existe una cuenta con ese correo');return}S.usuarios.push({id:uid('u'),nombre:val('n'),correo:c,rol:'USUARIO',estado:'Activo',empresaId:e2.id});toast('Acceso creado · contraseña '+PASS)}
+  save();render();
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.id==='bqEmp'){R.q=t.value;const pos=t.selectionStart;render();const n=$('#bqEmp');n.focus();n.setSelectionRange(pos,pos);return}
+  if(!W)return;
+  if(t.dataset.w){W[t.dataset.w]=t.value;return}
+  if(t.dataset.c&&t.type!=='checkbox'){W.cond[t.dataset.c]=t.value;return}
+  if(t.dataset.m){W.manual[t.dataset.m][t.dataset.f]=t.type==='number'?+t.value:t.value;return}
+  if(t.id==='w_kg'){W.carga.kg=+t.value;updParcial()}
+  if(t.id==='w_kgB'){W.cargaB.kg=+t.value;updParcial()}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='frEmp'){R.emp=t.value;render();return}
+  if(t.id==='frColor'){R.color=t.value;render();return}
+  if(t.id==='nrEmp'){const e2=emp(t.value);$('#nrSede').innerHTML=e2.sedes.map(s=>`<option value="${s.id}">${esc(s.nombre)}</option>`).join('');return}
+  if(!W)return;
+  if(t.dataset.w){W[t.dataset.w]=t.value;return}
+  if(t.dataset.c&&t.type==='checkbox'){W.cond[t.dataset.c]=t.checked;t.closest('.opt')&&t.closest('.opt').classList.toggle('on',t.checked);return}
+  if(t.dataset.m){W.manual[t.dataset.m][t.dataset.f]=t.value;return}
+  if(t.dataset.consent){const v=t.dataset.consent;W.aceptaFotos=v==='fotos';W.sinFotos=v==='sin';W.noAcepta=v==='no';if(v!=='fotos')W.fotos=[];W.err='';render();return}
+  if(t.dataset.aj==='piernasMal'){W.piernas=!t.checked;(W.ajTocado=W.ajTocado||{}).piernas=true;render();return}
+  if(t.dataset.aj){W.aj[t.dataset.aj]=t.checked;(W.ajTocado=W.ajTocado||{})[t.dataset.aj]=true;render();return}
+  if(t.dataset.q==='act'){W.act.estatica=t.value==='estatica';W.act.repetitiva=t.value==='repetitiva';render();return}
+  if(t.dataset.q==='tipo'){W.carga.tipo=t.value;render();return}
+  if(t.dataset.act2){(t.dataset.g==='B'?W.actB:W.act)[t.dataset.act2]=t.checked;updParcial();return}
+  if(t.id==='w_bIgual'){W.bIgual=t.checked;render();return}
+  if(t.id==='w_tipoB'){W.cargaB.tipo=t.value;updParcial();return}
+  if(t.id==='w_golpesB'){W.cargaB.golpes=t.checked;updParcial();return}
+  if(t.id==='w_piernas'){W.piernas=t.checked;(W.ajTocado=W.ajTocado||{}).piernas=true;render();return}
+  if(t.id==='w_tipo'){W.carga.tipo=t.value;updParcial();return}
+  if(t.id==='w_golpes'){W.carga.golpes=t.checked;render();return}
+  if(t.dataset.slot&&t.files&&t.files[0]){leerFoto(t.files[0],t.dataset.slot);t.value=''}
+});
+document.addEventListener('toggle',e=>{if(e.target.id==='p5mas'&&W)W.p5mas=e.target.open},true);
+function updParcial(){const el=$('#parcial');if(!el)return;const r=evaluar(W);if(r.res)el.innerHTML=`Vista previa: Puntuación A ${r.res.A} · B ${r.res.B} · C ${r.res.C} · D ${r.res.D} → ${pill(r.res)}`}
+/* Pone una foto en su casilla (perfil, frente o detalle) del lado que se está viendo; reemplaza la anterior */
+function ponerFoto(slot,d){const cara=W.p3cara||'principal',sl=SLOTS.find(x=>x.k===slot);
+  W.fotos=W.fotos.filter(f=>!(f.slot===slot&&(f.cara||'principal')===cara));
+  const f=Object.assign({id:uid('f'),slot,cara,vista:sl.vista,L:null},d);if(cara==='otro'&&sl.vista==='Lateral')f.mira=W.lado==='Derecho'?'Izquierdo':'Derecho';
+  W.fotos.push(f);W.err='';render()}
+function leerFoto(file,slot){
+  const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,1000/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    ponerFoto(slot||'perfil',{src:c.toDataURL('image/jpeg',.82),w:c.width,h:c.height});toast('Foto agregada')};im.onerror=()=>toast('No se pudo leer la imagen. Prueba con una foto JPG o PNG.');im.src=rd.result};rd.readAsDataURL(file);
+}
+window.__rzw=window.innerWidth;window.addEventListener('resize',()=>{const ww=window.innerWidth;if(ww===window.__rzw)return;window.__rzw=ww; /* iPad/celular: la barra de Safari cambia el alto al hacer scroll; solo redibujar si cambia el ancho */
+  if(R.v==='wizard'&&W&&W.paso===4&&LZ&&!LZ.drag){clearTimeout(window.__rz);window.__rz=setTimeout(montarLienzo,150)}});
+
+/* arranque */
+load();
+S.sesion=null;save(); // la mock app siempre abre en Iniciar sesión, para elegir el rol
+render();
+</script>

@@ -1,0 +1,516 @@
+Diccionario de Datos · Sistema RULA – Evaluación Ergonómica
+ Proyecto Nuclear 6.0 · Matriz de requisitos v6 · Fase de Diseño · Basado en el Modelo E-R v6
+
+Base de datos                                                  Cómo leer las tablas                                           Índice por fase
+   MySQL 8.0.16 o superior, motor InnoDB, utf8mb4 (RNF-          PK llave primaria · FK llave foránea · UQ valor único · U1   Acceso y seguridad
+   001).                                                         único en conjunto con las otras columnas U1.                  cuenta      bitacora
+   Nombre: rula_ergonomia. Script:                               Nulo = Sí: el dato es opcional o se llena después (por       Fase 1 · Configuración de la empresa
+   Script_MySQL_RULA_v6.sql.                                     ejemplo, al finalizar).
+                                                                                                                               empresa       sede      salon      area    cargo
+   21 tablas · 179 columnas · 24 llaves foráneas · 13 reglas     Los valores de cada ENUM salen de los enum de Clases A
+   CHECK.                                                        y B.                                                          puesto_trabajo
+   Tercera forma normal (3FN), igual que el Modelo E-R v6.       Nada se borra: ON DELETE RESTRICT, activo o estado (RF-
+                                                                 028, RNF-009).                                               Fase 2 · Agenda de visitas
+                                                                                                                               reserva       visita
+                                                                                                                              Fase 3 · Evaluación RULA
+                                                                                                                               nivel_riesgo         valor_tabla_rula      evaluacion
+
+                                                                                                                               condiciones_puesto            fotografia   analisis_rula
+
+                                                                                                                               medicion_angulo
+                                                                                                                              Fase 4 · Seguimiento e informes
+                                                                                                                               regla_sugerencia            sugerencia
+
+                                                                                                                               pendiente_arreglo            informe_empresa
+
+
+
+
+                                                                             Diccionario de datos v6 · página 1 de 16
+    cuenta                                                                                                                                                                                      Acceso y seguridad
+    Cuentas de las personas que entran al sistema. Administrador y Usuario viven en la misma tabla y se distinguen por rol (herencia de Cuenta). Requisitos: RF-001a, RF-001c, RF-002, RF-003, RNF-004
+#        Columna                             Tipo                                 Nulo    Llave                                   Defecto   Descripción                                              Req.
+1        id_cuenta                           INT                                  No      PK                                                Identificador de la cuenta.                              RF-003
+                                                                                          AUTO_INCREMENT
+2        id_empresa                          INT                                  Sí      FK                                                Empresa del Usuario. Vacío para el Administrador.        RF-002, RF-
+                                                                                          → empresa.id_empresa                                                                                       003
+3        nombre                              VARCHAR(100)                         No                                                        Nombre de la persona.                                    RF-003
+4        correo                              VARCHAR(120)                         No      UQ                                                Correo con el que entra. No se repite.                   RF-001a, RF-
+                                                                                                                                                                                                     010
+5        telefono                            VARCHAR(20)                          No                                                        Teléfono de contacto.                                    RF-003
+6        cargo                               VARCHAR(80)                          No                                                        Cargo de la persona (texto).                             RF-003
+7        contrasena_hash                     CHAR(60)                             No                                                        Contraseña cifrada con bcrypt (costo mínimo 10).         RNF-004
+                                                                                                                                            Nadie puede leerla.
+8        contrasena_temporal                 BOOLEAN                              No                                              TRUE      Verdadero si la contraseña es temporal y debe            RF-001a, RF-
+                                                                                                                                            cambiarse al entrar.                                     001c
+9        intentos_fallidos                   TINYINT                              No                                              0         Intentos fallidos seguidos de inicio de sesión.          RF-001a
+10       bloqueado_hasta                     DATETIME                             Sí                                                        Fecha y hora hasta la que el ingreso queda bloqueado     RF-001a
+                                                                                                                                            (5 intentos = 15 minutos).
+11       estado                              ENUM                                 No                                              ACTIVA    Estado de la cuenta.                                     RF-003
+                                             ACTIVA · INACTIVA · BLOQUEADA
+
+12       rol                                 ENUM                                 No                                                        Rol de la cuenta.                                        RF-002
+                                             ADMINISTRADOR · USUARIO
+
+    Reglas CHECK: intentos_fallidos >= 0 (RF-001a)
+    Dato inicial: una cuenta de Administrador con contraseña temporal (RF-003). La aplicación se conecta con el usuario app_rula, que solo tiene SELECT, INSERT y UPDATE (RNF-004).
+
+
+
+
+                                                                                             Diccionario de datos v6 · página 2 de 16
+    bitacora                                                                                                                                                                                  Acceso y seguridad
+    Registro de quién hizo cada acción, cuándo y qué estado cambió. Requisitos: RNF-005, RF-012, RF-013a, RF-013b
+#       Columna                            Tipo                               Nulo     Llave                                  Defecto   Descripción                                                Req.
+1       id_bitacora                        INT                                No       PK                                               Identificador del registro.                                RNF-005
+                                                                                       AUTO_INCREMENT
+2       id_cuenta                          INT                                No       FK                                               Cuenta que hizo la acción.                                 RNF-005
+                                                                                       → cuenta.id_cuenta
+3       fecha_hora                         DATETIME                           No                                                        Fecha y hora de la acción.                                 RNF-005
+4       tabla                              VARCHAR(30)                        No                                                        Nombre de la tabla afectada (por ejemplo, reserva).        RNF-005
+5       id_registro                        INT                                No                                                        Identificador de la fila afectada en esa tabla.            RNF-005
+6       accion                             ENUM                               No                                                        Tipo de acción.                                            RNF-005
+                                           CREAR · EDITAR ·
+                                           CAMBIAR_ESTADO · DESACTIVAR ·
+                                           REACTIVAR
+
+7       estado_anterior                    VARCHAR(20)                        Sí                                                        Estado antes del cambio (solo en cambios de estado).       RF-012
+8       estado_nuevo                       VARCHAR(20)                        Sí                                                        Estado después del cambio (solo en cambios de              RF-012
+                                                                                                                                        estado).
+9       detalle                            VARCHAR(255)                       Sí                                                        Detalle opcional, por ejemplo el motivo de cancelación.    RNF-005
+
+
+    empresa                                                                                                                                                                Fase 1 · Configuración de la empresa
+    Empresas cliente que evalúa el Ingeniero Industrial. No se borran: se desactivan. Requisitos: RF-004, RF-010, RF-028
+#       Columna                            Tipo                               Nulo     Llave                                  Defecto   Descripción                                                Req.
+1       id_empresa                         INT                                No       PK                                               Identificador de la empresa.                               RF-004
+                                                                                       AUTO_INCREMENT
+2       id_administrador                   INT                                No       FK                                               Administrador que registró la empresa.                     RF-004
+                                                                                       → cuenta.id_cuenta
+3       nombre                             VARCHAR(120)                       No                                                        Nombre de la empresa (obligatorio).                        RF-004
+4       nit                                VARCHAR(20)                        No       UQ                                               NIT de la empresa (obligatorio, no se repite).             RF-004, RF-010
+5       descripcion                        VARCHAR(255)                       Sí                                                        Descripción opcional.                                      RF-004
+6       telefono                           VARCHAR(20)                        Sí                                                        Teléfono opcional.                                         RF-004
+7       correo                             VARCHAR(120)                       Sí                                                        Correo opcional.                                           RF-004
+8       persona_contacto                   VARCHAR(100)                       Sí                                                        Persona de contacto opcional.                              RF-004
+9       activo                             BOOLEAN                            No                                              TRUE      Falso si la empresa está desactivada.                      RF-028
+
+
+
+
+                                                                                         Diccionario de datos v6 · página 3 de 16
+    sede                                                                                                                                                                    Fase 1 · Configuración de la empresa
+    Sedes de cada empresa. Requisitos: RF-005, RF-010, RF-028
+#       Columna                            Tipo                                Nulo   Llave                                  Defecto   Descripción                                                Req.
+1       id_sede                            INT                                 No     PK                                               Identificador de la sede.                                  RF-005
+                                                                                      AUTO_INCREMENT
+2       id_empresa                         INT                                 No     FK U1                                            Empresa a la que pertenece.                                RF-005
+                                                                                      → empresa.id_empresa
+3       nombre                             VARCHAR(100)                        No     U1                                               Nombre de la sede; no se repite en la empresa.             RF-005, RF-010
+4       direccion                          VARCHAR(150)                        No                                                      Dirección.                                                 RF-005
+5       ciudad                             VARCHAR(60)                         No                                                      Ciudad.                                                    RF-005
+6       telefono                           VARCHAR(20)                         No                                                      Teléfono.                                                  RF-005
+7       horario                            VARCHAR(100)                        No                                                      Horario de atención.                                       RF-005
+8       descripcion                        VARCHAR(200)                        No                                                      Descripción de máximo 200 caracteres.                      RF-005
+9       activo                             BOOLEAN                             No                                            TRUE      Falso si la sede está desactivada.                         RF-028
+
+
+    salon                                                                                                                                                                   Fase 1 · Configuración de la empresa
+    Salones o áreas físicas de cada sede. Requisitos: RF-006, RF-010, RF-028
+#       Columna                            Tipo                                Nulo   Llave                                  Defecto   Descripción                                                Req.
+1       id_salon                           INT                                 No     PK                                               Identificador del salón.                                   RF-006
+                                                                                      AUTO_INCREMENT
+2       id_sede                            INT                                 No     FK U1                                            Sede a la que pertenece.                                   RF-006
+                                                                                      → sede.id_sede
+3       nombre                             VARCHAR(100)                        No     U1                                               Nombre del salón; no se repite en la sede.                 RF-006, RF-010
+4       descripcion                        VARCHAR(200)                        No                                                      Descripción de máximo 200 caracteres.                      RF-006
+5       piso                               TINYINT                             No                                                      Piso donde está.                                           RF-006
+6       capacidad_puestos                  SMALLINT                            No                                                      Cantidad de puestos que caben.                             RF-006
+7       activo                             BOOLEAN                             No                                            TRUE      Falso si el salón está desactivado.                        RF-028
+    Reglas CHECK: capacidad_puestos > 0 (RF-006)
+
+
+
+
+                                                                                        Diccionario de datos v6 · página 4 de 16
+    area                                                                                                                                                                      Fase 1 · Configuración de la empresa
+    Áreas de la empresa (por ejemplo, Contabilidad). Requisitos: RF-007, RF-010, RF-028
+#       Columna                            Tipo                              Nulo    Llave                                     Defecto   Descripción                                                Req.
+1       id_area                            INT                               No      PK                                                  Identificador del área.                                    RF-007
+                                                                                     AUTO_INCREMENT
+2       id_empresa                         INT                               No      FK U1                                               Empresa a la que pertenece.                                RF-007
+                                                                                     → empresa.id_empresa
+3       nombre                             VARCHAR(100)                      No      U1                                                  Nombre del área; no se repite en la empresa.               RF-007, RF-010
+4       activo                             BOOLEAN                           No                                                TRUE      Falso si el área está desactivada.                         RF-028
+
+
+    cargo                                                                                                                                                                     Fase 1 · Configuración de la empresa
+    Cargos de la empresa con su tipo. No se guardan datos de personas, solo el cargo. Requisitos: RF-007, RF-010, RF-028
+#       Columna                            Tipo                              Nulo    Llave                                     Defecto   Descripción                                                Req.
+1       id_cargo                           INT                               No      PK                                                  Identificador del cargo.                                   RF-007
+                                                                                     AUTO_INCREMENT
+2       id_empresa                         INT                               No      FK U1                                               Empresa a la que pertenece.                                RF-007
+                                                                                     → empresa.id_empresa
+3       nombre                             VARCHAR(100)                      No      U1                                                  Nombre del cargo; no se repite en la empresa.              RF-007, RF-010
+4       tipo                               ENUM                              No                                                          Tipo de cargo.                                             RF-007
+                                           OPERATIVO · ADMINISTRATIVO ·
+                                           OTRO
+
+5       activo                             BOOLEAN                           No                                                TRUE      Falso si el cargo está desactivado.                        RF-028
+
+
+
+
+                                                                                          Diccionario de datos v6 · página 5 de 16
+    puesto_trabajo                                                                                                                                                         Fase 1 · Configuración de la empresa
+    Puestos de trabajo dentro de un salón, con su número y su último puntaje RULA. Requisitos: RF-008, RF-010, RF-028
+#       Columna                           Tipo                               Nulo    Llave                                     Defecto   Descripción                                               Req.
+1       id_puesto                         INT                                No      PK                                                  Identificador del puesto.                                 RF-008
+                                                                                     AUTO_INCREMENT
+2       id_salon                          INT                                No      FK U1                                               Salón donde está el puesto.                               RF-008
+                                                                                     → salon.id_salon
+3       id_area                           INT                                Sí      FK                                                  Área opcional del puesto.                                 RF-008
+                                                                                     → area.id_area
+4       id_cargo                          INT                                Sí      FK                                                  Cargo opcional del puesto.                                RF-008
+                                                                                     → cargo.id_cargo
+5       numero                            SMALLINT                           No      U1                                                  Número del puesto; no se repite en el salón.              RF-008, RF-010
+6       descripcion                       VARCHAR(255)                       No                                                          Descripción del puesto.                                   RF-008
+7       tipo                              ENUM                               No                                                          Tipo de puesto.                                           RF-008
+                                          ESCRITORIO · MESA · MOSTRADOR
+                                          · OTRO
+
+8       ubicacion                         VARCHAR(120)                       No                                                          Ubicación dentro del salón.                               RF-008
+9       ultimo_puntaje                    TINYINT                            Sí                                                          Puntaje más alto de su última evaluación (1 a 7). Vacío   RF-008, RF-021
+                                                                                                                                         si nunca se ha evaluado. El color sale de nivel_riesgo.
+10      activo                            BOOLEAN                            No                                                TRUE      Falso si el puesto está desactivado.                      RF-028
+    Reglas CHECK: ultimo_puntaje IS NULL OR ultimo_puntaje BETWEEN 1 AND 7 (RF-008)
+
+
+
+
+                                                                                          Diccionario de datos v6 · página 6 de 16
+    reserva                                                                                                                                                                             Fase 2 · Agenda de visitas
+    Reservas de visita a un salón, con su código y su estado. Requisitos: RF-009b, RF-010, RF-011, RF-012
+#       Columna                            Tipo                               Nulo    Llave                                     Defecto     Descripción                                             Req.
+1       id_reserva                         INT                                No      PK                                                    Identificador de la reserva.                            RF-011
+                                                                                      AUTO_INCREMENT
+2       id_salon                           INT                                No      FK U1                                                 Salón reservado; la sede y la empresa se obtienen por   RF-011
+                                                                                      → salon.id_salon                                      el salón.
+3       id_administrador                   INT                                No      FK                                                    Administrador que registró la reserva.                  RF-011
+                                                                                      → cuenta.id_cuenta
+4       codigo                             VARCHAR(12)                        No      UQ                                                    Código único que asigna el sistema (por ejemplo, R-     RF-011
+                                                                                                                                            0001). No se cambia.
+5       fecha                              DATE                               No      U1                                                    Fecha de la visita (hoy o posterior).                   RF-011
+6       hora_inicio                        TIME                               No      U1                                                    Hora de inicio.                                         RF-011
+7       hora_fin                           TIME                               No                                                            Hora de fin (posterior a la de inicio).                 RF-011
+8       categoria                          ENUM                               No                                                            Categoría de la visita.                                 RF-011
+                                           EVALUACION_INICIAL ·
+                                           SEGUIMIENTO · REEVALUACION
+
+9       descripcion                        VARCHAR(255)                       Sí                                                            Descripción opcional.                                   RF-011
+10      notas                              TEXT                               Sí                                                            Notas opcionales.                                       RF-011
+11      estado                             ENUM                               No                                                ESPERANDO   Estado de la reserva.                                   RF-012
+                                           ESPERANDO · EN_COLA ·
+                                           FINALIZADA · CANCELADA
+
+12      motivo_cancelacion                 VARCHAR(255)                       Sí                                                            Motivo obligatorio cuando la reserva se cancela.        RF-012
+    Reglas CHECK: hora_fin > hora_inicio (RF-011) · estado <> 'CANCELADA' OR motivo_cancelacion IS NOT NULL (RF-012)
+
+
+
+
+                                                                                           Diccionario de datos v6 · página 7 de 16
+    visita                                                                                                                                                                                                Fase 2 · Agenda de visitas
+    Visita real hecha a partir de una reserva EN_COLA (una visita por reserva). Requisitos: RF-013a, RF-013b
+#        Columna                                   Tipo                                      Nulo      Llave                                   Defecto    Descripción                                                 Req.
+1        id_visita                                 INT                                       No        PK                                                 Identificador de la visita.                                 RF-013a
+                                                                                                       AUTO_INCREMENT
+2        id_reserva                                INT                                       No        FK UQ                                              Reserva de la que nace (una visita por reserva).            RF-013a
+                                                                                                       → reserva.id_reserva
+3        hora_real_inicio                          DATETIME                                  No                                                           Fecha y hora real de inicio.                                RF-013a
+4        hora_real_fin                             DATETIME                                  Sí                                                           Fecha y hora real de fin; vacía mientras está               RF-013b
+                                                                                                                                                          EN_CURSO.
+5        notas                                     TEXT                                      Sí                                                           Notas al finalizar.                                         RF-013b
+6        calificacion_final                        DECIMAL(3,1)                              Sí                                                           Promedio de los puntajes de los puestos evaluados; se       RF-013b, RF-
+                                                                                                                                                          llena al finalizar.                                         025
+7        estado                                    ENUM                                      No                                                EN_CURSO   Estado de la visita.                                        RF-013a, RF-
+                                                   EN_CURSO · FINALIZADA                                                                                                                                              013b
+    Reglas CHECK: estado <> 'FINALIZADA' OR hora_real_fin IS NOT NULL (RF-013b)
+
+
+    nivel_riesgo                                                                                                                                                                                          Fase 3 · Evaluación RULA
+    Niveles del semáforo y nivel oficial de RULA. Tiene 4 filas fijas. Requisitos: RF-020, RF-027
+#        Columna                                   Tipo                                      Nulo      Llave                                   Defecto    Descripción                                                 Req.
+1        id_nivel                                  INT                                       No        PK                                                 Identificador del nivel.                                    RF-020
+                                                                                                       AUTO_INCREMENT
+2        color                                     ENUM                                      No                                                           Color del semáforo.                                         RF-020
+                                                   VERDE · AMARILLO · ROJO
+
+3        puntaje_minimo                            TINYINT                                   No                                                           Puntaje final mínimo del rango.                             RF-020
+4        puntaje_maximo                            TINYINT                                   No                                                           Puntaje final máximo del rango.                             RF-020
+5        nombre                                    VARCHAR(40)                               No                                                           Nombre que se muestra con el color.                         RF-020
+6        accion                                    VARCHAR(150)                              No                                                           Acción que se recomienda.                                   RF-020
+7        nivel_oficial_rula                        TINYINT                                   No                                                           Nivel de actuación oficial de RULA (1 a 4, Tabla 18 de      RF-020
+                                                                                                                                                          Ergonautas).
+    Reglas CHECK: puntaje_minimo BETWEEN 1 AND 7 AND puntaje_maximo BETWEEN puntaje_minimo AND 7 (RF-020) · nivel_oficial_rula BETWEEN 1 AND 4 (RF-020)
+    Datos iniciales (4 filas): 1–2 Verde, nivel 1 · 3–4 Amarillo, nivel 2 · 5–6 Rojo, nivel 3 · 7 Rojo, nivel 4.
+
+
+
+
+                                                                                                          Diccionario de datos v6 · página 8 de 16
+    valor_tabla_rula                                                                                                                                                                                      Fase 3 · Evaluación RULA
+    Valores de las Tablas A, B y C de RULA (Ergonautas). Se cargan una vez y no cambian. Requisitos: RF-027, RNF-010
+#        Columna                                 Tipo                                   Nulo      Llave                                     Defecto   Descripción                                                     Req.
+1        id_valor                                INT                                    No        PK                                                  Identificador del valor.                                        RF-027
+                                                                                                  AUTO_INCREMENT
+2        tabla                                   ENUM                                   No        U1                                                  Tabla de RULA a la que pertenece el valor.                      RF-027
+                                                 A · B · C
+
+3        fila                                    TINYINT                                No        U1                                                  Fila de la tabla (ver la regla de lectura abajo).               RF-027
+4        columna                                 TINYINT                                No        U1                                                  Columna de la tabla (ver la regla de lectura abajo).            RF-027
+5        valor                                   TINYINT                                No                                                            Valor publicado en la tabla.                                    RF-027, RNF-
+                                                                                                                                                                                                                      010
+    Reglas CHECK: valor BETWEEN 1 AND 9 (RF-027)
+    Regla de lectura: Tabla A → fila = (brazo − 1) × 3 + antebrazo (1 a 18), columna = (muñeca − 1) × 2 + giro (1 a 8) · Tabla B → fila = cuello (1 a 6), columna = (tronco − 1) × 2 + piernas (1 a 12) · Tabla C → fila = puntaje A (8
+    = 8 o más), columna = puntaje B (7 = 7 o más). Datos iniciales: 144 + 72 + 56 = 272 filas, copiadas de Ergonautas.
+
+
+
+
+                                                                                                       Diccionario de datos v6 · página 9 de 16
+    evaluacion                                                                                                                                                                         Fase 3 · Evaluación RULA
+    Evaluación de un puesto dentro de una visita EN_CURSO: la postura elegida y por qué. Requisitos: RF-014, RF-016
+#       Columna                            Tipo                              Nulo    Llave                                   Defecto   Descripción                                                Req.
+1       id_evaluacion                      INT                               No      PK                                                Identificador de la evaluación.                            RF-014
+                                                                                     AUTO_INCREMENT
+2       id_visita                          INT                               No      FK                                                Visita EN_CURSO donde se hace.                             RF-014
+                                                                                     → visita.id_visita
+3       id_puesto                          INT                               No      FK                                                Puesto evaluado.                                           RF-014
+                                                                                     → puesto_trabajo.id_puesto
+4       fecha                              DATE                              No                                                        Fecha de la evaluación.                                    RF-014
+5       postura                            VARCHAR(150)                      No                                                        Postura elegida para estudiar.                             RF-014
+6       criterio                           ENUM                              No                                                        Criterio de elección de la postura.                        RF-014
+                                           MAS_INADECUADA ·
+                                           MAYOR_EXPOSICION
+
+7       motivo                             VARCHAR(255)                      No                                                        Motivo de la elección.                                     RF-014
+8       minutos_jornada                    SMALLINT                          No                                                        Minutos por jornada en esa postura (1 a 720).              RF-014
+9       metodologia                        ENUM                              No                                              RULA      Metodología usada.                                         RF-014
+                                           RULA
+
+10      persona_acepto                     BOOLEAN                           No                                              FALSE     Casilla «A la persona se le explicó el estudio y aceptó    RF-016
+                                                                                                                                       las fotos».
+11      registro_fotografico               ENUM                              No                                                        Indica si la evaluación tiene fotos o quedó sin registro   RF-016
+                                           CON_FOTOS ·                                                                                 fotográfico.
+                                           SIN_REGISTRO_FOTOGRAFICO
+
+    Reglas CHECK: minutos_jornada BETWEEN 1 AND 720 (RF-014)
+
+
+
+
+                                                                                       Diccionario de datos v6 · página 10 de 16
+    condiciones_puesto                                                                                                                                                                   Fase 3 · Evaluación RULA
+    Condiciones del puesto marcadas con Sí o No (una fila por evaluación). Requisitos: RF-015
+#        Columna                            Tipo                               Nulo     Llave                                   Defecto   Descripción                                               Req.
+1        id_evaluacion                      INT                                No       PK FK                                             Evaluación a la que pertenecen las condiciones (llave y   RF-015
+                                                                                        → evaluacion.id_evaluacion                        foránea a la vez).
+2        escritorio_muy_alto                BOOLEAN                            No                                                         La superficie queda por encima del codo con los           RF-015
+                                                                                                                                          hombros relajados.
+3        pantalla_muy_alta                  BOOLEAN                            No                                                         El borde superior queda por encima de la línea de los     RF-015
+                                                                                                                                          ojos.
+4        pies_colgando                      BOOLEAN                            No                                                         Los pies no apoyan completos en el piso.                  RF-015
+5        tiene_apoyapies                    BOOLEAN                            No                                                         El puesto tiene apoyapiés.                                RF-015
+6        silla_con_apoyabrazos              BOOLEAN                            No                                                         La silla tiene apoyabrazos.                               RF-015
+7        silla_regulable                    BOOLEAN                            No                                                         La silla es regulable.                                    RF-015
+8        otras_observaciones                VARCHAR(255)                       Sí                                                         Otras observaciones (opcional).                           RF-015
+
+
+    fotografia                                                                                                                                                                           Fase 3 · Evaluación RULA
+    Fotos de la postura. El archivo vive en una carpeta del servidor; aquí se guardan sus datos y su ruta. Requisitos: RF-016, RNF-006
+#        Columna                            Tipo                               Nulo     Llave                                   Defecto   Descripción                                               Req.
+1        id_foto                            INT                                No       PK                                                Identificador de la foto.                                 RF-016
+                                                                                        AUTO_INCREMENT
+2        id_evaluacion                      INT                                No       FK                                                Evaluación a la que pertenece.                            RF-016
+                                                                                        → evaluacion.id_evaluacion
+3        nombre_archivo                     VARCHAR(120)                       No                                                         Nombre único del archivo en el servidor.                  RF-016
+4        ruta                               VARCHAR(255)                       No                                                         Ruta de la carpeta del servidor donde está la foto.       RF-016
+5        tamano_kb                          INT                                No                                                         Tamaño en KB (máximo 5 MB = 5120 KB).                     RF-016
+6        vista                              ENUM                               No                                                         Vista en que se tomó la foto.                             RF-016
+                                            FRENTE · PERFIL · OTRA
+
+7        descripcion                        VARCHAR(200)                       No                                                         Descripción de máximo 200 caracteres.                     RF-016
+    Reglas CHECK: tamano_kb BETWEEN 1 AND 5120 (RF-016)
+
+
+
+
+                                                                                          Diccionario de datos v6 · página 11 de 16
+    analisis_rula                                                                                                                                                                           Fase 3 · Evaluación RULA
+    Análisis RULA de una foto: lado, ajustes, actividad, carga y puntajes. Cada análisis es nuevo; nada se reemplaza. Requisitos: RF-017, RF-018, RF-019, RF-020, RF-021
+#       Columna                                 Tipo                                 Nulo      Llave                                  Defecto   Descripción                                           Req.
+1       id_analisis                             INT                                  No        PK                                               Identificador del análisis.                           RF-021
+                                                                                               AUTO_INCREMENT
+2       id_foto                                 INT                                  No        FK                                               Foto analizada.                                       RF-021
+                                                                                               → fotografia.id_foto
+3       id_nivel                                INT                                  No        FK                                               Nivel de riesgo que le corresponde al puntaje         RF-020
+                                                                                               → nivel_riesgo.id_nivel                          final.
+4       fecha_hora                              DATETIME                             No                                                         Fecha y hora del análisis.                            RNF-005
+5       lado                                    ENUM                                 No                                                         Lado del cuerpo evaluado.                             RF-017, RF-021
+                                                DERECHO · IZQUIERDO
+
+6       hombro_elevado                          BOOLEAN                              No                                                         Ajuste +1: hombro elevado.                            RF-017, RF-018
+7       brazo_separado                          BOOLEAN                              No                                                         Ajuste +1: brazo separado del cuerpo.                 RF-018
+8       brazo_apoyado                           BOOLEAN                              No                                                         Ajuste −1: brazo apoyado.                             RF-018
+9       antebrazo_cruza_linea_media             BOOLEAN                              No                                                         Ajuste +1: antebrazo cruza la línea media o va        RF-018
+                                                                                                                                                hacia afuera.
+10      muneca_desviada                         BOOLEAN                              No                                                         Ajuste +1: muñeca desviada.                           RF-018
+11      giro_muneca                             ENUM                                 No                                                         Giro de la muñeca (para la Tabla A).                  RF-017, RF-018
+                                                MEDIO · EXTREMO
+
+12      cuello_girado                           BOOLEAN                              No                                                         Ajuste +1: cuello girado.                             RF-017, RF-018
+13      cuello_inclinado                        BOOLEAN                              No                                                         Ajuste +1: cuello inclinado lateralmente.             RF-018
+14      tronco_girado                           BOOLEAN                              No                                                         Ajuste +1: tronco girado.                             RF-018
+15      tronco_inclinado                        BOOLEAN                              No                                                         Ajuste +1: tronco inclinado lateralmente.             RF-018
+16      piernas_apoyadas                        BOOLEAN                              No                                                         Piernas y pies bien apoyados (para la Tabla B).       RF-017, RF-018
+17      postura_estatica_o_repetitiva           BOOLEAN                              No                                                         Postura estática (más de 1 minuto) o repetitiva       RF-019
+                                                                                                                                                (más de 4 veces por minuto): +1.
+18      carga                                   ENUM                                 No                                                         Carga o fuerza (suma de 0 a 3 puntos).                RF-019
+                                                MENOS_2KG_INTERMITENTE ·
+                                                DE_2_A_10KG_INTERMITENTE ·
+                                                DE_2_A_10KG_ESTATICA_O_REPETITIVA
+                                                · MAS_10KG_INTERMITENTE ·
+                                                MAS_10KG_ESTATICA_O_REPETITIVA ·
+                                                GOLPES_O_FUERZAS_BRUSCAS
+
+19      puntaje_a                               TINYINT                              No                                                         Puntaje del Grupo A con actividad y carga.            RF-018, RF-019
+20      puntaje_b                               TINYINT                              No                                                         Puntaje del Grupo B con actividad y carga.            RF-018, RF-019
+21      puntaje_final                           TINYINT                              No                                                         Puntaje final de 1 a 7 (Tabla C).                     RF-018
+    Reglas CHECK: puntaje_final BETWEEN 1 AND 7 (RF-018)
+
+
+                                                                                          Diccionario de datos v6 · página 12 de 16
+    medicion_angulo                                                                                                                                                                  Fase 3 · Evaluación RULA
+    Ángulo medido de cada segmento del cuerpo dentro de un análisis. Requisitos: RF-017, RF-018
+#       Columna                            Tipo                              Nulo    Llave                                   Defecto   Descripción                                              Req.
+1       id_medicion                        INT                               No      PK                                                Identificador de la medición.                            RF-017
+                                                                                     AUTO_INCREMENT
+2       id_analisis                        INT                               No      FK U1                                             Análisis al que pertenece.                               RF-017
+                                                                                     → analisis_rula.id_analisis
+3       segmento                           ENUM                              No      U1                                                Parte del cuerpo medida; una medición por segmento       RF-017
+                                           BRAZO · ANTEBRAZO · MUNECA ·                                                                en cada análisis.
+                                           CUELLO · TRONCO
+
+4       puntos_marcados                    VARCHAR(100)                      No                                                        Coordenadas de los 3 puntos marcados sobre la foto.      RF-017
+5       angulo_grados                      DECIMAL(5,2)                      No                                                        Ángulo calculado en grados.                              RF-017
+6       puntos                             TINYINT                           No                                                        Puntos RULA del segmento según su ángulo.                RF-018, RF-021
+7       corregido_a_mano                   BOOLEAN                           No                                              FALSE     Verdadero si el ángulo se escribió a mano.               RF-017
+
+
+    regla_sugerencia                                                                                                                                                         Fase 4 · Seguimiento e informes
+    Reglas que usa el sistema para proponer sugerencias según el segmento, el puntaje y las condiciones. Requisitos: RF-023a
+#       Columna                            Tipo                              Nulo    Llave                                   Defecto   Descripción                                              Req.
+1       id_regla                           INT                               No      PK                                                Identificador de la regla.                               RF-023a
+                                                                                     AUTO_INCREMENT
+2       segmento                           ENUM                              No                                                        Segmento al que aplica la regla.                         RF-023a
+                                           BRAZO · ANTEBRAZO · MUNECA ·
+                                           CUELLO · TRONCO
+
+3       puntaje_minimo                     TINYINT                           No                                                        Puntos mínimos del segmento para que la regla            RF-023a
+                                                                                                                                       aplique.
+4       condicion                          VARCHAR(120)                      No                                                        Condición del puesto que activa la regla (por ejemplo,   RF-023a
+                                                                                                                                       pies_colgando).
+5       texto_sugerido                     VARCHAR(255)                      No                                                        Texto de la sugerencia que propone el sistema.           RF-023a
+
+
+
+
+                                                                                       Diccionario de datos v6 · página 13 de 16
+    sugerencia                                                                                                                                                                    Fase 4 · Seguimiento e informes
+    Sugerencias de mejora de una evaluación, propuestas por el sistema o escritas por el Administrador. Requisitos: RF-023a, RF-023b
+#       Columna                            Tipo                              Nulo    Llave                                   Defecto     Descripción                                               Req.
+1       id_sugerencia                      INT                               No      PK                                                  Identificador de la sugerencia.                           RF-023b
+                                                                                     AUTO_INCREMENT
+2       id_evaluacion                      INT                               No      FK                                                  Evaluación a la que pertenece.                            RF-023b
+                                                                                     → evaluacion.id_evaluacion
+3       id_regla                           INT                               Sí      FK                                                  Regla que la originó; vacío si la escribió el             RF-023a
+                                                                                     → regla_sugerencia.id_regla                         Administrador.
+4       titulo                             VARCHAR(120)                      No                                                          Título de la sugerencia.                                  RF-023b
+5       descripcion                        TEXT                              No                                                          Descripción de la mejora.                                 RF-023b
+6       tipo                               ENUM                              No                                                          Tipo de sugerencia.                                       RF-023b
+                                           MOBILIARIO · POSTURA ·
+                                           DESCANSOS · CARGA · OTRA
+
+7       prioridad                          ENUM                              No                                                          Prioridad.                                                RF-023b
+                                           ALTA · MEDIA · BAJA
+
+8       estado                             ENUM                              No                                              PENDIENTE   Estado de la sugerencia.                                  RF-023b
+                                           PENDIENTE · EN_PROCESO · HECHA
+
+9       fecha_limite                       DATE                              Sí                                                          Fecha límite opcional.                                    RF-023b
+10      origen                             ENUM                              No                                                          Quién la propuso.                                         RF-023a, RF-
+                                           SISTEMA · ADMINISTRADOR                                                                                                                                 023b
+11      activo                             BOOLEAN                           No                                              TRUE        Falso si el Administrador la quitó.                       RF-023b
+
+
+
+
+                                                                                       Diccionario de datos v6 · página 14 de 16
+    pendiente_arreglo                                                                                                                                                       Fase 4 · Seguimiento e informes
+    Puestos cuyo análisis quedó en Rojo y deben arreglarse. Requisitos: RF-022
+#       Columna                            Tipo                              Nulo   Llave                                   Defecto   Descripción                                             Req.
+1       id_pendiente                       INT                               No     PK                                                Identificador del pendiente.                            RF-022
+                                                                                    AUTO_INCREMENT
+2       id_evaluacion                      INT                               No     FK UQ                                             Evaluación que lo generó (el puesto se obtiene por      RF-022
+                                                                                    → evaluacion.id_evaluacion                        ella). Un pendiente por evaluación.
+3       descripcion                        VARCHAR(255)                      Sí                                                       Qué hay que arreglar; se escribe después.               RF-022
+4       prioridad                          ENUM                              Sí                                                       Prioridad; se escribe después.                          RF-022
+                                           ALTA · MEDIA · BAJA
+
+5       fecha_limite                       DATE                              Sí                                                       Fecha límite; se escribe después.                       RF-022
+6       puntaje                            TINYINT                           No                                                       Puntaje con el que quedó en Rojo.                       RF-022
+7       fecha_registro                     DATE                              No                                                       Fecha en que entró a pendientes.                        RF-022
+8       estado                             ENUM                              No                                             ABIERTO   Estado del pendiente.                                   RF-022
+                                           ABIERTO · ARREGLADO
+
+    Reglas CHECK: puntaje BETWEEN 5 AND 7 (RF-022)
+
+
+    informe_empresa                                                                                                                                                         Fase 4 · Seguimiento e informes
+    Informes PDF generados para una empresa. Requisitos: RF-025, RF-026
+#       Columna                            Tipo                              Nulo   Llave                                   Defecto   Descripción                                             Req.
+1       id_informe                         INT                               No     PK                                                Identificador del informe.                              RF-026
+                                                                                    AUTO_INCREMENT
+2       id_empresa                         INT                               No     FK                                                Empresa del informe.                                    RF-026
+                                                                                    → empresa.id_empresa
+3       fecha_generacion                   DATETIME                          No                                                       Fecha y hora en que se generó.                          RF-026
+4       ruta                               VARCHAR(255)                      No                                                       Ruta del PDF en el servidor.                            RF-026
+5       calificacion_general               DECIMAL(3,1)                      Sí                                                       Calificación general entre sedes; vacía si la empresa   RF-025
+                                                                                                                                      tiene una sola sede.
+
+
+
+
+                                                                                      Diccionario de datos v6 · página 15 de 16
+ Reglas que valida la aplicación (no caben en la base de datos)
+Req.        Regla
+RF-011      La fecha de la reserva es hoy o posterior.
+RF-012      Las transiciones de estado de la reserva siguen el diagrama de Estados (ESPERANDO → EN_COLA → FINALIZADA, o CANCELADA).
+RF-013a     La visita solo se inicia desde una reserva EN_COLA.
+RF-013b     La visita solo se finaliza si tiene al menos una evaluación guardada.
+RF-014      La evaluación solo se crea dentro de una visita EN_CURSO.
+RF-016      Máximo 10 fotos por evaluación; solo JPG o PNG.
+RF-001a     5 intentos fallidos seguidos bloquean el ingreso 15 minutos (bloqueado_hasta).
+RF-003      No se puede desactivar al último Administrador activo.
+RF-010      Empresa con nombre igual sin contar sufijos (S.A.S., Ltda., S.A.): el sistema avisa.
+RF-023b     Nivel Amarillo o Rojo: debe quedar al menos una sugerencia.
+RNF-004     Contraseña de mínimo 8 caracteres con al menos una letra y un número; consultas parametrizadas.
+
+                               Proyecto Nuclear 6.0 · Matriz de requisitos v6 · Fase de Diseño · Diccionario de datos v6 · Mismo origen que Script_MySQL_RULA_v6.sql
+
+
+
+
+                                                                                    Diccionario de datos v6 · página 16 de 16
+

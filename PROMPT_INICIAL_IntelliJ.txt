@@ -1,0 +1,6 @@
+Hola Claude. Vamos a programar APLOMO., el software real de mi Proyecto Nuclear.
+
+1. Lee completos CLAUDE.md y docs/00_LEEME.md, y después todos los archivos de docs/ (02 a 07). No escribas código todavía.
+2. Respóndeme en español sencillo, en máximo 10 líneas: qué entendiste del proyecto, los 2 roles, las tecnologías permitidas y qué harás en el Paso 0.
+3. Si algo de los documentos no está claro o se contradice, dímelo antes de empezar.
+4. Cuando yo diga "OK", haz SOLO el Paso 0 de docs/06_plan_de_implementacion.md. Al terminar: compila, explícame qué hiciste, dime cómo probarlo y espera mi OK antes del Paso 1.
