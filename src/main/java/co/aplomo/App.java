@@ -83,12 +83,6 @@ public class App {
                                     <circle class="jt" cx="1012" cy="770" r="5"/>
                                 </svg>
                             </div>
-                            <!-- Tarjeta de puntaje flotante -->
-                            <div class="pz-card">
-                                <div class="k">PUNTAJE RULA</div>
-                                <div class="n">4</div>
-                                <div class="nv"><i></i> Amarillo &middot; Nivel 2</div>
-                            </div>
                             <!-- Logo y lema sobre la foto -->
                             <div class="in">
                                 <span class="lockup" style="font-size:64px;color:#EDE6D8" aria-label="APLOMO.">

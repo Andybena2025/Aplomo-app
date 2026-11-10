@@ -132,12 +132,7 @@ tr.click:hover td{background:var(--card2)}
 .pz-svg .lv{font:400 21px var(--serif,Georgia,serif);fill:#EDE6D8}
 @keyframes pzDraw{to{stroke-dashoffset:0}}
 @keyframes pzFade{to{opacity:1}}
-.pz-card{position:absolute;z-index:2;top:32px;left:32px;background:rgba(11,11,12,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(237,230,216,.18);border-radius:14px;padding:14px 18px;min-width:190px;opacity:0;animation:pzFade .8s 2s forwards}
-.pz-card .k{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#9E998F}
-.pz-card .n{font-family:var(--serif,Georgia,serif);font-size:40px;line-height:1.1;color:#EDE6D8}
-.pz-card .nv{display:flex;align-items:center;gap:8px;font-size:13px;color:#C9CCD2}
-.pz-card .nv i{width:9px;height:9px;border-radius:50%;background:#FFCC00;display:inline-block}
-@media (max-width:820px){.pz-card{display:none}.pz-svg .lb{display:none}}
+@media (max-width:820px){.pz-svg .lb{display:none}}
 
 /* ====== Logo ====== */
 .lockup{display:inline-flex;align-items:flex-end;font-family:var(--serif);color:var(--ivory);line-height:1;letter-spacing:.07em;white-space:nowrap}
