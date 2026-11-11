@@ -40,9 +40,11 @@ Proyecto Nuclear de Ingenieria de Software, 3.er semestre, Corporacion Universit
 
 ## Estado de implementación y pruebas
 
-Fase 2 completa: conexión JDBC, lectura de tablas y niveles desde MySQL, medición de ángulos y motor RULA. Corresponde al paso 1 del plan. El ingreso sigue deshabilitado hasta la fase 3.
+Fase 2 completa: conexión JDBC, lectura de tablas y niveles desde MySQL, medición de ángulos y motor RULA. Corresponde al paso 1 del plan. El acceso de la fase 3 (paso 2) ya está disponible: ingreso, salida, cambio de contraseña, bloqueo e inactividad.
 
 Con MySQL y la conexión configurados, ejecutar `mvn test`: 389 pruebas, incluidas las 272 combinaciones de tablas y los 10 casos manuales. Instrucciones y desglose: [Pruebas de la fase 2](docs/pruebas_fase_2.md).
+
+Las instrucciones de acceso y sus pruebas están en [Pruebas de la fase 3](docs/pruebas_fase_3.md).
 
 ## Prototipo (referencia visual)
 

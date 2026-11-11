@@ -224,3 +224,10 @@ tr.click:hover td{background:var(--card2)}
   .top,.nav,.who,.btn,.wizfoot,#toast{display:none!important}
   .sheet{box-shadow:none;border:none;padding:24px}
 }
+
+/* RF-001a a RF-003: formularios y avisos neutros; colores de riesgo reservados al semáforo. */
+.aviso{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;border:1px solid var(--line2);background:var(--card2);padding:14px 16px;border-radius:10px;overflow-wrap:anywhere}
+.cuenta-form{max-width:680px;width:100%}
+.top .lockup{font-size:28px;text-decoration:none}
+.top .who{margin-left:auto;overflow-wrap:anywhere}
+@media(max-width:600px){.grid2{grid-template-columns:minmax(0,1fr)}.top .who{margin-left:0;width:100%}}

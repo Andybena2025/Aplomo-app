@@ -1,0 +1,132 @@
+package co.aplomo.web;
+
+import co.aplomo.soporte.BasePrueba;
+import co.aplomo.seguridad.Sesiones;
+import co.aplomo.modelo.Cuenta.Estado;
+import com.sun.net.httpserver.HttpServer;
+import org.junit.jupiter.api.*;
+import java.net.*;
+import java.net.http.*;
+import java.time.Duration;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.regex.Pattern;
+import static org.junit.jupiter.api.Assertions.*;
+
+/** HTTP real con cookies y MySQL; todo dato de prueba se revierte al terminar. */
+class HttpSeguridadTest extends BasePrueba {
+    private HttpServer servidor;
+    private HttpClient cliente;
+    private String raiz;
+
+    @BeforeEach void abrirServidor() throws Exception {
+        servidor=HttpServer.create(new InetSocketAddress("localhost",0),0);
+        servidor.createContext("/",new Router(auth,new Sesiones(reloj)));
+        servidor.start(); raiz="http://localhost:"+servidor.getAddress().getPort();
+        cliente=HttpClient.newBuilder().cookieHandler(new CookieManager(null,CookiePolicy.ACCEPT_ALL)).build();
+    }
+    @AfterEach void cerrarServidor() { if(servidor!=null) servidor.stop(0); }
+
+    private HttpResponse<String> get(String ruta) throws Exception {
+        return cliente.send(HttpRequest.newBuilder(URI.create(raiz+ruta)).GET().build(),HttpResponse.BodyHandlers.ofString());
+    }
+    private HttpResponse<String> post(String ruta, Map<String,String> datos) throws Exception {
+        String cuerpo=datos.entrySet().stream().map(e->URLEncoder.encode(e.getKey(),StandardCharsets.UTF_8)+"="
+                +URLEncoder.encode(e.getValue(),StandardCharsets.UTF_8)).collect(java.util.stream.Collectors.joining("&"));
+        return cliente.send(HttpRequest.newBuilder(URI.create(raiz+ruta)).header("Content-Type","application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(cuerpo)).build(),HttpResponse.BodyHandlers.ofString());
+    }
+    private String csrf(HttpResponse<String> r) {
+        var m=Pattern.compile("name=\"csrf\" value=\"([^\"]+)\"").matcher(r.body());
+        assertTrue(m.find()); return m.group(1);
+    }
+    private HttpResponse<String> entrar(int id) throws Exception {
+        var ingreso=get("/login");
+        return post("/login",Map.of("csrf",csrf(ingreso),"correo",cuenta(id).correo(),"clave",clave));
+    }
+
+    @Test void anonimoNoEntraYElLoginConservaElEstilo() throws Exception {
+        assertEquals("/login",get("/").headers().firstValue("Location").orElseThrow());
+        assertEquals(303,get("/usuarios").statusCode());
+        assertEquals(303,get("/cuenta/contrasena").statusCode());
+        var login=get("/login"); assertEquals(200,login.statusCode());
+        assertTrue(login.body().contains("pz-svg")); assertTrue(login.body().contains("name=\"correo\""));
+        assertFalse(login.body().contains(" disabled"));
+        String cookie=login.headers().firstValue("Set-Cookie").orElseThrow();
+        assertTrue(cookie.contains("HttpOnly")); assertTrue(cookie.contains("SameSite=Strict"));
+        assertEquals(200,get("/static/css/aplomo.css").statusCode());
+        assertEquals(404,get("/static/../plantillas/login.html").statusCode());
+    }
+
+    @Test void csrfProtegeIngresoYSalidaYSalirInvalidaLaSesion() throws Exception {
+        assertEquals(403,post("/login",Map.of("correo",cuenta(admin).correo(),"clave",clave)).statusCode());
+        assertEquals(303,entrar(admin).statusCode());
+        var inicio=get("/"); assertEquals(200,inicio.statusCode());
+        assertEquals(403,post("/logout",Map.of("csrf","invalido")).statusCode());
+        assertEquals(200,get("/").statusCode());
+        assertEquals(303,post("/logout",Map.of("csrf",csrf(inicio))).statusCode());
+        assertEquals(303,get("/").statusCode());
+    }
+
+    @Test void errorDeIngresoEsGenericoYEscapado() throws Exception {
+        var login=get("/login");
+        var incorrecto=post("/login",Map.of("csrf",csrf(login),"correo",cuenta(admin).correo(),"clave","Mal2026"));
+        var inexistente=post("/login",Map.of("csrf",csrf(login),"correo","<script>@prueba.invalid","clave","Mal2026"));
+        assertEquals(401,incorrecto.statusCode()); assertEquals(401,inexistente.statusCode());
+        assertTrue(incorrecto.body().contains("Correo o contraseña incorrectos"));
+        assertTrue(inexistente.body().contains("Correo o contraseña incorrectos"));
+        assertTrue(inexistente.body().contains("&lt;script&gt;@prueba.invalid"));
+        assertFalse(inexistente.body().contains("<script>@prueba.invalid"));
+        assertFalse(inexistente.body().contains("Mal2026"));
+    }
+
+    @Test void temporalNoAbreOtrasRutasYCambiaSoloConDatosValidos() throws Exception {
+        assertEquals("/cuenta/contrasena",entrar(usuario).headers().firstValue("Location").orElseThrow());
+        assertEquals("/cuenta/contrasena",get("/").headers().firstValue("Location").orElseThrow());
+        assertEquals("/cuenta/contrasena",get("/usuarios").headers().firstValue("Location").orElseThrow());
+        var cambio=get("/cuenta/contrasena");
+        assertTrue(cambio.body().contains("Tu contraseña es temporal"));
+        assertEquals(400,post("/cuenta/contrasena",Map.of("csrf",csrf(cambio),"actual","Mal2026","nueva","Nueva2026","confirmacion","Nueva2026")).statusCode());
+        var respuesta=post("/cuenta/contrasena",Map.of("csrf",csrf(cambio),"actual",clave,"nueva","Nueva2026","confirmacion","Nueva2026"));
+        assertEquals(303,respuesta.statusCode()); assertFalse(cuenta(usuario).temporal());
+        var inicio=get("/"); assertEquals(200,inicio.statusCode());
+        assertFalse(inicio.body().contains("href=\"/usuarios\""));
+        assertTrue(inicio.body().contains("&lt;script&gt;sin ejecutar&lt;/script&gt;"));
+    }
+
+    @Test void usuarioNoPuedeAdministrarAunqueEscribaLaDireccion() throws Exception {
+        dao.contrasena(con,usuario,cuenta(usuario).hash(),false);
+        entrar(usuario); var inicio=get("/");
+        assertEquals(403,get("/usuarios").statusCode());
+        assertEquals(403,post("/usuarios",Map.of("csrf",csrf(inicio),"nombre","Ataque")).statusCode());
+        assertEquals(403,get("/fotos/1").statusCode());
+        assertFalse(inicio.body().contains("href=\"/usuarios\""));
+    }
+
+    @Test void administradorAccedeYUnaCookieViejaNoSobreviveAlIngreso() throws Exception {
+        var login=get("/login"); String antigua=login.headers().firstValue("Set-Cookie").orElseThrow().split(";",2)[0];
+        var ingreso=post("/login",Map.of("csrf",csrf(login),"correo",cuenta(admin).correo(),"clave",clave));
+        assertNotEquals(antigua,ingreso.headers().firstValue("Set-Cookie").orElseThrow().split(";",2)[0]);
+        assertEquals(200,get("/usuarios").statusCode());
+        var viejo=HttpClient.newHttpClient().send(HttpRequest.newBuilder(URI.create(raiz+"/"))
+                .header("Cookie",antigua).GET().build(),HttpResponse.BodyHandlers.ofString());
+        assertEquals(303,viejo.statusCode());
+    }
+
+    @Test void expiraTrasInactividadYUnaCuentaDesactivadaPierdeAcceso() throws Exception {
+        entrar(admin); reloj.avanzar(Duration.ofMinutes(29)); assertEquals(200,get("/").statusCode());
+        reloj.avanzar(Duration.ofMinutes(30)); assertEquals(303,get("/").statusCode());
+        assertTrue(get("/login?inactividad=1").body().contains("por inactividad"));
+        entrar(admin); dao.acceso(con,admin,0,null,Estado.INACTIVA);
+        assertEquals(303,get("/").statusCode());
+    }
+
+    @Test void rechazaParametrosDuplicadosYCuerpoExcesivo() throws Exception {
+        get("/login");
+        for(String cuerpo:List.of("csrf=a&csrf=b","correo="+"a".repeat(16400))) {
+            var r=cliente.send(HttpRequest.newBuilder(URI.create(raiz+"/login"))
+                    .header("Content-Type","application/x-www-form-urlencoded").POST(HttpRequest.BodyPublishers.ofString(cuerpo)).build(),HttpResponse.BodyHandlers.ofString());
+            assertEquals(400,r.statusCode());
+        }
+    }
+}
