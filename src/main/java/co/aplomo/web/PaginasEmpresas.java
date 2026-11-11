@@ -44,15 +44,18 @@ public final class PaginasEmpresas {
                 .append(dato("Contacto", empresa.contacto())).append("</dl>")
                 .append(acciones(sesion, ruta, empresa.activo())).append("</section>");
         html.append(seccion("Sedes", admin(sesion) && empresa.activo() ? ruta + "/sedes/nuevo" : null, "Nueva sede"));
+        html.append(enlace("/sedes?empresa="+empresa.id(),"Consultar sedes",false));
         for (Sede sede : sedes) {
             html.append(tarjeta(sede.nombre(), sede.ciudad() + " · " + sede.direccion(), sede.activo(),
                     enlace("/sedes/" + sede.id(), "Ver sede", false)));
         }
         html.append(finSeccion(sedes.isEmpty(), "No hay sedes registradas."));
         html.append(seccion("Áreas", admin(sesion) && empresa.activo() ? ruta + "/areas/nuevo" : null, "Nueva área"));
+        html.append(enlace("/areas?empresa="+empresa.id(),"Consultar áreas",false));
         for (Area area : areas) html.append(tarjeta(area.nombre(), "", area.activo(), acciones(sesion, "/areas/" + area.id(), area.activo())));
         html.append(finSeccion(areas.isEmpty(), "No hay áreas registradas."));
         html.append(seccion("Cargos", admin(sesion) && empresa.activo() ? ruta + "/cargos/nuevo" : null, "Nuevo cargo"));
+        html.append(enlace("/cargos?empresa="+empresa.id(),"Consultar cargos",false));
         for (Cargo cargo : cargos) html.append(tarjeta(cargo.nombre(), etiqueta(cargo.tipo()), cargo.activo(), acciones(sesion, "/cargos/" + cargo.id(), cargo.activo())));
         html.append(finSeccion(cargos.isEmpty(), "No hay cargos registrados."));
         return Html.pagina(empresa.nombre(), html.toString(), sesion);
@@ -69,6 +72,7 @@ public final class PaginasEmpresas {
                 .append(dato("Descripción", sede.descripcion())).append("</dl>")
                 .append(acciones(sesion, ruta, sede.activo())).append("</section>")
                 .append(seccion("Salones", admin(sesion) && sede.activo() && empresa.activo() ? ruta + "/salones/nuevo" : null, "Nuevo salón"));
+        html.append(enlace("/salones?empresa="+empresa.id()+"&sede="+sede.id(),"Consultar salones",false));
         for (Salon salon : salones) html.append(tarjeta(salon.nombre(), "Piso " + salon.piso() + " · Capacidad " + salon.capacidad(),
                 salon.activo(), enlace("/salones/" + salon.id(), "Ver salón", false)));
         html.append(finSeccion(salones.isEmpty(), "No hay salones registrados."));
@@ -85,6 +89,7 @@ public final class PaginasEmpresas {
                 .append(dato("Capacidad", Integer.toString(salon.capacidad()))).append("</dl>")
                 .append(acciones(sesion, ruta, salon.activo())).append("</section>")
                 .append(seccion("Puestos", admin(sesion) && salon.activo() && sede.activo() && empresa.activo() ? ruta + "/puestos/nuevo" : null, "Nuevo puesto"));
+        html.append(enlace("/puestos?empresa="+empresa.id()+"&sede="+sede.id()+"&salon="+salon.id(),"Consultar puestos",false));
         for (Puesto puesto : puestos) {
             String detalle = puesto.descripcion() + " · " + etiqueta(puesto.tipo()) + " · " + puesto.ubicacion()
                     + (puesto.puntaje() == null ? " · Sin evaluar" : "");

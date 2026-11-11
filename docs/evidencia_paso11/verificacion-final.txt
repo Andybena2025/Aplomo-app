@@ -1,0 +1,23 @@
+Paso 11 · verificación final · 11 nov 2026 · America/Bogota
+Proyecto: Aplomo-app (IntelliJ)
+mvn compile test: BUILD SUCCESS
+Pruebas: 686; fallos: 0; errores: 0; omitidas: 0.
+Desglose nuevo: ConsultasTest 30; HttpConsultasTest 33; anteriores 623.
+Base comprobada en Surefire: rula_ergonomia_pruebas.
+QA visual: dos sesiones en rula_ergonomia_pruebas; ambos ROLLBACK confirmados.
+rula_ergonomia: 0 empresas con ese nombre
+rula_ergonomia_pruebas: 0 empresas con ese nombre
+git diff --check: correcto.
+Sin cambios en las clases RULA, pom.xml, config o SQL del esquema.
+Archivos privados ignorados y no versionados: config/db.properties y fotos/.
+60 mediciones: once listas y Sugerencias por evaluación, cinco tamaños.
+75 capturas, solo datos ficticios.
+Sin desbordamiento del documento, menú o contenedor de tabla.
+Barra en una fila a 810/1080/1366/1920 px; dos filas a 390 px.
+Controles móviles medidos: al menos 44 px; selectores de orden 148,5 x 44 px.
+Consola de los recorridos válidos revisada: sin errores ni advertencias.
+Usuario: dirección ajena, visita/evaluación roja/pendiente/sugerencia En curso denegados.
+Usuario: sus cuatro estados de reservas y motivo de cancelación visibles, solo consulta.
+Usuario: Verde final previo conservado; puesto solo En curso sin resultado.
+No se realizó prueba física con dedo ni compatibilidad completa Chrome/Edge/Firefox.
+No se empezó el Paso 12, 13 ni 14. Esperar OK.

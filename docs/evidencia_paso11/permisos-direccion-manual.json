@@ -1,0 +1,27 @@
+[
+  {
+    "nombre": "otra-empresa",
+    "ruta": "/empresas/5612",
+    "denegado": true
+  },
+  {
+    "nombre": "visita-en-curso",
+    "ruta": "/visitas/2688",
+    "denegado": true
+  },
+  {
+    "nombre": "evaluacion-roja-en-curso",
+    "ruta": "/evaluaciones/2262",
+    "denegado": true
+  },
+  {
+    "nombre": "pendiente-en-curso",
+    "ruta": "/pendientes/869",
+    "denegado": true
+  },
+  {
+    "nombre": "sugerencia-en-curso",
+    "ruta": "/sugerencias/5403",
+    "denegado": true
+  }
+]

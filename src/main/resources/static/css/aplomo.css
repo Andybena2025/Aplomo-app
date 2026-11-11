@@ -338,3 +338,10 @@ section.stack+section.stack{margin-top:28px}
 
 /* Lista de una evaluación: el puesto ya está en la tarjeta superior. */
 .acciones-sugerencias{margin-block:16px}
+
+/* RF-024: filtros, ordenación y tablas con los componentes del mock. */
+.consultas-secciones{margin-bottom:18px}.consultas-secciones .row{padding:12px}.consultas-filtros{margin-block:18px}.consultas-orden{align-items:flex-end}.consultas-orden .field{min-width:150px}.consultas-contador{margin-block:16px}.consultas-table td{vertical-align:top}.consultas-table .btn{white-space:normal;overflow-wrap:normal}.consultas-table .pill{white-space:normal}.orden-columna{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:4px}.orden-columna:hover{text-decoration:underline}.filtros-extra summary,.consultas-secciones summary{min-height:44px;cursor:pointer}.filtros-extra .grid3{margin-top:14px}.kpi-enlace{text-decoration:none;color:inherit;display:block}.kpi-enlace .card{height:100%}
+@media(max-width:1080px){.orden-columna{min-height:44px}}
+@media(max-width:720px){.consultas-orden .field{flex:1;min-width:0}.consultas-table .cell-value{overflow-wrap:anywhere}.consultas-filtros{padding:16px}}
+
+@media(max-width:720px){.consultas-orden{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:end}.consultas-orden .field{width:100%;min-width:0}.consultas-orden .btn{width:100%;justify-content:center}}

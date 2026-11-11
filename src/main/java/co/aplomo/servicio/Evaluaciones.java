@@ -132,6 +132,9 @@ public final class Evaluaciones {
     /** RF-023a/b: comparte reglas, permisos y auditoría con las rutas de sugerencias. */
     public Sugerencias sugerencias(){return new Sugerencias(tx,reloj,bitacora);}
 
+    /** RF-024: consultas de solo lectura que comparten la transacción autorizada. */
+    public Consultas consultas(){return new Consultas(tx);}
+
     /** Cuenta evaluaciones y puestos rojos visibles para las tarjetas de Inicio (RF-024). */
     public long[] resumen(Cuenta actor) throws SQLException {
         return tx.ejecutar(c->{

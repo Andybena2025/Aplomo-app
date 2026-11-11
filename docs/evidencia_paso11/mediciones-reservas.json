@@ -1,0 +1,527 @@
+[
+  {
+    "seccion": "reservas",
+    "ancho": 390,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver otras secciones"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Áreas"
+      },
+      {
+        "alto": 44,
+        "texto": "Cargos"
+      },
+      {
+        "alto": 44,
+        "texto": "Sedes"
+      },
+      {
+        "alto": 44,
+        "texto": "Salones"
+      },
+      {
+        "alto": 44,
+        "texto": "Puestos"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Evaluaciones"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes de arreglo"
+      },
+      {
+        "alto": 44,
+        "texto": "Sugerencias"
+      },
+      {
+        "alto": 44,
+        "texto": "Más filtros"
+      },
+      {
+        "alto": 44,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 44,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 44,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver reserva"
+      }
+    ],
+    "documento": 375,
+    "filasMenu": 2,
+    "menu": 343,
+    "tablas": [
+      {
+        "total": 343,
+        "visible": 343
+      }
+    ],
+    "ventana": 390,
+    "visible": 343
+  },
+  {
+    "seccion": "reservas",
+    "ancho": 810,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver otras secciones"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Áreas"
+      },
+      {
+        "alto": 44,
+        "texto": "Cargos"
+      },
+      {
+        "alto": 44,
+        "texto": "Sedes"
+      },
+      {
+        "alto": 44,
+        "texto": "Salones"
+      },
+      {
+        "alto": 44,
+        "texto": "Puestos"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Evaluaciones"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes de arreglo"
+      },
+      {
+        "alto": 44,
+        "texto": "Sugerencias"
+      },
+      {
+        "alto": 44,
+        "texto": "Más filtros"
+      },
+      {
+        "alto": 44,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 44,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 44,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      }
+    ],
+    "documento": 795,
+    "filasMenu": 1,
+    "menu": 478,
+    "tablas": [
+      {
+        "total": 761,
+        "visible": 761
+      }
+    ],
+    "ventana": 810,
+    "visible": 478
+  },
+  {
+    "seccion": "reservas",
+    "ancho": 1080,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver otras secciones"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Áreas"
+      },
+      {
+        "alto": 44,
+        "texto": "Cargos"
+      },
+      {
+        "alto": 44,
+        "texto": "Sedes"
+      },
+      {
+        "alto": 44,
+        "texto": "Salones"
+      },
+      {
+        "alto": 44,
+        "texto": "Puestos"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Evaluaciones"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes de arreglo"
+      },
+      {
+        "alto": 44,
+        "texto": "Sugerencias"
+      },
+      {
+        "alto": 44,
+        "texto": "Más filtros"
+      },
+      {
+        "alto": 44,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 44,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 44,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      }
+    ],
+    "documento": 1065,
+    "filasMenu": 1,
+    "menu": 748,
+    "tablas": [
+      {
+        "total": 1031,
+        "visible": 1031
+      }
+    ],
+    "ventana": 1080,
+    "visible": 748
+  },
+  {
+    "seccion": "reservas",
+    "ancho": 1366,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver otras secciones"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Áreas"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Cargos"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Sedes"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salones"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Puestos"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Evaluaciones"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Pendientes de arreglo"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Sugerencias"
+      },
+      {
+        "alto": 44,
+        "texto": "Más filtros"
+      },
+      {
+        "alto": 43,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 43,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      }
+    ],
+    "documento": 1351,
+    "filasMenu": 1,
+    "menu": 603,
+    "tablas": [
+      {
+        "total": 1046,
+        "visible": 1046
+      }
+    ],
+    "ventana": 1366,
+    "visible": 603
+  },
+  {
+    "seccion": "reservas",
+    "ancho": 1920,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver otras secciones"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Áreas"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Cargos"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Sedes"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salones"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Puestos"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Evaluaciones"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Pendientes de arreglo"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Sugerencias"
+      },
+      {
+        "alto": 44,
+        "texto": "Más filtros"
+      },
+      {
+        "alto": 43,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 43,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 53,
+        "texto": "Ver reserva"
+      }
+    ],
+    "documento": 1905,
+    "filasMenu": 1,
+    "menu": 603,
+    "tablas": [
+      {
+        "total": 1046,
+        "visible": 1046
+      }
+    ],
+    "ventana": 1920,
+    "visible": 603
+  }
+]

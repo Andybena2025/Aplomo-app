@@ -48,6 +48,7 @@ public final class PaginasVisitas {
                 .append(enlace("/reservas/" + ficha.visita().reserva(), "Ver " + ficha.codigoReserva(), false)).append("</section>")
                 .append("<section class=\"stack\"><div class=\"row between\"><h2>Evaluaciones</h2><span class=\"muted\">")
                 .append(Html.plural(evaluaciones.size(), "registrada")).append("</span></div>");
+        html.append(enlace("/evaluaciones?visita="+ficha.visita().id(),"Consultar evaluaciones",false));
         if (evaluaciones.isEmpty()) html.append("<p class=\"muted\">Todavía no hay evaluaciones registradas en esta visita.</p>");
         else {
             html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Puesto</th><th>Fecha</th><th>Postura</th><th>Puntaje</th></tr></thead><tbody>");

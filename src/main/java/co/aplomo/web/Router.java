@@ -24,6 +24,7 @@ public final class Router implements HttpHandler {
     private final EvaluacionesWeb evaluaciones;
     private final PendientesWeb pendientes;
     private final SugerenciasWeb sugerencias;
+    private final ConsultasWeb consultas;
 
     /** Construye las rutas con servicios reales (RNF-011). */
     public Router() { this(new Autenticacion(),new Sesiones()); }
@@ -60,6 +61,7 @@ public final class Router implements HttpHandler {
         this.evaluaciones=new EvaluacionesWeb(evaluaciones);
         this.pendientes=new PendientesWeb(evaluaciones.pendientes());
         this.sugerencias=new SugerenciasWeb(evaluaciones.sugerencias());
+        this.consultas=new ConsultasWeb(evaluaciones.consultas(),evaluaciones.sugerencias());
     }
 
     /** Revisa la sesión antes de atender cualquier ruta interna (RF-002). */
@@ -119,6 +121,7 @@ public final class Router implements HttpHandler {
             if (vencida) ponerCookie(x,"");
             redirigir(x,vencida ? "/login?inactividad=1" : "/login"); return;
         }
+        if(consultas.atender(x,s))return;
         if (ruta.startsWith("/evaluaciones") || ruta.startsWith("/fotos/")) {
             Permisos.administrador(s.cuenta());
             if (s.cuenta().temporal()) { redirigir(x,"/cuenta/contrasena"); return; }
@@ -179,7 +182,7 @@ public final class Router implements HttpHandler {
             inicio.append("<div class=\"grid4\" style=\"margin-bottom:24px\">")
                     .append(kpi("Visitas en curso", String.valueOf(enCurso), null))
                     .append(kpi("Reservas en cola", String.valueOf(enCola), null))
-                    .append(kpi("Evaluaciones", String.valueOf(resumen[0]), null))
+                    .append("<a class=\"kpi-enlace\" href=\"/evaluaciones\">").append(kpi("Evaluaciones", String.valueOf(resumen[0]), null)).append("</a>")
                     .append(kpi("Puestos en rojo", String.valueOf(resumen[1]), "color:var(--rojo)"))
                     .append("</div>");
             // Visitas en curso y reservas recientes como en el mock
