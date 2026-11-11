@@ -1,0 +1,18 @@
+Paso 9 · verificación final · 11 nov 2026 · America/Bogota
+Repositorio: Aplomo-app · main
+mvn compile test: BUILD SUCCESS
+Pruebas: 598; fallos: 0; errores: 0; omitidas: 0
+Base de pruebas: rula_ergonomia_pruebas
+QA visual temporal: ROLLBACK confirmado; fotos temporales propias retiradas.
+rula_ergonomia: 0 empresas con ese nombre
+rula_ergonomia_pruebas: 0 empresas con ese nombre
+Evaluaciones rojas anteriores sin pendiente en la base real: 0
+git diff --check: correcto
+node --check pendientes.js: correcto
+Sin cambios en pom.xml, config, esquema SQL ni clases del motor RULA.
+Excluidos de Git: config/db.properties, fotos/
+No hay config/db.properties ni fotos/ versionados.
+15 observaciones: lista, detalle y editar × 390/810/1080/1366/1920 px; sin desbordamiento lateral.
+Consola de acciones válidas: 0 errores y 0 advertencias.
+Permisos por URL: Usuario no edita; otra empresa denegada.
+Pendiente: prueba física con dedo y compatibilidad completa Chrome/Edge/Firefox (Paso 13).

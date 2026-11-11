@@ -1,0 +1,867 @@
+[
+  {
+    "pantalla": "lista",
+    "ancho": 390,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Aplicar"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      }
+    ],
+    "documento": 375,
+    "navegacion": {
+      "total": 343,
+      "visible": 343
+    }
+  },
+  {
+    "pantalla": "lista",
+    "ancho": 810,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Aplicar"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      }
+    ],
+    "documento": 810,
+    "navegacion": {
+      "total": 443,
+      "visible": 443
+    }
+  },
+  {
+    "pantalla": "lista",
+    "ancho": 1080,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Aplicar"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver pendiente"
+      }
+    ],
+    "documento": 1080,
+    "navegacion": {
+      "total": 589,
+      "visible": 589
+    }
+  },
+  {
+    "pantalla": "lista",
+    "ancho": 1366,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 37,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 37,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 37,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 37,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 37,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 37,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 43,
+        "texto": "Aplicar"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver pendiente"
+      }
+    ],
+    "documento": 1351,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  },
+  {
+    "pantalla": "lista",
+    "ancho": 1920,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 37,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 37,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 37,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 37,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 37,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 37,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 43,
+        "texto": "Aplicar"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver pendiente"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver pendiente"
+      }
+    ],
+    "documento": 1920,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  },
+  {
+    "pantalla": "detalle",
+    "ancho": 390,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver visita"
+      },
+      {
+        "alto": 44,
+        "texto": "Editar seguimiento"
+      },
+      {
+        "alto": 44,
+        "texto": "Marcar como arreglado"
+      }
+    ],
+    "documento": 375,
+    "navegacion": {
+      "total": 343,
+      "visible": 343
+    }
+  },
+  {
+    "pantalla": "detalle",
+    "ancho": 810,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver visita"
+      },
+      {
+        "alto": 44,
+        "texto": "Editar seguimiento"
+      },
+      {
+        "alto": 44,
+        "texto": "Marcar como arreglado"
+      }
+    ],
+    "documento": 795,
+    "navegacion": {
+      "total": 428,
+      "visible": 428
+    }
+  },
+  {
+    "pantalla": "detalle",
+    "ancho": 1080,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver visita"
+      },
+      {
+        "alto": 44,
+        "texto": "Editar seguimiento"
+      },
+      {
+        "alto": 44,
+        "texto": "Marcar como arreglado"
+      }
+    ],
+    "documento": 1065,
+    "navegacion": {
+      "total": 574,
+      "visible": 574
+    }
+  },
+  {
+    "pantalla": "detalle",
+    "ancho": 1366,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 37,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 37,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 37,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 37,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 37,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 37,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 33.5,
+        "texto": "← Pendientes"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver visita"
+      },
+      {
+        "alto": 43,
+        "texto": "Editar seguimiento"
+      },
+      {
+        "alto": 43,
+        "texto": "Marcar como arreglado"
+      }
+    ],
+    "documento": 1351,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  },
+  {
+    "pantalla": "detalle",
+    "ancho": 1920,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 37,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 37,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 37,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 37,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 37,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 37,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 33.5,
+        "texto": "← Pendientes"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver visita"
+      },
+      {
+        "alto": 43,
+        "texto": "Editar seguimiento"
+      },
+      {
+        "alto": 43,
+        "texto": "Marcar como arreglado"
+      }
+    ],
+    "documento": 1905,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  },
+  {
+    "pantalla": "editar",
+    "ancho": 390,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Volver al pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Guardar seguimiento"
+      }
+    ],
+    "documento": 375,
+    "navegacion": {
+      "total": 343,
+      "visible": 343
+    }
+  },
+  {
+    "pantalla": "editar",
+    "ancho": 810,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Volver al pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Guardar seguimiento"
+      }
+    ],
+    "documento": 810,
+    "navegacion": {
+      "total": 443,
+      "visible": 443
+    }
+  },
+  {
+    "pantalla": "editar",
+    "ancho": 1080,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Volver al pendiente"
+      },
+      {
+        "alto": 44,
+        "texto": "Guardar seguimiento"
+      }
+    ],
+    "documento": 1080,
+    "navegacion": {
+      "total": 589,
+      "visible": 589
+    }
+  },
+  {
+    "pantalla": "editar",
+    "ancho": 1366,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 37,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 37,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 37,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 37,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 37,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 37,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 33.5,
+        "texto": "← Volver al pendiente"
+      },
+      {
+        "alto": 43,
+        "texto": "Guardar seguimiento"
+      }
+    ],
+    "documento": 1366,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  },
+  {
+    "pantalla": "editar",
+    "ancho": 1920,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 37,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 37,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 37,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 37,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 37,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 37,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 33.5,
+        "texto": "← Volver al pendiente"
+      },
+      {
+        "alto": 43,
+        "texto": "Guardar seguimiento"
+      }
+    ],
+    "documento": 1920,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  }
+]

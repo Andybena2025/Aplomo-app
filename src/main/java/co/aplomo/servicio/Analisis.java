@@ -33,6 +33,7 @@ public final class Analisis {
         tablas.cargar(c);var calculo=new MotorRula(tablas).calcular(real);
         int id=dao.guardar(c,foto,LocalDateTime.now(reloj),calculo);
         bitacora.registrar(c,actor.id(),LocalDateTime.now(reloj),"analisis_rula",id,"CREAR",null,null,"Análisis nuevo · "+real.lado()+" · Foto "+foto);
+        if(calculo.resultado().nivel().color().equals("ROJO"))new Pendientes(tx,reloj,bitacora).registrarRojo(c,actor,f.evaluacion());
         return id;
     }
     /** Añade análisis a fotos ya guardadas; verifica relación, visita abierta y conserva todo el historial. */

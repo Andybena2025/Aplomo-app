@@ -42,9 +42,9 @@ Proyecto Nuclear de Ingenieria de Software, 3.er semestre, Corporacion Universit
 
 Fase 2 completa: conexión JDBC, lectura de tablas y niveles desde MySQL, medición de ángulos y motor RULA. Corresponde al paso 1 del plan. La fase 3 (pasos 2 y 3) está completa: ingreso, salida, contraseñas, bloqueo, inactividad, permisos y administración de cuentas.
 
-La fase 4 (pasos 4, 5 y 6) está completa: empresas y su estructura, reservas con estados y bitácora, e inicio y finalización de visitas. El Paso 7 de la fase 5 está implementado: puesto y postura, seis condiciones, consentimiento y fotos privadas. El Paso 8 está implementado: asistente completo con puntos, ángulos, ajustes, resultados y análisis independientes por foto. Espera la aprobación de Andy antes del Paso 9. Una visita nueva no se puede cerrar sin evaluaciones.
+La fase 4 (pasos 4, 5 y 6) está completa: empresas y su estructura, reservas con estados y bitácora, e inicio y finalización de visitas. El Paso 7 de la fase 5 está implementado: puesto y postura, seis condiciones, consentimiento y fotos privadas. El Paso 8 está implementado: asistente completo con puntos, ángulos, ajustes, resultados y análisis independientes por foto. El Paso 9 está implementado: pendientes automáticos al guardar un Rojo, seguimiento, estado Arreglado y consulta por empresa. Espera la aprobación de Andy antes del Paso 10. Una visita nueva no se puede cerrar sin evaluaciones.
 
-Con MySQL y la conexión configurados, ejecutar `mvn test`: **573 pruebas aprobadas**, sin fallos, errores ni omisiones, incluidas las 389 de la fase 2 (272 combinaciones de tablas y 10 casos manuales). Instrucciones y desglose: [Pruebas de la fase 2](docs/pruebas_fase_2.md).
+Con MySQL y la conexión configurados, ejecutar `mvn test`: **598 pruebas aprobadas**, sin fallos, errores ni omisiones, incluidas las 389 de la fase 2 (272 combinaciones de tablas y 10 casos manuales). Instrucciones y desglose: [Pruebas de la fase 2](docs/pruebas_fase_2.md).
 
 Las instrucciones de acceso y sus pruebas están en [Pruebas de la fase 3](docs/pruebas_fase_3.md).
 
@@ -53,6 +53,8 @@ El recorrido de empresas, reservas y visitas está en [Pruebas de la fase 4](doc
 El informe del Paso 7, las comprobaciones de permisos y las capturas por tamaño están en [Informe del Paso 7](docs/informe_paso7.md). Las pruebas y la revisión visual utilizan únicamente `rula_ergonomia_pruebas`.
 
 El [Informe del Paso 8](docs/informe_paso8.md) contiene la tabla de requisitos, los diez casos en pantalla, pruebas de permisos y capturas a cinco tamaños. El puntaje guardado lo calcula el servidor con las tablas de MySQL y NEUTRO = 5°.
+
+El [Informe del Paso 9](docs/informe_paso9.md) contiene requisitos, permisos, decisión de máximo por evaluación, pruebas y capturas de lista, detalle y edición en cinco tamaños. Los pendientes anteriores y su estado Arreglado se conservan.
 
 ## Prototipo (referencia visual)
 

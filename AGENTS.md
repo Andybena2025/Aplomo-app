@@ -18,10 +18,10 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 
 ## Estado (actualízalo al terminar cada paso)
 
-- Hechos y aprobados: Pasos 0 a 7, QA visual y QA de dispositivos. Andy aprobó el Paso 7 en el chat antes de iniciar el Paso 8.
-- Paso 8 implementado y verificado: asistente completo, medición y corrección manual, cálculo RULA en el servidor, historial por foto, semáforo y cuatro tarjetas de Inicio. Informe y límites de comprobación: `docs/informe_paso8.md`. Pendiente del OK de Andy.
-- Siguiente autorizable: Paso 9 (pendientes), únicamente después del OK de Andy.
-- Después: Pasos 10 a 13. El Paso 14 (IA) solo si Andy lo pide.
+- Hechos y aprobados: Pasos 0 a 8, QA visual y QA de dispositivos. Andy aprobó el Paso 8 antes de autorizar el Paso 9.
+- Paso 9 implementado y verificado: pendientes automáticos por evaluación roja, seguimiento editable, cierre Arreglado, historial, filtros y consulta por empresa. Informe y límites: `docs/informe_paso9.md`. Pendiente del OK de Andy.
+- Siguiente autorizable: Paso 10 (sugerencias), únicamente después del OK de Andy.
+- Después: Pasos 11 a 13. El Paso 14 (IA) solo si Andy lo pide.
 
 ## Reglas que no se negocian
 
@@ -43,6 +43,7 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 - **Consentimiento (RF-016, aclarado por Andy en el chat):** sin aceptación, `persona_acepto=false` y `registro_fotografico=SIN_REGISTRO_FOTOGRAFICO`; el servidor rechaza cualquier foto. No se pide motivo de ausencia de fotos. `evaluacion.motivo` es solo la elección de la postura. Con aceptación: `persona_acepto=true`, `CON_FOTOS` y 1–10 JPG/PNG de hasta 5 MB, cada una con vista y descripción de máximo 200 caracteres. Sin cambios de esquema.
 - **Tarjetas de Inicio** (a partir del Paso 8): Visitas en curso, Reservas en cola, Evaluaciones y Puestos en rojo (número en rojo).
 - **Tolerancia de 5°** del mock (ver regla 4). Andy NO aprobó quitarla.
+- **Pendientes (Paso 9):** un pendiente por evaluación. Andy eligió conservar el máximo de los análisis rojos de esa evaluación y mantener descripción, prioridad, fecha límite, fecha de registro y estado, incluso Arreglado. Otra evaluación roja genera otro pendiente sin borrar el anterior.
 - **Detección automática con IA** (MediaPipe) = Paso 14, solo si Andy lo pide.
 
 ## Al terminar CADA paso entrega este informe (obligatorio)

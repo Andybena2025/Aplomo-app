@@ -126,6 +126,9 @@ public final class Evaluaciones {
     /** Comparte el servicio de análisis para vista previa y nuevos análisis de fotos existentes. */
     public Analisis analisis() { return analisis; }
 
+    /** Comparte seguimiento, transacciones y reloj con las rutas del Paso 9. */
+    public Pendientes pendientes(){return new Pendientes(tx,reloj,bitacora);}
+
     /** Cuenta evaluaciones y puestos rojos visibles para las tarjetas de Inicio (RF-024). */
     public long[] resumen(Cuenta actor) throws SQLException {
         return tx.ejecutar(c->{

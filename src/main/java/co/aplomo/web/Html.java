@@ -108,8 +108,8 @@ public final class Html {
             String rolTexto = c.rol() == Rol.ADMINISTRADOR ? "Administrador" : "Usuario";
             // Pestañas de texto con la activa resaltada, como en el mock
             String[][] tabs = c.rol() == Rol.ADMINISTRADOR
-                    ? new String[][]{{"Inicio","/"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Usuarios","/usuarios"}}
-                    : new String[][]{{"Inicio","/"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}};
+                    ? new String[][]{{"Inicio","/"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Pendientes","/pendientes"}, {"Usuarios","/usuarios"}}
+                    : new String[][]{{"Inicio","/"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Pendientes","/pendientes"}};
             StringBuilder nav = new StringBuilder();
             if (!c.temporal()) {
                 for (String[] tab : tabs) {
