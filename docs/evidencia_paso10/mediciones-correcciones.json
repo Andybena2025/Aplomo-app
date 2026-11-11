@@ -1,0 +1,47 @@
+[
+  {
+    "pantalla": "correcciones-pendientes",
+    "ancho": 390,
+    "documento": 375,
+    "filas": 2,
+    "menu": 343,
+    "ventana": 390,
+    "visible": 343
+  },
+  {
+    "pantalla": "correcciones-pendientes",
+    "ancho": 810,
+    "documento": 795,
+    "filas": 1,
+    "menu": 478,
+    "ventana": 810,
+    "visible": 478
+  },
+  {
+    "pantalla": "correcciones-pendientes",
+    "ancho": 1080,
+    "documento": 1080,
+    "filas": 1,
+    "menu": 763,
+    "ventana": 1080,
+    "visible": 763
+  },
+  {
+    "pantalla": "correcciones-pendientes",
+    "ancho": 1366,
+    "documento": 1366,
+    "filas": 1,
+    "menu": 603,
+    "ventana": 1366,
+    "visible": 603
+  },
+  {
+    "pantalla": "correcciones-pendientes",
+    "ancho": 1920,
+    "documento": 1920,
+    "filas": 1,
+    "menu": 603,
+    "ventana": 1920,
+    "visible": 603
+  }
+]

@@ -12,13 +12,13 @@ public final class PuestoDao {
 
     /** Consulta una fila con filtro de empresa y bloqueo opcional para las modificaciones. */
     public Puesto buscar(Connection con, int id, int empresaPermitida, boolean bloquear) throws SQLException {
-        String consulta = "SELECT r.* FROM puesto_trabajo r JOIN salon l ON l.id_salon = r.id_salon JOIN sede s ON s.id_sede = l.id_sede WHERE r.id_puesto = ? AND (? = 0 OR s.id_empresa = ?)" + (bloquear ? " FOR UPDATE" : "");
+        String consulta = "SELECT r.*,n.color,n.nivel_oficial_rula FROM puesto_trabajo r LEFT JOIN nivel_riesgo n ON r.ultimo_puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo JOIN salon l ON l.id_salon = r.id_salon JOIN sede s ON s.id_sede = l.id_sede WHERE r.id_puesto = ? AND (? = 0 OR s.id_empresa = ?)" + (bloquear ? " FOR UPDATE" : "");
         return Sql.uno(con, consulta, PuestoDao::leer, id, empresaPermitida, empresaPermitida);
     }
 
     /** Lista el catálogo de un padre y limita los resultados a la empresa autorizada (RF-002). */
     public List<Puesto> buscarTodos(Connection con, int padre, int empresaPermitida) throws SQLException {
-        return Sql.listar(con, "SELECT r.* FROM puesto_trabajo r JOIN salon l ON l.id_salon = r.id_salon JOIN sede s ON s.id_sede = l.id_sede WHERE r.id_salon = ? AND (? = 0 OR s.id_empresa = ?) ORDER BY r.numero, r.id_puesto",
+        return Sql.listar(con, "SELECT r.*,n.color,n.nivel_oficial_rula FROM puesto_trabajo r LEFT JOIN nivel_riesgo n ON r.ultimo_puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo JOIN salon l ON l.id_salon = r.id_salon JOIN sede s ON s.id_sede = l.id_sede WHERE r.id_salon = ? AND (? = 0 OR s.id_empresa = ?) ORDER BY r.numero, r.id_puesto",
                 PuestoDao::leer, padre, empresaPermitida, empresaPermitida);
     }
 
@@ -49,6 +49,6 @@ public final class PuestoDao {
                 fila.getString("tipo"),
                 fila.getString("ubicacion"),
                 Sql.enteroOpcional(fila, "ultimo_puntaje"),
-                fila.getBoolean("activo"));
+                fila.getBoolean("activo"),fila.getString("color"),fila.getInt("nivel_oficial_rula"));
     }
 }

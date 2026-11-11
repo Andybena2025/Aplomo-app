@@ -87,8 +87,8 @@ public final class PaginasEmpresas {
                 .append(seccion("Puestos", admin(sesion) && salon.activo() && sede.activo() && empresa.activo() ? ruta + "/puestos/nuevo" : null, "Nuevo puesto"));
         for (Puesto puesto : puestos) {
             String detalle = puesto.descripcion() + " · " + etiqueta(puesto.tipo()) + " · " + puesto.ubicacion()
-                    + (puesto.puntaje() == null ? " · Sin evaluar" : " · Último puntaje " + puesto.puntaje());
-            html.append(tarjeta("Puesto " + puesto.numero(), detalle, puesto.activo(), acciones(sesion, "/puestos/" + puesto.id(), puesto.activo())));
+                    + (puesto.puntaje() == null ? " · Sin evaluar" : "");
+            html.append(tarjeta("Puesto " + puesto.numero(), detalle, puesto.activo(), (puesto.puntaje()==null?"":Html.riesgo(puesto.puntaje(),puesto.color(),puesto.nivel()))+acciones(sesion, "/puestos/" + puesto.id(), puesto.activo())));
         }
         html.append(finSeccion(puestos.isEmpty(), "No hay puestos registrados."));
         return Html.pagina(salon.nombre(), html.toString(), sesion);

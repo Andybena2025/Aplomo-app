@@ -6,9 +6,9 @@ import java.sql.*;import java.time.*;import java.util.*;
 
 /** RF-022: pendientes e historial consultables por empresa y estado de visita, sin fotos. */
 public final class PendienteDao {
-    private static final String CONTEXTO="SELECT p.*,e.id_puesto,e.id_visita,pt.numero,s.id_empresa,em.nombre empresa_nombre,s.nombre sede_nombre,l.nombre salon_nombre,v.estado visita_estado FROM pendiente_arreglo p JOIN evaluacion e ON e.id_evaluacion=p.id_evaluacion JOIN puesto_trabajo pt ON pt.id_puesto=e.id_puesto JOIN visita v ON v.id_visita=e.id_visita JOIN salon l ON l.id_salon=pt.id_salon JOIN sede s ON s.id_sede=l.id_sede JOIN empresa em ON em.id_empresa=s.id_empresa";
+    private static final String CONTEXTO="SELECT n.color,n.nivel_oficial_rula,p.*,e.id_puesto,e.id_visita,pt.numero,s.id_empresa,em.nombre empresa_nombre,s.nombre sede_nombre,l.nombre salon_nombre,v.estado visita_estado FROM pendiente_arreglo p JOIN evaluacion e ON e.id_evaluacion=p.id_evaluacion JOIN puesto_trabajo pt ON pt.id_puesto=e.id_puesto JOIN visita v ON v.id_visita=e.id_visita JOIN salon l ON l.id_salon=pt.id_salon JOIN sede s ON s.id_sede=l.id_sede JOIN empresa em ON em.id_empresa=s.id_empresa JOIN nivel_riesgo n ON p.puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo";
     /** Contexto visible sin rutas, imágenes ni datos de otras empresas. */
-    public record Ficha(PendienteArreglo pendiente,int puesto,int numero,int visita,int empresa,String empresaNombre,String sedeNombre,String salonNombre) {}
+    public record Ficha(PendienteArreglo pendiente,int puesto,int numero,int visita,int empresa,String empresaNombre,String sedeNombre,String salonNombre,String color,int nivel) {}
     /** Acción histórica con autor y hora de Colombia. */
     public record Cambio(LocalDateTime fecha,String responsable,String accion,String anterior,String nuevo,String detalle) {}
     /** Crea el acceso parametrizado a pendientes. */
@@ -22,7 +22,7 @@ public final class PendienteDao {
     public Ficha buscar(Connection c,int id,int empresa,boolean finalizadas,boolean bloquear)throws SQLException{
         PendienteArreglo actual=bloquear?Sql.uno(c,"SELECT * FROM pendiente_arreglo WHERE id_pendiente=? FOR UPDATE",PendienteDao::leer,id):null;
         var f=Sql.uno(c,CONTEXTO+" WHERE p.id_pendiente=? AND (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA')",PendienteDao::ficha,id,empresa,empresa,finalizadas);
-        return f==null?null:actual==null?f:new Ficha(actual,f.puesto(),f.numero(),f.visita(),f.empresa(),f.empresaNombre(),f.sedeNombre(),f.salonNombre());
+        return f==null?null:actual==null?f:new Ficha(actual,f.puesto(),f.numero(),f.visita(),f.empresa(),f.empresaNombre(),f.sedeNombre(),f.salonNombre(),f.color(),f.nivel());
     }
     /** Consulta la única fila de una evaluación dentro de la transacción del análisis. */
     public PendienteArreglo porEvaluacion(Connection c,int evaluacion)throws SQLException{
@@ -45,5 +45,5 @@ public final class PendienteDao {
         return Sql.listar(c,"SELECT b.*,q.nombre responsable FROM bitacora b JOIN cuenta q USING(id_cuenta) WHERE b.tabla='pendiente_arreglo' AND b.id_registro=? ORDER BY b.id_bitacora DESC",r->new Cambio(r.getTimestamp("fecha_hora").toLocalDateTime(),r.getString("responsable"),r.getString("accion"),r.getString("estado_anterior"),r.getString("estado_nuevo"),r.getString("detalle")),id);
     }
     private static PendienteArreglo leer(ResultSet r)throws SQLException{var fecha=r.getDate("fecha_limite");return new PendienteArreglo(r.getInt("id_pendiente"),r.getInt("id_evaluacion"),r.getString("descripcion"),r.getString("prioridad"),fecha==null?null:fecha.toLocalDate(),r.getInt("puntaje"),r.getDate("fecha_registro").toLocalDate(),r.getString("estado"));}
-    private static Ficha ficha(ResultSet r)throws SQLException{return new Ficha(leer(r),r.getInt("id_puesto"),r.getInt("numero"),r.getInt("id_visita"),r.getInt("id_empresa"),r.getString("empresa_nombre"),r.getString("sede_nombre"),r.getString("salon_nombre"));}
+    private static Ficha ficha(ResultSet r)throws SQLException{return new Ficha(leer(r),r.getInt("id_puesto"),r.getInt("numero"),r.getInt("id_visita"),r.getInt("id_empresa"),r.getString("empresa_nombre"),r.getString("sede_nombre"),r.getString("salon_nombre"),r.getString("color"),r.getInt("nivel_oficial_rula"));}
 }

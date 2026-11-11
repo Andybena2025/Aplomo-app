@@ -55,7 +55,7 @@ public final class PaginasVisitas {
                 html.append("<tr><td data-label=\"Puesto\"><div class=\"cell-value\">Puesto ").append(evaluacion.numero()).append("</div></td><td data-label=\"Fecha\"><div class=\"cell-value\">")
                         .append(Html.fecha(evaluacion.fecha())).append("</div></td><td data-label=\"Postura\"><div class=\"cell-value\">")
                         .append(escapar(evaluacion.postura())).append(admin(sesion) ? "<br>" + enlace("/evaluaciones/" + evaluacion.id(), "Ver evaluación", false) : "").append("</div></td><td data-label=\"Puntaje\"><div class=\"cell-value\">")
-                        .append(evaluacion.puntaje() == null ? "Sin puntaje disponible" : evaluacion.puntaje()).append("</div></td></tr>");
+                        .append(evaluacion.puntaje() == null ? "Sin puntaje disponible" : Html.riesgo(evaluacion.puntaje(),evaluacion.color(),evaluacion.nivel())).append("</div></td></tr>");
             }
             html.append("</tbody></table></div>");
         }

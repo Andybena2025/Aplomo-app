@@ -19,7 +19,7 @@ public final class VisitaDao {
                         String empresaNombre, String sedeNombre, String salonNombre) {}
 
     /** Resumen consultable de una evaluación; no contiene rutas de fotografías. */
-    public record Evaluacion(int id, int puesto, int numero, LocalDate fecha, String postura, Integer puntaje) {}
+    public record Evaluacion(int id, int puesto, int numero, LocalDate fecha, String postura, Integer puntaje,String color,int nivel) {}
 
     /** Datos de cálculo de la calificación; los nulos representan fotos o análisis aún inexistentes. */
     public record Resultado(int evaluacion, int puesto, Integer foto, Integer analisis, Integer puntaje) {}
@@ -52,14 +52,14 @@ public final class VisitaDao {
 
     /** Lee las evaluaciones y el máximo de sus análisis guardados, incluyendo ambos lados del cuerpo. */
     public List<Evaluacion> evaluaciones(Connection con, int visita, boolean bloquear) throws SQLException {
-        String consulta = "SELECT e.id_evaluacion, e.id_puesto, p.numero, e.fecha, e.postura, "
+        String consulta = "SELECT e.id_evaluacion, e.id_puesto, p.numero, e.fecha, e.postura, (SELECT n.color FROM nivel_riesgo n WHERE (SELECT MAX(a.puntaje_final) FROM fotografia f JOIN analisis_rula a USING(id_foto) WHERE f.id_evaluacion=e.id_evaluacion) BETWEEN n.puntaje_minimo AND n.puntaje_maximo) color, (SELECT n.nivel_oficial_rula FROM nivel_riesgo n WHERE (SELECT MAX(a.puntaje_final) FROM fotografia f JOIN analisis_rula a USING(id_foto) WHERE f.id_evaluacion=e.id_evaluacion) BETWEEN n.puntaje_minimo AND n.puntaje_maximo) nivel, "
                 + "(SELECT MAX(a.puntaje_final) FROM fotografia f JOIN analisis_rula a ON a.id_foto = f.id_foto "
                 + "WHERE f.id_evaluacion = e.id_evaluacion) AS puntaje "
                 + "FROM evaluacion e JOIN puesto_trabajo p ON p.id_puesto = e.id_puesto WHERE e.id_visita = ? "
                 + "ORDER BY e.id_evaluacion DESC" + (bloquear ? " FOR UPDATE" : "");
         return Sql.listar(con, consulta, fila -> new Evaluacion(fila.getInt("id_evaluacion"), fila.getInt("id_puesto"),
                 fila.getInt("numero"), fila.getDate("fecha").toLocalDate(), fila.getString("postura"),
-                Sql.enteroOpcional(fila, "puntaje")), visita);
+                Sql.enteroOpcional(fila, "puntaje"),fila.getString("color"),fila.getInt("nivel")), visita);
     }
 
     /** Obtiene y bloquea los resultados actuales al finalizar, incluidos registros sin análisis. */

@@ -143,6 +143,12 @@ public final class Html {
                 + "<main class=\"wrap\">" + pagehead + contenido + "</main></body></html>";
     }
 
+    /** RF-020: etiqueta completa con color y nivel leídos de MySQL, sin recalcular RULA. */
+    public static String riesgo(Integer puntaje,String color,int nivel) {
+        if(puntaje==null)return "<span class=\"tag\">Sin resultado</span>";
+        return "<span class=\"pill "+escapar(color)+"\">"+puntaje+" · "+escapar(Formularios.etiqueta(color))+" · Nivel "+nivel+"</span>";
+    }
+
     /** Iniciales del nombre para el avatar circular del mock (máximo 2 letras). */
     private static String iniciales(String nombre) {
         if (nombre == null || nombre.isBlank()) return "?";
