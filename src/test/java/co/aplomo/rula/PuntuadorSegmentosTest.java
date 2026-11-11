@@ -22,7 +22,7 @@ class PuntuadorSegmentosTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"0,1", "0.01,2", "2,2", "4.99,2", "5,2", "15,2", "15.01,3", "180,3"})
+    @CsvSource({"0,1", "0.01,1", "2,1", "4.99,1", "5,1", "5.01,2", "15,2", "15.01,3", "180,3"})
     void limitesMunecaEnAmbosSentidos(double g, int esperado) {
         assertEquals(esperado, PuntuadorSegmentos.muneca(g,false));
         assertEquals(esperado, PuntuadorSegmentos.muneca(-g,false));
@@ -35,7 +35,7 @@ class PuntuadorSegmentosTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"0,1", "0.01,2", "2,2", "4.99,2", "5,2", "20,2", "20.01,3", "60,3", "60.01,4", "180,4"})
+    @CsvSource({"0,1", "0.01,1", "2,1", "4.99,1", "5,1", "5.01,2", "20,2", "20.01,3", "60,3", "60.01,4", "180,4"})
     void limitesTroncoEnAmbosSentidos(double g, int esperado) {
         assertEquals(esperado, PuntuadorSegmentos.tronco(g,false,false,false));
         assertEquals(esperado, PuntuadorSegmentos.tronco(-g,false,false,false));

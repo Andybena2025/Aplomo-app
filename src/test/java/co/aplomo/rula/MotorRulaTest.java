@@ -25,7 +25,7 @@ class MotorRulaTest {
         var motor = new MotorRula(DatosPrueba.tablasMySQL());
         return Stream.of(
             new Caso("1. Documento: verde", new Angulos(1,85,9,10,2), SIN, false, Carga.MENOS_2KG_INTERMITENTE,
-                new Puntos(1,1,2,1,1,2,1),2,2,2,2,2,"VERDE",1),
+                new Puntos(1,1,2,1,1,1,1),2,1,2,1,2,"VERDE",1),
             new Caso("2. Documento: amarillo", EJEMPLO, SIN, false, Carga.MENOS_2KG_INTERMITENTE,
                 new Puntos(3,2,1,1,3,2,1),3,3,3,3,3,"AMARILLO",2),
             new Caso("3. Documento: hombro elevado y separado", EJEMPLO, HOMBRO, false, Carga.MENOS_2KG_INTERMITENTE,

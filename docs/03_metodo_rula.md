@@ -20,7 +20,7 @@ El Administrador marca puntos sobre la foto ampliada (de perfil, con el movimien
 - El sentido (flexión o extensión) sale del signo del producto cruz y de hacia dónde mira el trabajador (lado Derecho o Izquierdo).
 - El ángulo se puede **corregir moviendo los puntos o escribiéndolo a mano**. Si falta un dato o tiene un valor imposible, no se calcula.
 - Lo que la foto no muestra se marca con casillas: hombro elevado, cabeza o cuello girado, giro de muñeca, apoyo del brazo y piernas.
-- Referencia geométrica: `medirAngulos()` en `docs/referencia/mock_app/app.src.html`. **Decisión confirmada por Andy al implementar la fase 2:** usar los rangos exactos de la sección 2; solo 0° es neutro en muñeca y tronco. No aplicar la tolerancia de menos de 5° del mock. Se conservan decimales al medir.
+- Referencia funcionando: `medirAngulos()` en `docs/referencia/mock_app/app.src.html`. Se usa la tolerancia de 5° del mock (`const NEUTRO=5`): muñeca ≤5° = 1 punto; tronco ≤5° = 1 punto; cuello y tronco con 5° o menos hacia atrás cuentan como flexión, no extensión. Se conservan decimales al medir.
 - RULA se aplica al lado derecho y al izquierdo por separado; el campo `lado` del análisis guarda cuál.
 
 ## 2. Puntos por segmento (RF-018)

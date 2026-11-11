@@ -55,11 +55,11 @@ public final class PuntuadorSegmentos {
         return (grados >= 60 && grados <= 100 ? 1 : 2) + punto(cruza);
     }
 
-    /** Puntúa flexión o extensión de muñeca; solo 0° es neutro (RF-018). */
+    /** Puntúa flexión o extensión de muñeca; ≤5° es neutro como en el mock (RF-018). */
     public static int muneca(double grados, boolean desviada) {
         MedidorAngulos.validar(grados, -180, 180);
         double magnitud = Math.abs(grados);
-        return (magnitud == 0 ? 1 : magnitud <= 15 ? 2 : 3) + punto(desviada);
+        return (magnitud <= 5 ? 1 : magnitud <= 15 ? 2 : 3) + punto(desviada);
     }
 
     /** Puntúa cuello; cualquier extensión distinta de cero tiene base 4 (RF-018). */
@@ -69,11 +69,11 @@ public final class PuntuadorSegmentos {
                 + punto(girado) + punto(inclinado);
     }
 
-    /** Puntúa tronco por magnitud; neutral o sentado bien apoyado tiene base 1 (RF-018). */
+    /** Puntúa tronco por magnitud; ≤5° o sentado bien apoyado tiene base 1 como en el mock (RF-018). */
     public static int tronco(double grados, boolean girado, boolean inclinado, boolean sentadoBienApoyado) {
         MedidorAngulos.validar(grados, -180, 180);
         double magnitud = Math.abs(grados);
-        return (magnitud == 0 || sentadoBienApoyado ? 1 : magnitud <= 20 ? 2 : magnitud <= 60 ? 3 : 4)
+        return (magnitud <= 5 || sentadoBienApoyado ? 1 : magnitud <= 20 ? 2 : magnitud <= 60 ? 3 : 4)
                 + punto(girado) + punto(inclinado);
     }
 

@@ -55,16 +55,21 @@ public final class MedidorAngulos {
         return 180 - angulo(restar(codo, muneca), restar(nudillos, muneca));
     }
 
-    /** Mide cuello respecto al tronco y distingue extensión (RF-017). */
+    /** Tolerancia del mock: ≤5° hacia atrás se trata como flexión, no extensión (RF-017). */
+    private static final double NEUTRO = 5;
+
+    /** Mide cuello respecto al tronco; ≤5° hacia atrás es flexión como en el mock (RF-017). */
     public static double cuello(Punto cadera, Punto hombro, Punto coronilla, Lado lado) {
         Punto u = restar(hombro, cadera), v = restar(coronilla, hombro);
-        return conSentido(angulo(u, v), cruz(u, v) * direccion(lado) >= 0);
+        double grados = angulo(u, v);
+        return conSentido(grados, cruz(u, v) * direccion(lado) >= 0 || grados <= NEUTRO);
     }
 
-    /** Mide tronco respecto a la vertical ascendente (RF-017). */
+    /** Mide tronco respecto a la vertical; ≤5° hacia atrás es flexión como en el mock (RF-017). */
     public static double tronco(Punto cadera, Punto hombro, Lado lado) {
         Punto u = restar(hombro, cadera);
-        return conSentido(angulo(u, new Punto(0, -1)), u.x() * direccion(lado) >= 0);
+        double grados = angulo(u, new Punto(0, -1));
+        return conSentido(grados, u.x() * direccion(lado) >= 0 || grados <= NEUTRO);
     }
 
     private static int direccion(Lado lado) {
@@ -85,8 +90,7 @@ public final class MedidorAngulos {
         double coseno = (u.x() / nu) * (v.x() / nv) + (u.y() / nu) * (v.y() / nv);
         if (cruz(u, v) == 0) return coseno >= 0 ? 0 : 180;
         double grados = Math.toDegrees(Math.acos(Math.max(-1, Math.min(1, coseno))));
-        // RNF-010: elimina ruido como 20.00000000000001 sin redondear a grados enteros
-        // ni aplicar la tolerancia de 5° del mock. Los valores manuales no se redondean.
+        // RNF-010: elimina ruido como 20.00000000000001 sin redondear a grados enteros.
         return Math.rint(grados * 1e10) / 1e10;
     }
 
