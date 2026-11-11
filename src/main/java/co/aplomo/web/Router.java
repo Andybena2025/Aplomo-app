@@ -25,6 +25,7 @@ public final class Router implements HttpHandler {
     private final PendientesWeb pendientes;
     private final SugerenciasWeb sugerencias;
     private final ConsultasWeb consultas;
+    private final CalificacionesWeb calificaciones;
 
     /** Construye las rutas con servicios reales (RNF-011). */
     public Router() { this(new Autenticacion(),new Sesiones()); }
@@ -62,6 +63,7 @@ public final class Router implements HttpHandler {
         this.pendientes=new PendientesWeb(evaluaciones.pendientes());
         this.sugerencias=new SugerenciasWeb(evaluaciones.sugerencias());
         this.consultas=new ConsultasWeb(evaluaciones.consultas(),evaluaciones.sugerencias());
+        this.calificaciones=new CalificacionesWeb(evaluaciones.calificaciones());
     }
 
     /** Revisa la sesión antes de atender cualquier ruta interna (RF-002). */
@@ -143,6 +145,7 @@ public final class Router implements HttpHandler {
             sesiones.invalidarCuenta(cambiada.id()); s=sesiones.crear(cambiada); ponerCookie(x,s.id());
             redirigir(x,"/?contrasena=1"); return;
         }
+        if(calificaciones.atender(x,s))return;
         if(ruta.equals("/sugerencias")||ruta.startsWith("/sugerencias/")){sugerencias.atender(x,s,f);return;}
         if(ruta.equals("/pendientes")||ruta.startsWith("/pendientes/")){pendientes.atender(x,s,f);return;}
         if (ruta.equals("/usuarios") || ruta.startsWith("/usuarios/")) {

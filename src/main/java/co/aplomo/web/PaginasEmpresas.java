@@ -43,6 +43,9 @@ public final class PaginasEmpresas {
                 .append(dato("Teléfono", empresa.telefono())).append(dato("Correo", empresa.correo()))
                 .append(dato("Contacto", empresa.contacto())).append("</dl>")
                 .append(acciones(sesion, ruta, empresa.activo())).append("</section>");
+        html.append("<div class=\"row acciones-informe\">").append(enlace("/calificaciones?empresa="+empresa.id(),"Ver calificaciones",false));
+        if(admin(sesion))html.append(enlace("/informes/empresa/"+empresa.id(),"Generar informe",true));
+        html.append("</div>");
         html.append(seccion("Sedes", admin(sesion) && empresa.activo() ? ruta + "/sedes/nuevo" : null, "Nueva sede"));
         html.append(enlace("/sedes?empresa="+empresa.id(),"Consultar sedes",false));
         for (Sede sede : sedes) {

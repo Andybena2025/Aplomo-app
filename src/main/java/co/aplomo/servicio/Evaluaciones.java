@@ -135,6 +135,9 @@ public final class Evaluaciones {
     /** RF-024: consultas de solo lectura que comparten la transacción autorizada. */
     public Consultas consultas(){return new Consultas(tx);}
 
+    /** RF-025/026: comparte transacciones y fecha de generación con los indicadores y el informe. */
+    public Calificaciones calificaciones(){return new Calificaciones(tx,reloj);}
+
     /** Cuenta evaluaciones y puestos rojos visibles para las tarjetas de Inicio (RF-024). */
     public long[] resumen(Cuenta actor) throws SQLException {
         return tx.ejecutar(c->{

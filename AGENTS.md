@@ -18,12 +18,12 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 
 ## Estado (actualízalo al terminar cada paso)
 
-- Hechos y aprobados: Pasos 0 a 10, QA visual y QA de dispositivos. Andy aprobó el Paso 10 el 11 nov 2026.
+- Hechos y aprobados: Pasos 0 a 11, QA visual y QA de dispositivos. Andy aprobó el Paso 11 el 11 nov 2026.
 - Correcciones previas al Paso 10 comprobadas: etiquetas «puntaje · color · Nivel», navegación en una fila desde 810 px y encabezado Seguimiento en Pendientes. Commit `6dc93c2`.
 - Ajuste previo al Paso 11 comprobado: sin columna Puesto en Sugerencias de una evaluación, conservada en la lista general; espacio entre Escribir sugerencia y contador. Commit `759f5f4`.
-- Paso 11 implementado y verificado: once tablas con búsqueda, filtros y orden; permisos por empresa y resultados solo Finalizados; reservas propias en sus cuatro estados. Informe: `docs/informe_paso11.md`. Pendiente del OK de Andy.
-- Siguiente autorizable: Paso 12 (calificaciones e informe), únicamente después del OK de Andy.
-- Después: Paso 13. El Paso 14 (IA) solo si Andy lo pide.
+- Paso 11 implementado y verificado: once tablas con búsqueda, filtros y orden; permisos por empresa y resultados solo Finalizados; reservas propias en sus cuatro estados. Informe: `docs/informe_paso11.md`. Aprobado por Andy el 11 nov 2026.
+- Paso 12 implementado y verificado: calificaciones por sede, general con mínimo dos sedes calificadas, cobertura, informe imprimible y PDF nativo. Informe: `docs/informe_paso12.md`. Pendiente del OK de Andy.
+- Siguiente autorizable: Paso 13 (pulido y compatibilidad), únicamente después del OK de Andy. El Paso 14 (IA) solo si Andy lo pide.
 
 ## Reglas que no se negocian
 
@@ -50,6 +50,8 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 - **Sugerencias e historial (Andy, 11 nov 2026):** si no hay reglas para un Amarillo/Rojo, guardar el análisis y pedir que el Administrador agregue una; no permitir quitar la última activa. Al reanalizar una evaluación, añadir solo reglas nuevas, manteniendo las editadas, Hechas o quitadas. Cuando todas las activas del puesto estén Hechas, el Administrador registra una reserva de Reevaluación mediante el formulario de RF-011 (CU5-26).
 - **Correcciones visuales (Andy, 11 nov 2026):** riesgo siempre «puntaje · color · Nivel»; `.nav{flex-wrap:wrap;overflow-x:visible}` solo hasta 720 px. A 810, 1080, 1366 y 1920 px, una sola fila. Pendientes usa la etiqueta contextual Seguimiento.
 - **Consultas (respuesta de Andy, 11 nov 2026):** el Usuario consulta todas las reservas de su empresa (Esperando, En cola, Finalizadas y Canceladas con su motivo), sin controles de escritura. «Solo Finalizadas» aplica a resultados: visitas, evaluaciones, puntajes, pendientes y sugerencias En curso permanecen ocultos, también por dirección directa, incluso con análisis Rojo guardado. Las fotos siguen reservadas al Administrador.
+- **Calificación general (Andy, 11 nov 2026; propuesta):** promediar solo sedes con calificación y únicamente con al menos dos calificadas (`Calificaciones.MINIMO_SEDES_GENERAL`). Con cero o una, «Sin calificación general»; con una sola sede registrada, indicar que no hay general. Siempre mostrar cobertura y nombres de sedes faltantes, también en el informe.
+- **Estadísticas del informe (Andy, 11 nov 2026):** visitas y fotos analizadas de todas las visitas Finalizadas; cada puesto una sola vez, máximo de los análisis de su última evaluación Finalizada, nunca máximo histórico. Una Reevaluación Verde cuenta como Verde. Mantener los promedios históricos de visita. Pendientes por su propio estado, abiertos/arreglados separados; sugerencias activas por tipo y estado.
 - **Detección automática con IA** (MediaPipe) = Paso 14, solo si Andy lo pide.
 
 ## README e instalación (11 nov 2026)

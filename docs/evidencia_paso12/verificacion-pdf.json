@@ -1,0 +1,57 @@
+{
+  "archivo": "informe-general-qa.pdf",
+  "creador": "Safari",
+  "paginas": [
+    {
+      "pagina": 1,
+      "ancho": 595.2756,
+      "alto": 841.8898,
+      "palabras": 141,
+      "texto_fuera_de_pagina": 0
+    },
+    {
+      "pagina": 2,
+      "ancho": 595.2756,
+      "alto": 841.8898,
+      "palabras": 276,
+      "texto_fuera_de_pagina": 0
+    },
+    {
+      "pagina": 3,
+      "ancho": 595.2756,
+      "alto": 841.8898,
+      "palabras": 161,
+      "texto_fuera_de_pagina": 0
+    },
+    {
+      "pagina": 4,
+      "ancho": 595.2756,
+      "alto": 841.8898,
+      "palabras": 130,
+      "texto_fuera_de_pagina": 0
+    },
+    {
+      "pagina": 5,
+      "ancho": 595.2756,
+      "alto": 841.8898,
+      "palabras": 112,
+      "texto_fuera_de_pagina": 0
+    },
+    {
+      "pagina": 6,
+      "ancho": 595.2756,
+      "alto": 841.8898,
+      "palabras": 211,
+      "texto_fuera_de_pagina": 0
+    },
+    {
+      "pagina": 7,
+      "ancho": 595.2756,
+      "alto": 841.8898,
+      "palabras": 122,
+      "texto_fuera_de_pagina": 0
+    }
+  ],
+  "niveles_1_a_4_escritos": true,
+  "controles_de_app_ocultos": true
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "nombre": "calificaciones-ajenas",
+    "ruta": "/calificaciones?empresa=7252",
+    "denegado": true
+  },
+  {
+    "nombre": "informe-propio",
+    "ruta": "/informes/empresa/7251",
+    "denegado": true
+  },
+  {
+    "nombre": "informe-ajeno",
+    "ruta": "/informes/empresa/7252",
+    "denegado": true
+  }
+]

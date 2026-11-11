@@ -1,0 +1,25 @@
+Paso 12 · verificación final · 11 nov 2026 · America/Bogota
+Base incorporada por git pull --ff-only: 7670b93.
+./mvnw compile test en IntelliJ: BUILD SUCCESS.
+Pruebas: 710; fallos: 0; errores: 0; omitidas: 0.
+Nuevas: CalificacionesTest 16; HttpInformesTest 8; anteriores 686.
+Base de pruebas comprobada en Surefire: rula_ergonomia_pruebas.
+Dos sesiones de QA en rula_ergonomia_pruebas, ambas con ROLLBACK confirmado.
+rula_ergonomia: 0 empresas con ese nombre
+rula_ergonomia_pruebas: 0 empresas con ese nombre
+git diff --check: correcto.
+Sin cambios en RULA, NEUTRO, pom.xml, Maven Wrapper, scripts, configuración ni SQL.
+node --check static/js/informe.js: correcto.
+README: solo fila del Paso 12 y número de pruebas. INSTALAR: solo número de pruebas.
+15 mediciones: Calificaciones, informe general, informe de una sola sede; 390/810/1080/1366/1920 px.
+Sin desbordamientos del documento, menú o tablas. Barra en una fila desde 810 px.
+Controles medidos de al menos 44 px en celular.
+PDF guardado desde Safari en A4, color desactivado: 7 páginas revisadas visualmente.
+Se corrigieron cifras partidas y cabeceras separadas. Niveles 1 a 4 y acciones escritos.
+Texto PDF verificado sin controles de la app ni texto fuera de página.
+Usuario: calificaciones propias permitidas; ajenas, informe propio e informe ajeno denegados por dirección.
+Datos En curso y sugerencias quitadas excluidos. Reevaluación Verde sustituye Rojo histórico.
+General 3,75; clasificación 4 · Amarillo · Nivel 2; 2 de 3 sedes calificadas, falta Sede Norte.
+Sin credenciales reales ni fotos privadas versionadas. Evidencia solo ficticia.
+Sin prueba física táctil o en papel; compatibilidad completa de tres navegadores pendiente del Paso 13.
+AGENTS actualizado; esperar OK antes del Paso 13. Paso 14 no iniciado.

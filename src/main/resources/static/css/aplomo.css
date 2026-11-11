@@ -345,3 +345,35 @@ section.stack+section.stack{margin-top:28px}
 @media(max-width:720px){.consultas-orden .field{flex:1;min-width:0}.consultas-table .cell-value{overflow-wrap:anywhere}.consultas-filtros{padding:16px}}
 
 @media(max-width:720px){.consultas-orden{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:end}.consultas-orden .field{width:100%;min-width:0}.consultas-orden .btn{width:100%;justify-content:center}}
+
+/* RF-025/026: indicadores y hoja del mock, adaptada sin desplazamiento lateral. */
+.acciones-informe,.calificaciones-sedes{margin-top:24px}.calificaciones-sedes{gap:20px}.nota-promedio{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.nota-promedio .promedio{font-family:var(--serif);font-size:42px;line-height:1.1}.nota-promedio>.small{flex-basis:100%}.informe-wrap{overflow:visible;padding:20px}.informe-empresa{width:100%;max-width:794px;overflow-wrap:anywhere}.informe-empresa p{margin:8px 0}.informe-marca{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #141414;padding-bottom:14px;margin-bottom:18px}.informe-marca>b{font-family:var(--serif);font-size:30px;letter-spacing:.04em}.informe-marca>div{text-align:right;font-size:11px}.informe-metodo{border-bottom:1px solid #d9d2c3;padding-bottom:16px}.informe-sede{margin-top:28px}.informe-sede h3,.informe-sede h4{margin:16px 0 8px}.informe-empresa h2,.informe-empresa h3,.informe-empresa h4{break-after:avoid}.informe-cifras{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}.informe-cifras .box{display:flex;flex-direction:column;gap:8px}.informe-cifras b{font-family:var(--serif);font-size:30px}.informe-tabla{margin-block:12px}.informe-tabla table{table-layout:fixed;width:100%}.informe-tabla td,.informe-tabla th{overflow-wrap:anywhere}.informe-empresa .pill{white-space:normal}.informe-empresa .nota-promedio .small{color:#39362f}.informe-observacion,.informe-sugerencia{margin-block:12px;break-inside:avoid}.informe-general{margin-top:28px}.informe-leyenda{margin-top:22px}.informe-empresa .foot{margin-top:24px;padding-top:10px;border-top:1px solid #d9d2c3;font-size:10px}.informe-empresa .sm{display:block}.informe-empresa li{margin-bottom:6px}
+@media(max-width:720px){.informe-wrap{padding:8px}.informe-empresa{padding:20px 16px}.informe-cifras{grid-template-columns:repeat(2,minmax(0,1fr))}.informe-marca{flex-direction:column;gap:8px}.informe-marca>div{text-align:left}.informe-empresa table.resp td:before{color:#514b40}.informe-empresa table.resp td{color:#141414}.informe-empresa .nota-promedio .promedio{font-size:34px}}
+@media print{
+ @page{size:A4;margin:15mm}
+ body:has(.informe-empresa){background:#fff!important;color:#000!important;color-scheme:light;font-size:10pt}
+ body:has(.informe-empresa) .informe-controles,body:has(.informe-empresa) .informe-ayuda{display:none!important}
+ body:has(.informe-empresa) main.wrap{width:100%;max-width:none;padding:0;margin:0}
+ .informe-wrap{background:#fff!important;border:0;padding:0;overflow:visible}
+ .informe-empresa{width:100%;max-width:none;margin:0;padding:0;background:#fff!important;color:#000!important;font-size:10pt;line-height:1.4}
+ .informe-empresa *{color:#000!important;text-shadow:none!important;box-shadow:none!important}
+ .informe-empresa .box,.informe-empresa td,.informe-empresa th,.informe-empresa .pill{border-color:#888!important;background:transparent!important}
+ .informe-empresa .pill:before{display:none}
+ .informe-empresa .pill{border:1px solid #555!important;font-size:9pt}
+ .informe-marca{flex-direction:row}.informe-marca>div{text-align:right}.informe-cifras{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .informe-empresa table.resp{display:table}.informe-empresa table.resp thead{display:table-header-group}.informe-empresa table.resp tbody{display:table-row-group}
+ .informe-empresa table.resp tr{display:table-row;break-inside:avoid}.informe-empresa table.resp td,.informe-empresa table.resp th{display:table-cell;padding:6px;border-bottom:1px solid #888}
+ .informe-empresa table.resp td:before{display:none}.informe-empresa .cell-value{display:block;width:auto;min-width:0}.informe-empresa .nota-promedio .promedio{font-size:28pt}
+ .informe-empresa .informe-sede{break-before:auto}.informe-empresa .foot{break-inside:avoid}
+}
+@media print{
+ /* Safari: bloques atómicos y reglas clásicas para evitar cortar cifras o cabeceras de tablas. */
+ .informe-empresa .informe-cifras,.informe-empresa .informe-tabla{break-inside:avoid;page-break-inside:avoid}
+ .informe-empresa .informe-cifras{display:block}
+ .informe-empresa .informe-cifras .box{display:inline-block;vertical-align:top;width:calc(33.333% - 10px);margin:0 8px 10px 0;break-inside:avoid;page-break-inside:avoid}
+ .informe-empresa .informe-cifras b{display:block;margin-top:6px}
+ .informe-empresa tr,.informe-observacion,.informe-sugerencia,.informe-general{page-break-inside:avoid}
+ .informe-empresa h2,.informe-empresa h3,.informe-empresa h4{page-break-after:avoid}
+ .informe-tabla .nota-promedio .promedio{font-size:16pt}.informe-tabla .nota-promedio .small{display:none}
+}
+@media print{.informe-bloque{break-inside:avoid;page-break-inside:avoid}.informe-empresa p{widows:3;orphans:3}}

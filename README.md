@@ -41,7 +41,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 9 | Pendientes de arreglo (puestos en Rojo) | ✅ Hecho |
 | 10 | Sugerencias del sistema y seguimiento de mejoras | ✅ Hecho |
 | 11 | Consultas: buscar, filtrar y ordenar en las 11 secciones | ✅ Hecho |
-| 12 | Calificación de sedes y empresa + informe general en PDF | ⏳ Siguiente |
+| 12 | Calificación de sedes y empresa + informe general en PDF | ✅ Hecho |
 | 13 | Pulido final, prueba en Chrome, Edge y Firefox, datos de demostración | ⏳ Pendiente |
 | 14 | (Opcional) Detección automática de puntos con IA | 💭 Solo si sobra tiempo |
 
@@ -98,7 +98,7 @@ Sin frameworks, como lo pide la guía del proyecto.
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**686 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**710 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 
