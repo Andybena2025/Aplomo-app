@@ -20,7 +20,7 @@ El Administrador marca puntos sobre la foto ampliada (de perfil, con el movimien
 - El sentido (flexión o extensión) sale del signo del producto cruz y de hacia dónde mira el trabajador (lado Derecho o Izquierdo).
 - El ángulo se puede **corregir moviendo los puntos o escribiéndolo a mano**. Si falta un dato o tiene un valor imposible, no se calcula.
 - Lo que la foto no muestra se marca con casillas: hombro elevado, cabeza o cuello girado, giro de muñeca, apoyo del brazo y piernas.
-- Referencia funcionando: `medirAngulos()` en `docs/referencia/mock_app/app.src.html`. Tolerancia del mock: menos de 5° se toma como neutro (supuesto del equipo).
+- Referencia geométrica: `medirAngulos()` en `docs/referencia/mock_app/app.src.html`. **Decisión confirmada por Andy al implementar la fase 2:** usar los rangos exactos de la sección 2; solo 0° es neutro en muñeca y tronco. No aplicar la tolerancia de menos de 5° del mock. Se conservan decimales al medir.
 - RULA se aplica al lado derecho y al izquierdo por separado; el campo `lado` del análisis guarda cuál.
 
 ## 2. Puntos por segmento (RF-018)
@@ -84,6 +84,8 @@ El nivel se muestra **con nombre y color**, nunca solo con color.
 
 - Pruebas unitarias JUnit que recorren **todas** las combinaciones de las Tablas A, B y C contra los valores de la base.
 - **10 casos calculados a mano** comparados con el sistema. Tres casos ya verificados (puntos de segmento → tablas → final), sin actividad y con carga menor de 2 kg:
-  - Brazo 1° (1), antebrazo 85° (1), muñeca 9° (2), giro medio (1), cuello 10° (1), tronco 2° (1 o 2), piernas apoyadas (1) → A = 2, B = 1 o 2 → **2 · Verde · Nivel 1**.
+  - Brazo 1° (1), antebrazo 85° (1), muñeca 9° (2), giro medio (1), cuello 10° (1), tronco 2° (2), piernas apoyadas (1) → A = 2, B = 2 → **2 · Verde · Nivel 1**.
   - Brazo 61° (3), antebrazo 47° (2), muñeca 0° (1), giro medio (1), cuello 37° (3), tronco 17° (2), piernas apoyadas (1), sin ajustes → A = 3, B = 3 → **3 · Amarillo · Nivel 2**.
   - El mismo caso con hombro elevado (+1) y brazo separado (+1) → brazo = 5 → A = 5, B = 3 → **4 · Amarillo · Nivel 2** (es el resultado que muestra el mock app en la evaluación de ejemplo).
+
+Los diez casos completos, su desglose manual y las instrucciones para ejecutarlos están en [pruebas_fase_2.md](pruebas_fase_2.md).

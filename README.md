@@ -16,16 +16,19 @@ Proyecto Nuclear de Ingenieria de Software, 3.er semestre, Corporacion Universit
 
 ## Como correrlo
 
-1. **Crear la base de datos** en MySQL:
+1. **Solo para instalación inicial, si la base no existe**, crear la base de datos en MySQL:
    ```bash
    mysql -u root -p < docs/base_de_datos/Script_MySQL_RULA.sql
    ```
+   Si `rula_ergonomia` ya existe, omitir este paso: el script empieza borrando esa base.
 
 2. **Configurar la conexion:**
    ```bash
-   cp config/db.properties.ejemplo config/db.properties
+   cp -n config/db.properties.ejemplo config/db.properties
    ```
    Editar `config/db.properties` con tu usuario y clave de MySQL.
+
+   Si el archivo ya existe, conservarlo; `cp -n` evita reemplazarlo.
 
 3. **Compilar y arrancar:**
    ```bash
@@ -34,6 +37,12 @@ Proyecto Nuclear de Ingenieria de Software, 3.er semestre, Corporacion Universit
    ```
 
 4. **Abrir** http://localhost:8080 en Chrome, Edge o Firefox.
+
+## Estado de implementación y pruebas
+
+Fase 2 completa: conexión JDBC, lectura de tablas y niveles desde MySQL, medición de ángulos y motor RULA. Corresponde al paso 1 del plan. El ingreso sigue deshabilitado hasta la fase 3.
+
+Con MySQL y la conexión configurados, ejecutar `mvn test`: 389 pruebas, incluidas las 272 combinaciones de tablas y los 10 casos manuales. Instrucciones y desglose: [Pruebas de la fase 2](docs/pruebas_fase_2.md).
 
 ## Prototipo (referencia visual)
 
