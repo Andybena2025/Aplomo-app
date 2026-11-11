@@ -5,4 +5,4 @@
 
 db.url=jdbc:mysql://localhost:3306/rula_ergonomia?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Bogota&characterEncoding=UTF-8
 db.usuario=app_rula
-db.clave=CambiarEstaClave123
+db.clave=CambiarEstaClave2026
