@@ -231,3 +231,8 @@ tr.click:hover td{background:var(--card2)}
 .top .lockup{font-size:28px;text-decoration:none}
 .top .who{margin-left:auto;overflow-wrap:anywhere}
 @media(max-width:600px){.grid2{grid-template-columns:minmax(0,1fr)}.top .who{margin-left:0;width:100%}}
+.datos-cuenta{display:grid;gap:10px;margin:0}
+.datos-cuenta div{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px}
+.datos-cuenta dt{color:var(--muted);font-size:13px}
+.datos-cuenta dd{margin:0;overflow-wrap:anywhere}
+[hidden]{display:none!important}

@@ -17,11 +17,16 @@ public final class Router implements HttpHandler {
     private static final String COOKIE = "APLOMO_SESION";
     private final Autenticacion auth;
     private final Sesiones sesiones;
+    private final UsuariosWeb usuarios;
 
     /** Construye las rutas con servicios reales (RNF-011). */
     public Router() { this(new Autenticacion(),new Sesiones()); }
     /** Permite comprobar HTTP con servicios y reloj controlados (RNF-011). */
-    public Router(Autenticacion auth, Sesiones sesiones) { this.auth=auth; this.sesiones=sesiones; }
+    public Router(Autenticacion auth, Sesiones sesiones) { this(auth,sesiones,new co.aplomo.servicio.Usuarios()); }
+    /** Comparte los servicios de cuentas para verificar todo el recorrido HTTP (RNF-011). */
+    public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios) {
+        this.auth=auth; this.sesiones=sesiones; this.usuarios=new UsuariosWeb(usuarios,sesiones);
+    }
 
     /** Revisa la sesión antes de atender cualquier ruta interna (RF-002). */
     @Override public void handle(HttpExchange x) throws IOException {
@@ -58,7 +63,9 @@ public final class Router implements HttpHandler {
             }
             Map<String,String> f = formulario(x);
             exigirCsrf(s,f);
-            Cuenta c = auth.ingresar(f.get("correo"),f.get("clave"));
+            Cuenta c;
+            try { c=auth.ingresar(f.get("correo"),f.get("clave")); }
+            catch(SQLException e) { enviar(x,503,Html.login(s,f.get("correo"),"No pudimos verificar el ingreso. Revisa la conexión e inténtalo de nuevo.")); return; }
             if (c == null) {
                 enviar(x,401,Html.login(s,f.get("correo"),"Correo o contraseña incorrectos. Revisa los datos o vuelve a intentarlo en 15 minutos.")); return;
             }
@@ -81,12 +88,13 @@ public final class Router implements HttpHandler {
             Cuenta cambiada;
             try { cambiada=auth.cambiar(s.cuenta(),f.get("actual"),f.get("nueva"),f.get("confirmacion")); }
             catch (IllegalArgumentException e) { enviar(x,400,Html.contrasena(s,e.getMessage())); return; }
+            catch (SQLException e) { enviar(x,503,Html.contrasena(s,"No pudimos guardar la contraseña. Inténtalo de nuevo.")); return; }
             sesiones.invalidarCuenta(cambiada.id()); s=sesiones.crear(cambiada); ponerCookie(x,s.id());
             redirigir(x,"/?contrasena=1"); return;
         }
         if (ruta.equals("/usuarios") || ruta.startsWith("/usuarios/")) {
             Permisos.administrador(s.cuenta());
-            enviar(x,200,Html.pagina("Usuarios","<section class=\"card\"><p>Administración de cuentas.</p></section>",s)); return;
+            usuarios.atender(x,s,f); return;
         }
         if (ruta.startsWith("/fotos/")) {
             Permisos.administrador(s.cuenta()); enviar(x,404,Html.pagina("Foto no disponible","",s)); return;

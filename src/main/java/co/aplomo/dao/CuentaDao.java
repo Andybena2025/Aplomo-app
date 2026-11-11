@@ -42,6 +42,50 @@ public class CuentaDao {
         }
     }
 
+    /** Lista cuentas para la administración; la autorización se comprueba en el servicio (RF-003). */
+    public java.util.List<Cuenta> listar(Connection con) throws SQLException {
+        try (var ps=con.prepareStatement("SELECT * FROM cuenta ORDER BY nombre, id_cuenta"); var rs=ps.executeQuery()) {
+            var cuentas=new java.util.ArrayList<Cuenta>();
+            while(rs.next()) cuentas.add(leer(rs));
+            return java.util.List.copyOf(cuentas);
+        }
+    }
+
+    /** Bloquea todos los Administradores en orden estable antes de cambiar roles o estados (RF-003). */
+    public java.util.List<Cuenta> bloquearAdministradores(Connection con) throws SQLException {
+        try (var ps=con.prepareStatement("SELECT * FROM cuenta WHERE rol = ? ORDER BY id_cuenta FOR UPDATE")) {
+            ps.setString(1,Rol.ADMINISTRADOR.name());
+            try(var rs=ps.executeQuery()) {
+                var cuentas=new java.util.ArrayList<Cuenta>();
+                while(rs.next()) cuentas.add(leer(rs));
+                return java.util.List.copyOf(cuentas);
+            }
+        }
+    }
+
+    /** Inserta una cuenta activa con contraseña temporal y devuelve su ID (RF-003). */
+    public int crear(Connection con, String nombre, String correo, String telefono, String cargo,
+                     Rol rol, Integer empresa, String hash) throws SQLException {
+        try(var ps=con.prepareStatement("INSERT INTO cuenta (nombre,correo,telefono,cargo,rol,id_empresa,contrasena_hash,contrasena_temporal) VALUES (?,?,?,?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1,nombre); ps.setString(2,correo); ps.setString(3,telefono); ps.setString(4,cargo);
+            ps.setString(5,rol.name()); ps.setObject(6,empresa); ps.setString(7,hash); ps.setBoolean(8,true);
+            ps.executeUpdate();
+            try(var claves=ps.getGeneratedKeys()) {
+                if(!claves.next()) throw new SQLException("No se pudo identificar la cuenta creada.");
+                return claves.getInt(1);
+            }
+        }
+    }
+
+    /** Edita datos de la cuenta sin cambiar su ID, estado ni contraseña (RF-003). */
+    public void editar(Connection con, int id, String nombre, String correo, String telefono, String cargo,
+                       Rol rol, Integer empresa) throws SQLException {
+        try(var ps=con.prepareStatement("UPDATE cuenta SET nombre = ?, correo = ?, telefono = ?, cargo = ?, rol = ?, id_empresa = ? WHERE id_cuenta = ?")) {
+            ps.setString(1,nombre); ps.setString(2,correo); ps.setString(3,telefono); ps.setString(4,cargo);
+            ps.setString(5,rol.name()); ps.setObject(6,empresa); ps.setInt(7,id); ps.executeUpdate();
+        }
+    }
+
     private Cuenta leer(ResultSet rs) throws SQLException {
         int empresa = rs.getInt("id_empresa");
         Integer idEmpresa = rs.wasNull() ? null : empresa;

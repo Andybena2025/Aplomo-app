@@ -5,3 +5,16 @@ document.querySelectorAll('form').forEach(f => f.addEventListener('submit', () =
   const b = f.querySelector('button[type="submit"],button:not([type])');
   if (b) { b.disabled = true; b.textContent = 'Procesando…'; }
 }));
+const rol = document.querySelector('#rol');
+const empresa = document.querySelector('#empresa');
+if (rol && empresa) {
+  const actualizarEmpresa = () => {
+    const requiere = rol.value === 'USUARIO';
+    empresa.required = requiere;
+    empresa.disabled = !requiere;
+    empresa.closest('[data-empresa]').hidden = !requiere;
+    if (!requiere) empresa.value = '';
+  };
+  rol.addEventListener('change', actualizarEmpresa);
+  actualizarEmpresa();
+}
