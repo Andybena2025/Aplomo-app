@@ -42,9 +42,9 @@ Proyecto Nuclear de Ingenieria de Software, 3.er semestre, Corporacion Universit
 
 Fase 2 completa: conexión JDBC, lectura de tablas y niveles desde MySQL, medición de ángulos y motor RULA. Corresponde al paso 1 del plan. La fase 3 (pasos 2 y 3) está completa: ingreso, salida, contraseñas, bloqueo, inactividad, permisos y administración de cuentas.
 
-La fase 4 (pasos 4, 5 y 6) está completa: empresas y su estructura, reservas con estados y bitácora, e inicio y finalización de visitas. El Paso 7 de la fase 5 está implementado: puesto y postura, seis condiciones, consentimiento y fotos privadas. El Paso 8 está implementado: asistente completo con puntos, ángulos, ajustes, resultados y análisis independientes por foto. El Paso 9 está implementado: pendientes automáticos al guardar un Rojo, seguimiento, estado Arreglado y consulta por empresa. Espera la aprobación de Andy antes del Paso 10. Una visita nueva no se puede cerrar sin evaluaciones.
+La fase 4 (pasos 4, 5 y 6) está completa: empresas y su estructura, reservas con estados y bitácora, e inicio y finalización de visitas. El Paso 7 de la fase 5 está implementado: puesto y postura, seis condiciones, consentimiento y fotos privadas. El Paso 8 está implementado: asistente completo con puntos, ángulos, ajustes, resultados y análisis independientes por foto. El Paso 9 está implementado: pendientes automáticos al guardar un Rojo, seguimiento, estado Arreglado y consulta por empresa. El Paso 10 está implementado: sugerencias automáticas y manuales, edición, quitar sin borrar, estados y acceso a reservar una Reevaluación. Espera la aprobación de Andy antes del Paso 11. Una visita nueva no se puede cerrar sin evaluaciones.
 
-Con MySQL y la conexión configurados, ejecutar `mvn test`: **598 pruebas aprobadas**, sin fallos, errores ni omisiones, incluidas las 389 de la fase 2 (272 combinaciones de tablas y 10 casos manuales). Instrucciones y desglose: [Pruebas de la fase 2](docs/pruebas_fase_2.md).
+Con MySQL y la conexión configurados, ejecutar `mvn test`: **623 pruebas aprobadas**, sin fallos, errores ni omisiones, incluidas las 389 de la fase 2 (272 combinaciones de tablas y 10 casos manuales). Instrucciones y desglose: [Pruebas de la fase 2](docs/pruebas_fase_2.md).
 
 Las instrucciones de acceso y sus pruebas están en [Pruebas de la fase 3](docs/pruebas_fase_3.md).
 
@@ -55,6 +55,10 @@ El informe del Paso 7, las comprobaciones de permisos y las capturas por tamaño
 El [Informe del Paso 8](docs/informe_paso8.md) contiene la tabla de requisitos, los diez casos en pantalla, pruebas de permisos y capturas a cinco tamaños. El puntaje guardado lo calcula el servidor con las tablas de MySQL y NEUTRO = 5°.
 
 El [Informe del Paso 9](docs/informe_paso9.md) contiene requisitos, permisos, decisión de máximo por evaluación, pruebas y capturas de lista, detalle y edición en cinco tamaños. Los pendientes anteriores y su estado Arreglado se conservan.
+
+El [Informe del Paso 10](docs/informe_paso10.md) documenta las correcciones visuales previas, las decisiones de Andy del 11 nov 2026 y las pruebas de Sugerencias. Se accede desde **Pendientes → Sugerencias** o desde una evaluación con análisis guardado. El Usuario solo consulta su empresa y visitas finalizadas.
+
+Para una instalación existente nueva, cargar **solo** `docs/base_de_datos/datos_sugerencias.sql` en la base elegida: añade las 11 reglas iniciales sin modificar ni duplicar las existentes, sin borrar y sin cambiar tablas. En el entorno local de Andy ya se cargó ese catálogo en `rula_ergonomia`. Las pruebas lo cargan en su propia transacción en `rula_ergonomia_pruebas` y lo revierten. Nunca ejecutar de nuevo el script SQL inicial sobre una base existente.
 
 ## Prototipo (referencia visual)
 

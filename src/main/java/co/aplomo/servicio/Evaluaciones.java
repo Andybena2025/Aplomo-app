@@ -129,6 +129,9 @@ public final class Evaluaciones {
     /** Comparte seguimiento, transacciones y reloj con las rutas del Paso 9. */
     public Pendientes pendientes(){return new Pendientes(tx,reloj,bitacora);}
 
+    /** RF-023a/b: comparte reglas, permisos y auditoría con las rutas de sugerencias. */
+    public Sugerencias sugerencias(){return new Sugerencias(tx,reloj,bitacora);}
+
     /** Cuenta evaluaciones y puestos rojos visibles para las tarjetas de Inicio (RF-024). */
     public long[] resumen(Cuenta actor) throws SQLException {
         return tx.ejecutar(c->{

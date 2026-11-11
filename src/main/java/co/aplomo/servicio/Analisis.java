@@ -28,12 +28,14 @@ public final class Analisis {
     int guardarEnTransaccion(Connection c,Cuenta actor,int foto,MotorRula.Entrada entrada) throws SQLException,IOException {
         if(entrada==null)throw new IllegalArgumentException("Completa las mediciones de la foto.");
         var f=new EvaluacionDao().foto(c,foto);if(f==null)throw new SecurityException("La foto no está disponible.");
+        new SugerenciaDao().contexto(c,f.evaluacion(),0,false,true);
         int[] dimensiones=archivos.dimensiones(f.nombre());
         var real=new MotorRula.Entrada(entrada.lado(),dimensiones[0],dimensiones[1],entrada.mediciones(),entrada.ajustes(),entrada.actividad(),entrada.carga());
         tablas.cargar(c);var calculo=new MotorRula(tablas).calcular(real);
         int id=dao.guardar(c,foto,LocalDateTime.now(reloj),calculo);
         bitacora.registrar(c,actor.id(),LocalDateTime.now(reloj),"analisis_rula",id,"CREAR",null,null,"Análisis nuevo · "+real.lado()+" · Foto "+foto);
         if(calculo.resultado().nivel().color().equals("ROJO"))new Pendientes(tx,reloj,bitacora).registrarRojo(c,actor,f.evaluacion());
+        new Sugerencias(tx,reloj,bitacora).proponer(c,actor,f.evaluacion(),calculo);
         return id;
     }
     /** Añade análisis a fotos ya guardadas; verifica relación, visita abierta y conserva todo el historial. */

@@ -1,0 +1,322 @@
+[
+  {
+    "pantalla": "sugerencia-detalle",
+    "ancho": 390,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Sugerencias de la evaluación"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver visita"
+      },
+      {
+        "alto": 44,
+        "texto": "Editar sugerencia"
+      },
+      {
+        "alto": 44,
+        "texto": "Quitar sugerencia"
+      },
+      {
+        "alto": 44,
+        "texto": "Guardar estado"
+      }
+    ],
+    "documento": 375,
+    "filas": 2,
+    "menu": 343,
+    "scrollY": 0,
+    "ventana": 390,
+    "visible": 343
+  },
+  {
+    "pantalla": "sugerencia-detalle",
+    "ancho": 810,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Sugerencias de la evaluación"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver visita"
+      },
+      {
+        "alto": 44,
+        "texto": "Editar sugerencia"
+      },
+      {
+        "alto": 44,
+        "texto": "Quitar sugerencia"
+      },
+      {
+        "alto": 44,
+        "texto": "Guardar estado"
+      }
+    ],
+    "documento": 795,
+    "filas": 1,
+    "menu": 478,
+    "scrollY": 0,
+    "ventana": 810,
+    "visible": 478
+  },
+  {
+    "pantalla": "sugerencia-detalle",
+    "ancho": 1080,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 44,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 44,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 44,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 44,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 44,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Sugerencias de la evaluación"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver visita"
+      },
+      {
+        "alto": 44,
+        "texto": "Editar sugerencia"
+      },
+      {
+        "alto": 44,
+        "texto": "Quitar sugerencia"
+      },
+      {
+        "alto": 44,
+        "texto": "Guardar estado"
+      }
+    ],
+    "documento": 1065,
+    "filas": 1,
+    "menu": 748,
+    "scrollY": 0,
+    "ventana": 1080,
+    "visible": 748
+  },
+  {
+    "pantalla": "sugerencia-detalle",
+    "ancho": 1366,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 37,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 37,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 37,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 37,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 37,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 37,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 33.5,
+        "texto": "← Sugerencias de la evaluación"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver visita"
+      },
+      {
+        "alto": 43,
+        "texto": "Editar sugerencia"
+      },
+      {
+        "alto": 43,
+        "texto": "Quitar sugerencia"
+      },
+      {
+        "alto": 43,
+        "texto": "Guardar estado"
+      }
+    ],
+    "documento": 1351,
+    "filas": 1,
+    "menu": 603,
+    "scrollY": 0,
+    "ventana": 1366,
+    "visible": 603
+  },
+  {
+    "pantalla": "sugerencia-detalle",
+    "ancho": 1920,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 37,
+        "texto": "Inicio"
+      },
+      {
+        "alto": 37,
+        "texto": "Empresas"
+      },
+      {
+        "alto": 37,
+        "texto": "Reservas"
+      },
+      {
+        "alto": 37,
+        "texto": "Visitas"
+      },
+      {
+        "alto": 37,
+        "texto": "Pendientes"
+      },
+      {
+        "alto": 37,
+        "texto": "Usuarios"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 33.5,
+        "texto": "← Sugerencias de la evaluación"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver visita"
+      },
+      {
+        "alto": 43,
+        "texto": "Editar sugerencia"
+      },
+      {
+        "alto": 43,
+        "texto": "Quitar sugerencia"
+      },
+      {
+        "alto": 43,
+        "texto": "Guardar estado"
+      }
+    ],
+    "documento": 1905,
+    "filas": 1,
+    "menu": 603,
+    "scrollY": 0,
+    "ventana": 1920,
+    "visible": 603
+  }
+]

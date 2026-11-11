@@ -1,0 +1,20 @@
+Paso 10 · verificación final · 11 nov 2026 · America/Bogota
+mvn compile test: BUILD SUCCESS
+623 pruebas; 0 fallos; 0 errores; 0 omitidas.
+Pruebas y QA visual: rula_ergonomia_pruebas.
+Servidores temporales cerrados; ROLLBACK confirmado, incluida la reserva de Reevaluación de QA.
+rula_ergonomia: 0 empresas con ese nombre
+rula_ergonomia_pruebas: 0 empresas con ese nombre
+Catálogo real de configuración: 0 → 11 reglas; segunda carga: 11 → 11, 0 añadidas.
+Sin DDL ni borrados. SQL inicial no ejecutado.
+git diff --check: correcto
+node --check sugerencias.js, analisis.js y cuenta.js: correcto
+Sin cambios en cálculo RULA, tablas, pom.xml ni configuración privada.
+config/db.properties y fotos/ ignorados; ninguno versionado.
+15 observaciones: lista, detalle y editar × 390/810/1080/1366/1920 px.
+Sin desbordamiento del documento ni menú; una fila de navegación desde 810 px.
+Controles visibles medidos ≥44 px en 390, 810 y 1080 px.
+Consola del recorrido final válido: 0 errores y 0 advertencias.
+Usuario: edición y otra empresa denegadas por dirección directa.
+Reevaluación: formulario preparado y reserva guardada en QA; luego ROLLBACK.
+Pendiente: prueba física con dedo y recorrido completo en Chrome, Edge y Firefox (Paso 13).

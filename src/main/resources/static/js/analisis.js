@@ -80,7 +80,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   }
   async function medir(f,exigir=false){
     const s=estado(f);if(!s.habilitada||!completo(f)){if(exigir)throw new Error('Completa los ángulos de la foto '+(obtenerFotos().indexOf(f)+1)+': marca sus puntos o escribe los cinco ángulos.');return;}
-    const revision=s.revision,peticion=++numeroPeticion,p=parametros(f,obtenerFotos().indexOf(f));p.set('csrf',form.elements.csrf.value);p.set('visita',form.elements.visita.value);
+    const revision=s.revision,peticion=++numeroPeticion,p=parametros(f,obtenerFotos().indexOf(f));p.set('csrf',form.elements.csrf.value);p.set('visita',form.elements.visita.value);for(const k of ['escritorio','pantalla','pies','apoyapies','apoyabrazos','regulable']){const e=form.elements[k];p.set(k,e?.type==='checkbox'?(e.checked?'si':'no'):(e?.value||'no'));}
     let r=await fetch('/evaluaciones/calcular',{method:'POST',body:p,credentials:'same-origin',redirect:'manual'});
     if(r.status===403 && await renovarFormulario()){p.set('csrf',form.elements.csrf.value);r=await fetch('/evaluaciones/calcular',{method:'POST',body:p,credentials:'same-origin',redirect:'manual'});}
     if(!r.ok){const texto=(r.headers.get('Content-Type')||'').startsWith('text/plain')?await r.text():'No se pudo calcular. Comprueba tu sesión en otra pestaña y vuelve aquí; tus datos se conservan.';throw new Error(texto);}

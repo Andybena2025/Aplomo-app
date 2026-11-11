@@ -39,14 +39,19 @@ public final class EvaluacionesWeb {
                 var f=Router.formulario(x);
                 if(!Sesiones.csrfValido(s,f.get("csrf"))){responder(x,403,"El formulario venció. Inicia sesión en otra pestaña y vuelve a intentarlo aquí.");return;}
                 var calculo=servicio.analisis().previsualizar(s.cuenta(),entero(f.get("visita"),"visita"),DatosAnalisis.leer(f));
-                Router.enviar(x,200,PaginasAnalisis.resultado(calculo));
+                Map<String,Boolean> condiciones=Map.of("escritorio_muy_alto",si(f,"escritorio"),"pantalla_muy_alta",si(f,"pantalla"),"pies_colgando",si(f,"pies"),"tiene_apoyapies",si(f,"apoyapies"),"silla_con_apoyabrazos",si(f,"apoyabrazos"),"silla_regulable",si(f,"regulable"));
+                var propuestas=servicio.sugerencias().previsualizar(s.cuenta(),calculo,condiciones);String resultado=PaginasAnalisis.resultado(calculo);StringBuilder html=new StringBuilder(resultado.substring(0,resultado.length()-6)).append("<div class=\"stack\"><span class=\"eyebrow\">Sugerencias del sistema</span>");
+                for(var regla:propuestas)html.append("<div class=\"sug\">").append(Html.escapar(regla.texto())).append("</div>");
+                if(propuestas.isEmpty())html.append("<p class=\"hint\">No hay reglas que apliquen. El análisis se puede guardar; si es Amarillo o Rojo, agrega después al menos una sugerencia.</p>");
+                Router.enviar(x,200,html.append("</div></div>").toString());
             }catch(IllegalArgumentException e){responder(x,400,e.getMessage());}
             catch(SQLException e){responder(x,503,"No pudimos calcular. Revisa la conexión e inténtalo de nuevo; tus puntos se conservan.");}
             return;
         }
         if(ruta.matches("/evaluaciones/[1-9][0-9]*/analisis/[1-9][0-9]*")&&!post) {
             String[] ids=ruta.split("/");var guardado=servicio.analisis().consultar(s.cuenta(),entero(ids[2],"evaluación"),entero(ids[4],"análisis"));
-            Router.enviar(x,200,PaginasAnalisis.guardado(s,guardado));return;
+            var c=servicio.sugerencias().contexto(s.cuenta(),guardado.ficha().evaluacion()); var lista=servicio.sugerencias().listar(s.cuenta(),c.evaluacion());
+            Router.enviar(x,200,PaginasAnalisis.guardado(s,guardado).replace("</main>",PaginasSugerencias.resumen(lista,c)+"</main>"));return;
         }
         if(ruta.matches("/evaluaciones/[1-9][0-9]*/analizar")&&!post) {
             int id=entero(ruta.split("/")[2],"evaluación");var consulta=servicio.consultar(s.cuenta(),id);
@@ -67,7 +72,8 @@ public final class EvaluacionesWeb {
             Router.enviar(x,200,PaginasEvaluacion.nueva(s,servicio.contexto(s.cuenta(),visita))); return;
         }
         if (!post && ruta.matches("/evaluaciones/[1-9][0-9]*")) {
-            Router.enviar(x,200,PaginasEvaluacion.detalle(s,servicio.consultar(s.cuenta(),entero(ruta.substring(14),"evaluación")),servicio.analisis().listar(s.cuenta(),entero(ruta.substring(14),"evaluación")),Router.consulta(x).get("aviso"))); return;
+            int id=entero(ruta.substring(14),"evaluación");var analisis=servicio.analisis().listar(s.cuenta(),id);String pagina=PaginasEvaluacion.detalle(s,servicio.consultar(s.cuenta(),id),analisis,Router.consulta(x).get("aviso"));
+            if(!analisis.isEmpty())pagina=pagina.replace("</main>",PaginasSugerencias.resumen(servicio.sugerencias().listar(s.cuenta(),id),servicio.sugerencias().contexto(s.cuenta(),id))+"</main>");Router.enviar(x,200,pagina);return;
         }
         if (!ruta.equals("/evaluaciones") || !post) { Router.enviar(x,404,"Página no disponible.");return; }
         try {

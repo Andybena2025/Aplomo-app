@@ -331,3 +331,7 @@ section.stack+section.stack{margin-top:28px}
 
 /* Barra de una sola fila en tabletas; conserva texto y acceso a todas las secciones. */
 @media(min-width:721px) and (max-width:1080px){.top .wrap{gap:10px}.top .hideSm{display:none}.nav-tab{padding-inline:7px}.who .meta{display:none}}
+
+/* RF-023a/b: sugerencias del mock y formularios que conservan sus campos. */
+.sug{display:flex;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line)}.sug:last-child{border-bottom:0}.sug::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--plat);margin-top:9px}
+.sugerencias-table td{vertical-align:top;overflow-wrap:anywhere}.sugerencias-table .btn{white-space:normal;overflow-wrap:normal}.sugerencias-table td:nth-child(3) .cell-value{font-size:12px;overflow-wrap:normal}[data-error-sugerencia] .link{min-height:44px;min-width:44px}

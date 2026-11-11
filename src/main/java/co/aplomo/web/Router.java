@@ -23,6 +23,7 @@ public final class Router implements HttpHandler {
     private final VisitasWeb visitas;
     private final EvaluacionesWeb evaluaciones;
     private final PendientesWeb pendientes;
+    private final SugerenciasWeb sugerencias;
 
     /** Construye las rutas con servicios reales (RNF-011). */
     public Router() { this(new Autenticacion(),new Sesiones()); }
@@ -58,6 +59,7 @@ public final class Router implements HttpHandler {
         this.visitas=new VisitasWeb(visitas, reservas);
         this.evaluaciones=new EvaluacionesWeb(evaluaciones);
         this.pendientes=new PendientesWeb(evaluaciones.pendientes());
+        this.sugerencias=new SugerenciasWeb(evaluaciones.sugerencias());
     }
 
     /** Revisa la sesión antes de atender cualquier ruta interna (RF-002). */
@@ -138,6 +140,7 @@ public final class Router implements HttpHandler {
             sesiones.invalidarCuenta(cambiada.id()); s=sesiones.crear(cambiada); ponerCookie(x,s.id());
             redirigir(x,"/?contrasena=1"); return;
         }
+        if(ruta.equals("/sugerencias")||ruta.startsWith("/sugerencias/")){sugerencias.atender(x,s,f);return;}
         if(ruta.equals("/pendientes")||ruta.startsWith("/pendientes/")){pendientes.atender(x,s,f);return;}
         if (ruta.equals("/usuarios") || ruta.startsWith("/usuarios/")) {
             Permisos.administrador(s.cuenta());

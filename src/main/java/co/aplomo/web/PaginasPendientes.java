@@ -8,7 +8,7 @@ public final class PaginasPendientes {
     private PaginasPendientes() {}
     /** Lista ordenable y filtrable; el Usuario recibe solo filas autorizadas y no ve controles de cambio. */
     public static String lista(Sesion s,List<Ficha> lista,String estado,String orden,String aviso){
-        StringBuilder h=new StringBuilder(Html.aviso(aviso,true));
+        StringBuilder h=new StringBuilder(Html.aviso(aviso,true)).append(enlace("/sugerencias","Sugerencias",false));
         h.append("<p class=\"muted\">Los resultados rojos generan un pendiente por evaluación. Los anteriores se conservan.</p><form class=\"row filtros-pendientes\" method=\"get\" action=\"/pendientes\">")
                 .append(Formularios.selector(Map.of("estado",estado),"estado","Mostrar",List.of(new Formularios.Opcion("ABIERTO","Abiertos"),new Formularios.Opcion("ARREGLADO","Arreglados"),new Formularios.Opcion("TODOS","Todos")),true))
                 .append(Formularios.selector(Map.of("orden",orden),"orden","Ordenar por",List.of(new Formularios.Opcion("prioridad","Prioridad"),new Formularios.Opcion("fecha","Fecha de registro"),new Formularios.Opcion("limite","Fecha límite")),true))
