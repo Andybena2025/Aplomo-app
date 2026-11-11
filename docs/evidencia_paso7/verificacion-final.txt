@@ -1,0 +1,17 @@
+APLOMO · Paso 7
+11 nov 2026, 09:18 America/Bogota
+
+mvn compile test: BUILD SUCCESS
+Pruebas: 532
+Fallos: 0
+Errores: 0
+Omitidas: 0
+EvaluacionesTest: 27
+HttpEvaluacionesTest: 10
+
+Auditoría posterior a todas las revisiones y pruebas, solo lectura:
+rula_ergonomia: 0 empresas llamadas Empresa de prueba sin confirmar
+rula_ergonomia_pruebas: 0 empresas llamadas Empresa de prueba sin confirmar
+
+Los procesos visuales temporales finalizaron con ROLLBACK confirmado.
+No se modificó el esquema ni se borraron datos de la base real.

@@ -21,6 +21,7 @@ public final class Router implements HttpHandler {
     private final EmpresasWeb empresas;
     private final ReservasWeb reservas;
     private final VisitasWeb visitas;
+    private final EvaluacionesWeb evaluaciones;
 
     /** Construye las rutas con servicios reales (RNF-011). */
     public Router() { this(new Autenticacion(),new Sesiones()); }
@@ -44,10 +45,17 @@ public final class Router implements HttpHandler {
     public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
                   co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas,
                   co.aplomo.servicio.Visitas visitas) {
+        this(auth, sesiones, usuarios, empresas, reservas, visitas, new co.aplomo.servicio.Evaluaciones());
+    }
+    /** Comparte los servicios y la carpeta aislada del paso 7 para las pruebas HTTP. */
+    public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
+                  co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas,
+                  co.aplomo.servicio.Visitas visitas, co.aplomo.servicio.Evaluaciones evaluaciones) {
         this.auth=auth; this.sesiones=sesiones; this.usuarios=new UsuariosWeb(usuarios,sesiones);
         this.empresas=new EmpresasWeb(empresas);
         this.reservas=new ReservasWeb(reservas, empresas);
         this.visitas=new VisitasWeb(visitas, reservas);
+        this.evaluaciones=new EvaluacionesWeb(evaluaciones);
     }
 
     /** Revisa la sesión antes de atender cualquier ruta interna (RF-002). */
@@ -102,9 +110,15 @@ public final class Router implements HttpHandler {
         }
         if (s == null || s.cuenta() == null) {
             // RF-001b, RNF-007: un formulario anónimo vigente no es una sesión cerrada.
+            if (ruta.startsWith("/fotos/")) throw new SecurityException("Acceso denegado.");
             boolean vencida = s == null && id != null;
             if (vencida) ponerCookie(x,"");
             redirigir(x,vencida ? "/login?inactividad=1" : "/login"); return;
+        }
+        if (ruta.startsWith("/evaluaciones") || ruta.startsWith("/fotos/")) {
+            Permisos.administrador(s.cuenta());
+            if (s.cuenta().temporal()) { redirigir(x,"/cuenta/contrasena"); return; }
+            evaluaciones.atender(x,s); return;
         }
         Map<String,String> f = metodo.equals("POST") ? formulario(x) : Map.of();
         if (metodo.equals("POST")) exigirCsrf(s,f);

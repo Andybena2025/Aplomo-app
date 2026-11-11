@@ -284,3 +284,34 @@ section.stack+section.stack{margin-top:28px}
 @media(max-width:600px){.grid2>section.stack+section.stack{margin-top:12px}}
 
 @media(max-width:820px){.login .hero{background-position:92% center}}
+
+/* RF-016: tomas y guía del mock; imágenes de muestra públicas, fotos reales por ruta protegida. */
+.guia{border:1px solid var(--line2);background:var(--card2);border-radius:14px;padding:12px 14px}
+.guia summary{cursor:pointer;font-weight:500;color:var(--ivory)}
+.guia .in{display:grid;grid-template-columns:240px minmax(0,1fr);gap:16px;align-items:start;margin-top:12px}
+.guia canvas{width:100%;height:auto;border-radius:10px;display:block}
+.guia ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--plat)}
+.guia ol b{color:var(--ivory);font-weight:500}
+@media (max-width:620px){.guia .in{grid-template-columns:1fr}.guia canvas{max-width:320px}}
+
+.slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.slot{display:flex;flex-direction:column;gap:10px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px}.slot.lista{border-color:rgba(52,199,89,.55)}
+.slotTop{display:flex;justify-content:space-between;align-items:center;gap:8px}.slot.lista .slotTop .tag{color:var(--verde);border-color:rgba(52,199,89,.5)}
+.slotImg{position:relative;aspect-ratio:4/5;border-radius:10px;overflow:hidden;background:#000}.slotImg img{width:100%;height:100%;object-fit:cover;display:block}
+.slotImg .zoom{width:100%;height:100%;background-size:520% auto;background-position:73% 25%}
+.slotLbl{position:absolute;top:8px;left:8px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;background:rgba(11,11,12,.72);padding:3px 8px;border-radius:999px;color:var(--plat)}
+.slotDia{position:absolute;right:8px;bottom:8px;width:44%;background:rgba(11,11,12,.82);border:1px solid rgba(237,230,216,.18);border-radius:10px;padding:4px;backdrop-filter:blur(6px)}.slotDia svg{display:block;width:100%}
+.slotReglas{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--plat)}
+.espejo{transform:scaleX(-1)}.otroLado{text-align:left;background:transparent;border:1px dashed var(--line2);border-radius:14px;padding:14px 16px;color:var(--ivory);cursor:pointer;font:inherit}.otroLado:hover{border-color:var(--plat)}
+
+.ayuda-condiciones{padding-left:20px;font-size:13px;color:var(--plat)}
+.foto-elegida{display:grid;grid-template-columns:130px minmax(0,1fr);gap:16px;border:1px solid var(--line);border-radius:14px;padding:14px}
+.foto-elegida img{width:100%;max-height:180px;object-fit:contain;border-radius:10px;background:#000}
+.slot input[type=file]{font-size:13px;max-width:100%}
+[data-paso] .opt{min-height:44px;white-space:normal}
+[data-evaluacion] .slotLbl{pointer-events:none}
+@media(max-width:600px){.slots{grid-template-columns:minmax(0,1fr)}.foto-elegida{grid-template-columns:minmax(0,1fr)}.foto-elegida img{max-height:240px}.wizfoot .btn{min-height:44px}}
+
+.foto-guardada{margin:0}.foto-guardada img{width:100%;height:auto;border-radius:10px}.foto-guardada figcaption{overflow-wrap:anywhere}
+
+[data-paso] h2[tabindex="-1"]:focus{outline:none}

@@ -42,13 +42,15 @@ Proyecto Nuclear de Ingenieria de Software, 3.er semestre, Corporacion Universit
 
 Fase 2 completa: conexión JDBC, lectura de tablas y niveles desde MySQL, medición de ángulos y motor RULA. Corresponde al paso 1 del plan. La fase 3 (pasos 2 y 3) está completa: ingreso, salida, contraseñas, bloqueo, inactividad, permisos y administración de cuentas.
 
-La fase 4 (pasos 4, 5 y 6) está completa: empresas y su estructura, reservas con estados y bitácora, e inicio y finalización de visitas. Las evaluaciones y las fotos se incorporan en la fase 5; hasta entonces, una visita nueva no se puede cerrar sin evaluaciones.
+La fase 4 (pasos 4, 5 y 6) está completa: empresas y su estructura, reservas con estados y bitácora, e inicio y finalización de visitas. El Paso 7 de la fase 5 está implementado: puesto y postura, seis condiciones, consentimiento y fotos privadas. El Paso 8 (medición y resultados en pantalla) espera el OK de Andy. Una visita nueva no se puede cerrar sin evaluaciones.
 
-Con MySQL y la conexión configurados, ejecutar `mvn test`: **493 pruebas aprobadas**, sin fallos, errores ni omisiones, incluidas las 389 de la fase 2 (272 combinaciones de tablas y 10 casos manuales). Instrucciones y desglose: [Pruebas de la fase 2](docs/pruebas_fase_2.md).
+Con MySQL y la conexión configurados, ejecutar `mvn test`: **532 pruebas aprobadas**, sin fallos, errores ni omisiones, incluidas las 389 de la fase 2 (272 combinaciones de tablas y 10 casos manuales). Instrucciones y desglose: [Pruebas de la fase 2](docs/pruebas_fase_2.md).
 
 Las instrucciones de acceso y sus pruebas están en [Pruebas de la fase 3](docs/pruebas_fase_3.md).
 
 El recorrido de empresas, reservas y visitas está en [Pruebas de la fase 4](docs/pruebas_fase_4.md). Para usar el puerto de la revisión actual: `mvn -Daplomo.puerto=8081 compile exec:java` y abrir `http://localhost:8081`.
+
+El informe del Paso 7, las comprobaciones de permisos y las capturas por tamaño están en [Informe del Paso 7](docs/informe_paso7.md). Las pruebas y la revisión visual utilizan únicamente `rula_ergonomia_pruebas`.
 
 ## Prototipo (referencia visual)
 

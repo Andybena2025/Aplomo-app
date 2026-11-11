@@ -14,13 +14,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Servidor HTTP y navegador de pruebas, con datos aislados por transacción. */
 public abstract class HttpPrueba extends BasePrueba {
+    @org.junit.jupiter.api.io.TempDir protected java.nio.file.Path carpetaFotos;
     protected HttpServer servidor;
     protected HttpClient cliente;
     protected String raiz;
 
     @BeforeEach void abrirServidor() throws Exception {
         servidor=HttpServer.create(new InetSocketAddress("localhost",0),0);
-        servidor.createContext("/",new Router(auth,new Sesiones(reloj),servicioUsuarios(),new co.aplomo.servicio.Empresas(tx),new co.aplomo.servicio.Reservas(tx,reloj),new co.aplomo.servicio.Visitas(tx,reloj)));
+        servidor.createContext("/",new Router(auth,new Sesiones(reloj),servicioUsuarios(),new co.aplomo.servicio.Empresas(tx),new co.aplomo.servicio.Reservas(tx,reloj),new co.aplomo.servicio.Visitas(tx,reloj),new co.aplomo.servicio.Evaluaciones(tx,reloj,new co.aplomo.servicio.Fotos(carpetaFotos),new co.aplomo.dao.BitacoraDao())));
         servidor.start(); raiz="http://localhost:"+servidor.getAddress().getPort();
         cliente=HttpClient.newBuilder().cookieHandler(new CookieManager(null,CookiePolicy.ACCEPT_ALL)).build();
     }

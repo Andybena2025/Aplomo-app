@@ -19,8 +19,9 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 ## Estado (actualízalo al terminar cada paso)
 
 - Hechos y aprobados: Paso 0, Paso 1 (motor RULA), Pasos 2 y 3 (acceso y cuentas), Pasos 4, 5 y 6 (empresas, reservas, visitas), QA visual y QA de dispositivos (commit c1cc829).
-- Siguiente: Paso 7 (asistente de evaluación, pasos 1 a 3: puesto y postura, condiciones, fotos).
-- Después: Paso 8, luego 9 a 13. El Paso 14 (IA) solo si Andy lo pide.
+- Paso 7 implementado y verificado: asistente de evaluación, pasos 1 a 3 (puesto y postura, seis condiciones y fotos). Informe y límites de la comprobación: `docs/informe_paso7.md`. Pendiente del OK de Andy.
+- Siguiente autorizable: Paso 8, únicamente después del OK de Andy.
+- Después: Pasos 9 a 13. El Paso 14 (IA) solo si Andy lo pide.
 
 ## Reglas que no se negocian
 
@@ -39,6 +40,7 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 ## Decisiones de Andy ya tomadas
 
 - **Condiciones del puesto (RF-015):** las 6 de la tabla `condiciones_puesto` (escritorio muy alto, pantalla muy alta, pies colgando, apoyapiés, silla con apoyabrazos, silla regulable) + "Otras observaciones" (máx. 255), con el diseño del mock (casillas `.opt` y cuadro de observaciones) y las definiciones de RF-015 como ayuda. NO las 8 casillas del mock ni el campo de altura. NO cambiar la base.
+- **Consentimiento (RF-016, aclarado por Andy en el chat):** sin aceptación, `persona_acepto=false` y `registro_fotografico=SIN_REGISTRO_FOTOGRAFICO`; el servidor rechaza cualquier foto. No se pide motivo de ausencia de fotos. `evaluacion.motivo` es solo la elección de la postura. Con aceptación: `persona_acepto=true`, `CON_FOTOS` y 1–10 JPG/PNG de hasta 5 MB, cada una con vista y descripción de máximo 200 caracteres. Sin cambios de esquema.
 - **Tarjetas de Inicio** (a partir del Paso 8): Visitas en curso, Reservas en cola, Evaluaciones y Puestos en rojo (número en rojo).
 - **Tolerancia de 5°** del mock (ver regla 4). Andy NO aprobó quitarla.
 - **Detección automática con IA** (MediaPipe) = Paso 14, solo si Andy lo pide.
