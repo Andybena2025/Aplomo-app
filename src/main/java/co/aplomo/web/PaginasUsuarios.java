@@ -18,7 +18,7 @@ public final class PaginasUsuarios {
                 .append(" registrada").append(cuentas.size() == 1 ? "" : "s").append("</p><a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a></div><div class=\"grid2\">");
         for(Cuenta c:cuentas) {
             contenido.append("<article class=\"card stack\"><div class=\"row between\"><h2>").append(Html.escapar(c.nombre()))
-                    .append("</h2><span class=\"tag\">").append(estado(c.estado())).append("</span></div><dl class=\"datos-cuenta\">")
+                    .append("</h2><span class=\"").append(claseEstado(c.estado())).append("\">").append(estado(c.estado())).append("</span></div><dl class=\"datos-cuenta\">")
                     .append(dato("Correo",c.correo())).append(dato("Teléfono",c.telefono())).append(dato("Cargo",c.cargo()))
                     .append(dato("Rol",c.rol()==Rol.ADMINISTRADOR ? "Administrador" : "Usuario"))
                     .append(dato("Empresa",c.empresa()==null ? "Independiente" : nombres.getOrDefault(c.empresa(),"Empresa asignada")))
@@ -34,6 +34,7 @@ public final class PaginasUsuarios {
 
     private static String dato(String titulo,String valor) { return "<div><dt>"+Html.escapar(titulo)+"</dt><dd>"+Html.escapar(valor)+"</dd></div>"; }
     private static String estado(Estado estado) { return switch(estado) { case ACTIVA->"Activa"; case INACTIVA->"Inactiva"; case BLOQUEADA->"Bloqueada temporalmente"; }; }
+    private static String claseEstado(Estado estado) { return switch(estado) { case ACTIVA->"tag good"; case INACTIVA->"tag"; case BLOQUEADA->"tag warn"; }; }
 
     /** Conserva los campos no secretos cuando falla la validación; una clave nunca se vuelve a mostrar. */
     public static String formulario(Sesion s,Cuenta c,List<Opcion> empresas,Map<String,String> enviados,String error) {

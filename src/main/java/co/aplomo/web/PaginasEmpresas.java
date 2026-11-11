@@ -166,7 +166,7 @@ public final class PaginasEmpresas {
     }
 
     private static boolean admin(Sesion sesion) { return sesion.cuenta().rol() == Rol.ADMINISTRADOR; }
-    private static String estado(boolean activo) { return "<span class=\"tag\">" + (activo ? "Activo" : "Inactivo") + "</span>"; }
+    private static String estado(boolean activo) { return "<span class=\"tag" + (activo ? " good" : "") + "\">" + (activo ? "Activo" : "Inactivo") + "</span>"; }
     private static String dato(String titulo, String valor) { return "<div><dt>" + escapar(titulo) + "</dt><dd>" + escapar(valor) + "</dd></div>"; }
 
     private static String acciones(Sesion sesion, String ruta, boolean activo) {

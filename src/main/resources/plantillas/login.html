@@ -75,13 +75,13 @@
             {{mensaje}}
             <form class="stack" method="post" action="/login">
                 <input type="hidden" name="csrf" value="{{csrf}}">
-                <div class="field"><label for="correo">CORREO</label>
+                <div class="field"><label for="correo">Correo</label>
                     <input class="input" id="correo" name="correo" type="email" maxlength="120"
-                           autocomplete="username" value="{{correo}}" required></div>
-                <div class="field"><label for="clave">CONTRASEÑA</label>
+                           placeholder="nombre@empresa.co" autocomplete="username" value="{{correo}}" required></div>
+                <div class="field"><label for="clave">Contraseña</label>
                     <input class="input" id="clave" name="clave" type="password"
                            autocomplete="current-password" required></div>
-                <button class="btn p" type="submit">Entrar</button>
+                <button class="btn p" type="submit" style="width:100%">Entrar</button>
             </form>
         </section>
     </div>

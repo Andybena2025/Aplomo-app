@@ -35,8 +35,8 @@ public final class PaginasReservas {
                         .append(escapar(ficha.sedeNombre())).append(" · ").append(escapar(ficha.salonNombre()))
                         .append("</span></td><td class=\"num\">").append(Html.fecha(r.fecha())).append("<br>")
                         .append(escapar(r.inicio().toString())).append("–").append(escapar(r.fin().toString()))
-                        .append("</td><td>").append(escapar(categoria(r.categoria()))).append("</td><td><span class=\"tag\">")
-                        .append(escapar(estado(r.estado()))).append("</span></td><td>")
+                        .append("</td><td>").append(escapar(categoria(r.categoria()))).append("</td><td><span class=\"")
+                        .append(claseEstado(r.estado())).append("\">").append(escapar(estado(r.estado()))).append("</span></td><td>")
                         .append(enlace("/reservas/" + r.id(), "Ver reserva", false)).append("</td></tr>");
             }
             html.append("</tbody></table></div>");
@@ -49,7 +49,7 @@ public final class PaginasReservas {
         Reserva r = ficha.reserva();
         StringBuilder html = new StringBuilder(enlace("/reservas", "← Reservas", false));
         html.append(Html.aviso(aviso, exito)).append("<section class=\"card stack\"><div class=\"row between\"><h2>")
-                .append(escapar(ficha.empresaNombre())).append("</h2><span class=\"tag\">").append(escapar(estado(r.estado())))
+                .append(escapar(ficha.empresaNombre())).append("</h2><span class=\"").append(claseEstado(r.estado())).append("\">").append(escapar(estado(r.estado())))
                 .append("</span></div><p class=\"muted\">").append(escapar(ficha.sedeNombre())).append(" · ")
                 .append(escapar(ficha.salonNombre())).append("</p><dl class=\"datos-cuenta\">")
                 .append(dato("Fecha", Html.fecha(r.fecha()))).append(dato("Horario", r.inicio() + "–" + r.fin()))
@@ -144,6 +144,14 @@ public final class PaginasReservas {
             case "ESPERANDO" -> "Esperando"; case "EN_COLA" -> "En cola";
             case "FINALIZADA" -> "Finalizada"; case "CANCELADA" -> "Cancelada";
             default -> "No disponible";
+        };
+    }
+
+    /** Clase CSS del tag según el estado, como en el mock: En cola = good, Esperando = warn. */
+    public static String claseEstado(String valor) {
+        return switch (valor) {
+            case "EN_COLA" -> "tag good"; case "ESPERANDO" -> "tag warn";
+            case "FINALIZADA" -> "tag good"; default -> "tag";
         };
     }
 

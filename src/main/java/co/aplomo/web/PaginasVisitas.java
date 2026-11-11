@@ -26,7 +26,8 @@ public final class PaginasVisitas {
                         .append(escapar(ficha.empresaNombre())).append("<br><span class=\"muted small\">")
                         .append(escapar(ficha.sedeNombre())).append(" · ").append(escapar(ficha.salonNombre()))
                         .append("</span></td><td class=\"num\">").append(fecha(ficha.visita().inicio()))
-                        .append("</td><td>").append(estado(ficha.visita().estado())).append("</td><td>")
+                        .append("</td><td><span class=\"").append(claseEstado(ficha.visita().estado())).append("\">")
+                        .append(estado(ficha.visita().estado())).append("</span></td><td>")
                         .append(calificacion(ficha)).append("</td><td>").append(enlace("/visitas/" + ficha.visita().id(), "Ver visita", false))
                         .append("</td></tr>");
             }
@@ -39,7 +40,7 @@ public final class PaginasVisitas {
     public static String detalle(Sesion sesion, Ficha ficha, List<Evaluacion> evaluaciones, String aviso, boolean exito) {
         StringBuilder html = new StringBuilder(enlace("/visitas", "← Visitas", false));
         html.append(Html.aviso(aviso, exito)).append("<section class=\"card stack\"><div class=\"row between\"><h2>")
-                .append(escapar(ficha.empresaNombre())).append("</h2><span class=\"tag\">").append(estado(ficha.visita().estado()))
+                .append(escapar(ficha.empresaNombre())).append("</h2><span class=\"").append(claseEstado(ficha.visita().estado())).append("\">").append(estado(ficha.visita().estado()))
                 .append("</span></div><p class=\"muted\">").append(escapar(ficha.sedeNombre())).append(" · ")
                 .append(escapar(ficha.salonNombre())).append("</p><dl class=\"datos-cuenta\">")
                 .append(dato("Inicio real", fecha(ficha.visita().inicio()))).append(dato("Fin real", fecha(ficha.visita().fin())))
@@ -80,6 +81,7 @@ public final class PaginasVisitas {
 
     private static String fecha(LocalDateTime valor) { return Html.fechaHora(valor); }
     private static String estado(String valor) { return valor.equals("EN_CURSO") ? "En curso" : "Finalizada"; }
+    private static String claseEstado(String valor) { return valor.equals("EN_CURSO") ? "tag warn" : "tag good"; }
     private static String calificacion(Ficha ficha) { return ficha.visita().calificacion() == null ? "Sin calificación disponible" : ficha.visita().calificacion().toPlainString(); }
     private static String dato(String titulo, String valor) { return "<div><dt>" + escapar(titulo) + "</dt><dd class=\"texto-notas\">" + escapar(valor) + "</dd></div>"; }
     private static boolean admin(Sesion sesion) { return sesion.cuenta().rol() == Rol.ADMINISTRADOR; }
