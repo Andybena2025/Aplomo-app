@@ -38,6 +38,17 @@ public class HttpSeguridadTest extends co.aplomo.soporte.HttpPrueba {
         assertEquals(303,get("/").statusCode());
     }
 
+    @Test void anonimoYSalidaVoluntariaNoMuestranAvisoDeInactividad() throws Exception {
+        get("/login");
+        assertEquals("/login", get("/usuarios").headers().firstValue("Location").orElseThrow());
+        assertEquals(303, entrar(admin).statusCode());
+        var inicio = get("/");
+        assertEquals(303, post("/logout", Map.of("csrf", csrf(inicio))).statusCode());
+        var login = get("/login");
+        assertFalse(login.body().contains("Tu sesión se cerró por inactividad"));
+        assertEquals("/login", get("/usuarios").headers().firstValue("Location").orElseThrow());
+    }
+
     @Test void formularioVencidoPermiteReintentarSinPerderElCorreo() throws Exception {
         var login = get("/login");
         reloj.avanzar(Duration.ofMinutes(30));

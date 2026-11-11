@@ -69,3 +69,13 @@ Un formulario de ingreso vencido sigue siendo rechazado (HTTP 403), pero ahora m
 Las dos pruebas nuevas elevan el total a **439**. Para probar manualmente, abrir una página nueva de ingreso en un navegador externo (por ejemplo Chrome o Safari), usando el puerto de la versión actual. El navegador integrado también reprodujo un fallo de sesión que se debe distinguir de la conexión MySQL.
 
 Verificación de esta corrección: `mvn compile test` terminó con **439 aprobadas, 0 fallos, 0 errores y 0 omitidas**. Se reinició `mvn -Daplomo.puerto=8081 exec:java` y se comprobó en Safari que un formulario anterior al reinicio ofrece reintentar; al volver a escribir la clave, el administrador inicial llega a Cambiar contraseña. La elección y el cambio de la contraseña quedan a cargo de Andy. No se avanzó a la fase 4.
+
+## Revisión antes de la fase 4
+
+Se revisaron el código de acceso y cuentas, la suite completa y las rutas de la aplicación en ejecución. Se corrigió un aviso de inactividad incorrecto cuando un visitante con formulario de ingreso vigente abre una dirección interna, incluido después de cerrar sesión voluntariamente. La sesión vencida real sigue mostrando su aviso y las rutas internas siguen protegidas. Una prueba HTTP nueva cubre los dos recorridos. También se impide que un mensaje largo reduzca el botón Cerrar hasta partir sus letras en varias líneas.
+
+Resultado final de esta revisión: `mvn compile test` terminó con **440 aprobadas, 0 fallos, 0 errores y 0 omitidas**. En la aplicación real de 8081 se comprobó el ingreso con la contraseña actual del administrador, Usuarios, Nuevo usuario y el selector Administrador sin empresa; también Cerrar sesión y el rechazo de la dirección interna. Tras reiniciar se verificó la redirección corregida y que el botón Cerrar permanece en una sola línea con un aviso largo. No se crearon cuentas reales ni se cambiaron contraseñas durante la revisión.
+
+Se abrió además una página nueva en el navegador integrado: el ingreso funcionó y la navegación posterior a Usuarios conservó la sesión. El fallo anterior no se reprodujo en esa página nueva. La comprobación completa de compatibilidad con Chrome, Edge y Firefox continúa pendiente del paso 13; esos navegadores no están instalados en esta máquina en /Applications.
+
+Se conserva el punto de parada: la siguiente fase autorizable es la **FASE 4, pasos 4, 5 y 6** (empresas, reservas y visitas). Se espera el OK de Andy.

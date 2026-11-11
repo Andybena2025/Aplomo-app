@@ -79,8 +79,10 @@ public final class Router implements HttpHandler {
             redirigir(x,c.temporal() ? "/cuenta/contrasena" : "/"); return;
         }
         if (s == null || s.cuenta() == null) {
-            if (id != null) ponerCookie(x,"");
-            redirigir(x,id != null ? "/login?inactividad=1" : "/login"); return;
+            // RF-001b, RNF-007: un formulario anónimo vigente no es una sesión cerrada.
+            boolean vencida = s == null && id != null;
+            if (vencida) ponerCookie(x,"");
+            redirigir(x,vencida ? "/login?inactividad=1" : "/login"); return;
         }
         Map<String,String> f = metodo.equals("POST") ? formulario(x) : Map.of();
         if (metodo.equals("POST")) exigirCsrf(s,f);
