@@ -20,7 +20,7 @@ public abstract class HttpPrueba extends BasePrueba {
 
     @BeforeEach void abrirServidor() throws Exception {
         servidor=HttpServer.create(new InetSocketAddress("localhost",0),0);
-        servidor.createContext("/",new Router(auth,new Sesiones(reloj),servicioUsuarios(),new co.aplomo.servicio.Empresas(tx),new co.aplomo.servicio.Reservas(tx,reloj)));
+        servidor.createContext("/",new Router(auth,new Sesiones(reloj),servicioUsuarios(),new co.aplomo.servicio.Empresas(tx),new co.aplomo.servicio.Reservas(tx,reloj),new co.aplomo.servicio.Visitas(tx,reloj)));
         servidor.start(); raiz="http://localhost:"+servidor.getAddress().getPort();
         cliente=HttpClient.newBuilder().cookieHandler(new CookieManager(null,CookiePolicy.ACCEPT_ALL)).build();
     }

@@ -20,6 +20,7 @@ public final class Router implements HttpHandler {
     private final UsuariosWeb usuarios;
     private final EmpresasWeb empresas;
     private final ReservasWeb reservas;
+    private final VisitasWeb visitas;
 
     /** Construye las rutas con servicios reales (RNF-011). */
     public Router() { this(new Autenticacion(),new Sesiones()); }
@@ -37,9 +38,16 @@ public final class Router implements HttpHandler {
     /** Comparte los servicios de configuración y agenda para las comprobaciones HTTP. */
     public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
                   co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas) {
+        this(auth, sesiones, usuarios, empresas, reservas, new co.aplomo.servicio.Visitas());
+    }
+    /** Comparte todos los servicios de la fase 4 con sus transacciones de prueba. */
+    public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
+                  co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas,
+                  co.aplomo.servicio.Visitas visitas) {
         this.auth=auth; this.sesiones=sesiones; this.usuarios=new UsuariosWeb(usuarios,sesiones);
         this.empresas=new EmpresasWeb(empresas);
         this.reservas=new ReservasWeb(reservas, empresas);
+        this.visitas=new VisitasWeb(visitas, reservas);
     }
 
     /** Revisa la sesión antes de atender cualquier ruta interna (RF-002). */
@@ -122,6 +130,9 @@ public final class Router implements HttpHandler {
                 || ruta.startsWith("/salones/") || ruta.startsWith("/areas/") || ruta.startsWith("/cargos/")
                 || ruta.startsWith("/puestos/")) {
             empresas.atender(x, s, f); return;
+        }
+        if (ruta.equals("/visitas") || ruta.startsWith("/visitas/") || ruta.matches("/reservas/[1-9][0-9]*/iniciar-visita")) {
+            visitas.atender(x, s, f); return;
         }
         if (ruta.equals("/reservas") || ruta.startsWith("/reservas/")) {
             reservas.atender(x, s, f); return;

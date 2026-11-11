@@ -74,6 +74,31 @@ public abstract class BasePrueba {
                 "EVALUACION_INICIAL", "Descripción", "Primera línea\nSegunda línea");
     }
 
+    /** Inserta una evaluación fixture sin archivos, siempre dentro de la transacción reversible. */
+    protected int evaluacion(int visita, int salon, int numero) throws Exception {
+        Integer puesto = Sql.uno(con, "SELECT id_puesto FROM puesto_trabajo WHERE id_salon = ? AND numero = ?",
+                fila -> fila.getInt(1), salon, numero);
+        if (puesto == null) puesto = new co.aplomo.servicio.Empresas(tx).guardar(cuenta(admin),
+                new co.aplomo.modelo.Puesto(0, salon, null, null, numero, "Puesto de prueba", "ESCRITORIO", "Centro", null, true)).id();
+        return Sql.insertar(con, "INSERT INTO evaluacion (id_visita,id_puesto,fecha,postura,criterio,motivo,minutos_jornada,registro_fotografico) VALUES (?,?,?,?,'MAS_INADECUADA',?,60,'SIN_REGISTRO_FOTOGRAFICO')",
+                visita, puesto, java.time.LocalDate.now(reloj), "Postura <b>de prueba</b>", "Motivo de prueba");
+    }
+
+    /** Crea metadatos de foto ficticios; nunca escribe archivos ni confirma datos. */
+    protected int foto(int evaluacion) throws SQLException {
+        Sql.actualizar(con, "UPDATE evaluacion SET registro_fotografico = 'CON_FOTOS', persona_acepto = TRUE WHERE id_evaluacion = ?", evaluacion);
+        return Sql.insertar(con, "INSERT INTO fotografia (id_evaluacion,nombre_archivo,ruta,tamano_kb,vista,descripcion) VALUES (?,?,?,1,'PERFIL',?)",
+                evaluacion, UUID.randomUUID() + ".png", "no-existe/prueba.png", "Metadatos de prueba sin archivo");
+    }
+
+    /** Guarda un resultado fixture para comprobar promedios, sin recalcular ni alterar tablas RULA. */
+    protected int analisis(int foto, int puntaje) throws SQLException {
+        int nivel = Sql.uno(con, "SELECT id_nivel FROM nivel_riesgo WHERE ? BETWEEN puntaje_minimo AND puntaje_maximo",
+                fila -> fila.getInt(1), puntaje);
+        return Sql.insertar(con, "INSERT INTO analisis_rula (id_foto,id_nivel,fecha_hora,lado,hombro_elevado,brazo_separado,brazo_apoyado,antebrazo_cruza_linea_media,muneca_desviada,giro_muneca,cuello_girado,cuello_inclinado,tronco_girado,tronco_inclinado,piernas_apoyadas,postura_estatica_o_repetitiva,carga,puntaje_a,puntaje_b,puntaje_final) VALUES (?,?,?,'DERECHO',FALSE,FALSE,FALSE,FALSE,FALSE,'MEDIO',FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,'MENOS_2KG_INTERMITENTE',1,1,?)",
+                foto, nivel, java.time.LocalDateTime.now(reloj), puntaje);
+    }
+
     protected Cuenta cuenta(int id) throws SQLException { return dao.porId(con,id,false); }
 
     @AfterEach

@@ -42,9 +42,13 @@ Proyecto Nuclear de Ingenieria de Software, 3.er semestre, Corporacion Universit
 
 Fase 2 completa: conexión JDBC, lectura de tablas y niveles desde MySQL, medición de ángulos y motor RULA. Corresponde al paso 1 del plan. La fase 3 (pasos 2 y 3) está completa: ingreso, salida, contraseñas, bloqueo, inactividad, permisos y administración de cuentas.
 
-Con MySQL y la conexión configurados, ejecutar `mvn test`: 437 pruebas en total, incluidas las 389 de la fase 2 (272 combinaciones de tablas y 10 casos manuales). Instrucciones y desglose: [Pruebas de la fase 2](docs/pruebas_fase_2.md).
+La fase 4 (pasos 4, 5 y 6) está completa: empresas y su estructura, reservas con estados y bitácora, e inicio y finalización de visitas. Las evaluaciones y las fotos se incorporan en la fase 5; hasta entonces, una visita nueva no se puede cerrar sin evaluaciones.
+
+Con MySQL y la conexión configurados, ejecutar `mvn test`: **493 pruebas aprobadas**, sin fallos, errores ni omisiones, incluidas las 389 de la fase 2 (272 combinaciones de tablas y 10 casos manuales). Instrucciones y desglose: [Pruebas de la fase 2](docs/pruebas_fase_2.md).
 
 Las instrucciones de acceso y sus pruebas están en [Pruebas de la fase 3](docs/pruebas_fase_3.md).
+
+El recorrido de empresas, reservas y visitas está en [Pruebas de la fase 4](docs/pruebas_fase_4.md). Para usar el puerto de la revisión actual: `mvn -Daplomo.puerto=8081 compile exec:java` y abrir `http://localhost:8081`.
 
 ## Prototipo (referencia visual)
 

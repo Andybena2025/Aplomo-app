@@ -63,9 +63,16 @@ public final class PaginasReservas {
                 html.append("<form method=\"post\" action=\"/reservas/").append(r.id()).append("/aceptar\">")
                         .append(Html.csrf(sesion)).append("<button class=\"btn p\">Aceptar reserva</button></form>");
             }
+            if (r.estado().equals("EN_COLA") && ficha.visita() == null) {
+                html.append("<form method=\"post\" action=\"/reservas/").append(r.id()).append("/iniciar-visita\">")
+                        .append(Html.csrf(sesion)).append("<button class=\"btn p\">Iniciar visita</button></form>");
+            }
             if (ficha.visita() == null) html.append(enlace("/reservas/" + r.id() + "/cancelar", "Cancelar reserva", false));
             else html.append("<p class=\"hint\">La visita ya se inició; su reserva se conserva hasta finalizarla.</p>");
             html.append("</div>");
+        }
+        if (ficha.visita() != null && (admin(sesion) || "FINALIZADA".equals(ficha.estadoVisita()))) {
+            html.append(enlace("/visitas/" + ficha.visita(), "Ver visita", false));
         }
         html.append("</section>");
         return Html.pagina(r.codigo(), html.toString(), sesion);

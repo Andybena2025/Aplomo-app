@@ -23,10 +23,6 @@ Para probar:
 5. Editar datos y comprobar que siguen en su contexto. Desactivar y reactivar: el registro continúa visible como parte del historial.
 6. Crear una cuenta Usuario asignada a esa empresa. Al ingresar con contraseña definitiva solo se consulta su empresa; escribir una dirección de otra empresa o de edición devuelve acceso denegado.
 
-## Estado de la fase
-
-Paso 4 comprobado. Reservas y visitas se construyen a continuación dentro de esta misma fase. La fase 5 todavía no se inicia.
-
 Se verificaron visualmente en el navegador integrado la navegación Empresas, el listado vacío y el formulario Nueva empresa. Se ajustó el ancho del enlace Volver al estilo del mock, sin crear empresas reales durante la revisión.
 
 ## Paso 5: reservas
@@ -50,3 +46,32 @@ Para probar este paso:
 2. Si falta alguno, usar Registrar un lugar en la misma pantalla; al guardar se selecciona y el borrador se conserva.
 3. Guardar y comprobar código, estado Esperando y datos. Aceptar para pasar a En cola.
 4. Editar fecha o notas y comprobar que conserva código y lugar. Cancelar pide un motivo y después impide editar o cambiar de estado.
+
+## Paso 6: visitas
+
+RF-013a, RF-013b, RF-002, RNF-005 y RNF-009. La visita se inicia desde una reserva En cola, guarda la hora real de Colombia y registra al responsable en bitácora. Una reserva solo tiene una visita. Iniciar y finalizar usan POST con token de sesión y vuelven a comprobar los permisos en el servicio.
+
+- El detalle muestra empresa, sede, salón, inicio, fin, notas y las evaluaciones guardadas con su número de puesto, postura, fecha y puntaje. El Usuario solo puede consultar visitas finalizadas de su empresa; el filtro se aplica en SQL. No se entregan fotos ni rutas de archivos.
+- No se finaliza sin al menos una evaluación guardada. Se conservan las notas ante un error. Al finalizar, visita y reserva pasan a Finalizada, se guarda la hora real de fin y se registran ambos cambios en bitácora, todo en una sola transacción.
+- La calificación usa el máximo de todos los análisis de la última evaluación de cada puesto dentro de esta visita, sin perder el lado derecho o izquierdo. Después promedia los puestos con puntaje disponible y guarda un decimal. Los análisis y evaluaciones anteriores se conservan.
+- Una evaluación Sin registro fotográfico puede existir sin análisis RULA. No se inventa un cero: ese puesto no entra al promedio; si ninguno tiene puntaje, la calificación queda vacía y la pantalla dice «Sin calificación disponible».
+- La cancelación queda bloqueada desde el inicio de la visita. Las visitas finalizadas no se reabren ni se sobrescriben. Si falla cualquier escritura, incluida la segunda entrada de bitácora, se revierten todos los cambios de la operación.
+
+Comprobación del paso 6: `mvn compile test`, **493 pruebas aprobadas, 0 fallos, 0 errores y 0 omitidas**. Se añadieron 16 casos a las 477 anteriores: inicio único, estados de origen, cierre vacío, promedio de puestos con múltiples evaluaciones y fotos, ambos lados, ausencia de puntajes, notas inválidas, hora de fin, privacidad por empresa, tokens, campos manipulados y reversión de fallos parciales.
+
+Comprobación visual en el navegador integrado: inicio desde una reserva En cola, visita vacía sin botón de finalizar, lista de evaluaciones, formulario de notas, cierre con puntajes 4 y 7 que dio **5.5**, notas con párrafos conservados y reserva Finalizada. Se usaron metadatos ficticios y una transacción temporal revertida al cerrar; no se crearon fotos ni datos reales de demostración.
+
+Para probar este paso:
+
+1. Crear una reserva y aceptarla. Abrir su detalle y pulsar Iniciar visita: aparece En curso con hora real.
+2. Volver a la reserva: muestra Ver visita y ya no ofrece Cancelar. Repetir el inicio no crea otra visita.
+3. Abrir la visita vacía: explica que requiere una evaluación y no ofrece finalizarla. El servidor también rechaza un envío directo sin evaluaciones.
+4. La pantalla para crear evaluaciones corresponde a la **fase 5**. En esta fase el cierre con evaluaciones ya guardadas se comprueba con las pruebas reversibles de MySQL y la vista temporal descrita arriba; no se debe insertar información manualmente en la base real.
+5. Cuando existan evaluaciones, pulsar Finalizar visita, escribir notas y confirmar. Verificar fin real, promedio, notas y estado Finalizada tanto en visita como en reserva.
+6. Ingresar como Usuario de esa empresa: solo aparecen sus visitas finalizadas y no hay controles de modificación. Una dirección de otra empresa no permite consultar sus datos.
+
+## Estado de la fase
+
+**Fase 4 completa: pasos 4, 5 y 6.** Cada paso tiene compilación, suite completa y su propio commit. Se conserva el esquema, las cuentas, los datos y los documentos existentes; no se ejecutó el script inicial ni se agregaron dependencias. Los datos de las pruebas se revirtieron mediante ROLLBACK.
+
+Pendiente para las fases siguientes: crear evaluaciones y fotos en fase 5; búsqueda y filtros completos, indicadores e informe en fase 6; recorrido de compatibilidad en Chrome, Edge y Firefox en fase 7. La revisión visual de esta fase se hizo en el navegador integrado. No se inicia la fase 5 hasta el OK de Andy.

@@ -45,7 +45,7 @@ public final class Html {
         String cabecera = "";
         if (s != null && s.cuenta() != null) {
             Cuenta c = s.cuenta();
-            String menu = c.temporal() ? "" : "<a class=\"btn sm\" href=\"/\">Inicio</a><a class=\"btn sm\" href=\"/empresas\">Empresas</a><a class=\"btn sm\" href=\"/reservas\">Reservas</a>"
+            String menu = c.temporal() ? "" : "<a class=\"btn sm\" href=\"/\">Inicio</a><a class=\"btn sm\" href=\"/empresas\">Empresas</a><a class=\"btn sm\" href=\"/reservas\">Reservas</a><a class=\"btn sm\" href=\"/visitas\">Visitas</a>"
                     + (c.rol() == Rol.ADMINISTRADOR ? "<a class=\"btn sm\" href=\"/usuarios\">Usuarios</a>" : "");
             cabecera = "<header class=\"top\"><div class=\"wrap\"><a class=\"lockup\" href=\"/\">APLOMO.</a>"
                     + "<nav class=\"row\" aria-label=\"Principal\">" + menu + "</nav><div class=\"who\">"
