@@ -64,6 +64,7 @@
                 <configuration>
                     <systemPropertyVariables>
                         <aplomo.db.url>jdbc:mysql://localhost:3306/rula_ergonomia_pruebas?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=America/Bogota&amp;characterEncoding=UTF-8</aplomo.db.url>
+                        <user.timezone>America/Bogota</user.timezone>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -75,6 +76,12 @@
                 <version>3.1.1</version>
                 <configuration>
                     <mainClass>co.aplomo.App</mainClass>
+                    <systemProperties>
+                        <systemProperty>
+                            <key>user.timezone</key>
+                            <value>America/Bogota</value>
+                        </systemProperty>
+                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>
