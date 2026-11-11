@@ -21,7 +21,7 @@ public final class PaginasReservas {
     /** Lista las reservas ya filtradas por empresa, sin acciones de gestión para Usuario. */
     public static String lista(Sesion sesion, List<Ficha> reservas) {
         StringBuilder html = new StringBuilder("<div class=\"row between\"><p class=\"muted\">")
-                .append(reservas.size()).append(" reservas</p>");
+                .append(Html.plural(reservas.size(), "reserva")).append("</p>");
         if (admin(sesion)) html.append(enlace("/reservas/nueva", "Nueva reserva", true));
         html.append("</div>");
         if (reservas.isEmpty()) {

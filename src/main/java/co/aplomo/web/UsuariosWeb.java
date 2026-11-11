@@ -25,7 +25,9 @@ public final class UsuariosWeb {
         Permisos.administrador(s.cuenta());
         String ruta=x.getRequestURI().getPath(); boolean post=x.getRequestMethod().equals("POST");
         if(ruta.equals("/usuarios") && !post) {
-            Router.enviar(x,200,PaginasUsuarios.lista(s,usuarios.listar(s.cuenta()),usuarios.empresas(s.cuenta()),"guardado=1".equals(x.getRequestURI().getRawQuery()))); return;
+            String q=x.getRequestURI().getRawQuery();
+            String aviso="guardado=1".equals(q) ? "Cuenta actualizada." : "creado=1".equals(q) ? "Cuenta creada." : null;
+            Router.enviar(x,200,PaginasUsuarios.lista(s,usuarios.listar(s.cuenta()),usuarios.empresas(s.cuenta()),aviso)); return;
         }
         if(ruta.equals("/usuarios/nuevo") && !post) {
             Router.enviar(x,200,PaginasUsuarios.formulario(s,null,usuarios.empresas(s.cuenta()),Map.of(),null)); return;
@@ -48,7 +50,7 @@ public final class UsuariosWeb {
             } catch(SQLException e) {
                 Router.enviar(x,503,PaginasUsuarios.formulario(s,anterior,opciones,f,"No pudimos guardar la cuenta. Tus datos siguen en el formulario; inténtalo de nuevo.")); return;
             }
-            Router.redirigir(x,edicion && id==s.cuenta().id() ? "/login" : "/usuarios?guardado=1"); return;
+            Router.redirigir(x,edicion && id==s.cuenta().id() ? "/login" : "/usuarios?" + (edicion ? "guardado=1" : "creado=1")); return;
         }
         if(post && m.matches() && !edicion) {
             try { usuarios.estado(s.cuenta(),id,m.group(2).equals("activar")); }

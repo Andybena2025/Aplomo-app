@@ -125,6 +125,6 @@ public final class Usuarios {
 
     private void duplicados(Connection con,String correo,int mismoId) throws SQLException {
         Cuenta repetida=dao.porCorreo(con,correo);
-        if(repetida!=null && repetida.id()!=mismoId) throw new IllegalArgumentException("El correo ya pertenece a "+repetida.nombre()+". Edita o reactiva esa cuenta.");
+        if(repetida!=null && repetida.id()!=mismoId) throw new IllegalArgumentException("El correo ya pertenece a "+repetida.nombre()+(repetida.nombre().endsWith(".") ? "" : ".")+" Edita o reactiva esa cuenta.");
     }
 }

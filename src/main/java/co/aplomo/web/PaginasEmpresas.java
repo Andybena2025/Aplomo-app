@@ -18,7 +18,7 @@ public final class PaginasEmpresas {
     /** Lista empresas respetando el alcance ya filtrado por el servicio. */
     public static String lista(Sesion sesion, List<Empresa> empresas, String aviso) {
         StringBuilder html = new StringBuilder(Html.aviso(aviso, "Datos guardados.".equals(aviso) || "Registro reactivado.".equals(aviso)));
-        html.append("<div class=\"row between\"><p class=\"muted\">").append(empresas.size()).append(" empresas</p>");
+        html.append("<div class=\"row between\"><p class=\"muted\">").append(Html.plural(empresas.size(), "empresa")).append("</p>");
         if (admin(sesion)) html.append(enlace("/empresas/nueva", "Nueva empresa", true));
         html.append("</div><div class=\"grid2\">");
         for (Empresa empresa : empresas) {

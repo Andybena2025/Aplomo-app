@@ -54,6 +54,16 @@ public final class Html {
                 + String.format(LOGO_SVG, svgH, svgH, marginB, marginR) + "<span>PLOMO.</span></span>";
     }
 
+    /** "1 reserva", "3 reservas": singular cuando n == 1, plural en otro caso (RNF-007). */
+    public static String plural(int n, String singular) {
+        return n + " " + (n == 1 ? singular : singular + "s");
+    }
+
+    /** Evita doble punto cuando un nombre ya termina en punto, como "S.A.S." (RNF-007). */
+    public static String punto(String texto) {
+        return texto != null && texto.endsWith(".") ? "" : ".";
+    }
+
     /** Escapa texto y atributos para que los datos no se ejecuten como HTML (RNF-004). */
     public static String escapar(String texto) {
         return texto == null ? "" : texto.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")

@@ -14,7 +14,7 @@ public final class PaginasVisitas {
 
     /** Lista las visitas permitidas por el servicio para cada rol. */
     public static String lista(Sesion sesion, List<Ficha> visitas) {
-        StringBuilder html = new StringBuilder("<p class=\"muted\">").append(visitas.size()).append(" visitas</p>");
+        StringBuilder html = new StringBuilder("<p class=\"muted\">").append(Html.plural(visitas.size(), "visita")).append("</p>");
         if (visitas.isEmpty()) {
             html.append("<section class=\"card stack\"><h2>Tus visitas</h2><p class=\"muted\">Todavía no hay visitas disponibles.</p>");
             if (admin(sesion)) html.append(enlace("/reservas", "Ver reservas", false));
@@ -46,7 +46,7 @@ public final class PaginasVisitas {
                 .append(dato("Calificación", calificacion(ficha))).append(dato("Notas", ficha.visita().notas())).append("</dl>")
                 .append(enlace("/reservas/" + ficha.visita().reserva(), "Ver " + ficha.codigoReserva(), false)).append("</section>")
                 .append("<section class=\"stack\"><div class=\"row between\"><h2>Evaluaciones</h2><span class=\"muted\">")
-                .append(evaluaciones.size()).append(" registradas</span></div>");
+                .append(Html.plural(evaluaciones.size(), "registrada")).append("</span></div>");
         if (evaluaciones.isEmpty()) html.append("<p class=\"muted\">Todavía no hay evaluaciones registradas en esta visita.</p>");
         else {
             html.append("<div class=\"tablewrap\"><table><thead><tr><th>Puesto</th><th>Fecha</th><th>Postura</th><th>Puntaje</th></tr></thead><tbody>");

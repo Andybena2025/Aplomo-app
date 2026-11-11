@@ -11,11 +11,11 @@ public final class PaginasUsuarios {
     private PaginasUsuarios() {}
 
     /** Lista cuentas sin mostrar hashes, claves ni contadores internos (RF-003, RNF-004). */
-    public static String lista(Sesion s,List<Cuenta> cuentas,List<Opcion> empresas,boolean guardado) {
+    public static String lista(Sesion s,List<Cuenta> cuentas,List<Opcion> empresas,String aviso) {
         Map<Integer,String> nombres=new HashMap<>(); empresas.forEach(e->nombres.put(e.id(),e.nombre()));
-        StringBuilder contenido=new StringBuilder(Html.aviso(guardado ? "Cuenta actualizada." : null,true));
-        contenido.append("<div class=\"row between\"><p class=\"muted\">").append(cuentas.size())
-                .append(" cuentas registradas</p><a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a></div><div class=\"grid2\">");
+        StringBuilder contenido=new StringBuilder(Html.aviso(aviso,true));
+        contenido.append("<div class=\"row between\"><p class=\"muted\">").append(Html.plural(cuentas.size(), "cuenta"))
+                .append(" registrada").append(cuentas.size() == 1 ? "" : "s").append("</p><a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a></div><div class=\"grid2\">");
         for(Cuenta c:cuentas) {
             contenido.append("<article class=\"card stack\"><div class=\"row between\"><h2>").append(Html.escapar(c.nombre()))
                     .append("</h2><span class=\"tag\">").append(estado(c.estado())).append("</span></div><dl class=\"datos-cuenta\">")

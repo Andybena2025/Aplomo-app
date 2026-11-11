@@ -121,10 +121,10 @@ public final class Empresas {
             for (Empresa otra : empresas.buscarTodos(con, 0, 0)) {
                 if (otra.id() == dato.id()) continue;
                 if (Validacion.nombre(otra.nit()).replaceAll("\\s+", "").equals(Validacion.nombre(dato.nit()))) {
-                    throw new IllegalArgumentException("El NIT ya pertenece a " + otra.nombre() + ". Edita o reactiva esa empresa.");
+                    throw new IllegalArgumentException("El NIT ya pertenece a " + otra.nombre() + (otra.nombre().endsWith(".") ? "" : ".") + " Edita o reactiva esa empresa.");
                 }
                 if (Validacion.nombreEmpresa(otra.nombre()).equals(Validacion.nombreEmpresa(dato.nombre()))) {
-                    aviso = "Existe otra empresa con nombre similar: " + otra.nombre() + ". Revisa que sean empresas diferentes.";
+                    aviso = "Existe otra empresa con nombre similar: " + otra.nombre() + (otra.nombre().endsWith(".") ? "" : ".") + " Revisa que sean empresas diferentes.";
                 }
             }
             try { return new Guardado(empresas.guardar(con, dato), aviso); }
@@ -334,7 +334,7 @@ public final class Empresas {
 
     private static void duplicado(int id, String nombre, int otroId, String otroNombre) {
         if (id != otroId && Validacion.nombre(nombre).equals(Validacion.nombre(otroNombre))) {
-            throw new IllegalArgumentException("Ya existe " + otroNombre + ". Edita o reactiva ese registro.");
+            throw new IllegalArgumentException("Ya existe " + otroNombre + (otroNombre.endsWith(".") ? "" : ".") + " Edita o reactiva ese registro.");
         }
     }
 
