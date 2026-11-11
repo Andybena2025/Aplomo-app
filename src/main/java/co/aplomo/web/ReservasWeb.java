@@ -25,6 +25,9 @@ public final class ReservasWeb {
     /** Comparte los servicios de agenda y configuración con la aplicación y las pruebas. */
     public ReservasWeb(Reservas reservas, Empresas empresas) { this.reservas = reservas; this.empresas = empresas; }
 
+    /** Expone el servicio para que el Inicio consulte datos sin duplicar la lógica de acceso. */
+    public Reservas servicio() { return reservas; }
+
     /** Atiende únicamente rutas y transiciones de reservas, con permisos de servidor. */
     public void atender(HttpExchange x, Sesion sesion, Map<String,String> datos) throws IOException, SQLException {
         String ruta = x.getRequestURI().getPath();

@@ -4,7 +4,6 @@ import co.aplomo.dao.VisitaDao.*;
 import co.aplomo.modelo.Cuenta.Rol;
 import co.aplomo.seguridad.Sesiones.Sesion;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import static co.aplomo.web.Html.escapar;
 import static co.aplomo.web.PaginasEmpresas.enlace;
@@ -12,7 +11,6 @@ import static co.aplomo.web.PaginasEmpresas.enlace;
 /** RF-013a, RF-013b: visitas y evaluaciones consultables sin entregar fotografías. */
 public final class PaginasVisitas {
     private PaginasVisitas() {}
-    private static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     /** Lista las visitas permitidas por el servicio para cada rol. */
     public static String lista(Sesion sesion, List<Ficha> visitas) {
@@ -54,7 +52,7 @@ public final class PaginasVisitas {
             html.append("<div class=\"tablewrap\"><table><thead><tr><th>Puesto</th><th>Fecha</th><th>Postura</th><th>Puntaje</th></tr></thead><tbody>");
             for (Evaluacion evaluacion : evaluaciones) {
                 html.append("<tr><td>Puesto ").append(evaluacion.numero()).append("</td><td>")
-                        .append(escapar(evaluacion.fecha().toString())).append("</td><td>")
+                        .append(Html.fecha(evaluacion.fecha())).append("</td><td>")
                         .append(escapar(evaluacion.postura())).append("</td><td>")
                         .append(evaluacion.puntaje() == null ? "Sin puntaje disponible" : evaluacion.puntaje()).append("</td></tr>");
             }
@@ -80,7 +78,7 @@ public final class PaginasVisitas {
                         + "<button class=\"btn p\"" + (sinEvaluaciones ? " disabled" : "") + ">Finalizar visita</button></form>", sesion);
     }
 
-    private static String fecha(LocalDateTime valor) { return valor == null ? "—" : FECHA.format(valor); }
+    private static String fecha(LocalDateTime valor) { return Html.fechaHora(valor); }
     private static String estado(String valor) { return valor.equals("EN_CURSO") ? "En curso" : "Finalizada"; }
     private static String calificacion(Ficha ficha) { return ficha.visita().calificacion() == null ? "Sin calificación disponible" : ficha.visita().calificacion().toPlainString(); }
     private static String dato(String titulo, String valor) { return "<div><dt>" + escapar(titulo) + "</dt><dd class=\"texto-notas\">" + escapar(valor) + "</dd></div>"; }

@@ -5,10 +5,54 @@ import co.aplomo.modelo.Cuenta.Rol;
 import co.aplomo.seguridad.Sesiones.Sesion;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /** RNF-007, RNF-011: HTML común; todos los datos variables pasan por escapar. */
 public final class Html {
     private Html() {}
+
+    /** Zona horaria del sistema (RNF-007). */
+    public static final ZoneId ZONA = ZoneId.of("America/Bogota");
+
+    private static final String[] MESES = {"ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"};
+
+    /** Formato "20 nov 2026" como en el mock (RNF-007). */
+    public static String fecha(LocalDate fecha) {
+        if (fecha == null) return "";
+        return fecha.getDayOfMonth() + " " + MESES[fecha.getMonthValue() - 1] + " " + fecha.getYear();
+    }
+
+    /** Formato "20 nov 2026 14:00" para marcas de tiempo (RNF-007). */
+    public static String fechaHora(LocalDateTime valor) {
+        if (valor == null) return "—";
+        return fecha(valor.toLocalDate()) + " " + String.format("%02d:%02d", valor.getHour(), valor.getMinute());
+    }
+
+    /** Hoy en la zona horaria del sistema (RNF-007). */
+    public static LocalDate hoy() { return LocalDate.now(ZONA); }
+
+    /** SVG del ícono A-plomada del logo (identidad visual del mock). */
+    private static final String LOGO_SVG =
+            "<svg width=\"%d\" height=\"%d\" viewBox=\"0 0 100 100\" style=\"margin-bottom:%dpx;margin-right:%dpx\" aria-hidden=\"true\">"
+            + "<line x1=\"50\" y1=\"10\" x2=\"16\" y2=\"90\" stroke=\"currentColor\" stroke-width=\"4\" stroke-linecap=\"round\"/>"
+            + "<line x1=\"50\" y1=\"10\" x2=\"84\" y2=\"90\" stroke=\"currentColor\" stroke-width=\"4\" stroke-linecap=\"round\"/>"
+            + "<path d=\"M31.2,54.2 A48,48 0 0 0 68.8,54.2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-dasharray=\"3.6 3.6\" opacity=\".85\"/>"
+            + "<line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"64\" stroke=\"currentColor\" stroke-width=\"1.6\"/>"
+            + "<path d=\"M47.84,64 h4.32 v2.16 L55.04,70.48 L50,82.72 L44.96,70.48 L47.84,66.16 Z\" fill=\"currentColor\"/>"
+            + "<circle cx=\"50\" cy=\"10\" r=\"3.6\" fill=\"currentColor\"/></svg>";
+
+    /** Logo con ícono y texto como en el mock, a la altura indicada en píxeles. */
+    public static String logo(int altura) {
+        int svgH = (int)(altura * 0.78);
+        int marginB = (int)(altura * 0.19);
+        int marginR = (int)(altura * 0.03);
+        return "<span class=\"lockup\" style=\"font-size:" + altura + "px\" aria-label=\"APLOMO.\">"
+                + String.format(LOGO_SVG, svgH, svgH, marginB, marginR) + "<span>PLOMO.</span></span>";
+    }
 
     /** Escapa texto y atributos para que los datos no se ejecuten como HTML (RNF-004). */
     public static String escapar(String texto) {
@@ -40,28 +84,64 @@ public final class Html {
         }
     }
 
-    /** Genera una página con cabecera, menú permitido y formulario para salir (RF-002). */
+    /** Genera una página con cabecera igual al mock: atrás, logo, pestañas, nombre+avatar, salir (RF-002). */
     public static String pagina(String titulo, String contenido, Sesion s) {
+        return pagina(titulo, contenido, s, true);
+    }
+
+    /** Versión con control del pagehead para páginas que definen su propio encabezado (como Inicio). */
+    public static String pagina(String titulo, String contenido, Sesion s, boolean conPagehead) {
         String cabecera = "";
         if (s != null && s.cuenta() != null) {
             Cuenta c = s.cuenta();
-            String menu = c.temporal() ? "" : "<a class=\"btn sm\" href=\"/\">Inicio</a><a class=\"btn sm\" href=\"/empresas\">Empresas</a><a class=\"btn sm\" href=\"/reservas\">Reservas</a><a class=\"btn sm\" href=\"/visitas\">Visitas</a>"
-                    + (c.rol() == Rol.ADMINISTRADOR ? "<a class=\"btn sm\" href=\"/usuarios\">Usuarios</a>" : "");
-            cabecera = "<header class=\"top\"><div class=\"wrap\"><a class=\"lockup\" href=\"/\">APLOMO.</a>"
-                    + "<nav class=\"row\" aria-label=\"Principal\">" + menu + "</nav><div class=\"who\">"
-                    + escapar(c.nombre()) + " · " + (c.rol() == Rol.ADMINISTRADOR ? "Administrador" : "Usuario")
-                    + "</div><a class=\"btn sm\" href=\"/cuenta/contrasena\">Cambiar contraseña</a>"
-                    + "<form method=\"post\" action=\"/logout\">" + csrf(s)
-                    + "<button class=\"btn sm\">Cerrar sesión</button></form></div></header>";
+            String iniciales = iniciales(c.nombre());
+            String rolTexto = c.rol() == Rol.ADMINISTRADOR ? "Administrador" : "Usuario";
+            // Pestañas de texto con la activa resaltada, como en el mock
+            String[][] tabs = c.rol() == Rol.ADMINISTRADOR
+                    ? new String[][]{{"Inicio","/"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Usuarios","/usuarios"}}
+                    : new String[][]{{"Inicio","/"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}};
+            StringBuilder nav = new StringBuilder();
+            if (!c.temporal()) {
+                for (String[] tab : tabs) {
+                    nav.append("<a class=\"nav-tab\" href=\"").append(tab[1]).append("\">").append(tab[0]).append("</a>");
+                }
+            }
+            cabecera = "<header class=\"top\"><div class=\"wrap\">"
+                    // Botón Atrás + logo con ícono
+                    + "<div class=\"row\" style=\"gap:10px;flex-wrap:nowrap\">"
+                    + "<button class=\"btn sm\" onclick=\"history.back()\" aria-label=\"Atrás\">← <span class=\"hideSm\">Atrás</span></button>"
+                    + "<a href=\"/\" style=\"text-decoration:none\">" + logo(26) + "</a></div>"
+                    // Pestañas de navegación
+                    + "<nav class=\"nav\" aria-label=\"Menú principal\">" + nav + "</nav>"
+                    // Nombre + rol + avatar + Salir (Cambiar contraseña dentro del menú de cuenta)
+                    + "<div class=\"who\"><div class=\"meta\" style=\"text-align:right\"><div>"
+                    + escapar(c.nombre()) + "</div><div class=\"muted small\">" + escapar(rolTexto) + "</div></div>"
+                    + "<a href=\"/cuenta/contrasena\" class=\"avatar\" title=\"Cambiar contraseña\">" + escapar(iniciales) + "</a>"
+                    + "<form method=\"post\" action=\"/logout\" style=\"margin:0\">" + csrf(s)
+                    + "<button class=\"btn sm\">Salir</button></form></div>"
+                    + "</div></header>";
         }
+        String pagehead = conPagehead
+                ? "<div class=\"pagehead\"><div><span class=\"eyebrow\">Ergonomía con precisión</span><h1>" + escapar(titulo) + "</h1></div></div>"
+                : "";
         return "<!doctype html><html lang=\"es\"><head><meta charset=\"UTF-8\">"
                 + "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">"
                 + "<title>" + escapar(titulo) + " · APLOMO.</title>"
                 + "<link href=\"https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&display=swap\" rel=\"stylesheet\">"
                 + "<link rel=\"stylesheet\" href=\"/static/css/aplomo.css\">"
                 + "<script src=\"/static/js/cuenta.js\" defer></script><script src=\"/static/js/reservas.js\" defer></script></head><body>" + cabecera
-                + "<main class=\"wrap stack\"><div class=\"pagehead\"><div><span class=\"eyebrow\">Ergonomía con precisión</span><h1>"
-                + escapar(titulo) + "</h1></div></div>" + contenido + "</main></body></html>";
+                + "<main class=\"wrap\">" + pagehead + contenido + "</main></body></html>";
+    }
+
+    /** Iniciales del nombre para el avatar circular del mock (máximo 2 letras). */
+    private static String iniciales(String nombre) {
+        if (nombre == null || nombre.isBlank()) return "?";
+        String[] partes = nombre.strip().split("\\s+");
+        StringBuilder ini = new StringBuilder();
+        for (int i = 0; i < Math.min(2, partes.length); i++) {
+            if (!partes[i].isEmpty()) ini.appendCodePoint(partes[i].codePointAt(0));
+        }
+        return ini.toString().toUpperCase(Locale.ROOT);
     }
 
     /** Incluye el token de la sesión en un formulario POST (RNF-004). */

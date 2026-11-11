@@ -142,8 +142,67 @@ public final class Router implements HttpHandler {
         }
         if (ruta.equals("/") && metodo.equals("GET")) {
             String aviso = "contrasena=1".equals(x.getRequestURI().getRawQuery()) ? Html.aviso("Contraseña actualizada.",true) : "";
-            enviar(x,200,Html.pagina("Inicio",aviso + "<section class=\"card stack\"><h2>Bienvenido, "
-                    + Html.escapar(s.cuenta().nombre()) + "</h2><p>Tu sesión está activa. Desde aquí puedes acceder a las opciones de tu cuenta.</p></section>",s)); return;
+            Cuenta c = s.cuenta();
+            String nombre = c.nombre().contains(" ") ? c.nombre().substring(0, c.nombre().indexOf(' ')) : c.nombre();
+            // Consultar datos reales para el panel de inicio (RF-013a)
+            var listaReservas = reservas.servicio().listar(c);
+            var listaVisitas = visitas.servicio().listar(c);
+            long enCurso = listaVisitas.stream().filter(v -> v.visita().estado().equals("EN_CURSO")).count();
+            long enCola = listaReservas.stream().filter(r -> r.reserva().estado().equals("EN_COLA")).count();
+            long totalReservas = listaReservas.size();
+            long totalVisitas = listaVisitas.size();
+            StringBuilder inicio = new StringBuilder(aviso);
+            // Saludo con fecha como en el mock
+            inicio.append("<div class=\"pagehead\"><div><span class=\"eyebrow\">")
+                    .append(Html.fecha(Html.hoy()).toUpperCase(java.util.Locale.ROOT)).append("</span><h1>Hola, ")
+                    .append(Html.escapar(nombre)).append("</h1></div></div>");
+            // 4 tarjetas KPI como en el mock
+            inicio.append("<div class=\"grid3\" style=\"margin-bottom:24px\">")
+                    .append(kpi("Visitas en curso", String.valueOf(enCurso), null))
+                    .append(kpi("Reservas en cola", String.valueOf(enCola), null))
+                    .append(kpi("Total reservas", String.valueOf(totalReservas), null))
+                    .append(kpi("Total visitas", String.valueOf(totalVisitas), null))
+                    .append("</div>");
+            // Visitas en curso y reservas recientes como en el mock
+            inicio.append("<div class=\"grid2\"><section class=\"stack\"><h3>Visitas en curso</h3>");
+            var cursando = listaVisitas.stream().filter(v -> v.visita().estado().equals("EN_CURSO")).toList();
+            if (cursando.isEmpty()) {
+                inicio.append("<div class=\"empty\">No hay visitas en curso. Inicia una desde una reserva En cola.</div>");
+            } else {
+                for (var v : cursando) {
+                    inicio.append("<div class=\"card row between\"><div><div>").append(Html.escapar(v.empresaNombre()))
+                            .append("</div><div class=\"muted small\">").append(Html.escapar(v.sedeNombre()))
+                            .append(" · desde ").append(Html.fecha(v.visita().inicio().toLocalDate()))
+                            .append("</div></div><a class=\"btn p sm\" href=\"/visitas/").append(v.visita().id())
+                            .append("\">Continuar</a></div>");
+                }
+            }
+            inicio.append("</section><section class=\"stack\"><h3>Reservas</h3>");
+            var pendientes = listaReservas.stream()
+                    .filter(r -> r.reserva().estado().equals("EN_COLA") || r.reserva().estado().equals("ESPERANDO")).toList();
+            if (pendientes.isEmpty()) {
+                inicio.append("<div class=\"empty\">No hay reservas pendientes.</div>");
+            } else {
+                for (var r : pendientes) {
+                    inicio.append("<div class=\"card stack\" style=\"gap:10px\"><div class=\"row between\"><div><div>")
+                            .append(Html.escapar(r.empresaNombre())).append("</div><div class=\"muted small\">")
+                            .append(Html.escapar(r.sedeNombre())).append(" · ").append(Html.fecha(r.reserva().fecha()))
+                            .append(" · ").append(r.reserva().inicio()).append("</div></div><span class=\"tag")
+                            .append(r.reserva().estado().equals("EN_COLA") ? " good" : " warn").append("\">")
+                            .append(r.reserva().estado().equals("EN_COLA") ? "En cola" : "Esperando")
+                            .append("</span></div>");
+                    if (r.reserva().descripcion() != null && !r.reserva().descripcion().isBlank()) {
+                        inicio.append("<p class=\"small muted\">").append(Html.escapar(r.reserva().descripcion())).append("</p>");
+                    }
+                    if (r.reserva().estado().equals("EN_COLA") && r.visita() == null) {
+                        inicio.append("<div class=\"row\"><a class=\"btn sm p\" href=\"/reservas/").append(r.reserva().id())
+                                .append("\">Ver reserva</a></div>");
+                    }
+                    inicio.append("</div>");
+                }
+            }
+            inicio.append("</section></div>");
+            enviar(x,200,Html.pagina("Inicio",inicio.toString(),s,false)); return;
         }
         enviar(x,404,Html.pagina("Página no disponible","<a href=\"/\">Volver al inicio</a>",s));
     }
@@ -222,6 +281,11 @@ public final class Router implements HttpHandler {
     /** Redirige después de un POST para evitar repetir operaciones al recargar (RNF-002). */
     public static void redirigir(HttpExchange x, String ruta) throws IOException {
         x.getResponseHeaders().set("Location",ruta); x.sendResponseHeaders(303,-1);
+    }
+
+    private static String kpi(String titulo, String valor, String estilo) {
+        return "<div class=\"card kpi\"><span class=\"eyebrow\">" + Html.escapar(titulo) + "</span><b class=\"num\""
+                + (estilo != null ? " style=\"" + estilo + "\"" : "") + ">" + Html.escapar(valor) + "</b></div>";
     }
 
     private static void estatico(HttpExchange x, String ruta) throws IOException {

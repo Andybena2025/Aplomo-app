@@ -33,7 +33,7 @@ public final class PaginasReservas {
                 html.append("<tr><td>").append(escapar(r.codigo())).append("</td><td>")
                         .append(escapar(ficha.empresaNombre())).append("<br><span class=\"muted small\">")
                         .append(escapar(ficha.sedeNombre())).append(" · ").append(escapar(ficha.salonNombre()))
-                        .append("</span></td><td class=\"num\">").append(escapar(r.fecha().toString())).append("<br>")
+                        .append("</span></td><td class=\"num\">").append(Html.fecha(r.fecha())).append("<br>")
                         .append(escapar(r.inicio().toString())).append("–").append(escapar(r.fin().toString()))
                         .append("</td><td>").append(escapar(categoria(r.categoria()))).append("</td><td><span class=\"tag\">")
                         .append(escapar(estado(r.estado()))).append("</span></td><td>")
@@ -52,7 +52,7 @@ public final class PaginasReservas {
                 .append(escapar(ficha.empresaNombre())).append("</h2><span class=\"tag\">").append(escapar(estado(r.estado())))
                 .append("</span></div><p class=\"muted\">").append(escapar(ficha.sedeNombre())).append(" · ")
                 .append(escapar(ficha.salonNombre())).append("</p><dl class=\"datos-cuenta\">")
-                .append(dato("Fecha", r.fecha().toString())).append(dato("Horario", r.inicio() + "–" + r.fin()))
+                .append(dato("Fecha", Html.fecha(r.fecha()))).append(dato("Horario", r.inicio() + "–" + r.fin()))
                 .append(dato("Categoría", categoria(r.categoria()))).append(dato("Descripción", r.descripcion()))
                 .append(dato("Notas", r.notas()));
         if (r.motivo() != null) html.append(dato("Cancelación", r.motivo()));

@@ -22,6 +22,9 @@ public final class VisitasWeb {
     /** Recibe los servicios para mantener el flujo entre reserva y visita. */
     public VisitasWeb(Visitas visitas, Reservas reservas) { this.visitas = visitas; this.reservas = reservas; }
 
+    /** Expone el servicio para que el Inicio consulte datos sin duplicar la lógica de acceso. */
+    public Visitas servicio() { return visitas; }
+
     /** Atiende las rutas con permiso y token ya comprobados por el Router. */
     public void atender(HttpExchange x, Sesion sesion, Map<String,String> datos) throws IOException, SQLException {
         String ruta = x.getRequestURI().getPath();

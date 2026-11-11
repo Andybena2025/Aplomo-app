@@ -82,13 +82,16 @@ textarea.input{min-height:76px;resize:vertical}
 
 /* ====== Barra superior ====== */
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(11,11,12,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.top .wrap{display:flex;align-items:center;gap:18px;min-height:64px;flex-wrap:wrap;padding-block:8px}
+.top .wrap{display:flex;align-items:center;gap:18px;min-height:64px;flex-wrap:nowrap;padding-block:8px}
 .nav{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none}
-.nav button{background:none;border:0;padding:8px 12px;border-radius:999px;color:var(--muted);cursor:pointer;font-size:14px;white-space:nowrap}
-.nav button.on{color:var(--ivory);background:var(--card2)}
-.who{display:flex;align-items:center;gap:10px;font-size:13px}
-.who .avatar{width:30px;height:30px;border-radius:50%;background:var(--card2);border:1px solid var(--line2);display:grid;place-items:center;font-size:12px;color:var(--plat)}
-@media (max-width:720px){.nav{order:3;flex-basis:100%}.who .meta{display:none}}
+.nav-tab{background:none;border:0;padding:8px 12px;border-radius:999px;color:var(--muted);cursor:pointer;font-size:14px;white-space:nowrap;text-decoration:none}
+.nav-tab:hover{color:var(--ivory)}
+.nav-tab.on{color:var(--ivory);background:var(--card2)}
+.who{display:flex;align-items:center;gap:10px;font-size:13px;margin-left:auto;flex-shrink:0}
+.who .meta{text-align:right}
+.who .avatar{width:30px;height:30px;border-radius:50%;background:var(--card2);border:1px solid var(--line2);display:grid;place-items:center;font-size:12px;color:var(--plat);text-decoration:none}
+.hideSm{}
+@media (max-width:720px){.nav{order:3;flex-basis:100%;overflow-x:auto}.who .meta{display:none}.hideSm{display:none}}
 main{padding-block:28px 64px}
 .pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
 
@@ -239,8 +242,9 @@ tr.click:hover td{background:var(--card2)}
 .datos-cuenta dd{margin:0;overflow-wrap:anywhere}
 [hidden]{display:none!important}
 
-/* RF-004, RNF-002: enlaces de navegación con el ancho de su texto, como en el mock. */
+/* RF-004, RNF-002: enlaces y etiquetas con el ancho de su texto, como en el mock. */
 .stack>.btn{align-self:flex-start}
+.stack>.tag{align-self:flex-start}
 
 /* RF-011: notas con sus párrafos y altas en contexto con controles legibles. */
 .texto-notas{white-space:pre-wrap}

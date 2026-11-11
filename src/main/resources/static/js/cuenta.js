@@ -5,6 +5,14 @@ document.querySelectorAll('form:not([data-alta-reserva])').forEach(f => f.addEve
   const b = f.querySelector('button[type="submit"],button:not([type])');
   if (b) { b.disabled = true; b.textContent = 'Procesando…'; }
 }));
+/* Resaltar la pestaña activa según la ruta actual (como el mock). */
+(function(){
+  var path = location.pathname;
+  document.querySelectorAll('.nav-tab').forEach(function(tab){
+    var href = tab.getAttribute('href');
+    if (href === '/' ? path === '/' : path.startsWith(href)) tab.classList.add('on');
+  });
+})();
 const rol = document.querySelector('#rol');
 const empresa = document.querySelector('#empresa');
 if (rol && empresa) {
