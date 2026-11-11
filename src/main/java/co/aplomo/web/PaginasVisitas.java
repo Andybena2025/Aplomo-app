@@ -20,14 +20,14 @@ public final class PaginasVisitas {
             if (admin(sesion)) html.append(enlace("/reservas", "Ver reservas", false));
             html.append("</section>");
         } else {
-            html.append("<div class=\"tablewrap\"><table><thead><tr><th>Reserva</th><th>Empresa y lugar</th><th>Inicio real</th><th>Estado</th><th>Calificación</th><th>Detalle</th></tr></thead><tbody>");
+            html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Reserva</th><th>Empresa y lugar</th><th>Inicio real</th><th>Estado</th><th>Calificación</th><th>Detalle</th></tr></thead><tbody>");
             for (Ficha ficha : visitas) {
-                html.append("<tr><td>").append(escapar(ficha.codigoReserva())).append("</td><td>")
+                html.append("<tr><td data-label=\"Reserva\">").append(escapar(ficha.codigoReserva())).append("</td><td data-label=\"Empresa\">")
                         .append(escapar(ficha.empresaNombre())).append("<br><span class=\"muted small\">")
                         .append(escapar(ficha.sedeNombre())).append(" · ").append(escapar(ficha.salonNombre()))
-                        .append("</span></td><td class=\"num\">").append(fecha(ficha.visita().inicio()))
-                        .append("</td><td><span class=\"").append(claseEstado(ficha.visita().estado())).append("\">")
-                        .append(estado(ficha.visita().estado())).append("</span></td><td>")
+                        .append("</span></td><td data-label=\"Inicio\" class=\"num\">").append(fecha(ficha.visita().inicio()))
+                        .append("</td><td data-label=\"Estado\"><span class=\"").append(claseEstado(ficha.visita().estado())).append("\">")
+                        .append(estado(ficha.visita().estado())).append("</span></td><td data-label=\"Calificación\">")
                         .append(calificacion(ficha)).append("</td><td>").append(enlace("/visitas/" + ficha.visita().id(), "Ver visita", false))
                         .append("</td></tr>");
             }
@@ -50,11 +50,11 @@ public final class PaginasVisitas {
                 .append(Html.plural(evaluaciones.size(), "registrada")).append("</span></div>");
         if (evaluaciones.isEmpty()) html.append("<p class=\"muted\">Todavía no hay evaluaciones registradas en esta visita.</p>");
         else {
-            html.append("<div class=\"tablewrap\"><table><thead><tr><th>Puesto</th><th>Fecha</th><th>Postura</th><th>Puntaje</th></tr></thead><tbody>");
+            html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Puesto</th><th>Fecha</th><th>Postura</th><th>Puntaje</th></tr></thead><tbody>");
             for (Evaluacion evaluacion : evaluaciones) {
-                html.append("<tr><td>Puesto ").append(evaluacion.numero()).append("</td><td>")
-                        .append(Html.fecha(evaluacion.fecha())).append("</td><td>")
-                        .append(escapar(evaluacion.postura())).append("</td><td>")
+                html.append("<tr><td data-label=\"Puesto\">Puesto ").append(evaluacion.numero()).append("</td><td data-label=\"Fecha\">")
+                        .append(Html.fecha(evaluacion.fecha())).append("</td><td data-label=\"Postura\">")
+                        .append(escapar(evaluacion.postura())).append("</td><td data-label=\"Puntaje\">")
                         .append(evaluacion.puntaje() == null ? "Sin puntaje disponible" : evaluacion.puntaje()).append("</td></tr>");
             }
             html.append("</tbody></table></div>");

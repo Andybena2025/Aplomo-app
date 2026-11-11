@@ -91,9 +91,10 @@
         var hero=document.querySelector('.login .hero');
         var pz=document.getElementById('pzOverlay');
         if(!hero||!pz)return;
-        var PW=1400,PH=933,POSX=0.76;
+        var PW=1400,PH=933;
         function fit(){
             var W=hero.clientWidth,H=hero.clientHeight;
+            var POSX=W<820?0.92:0.76;
             var k=Math.max(W/PW,H/PH);
             var iw=PW*k,ih=PH*k;
             pz.style.width=iw+'px';

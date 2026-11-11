@@ -27,15 +27,15 @@ public final class PaginasReservas {
         if (reservas.isEmpty()) {
             html.append("<section class=\"card stack\"><h2>Tu agenda de visitas</h2><p class=\"muted\">Todavía no hay reservas registradas.</p></section>");
         } else {
-            html.append("<div class=\"tablewrap\"><table><thead><tr><th>Reserva</th><th>Empresa y lugar</th><th>Fecha y horario</th><th>Categoría</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>");
+            html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Reserva</th><th>Empresa y lugar</th><th>Fecha y horario</th><th>Categoría</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>");
             for (Ficha ficha : reservas) {
                 Reserva r = ficha.reserva();
-                html.append("<tr><td>").append(escapar(r.codigo())).append("</td><td>")
+                html.append("<tr><td data-label=\"Reserva\">").append(escapar(r.codigo())).append("</td><td data-label=\"Empresa\">")
                         .append(escapar(ficha.empresaNombre())).append("<br><span class=\"muted small\">")
                         .append(escapar(ficha.sedeNombre())).append(" · ").append(escapar(ficha.salonNombre()))
-                        .append("</span></td><td class=\"num\">").append(Html.fecha(r.fecha())).append("<br>")
+                        .append("</span></td><td data-label=\"Fecha\" class=\"num\">").append(Html.fecha(r.fecha())).append("<br>")
                         .append(escapar(r.inicio().toString())).append("–").append(escapar(r.fin().toString()))
-                        .append("</td><td>").append(escapar(categoria(r.categoria()))).append("</td><td><span class=\"")
+                        .append("</td><td data-label=\"Categoría\">").append(escapar(categoria(r.categoria()))).append("</td><td data-label=\"Estado\"><span class=\"")
                         .append(claseEstado(r.estado())).append("\">").append(escapar(estado(r.estado()))).append("</span></td><td>")
                         .append(enlace("/reservas/" + r.id(), "Ver reserva", false)).append("</td></tr>");
             }

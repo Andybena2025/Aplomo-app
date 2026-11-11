@@ -157,7 +157,7 @@ public final class Router implements HttpHandler {
                     .append(Html.fecha(Html.hoy()).toUpperCase(java.util.Locale.ROOT)).append("</span><h1>Hola, ")
                     .append(Html.escapar(nombre)).append("</h1></div></div>");
             // 4 tarjetas KPI como en el mock
-            inicio.append("<div class=\"grid3\" style=\"margin-bottom:24px\">")
+            inicio.append("<div class=\"grid4\" style=\"margin-bottom:24px\">")
                     .append(kpi("Visitas en curso", String.valueOf(enCurso), null))
                     .append(kpi("Reservas en cola", String.valueOf(enCola), null))
                     .append(kpi("Total reservas", String.valueOf(totalReservas), null))
