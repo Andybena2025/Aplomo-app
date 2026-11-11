@@ -56,11 +56,16 @@
                 </configuration>
             </plugin>
 
-            <!-- Plugin para correr las pruebas JUnit 5 -->
+            <!-- Plugin para correr las pruebas JUnit 5 con la base de pruebas -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <aplomo.db.url>jdbc:mysql://localhost:3306/rula_ergonomia_pruebas?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=America/Bogota&amp;characterEncoding=UTF-8</aplomo.db.url>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
 
             <!-- Plugin para ejecutar con: mvn exec:java -->

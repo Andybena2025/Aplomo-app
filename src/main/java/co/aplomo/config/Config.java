@@ -35,9 +35,9 @@ public class Config {
         }
     }
 
-    /** Devuelve la URL JDBC (db.url). */
+    /** Devuelve la URL JDBC; las pruebas la redefinien con -Daplomo.db.url (RNF-010). */
     public static String url() {
-        return props.getProperty("db.url");
+        return System.getProperty("aplomo.db.url", props.getProperty("db.url"));
     }
 
     /** Devuelve el usuario de MySQL (db.usuario). */
