@@ -1,79 +1,132 @@
 # APLOMO.
 
-**Ergonomia con precision** — Sistema web para evaluar posturas en puestos de trabajo con el metodo RULA.
+**Ergonomía con precisión.** Sistema web para evaluar posturas en puestos de trabajo con el método **RULA** (Rapid Upper Limb Assessment).
 
-Proyecto Nuclear de Ingenieria de Software, 3.er semestre, Corporacion Universitaria Empresarial Alexander von Humboldt, periodo 2026-2.
+Proyecto Nuclear de Ingeniería de Software, 3.er semestre · Corporación Universitaria Empresarial Alexander von Humboldt · periodo 2026-2.
 
-## Tecnologias
+![Pantalla de inicio de sesión](docs/evidencia_qa_dispositivos/1366-login.jpg)
 
-- **Java 17+** con Maven
-- **MySQL 8** (21 tablas, tablas RULA precargadas)
-- Servidor HTTP del JDK (`com.sun.net.httpserver.HttpServer`)
-- JDBC con `PreparedStatement` (sin ORM)
-- bcrypt para contrasenas (`org.mindrot:jbcrypt`)
-- JUnit 5 para pruebas
-- HTML, CSS y JavaScript puro (sin frameworks)
+---
 
-## Como correrlo
+## Qué hace
 
-1. **Solo para instalación inicial, si la base no existe**, crear la base de datos en MySQL:
-   ```bash
-   mysql -u root -p < docs/base_de_datos/Script_MySQL_RULA.sql
-   ```
-   Si `rula_ergonomia` ya existe, omitir este paso: el script empieza borrando esa base.
+El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los ángulos del cuerpo y APLOMO. calcula el puntaje RULA con su semáforo. Lo que sale en Rojo pasa a **pendientes de arreglo**, el sistema **propone mejoras** y la empresa consulta sus resultados desde su propia cuenta.
 
-2. **Configurar la conexion:**
-   ```bash
-   cp -n config/db.properties.ejemplo config/db.properties
-   ```
-   Editar `config/db.properties` con tu usuario y clave de MySQL.
+| Rol | Qué puede hacer |
+|---|---|
+| **Administrador** (Ingeniero Industrial) | Todo: cuentas, empresas, sedes, salones y puestos; reservas y visitas; evaluaciones con fotos, ángulos y puntaje RULA; pendientes; sugerencias; reevaluaciones; consultas. |
+| **Usuario** (contacto de la empresa) | Inicia sesión, cambia su contraseña y **consulta** los datos de **su** empresa: reservas, resultados de visitas finalizadas, pendientes y sugerencias. Sin botones de crear ni editar, y nunca ve fotos. |
 
-   Si el archivo ya existe, conservarlo; `cp -n` evita reemplazarlo.
+<p>
+  <img src="docs/evidencia_paso8/inicio.jpg" alt="Inicio del Administrador" width="49%">
+  <img src="docs/evidencia_paso10/resultado-sugerencias-vista-previa.jpg" alt="Resultado RULA con sugerencias" width="49%">
+</p>
+<p>
+  <img src="docs/evidencia_paso8/390-paso4.jpg" alt="Marcar ángulos en el celular" width="24%">
+  <img src="docs/evidencia_paso11/1366-evaluaciones.jpg" alt="Consultas con filtros" width="74%">
+</p>
 
-3. **Compilar y arrancar:**
-   ```bash
-   mvn compile
-   mvn exec:java
-   ```
+---
 
-4. **Abrir** http://localhost:8080 en Chrome, Edge o Firefox.
+## Avance (hoja de ruta)
 
-## Estado de implementación y pruebas
+| Paso | Qué incluye | Estado |
+|---|---|---|
+| 0 | Proyecto, base de datos y estilo del prototipo | ✅ Hecho |
+| 1 | Motor RULA (ángulos, tablas A, B y C, semáforo) con 389 pruebas | ✅ Hecho |
+| 2–3 | Inicio de sesión, contraseñas seguras, bloqueo, inactividad, roles y cuentas | ✅ Hecho |
+| 4–6 | Empresas, sedes, salones, puestos, reservas y visitas | ✅ Hecho |
+| 7 | Evaluación: puesto y postura, condiciones, consentimiento y fotos | ✅ Hecho |
+| 8 | Ángulos con 3 puntos, ajustes, carga y resultado RULA | ✅ Hecho |
+| 9 | Pendientes de arreglo (puestos en Rojo) | ✅ Hecho |
+| 10 | Sugerencias del sistema y seguimiento de mejoras | ✅ Hecho |
+| 11 | Consultas: buscar, filtrar y ordenar en las 11 secciones | ✅ Hecho |
+| 12 | Calificación de sedes y empresa + informe general en PDF | ⏳ Siguiente |
+| 13 | Pulido final, prueba en Chrome, Edge y Firefox, datos de demostración | ⏳ Pendiente |
+| 14 | (Opcional) Detección automática de puntos con IA | 💭 Solo si sobra tiempo |
 
-Fase 2 completa: conexión JDBC, lectura de tablas y niveles desde MySQL, medición de ángulos y motor RULA. Corresponde al paso 1 del plan. La fase 3 (pasos 2 y 3) está completa: ingreso, salida, contraseñas, bloqueo, inactividad, permisos y administración de cuentas.
+**Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 
-La fase 4 (pasos 4, 5 y 6) está completa: empresas y su estructura, reservas con estados y bitácora, e inicio y finalización de visitas. El Paso 7 de la fase 5 está implementado: puesto y postura, seis condiciones, consentimiento y fotos privadas. El Paso 8 está implementado: asistente completo con puntos, ángulos, ajustes, resultados y análisis independientes por foto. El Paso 9 está implementado: pendientes automáticos al guardar un Rojo, seguimiento, estado Arreglado y consulta por empresa. El Paso 10 está implementado: sugerencias automáticas y manuales, edición, quitar sin borrar, estados y acceso a reservar una Reevaluación. El Paso 11 está implementado: once tablas con búsqueda, filtros combinables y orden, con permisos por empresa y resultados de visitas finalizadas para el Usuario. Espera la aprobación de Andy antes del Paso 12. Una visita nueva no se puede cerrar sin evaluaciones.
+---
 
-Con MySQL y la conexión configurados, ejecutar `mvn test`: **686 pruebas aprobadas**, sin fallos, errores ni omisiones, incluidas las 389 de la fase 2 (272 combinaciones de tablas y 10 casos manuales). Instrucciones y desglose: [Pruebas de la fase 2](docs/pruebas_fase_2.md).
+## Instalación rápida
 
-Las instrucciones de acceso y sus pruebas están en [Pruebas de la fase 3](docs/pruebas_fase_3.md).
+Necesitas instalar **dos programas una sola vez**: **Java 21** y **MySQL 8**. Lo demás (Maven y las librerías) se descarga solo.
 
-El recorrido de empresas, reservas y visitas está en [Pruebas de la fase 4](docs/pruebas_fase_4.md). Para usar el puerto de la revisión actual: `mvn -Daplomo.puerto=8081 compile exec:java` y abrir `http://localhost:8081`.
+> Guía completa paso a paso, con solución de errores: **[INSTALAR.md](INSTALAR.md)**
 
-El informe del Paso 7, las comprobaciones de permisos y las capturas por tamaño están en [Informe del Paso 7](docs/informe_paso7.md). Las pruebas y la revisión visual utilizan únicamente `rula_ergonomia_pruebas`.
+### Mac
 
-El [Informe del Paso 8](docs/informe_paso8.md) contiene la tabla de requisitos, los diez casos en pantalla, pruebas de permisos y capturas a cinco tamaños. El puntaje guardado lo calcula el servidor con las tablas de MySQL y NEUTRO = 5°.
+```bash
+git clone https://github.com/Andybena2025/Aplomo-app.git
+cd Aplomo-app
+bash scripts/instalar_mac.sh     # solo la primera vez: Java 21 + MySQL
+bash scripts/iniciar.sh          # crea la base (primera vez) y arranca
+```
 
-El [Informe del Paso 9](docs/informe_paso9.md) contiene requisitos, permisos, decisión de máximo por evaluación, pruebas y capturas de lista, detalle y edición en cinco tamaños. Los pendientes anteriores y su estado Arreglado se conservan.
+### Windows
 
-El [Informe del Paso 10](docs/informe_paso10.md) documenta las correcciones visuales previas, las decisiones de Andy del 11 nov 2026 y las pruebas de Sugerencias. Se accede desde **Pendientes → Sugerencias** o desde una evaluación con análisis guardado. El Usuario solo consulta su empresa y visitas finalizadas.
+1. Descarga el proyecto: botón verde **Code → Download ZIP** y descomprímelo (o `git clone`).
+2. Doble clic en `scripts\instalar_windows.bat` (instala Java 21 y te guía para MySQL).
+3. Doble clic en `scripts\iniciar.bat`.
 
-El [Informe del Paso 11](docs/informe_paso11.md) incluye requisitos, decisión de Andy del 11 nov 2026, pruebas de una visita En curso con Rojo y capturas a cinco tamaños. Entra desde **Inicio → Evaluaciones**, las secciones habituales o **Ver otras secciones**. El Usuario consulta todas sus reservas y los motivos de cancelación, pero solo resultados de visitas finalizadas, sin fotos ni controles de edición.
+Luego abre **http://localhost:8080** en Chrome, Edge o Firefox.
 
-Para una instalación existente nueva, cargar **solo** `docs/base_de_datos/datos_sugerencias.sql` en la base elegida: añade las 11 reglas iniciales sin modificar ni duplicar las existentes, sin borrar y sin cambiar tablas. En el entorno local de Andy ya se cargó ese catálogo en `rula_ergonomia`. Las pruebas lo cargan en su propia transacción en `rula_ergonomia_pruebas` y lo revierten. Nunca ejecutar de nuevo el script SQL inicial sobre una base existente.
+### Primer ingreso
 
-## Prototipo (referencia visual)
+| Correo | Contraseña temporal |
+|---|---|
+| `admin@rula.local` | `Cambiar2026` |
 
-El prototipo funcional que se presento antes de la implementacion esta en linea:
-https://andybena2025.github.io/Aplomo-Proyecto-Nuclear-/
+Al entrar, la app te pide cambiarla (mínimo 8 caracteres, con letras y números). Las cuentas de **Usuario** las crea el Administrador desde **Usuarios**.
 
-Su codigo fuente esta en `docs/referencia/mock_app/` como referencia de estilo y flujo.
+---
+
+## Tecnologías
+
+Sin frameworks, como lo pide la guía del proyecto.
+
+- **Java 17+** con el servidor HTTP del JDK (`com.sun.net.httpserver`)
+- **MySQL 8** con JDBC y `PreparedStatement` (21 tablas, 3FN; tablas RULA y semáforo leídos de la base)
+- **jBCrypt** para contraseñas (costo 10) · **JUnit 5** para pruebas
+- **HTML, CSS y JavaScript puro**, con el estilo "Obsidian & Ivory" del prototipo
+- **Maven** (incluido con `./mvnw`, no hace falta instalarlo)
+
+## Pruebas
+
+```bash
+./mvnw test        # Windows: mvnw.cmd test
+```
+
+**686 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+
+## Estructura
+
+```
+src/main/java/co/aplomo/   código Java (rula = cálculo RULA, servicio, dao, web, seguridad)
+src/main/resources/static/ CSS, JavaScript e imágenes
+src/test/java/             pruebas JUnit
+docs/                      requisitos, método RULA, arquitectura, plan, informes y diagramas
+docs/base_de_datos/        script MySQL, diccionario de datos y reglas de sugerencias
+scripts/                   instalar e iniciar en Mac y Windows
+config/                    db.properties.ejemplo (la copia real nunca se sube)
+```
+
+## Seguridad
+
+Contraseñas con bcrypt, CSRF en cada formulario, consultas con `PreparedStatement`, permisos revisados en el servidor en cada petición, fotos privadas con nombre aleatorio y nada se borra de la base (se desactiva o se cancela).
+
+## Prototipo
+
+El prototipo interactivo que se presentó antes de programar sigue en línea: **https://andybena2025.github.io/Aplomo-Proyecto-Nuclear-/**
 
 ## Equipo
 
-- Laura Gabriella Romero Gomez
-- Johan Andres Zapata Quintero
-- Andres Eduardo Benavides
+- Laura Gabriella Romero Gómez
+- Johan Andrés Zapata Quintero
+- Andrés Eduardo Benavides
+
+Docente: Ing. Arle Morales Ortiz.
 
 ## Licencia
 

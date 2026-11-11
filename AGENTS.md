@@ -52,6 +52,12 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 - **Consultas (respuesta de Andy, 11 nov 2026):** el Usuario consulta todas las reservas de su empresa (Esperando, En cola, Finalizadas y Canceladas con su motivo), sin controles de escritura. «Solo Finalizadas» aplica a resultados: visitas, evaluaciones, puntajes, pendientes y sugerencias En curso permanecen ocultos, también por dirección directa, incluso con análisis Rojo guardado. Las fotos siguen reservadas al Administrador.
 - **Detección automática con IA** (MediaPipe) = Paso 14, solo si Andy lo pide.
 
+## README e instalación (11 nov 2026)
+
+- `README.md` es la portada del producto para el equipo y el docente. Al terminar un paso, actualiza **solo** la fila de ese paso en la tabla "Avance (hoja de ruta)" y el número de pruebas. No agregues párrafos por paso: el detalle va en `docs/informe_pasoN.md`.
+- `INSTALAR.md` y `scripts/` (instalar_mac.sh, instalar_windows.bat, iniciar.sh, iniciar.bat, crear_base_pruebas.sh) son la instalación del equipo. Si cambias algo que afecte la instalación (nueva tabla de datos, puerto, cuenta inicial), actualízalos en el mismo paso.
+- El proyecto trae Maven Wrapper (`./mvnw`, `mvnw.cmd`): úsalo en las instrucciones en lugar de `mvn`.
+
 ## Al terminar CADA paso entrega este informe (obligatorio)
 
 1. Qué hiciste, en español sencillo.
