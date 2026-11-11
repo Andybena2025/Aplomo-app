@@ -57,7 +57,10 @@ public final class PaginasUsuarios {
                 .append(opcion("USUARIO","Usuario","USUARIO".equals(rol))).append("</select></div>")
                 .append("<div class=\"field\" data-empresa><label for=\"empresa\">Empresa del Usuario</label><select class=\"input\" id=\"empresa\" name=\"empresa\">")
                 .append(opcion("","Selecciona una empresa",valores.getOrDefault("empresa","").isEmpty()));
-        for(Opcion e:empresas) form.append(opcion(Integer.toString(e.id()),e.nombre()+(e.activa() ? "" : " (inactiva)"),Integer.toString(e.id()).equals(valores.get("empresa"))));
+        for(Opcion e:empresas) {
+            boolean asignada = c != null && Objects.equals(c.empresa(),e.id());
+            if (e.activa() || asignada) form.append(opcion(Integer.toString(e.id()),e.nombre()+(e.activa() ? "" : " (inactiva)"),Integer.toString(e.id()).equals(valores.get("empresa"))));
+        }
         form.append("</select><span class=\"hint\">El Administrador es independiente. El Usuario consulta únicamente su empresa.</span></div>");
         if(empresas.isEmpty()) form.append(Html.aviso("Todavía no hay empresas registradas. Para crear un Usuario se necesita una empresa existente.",false));
         String clave=Html.campo("temporal",nuevo ? "Contraseña temporal" : "Nueva contraseña temporal (opcional)","password","",100);

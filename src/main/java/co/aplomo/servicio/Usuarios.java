@@ -59,7 +59,7 @@ public final class Usuarios {
         Permisos.administrador(actor); String hash=Contrasenas.cifrar(temporal);
         return tx.ejecutar(con -> {
             dao.bloquearAdministradores(con); autorizar(con,actor);
-            validarEmpresa(con,datos); duplicados(con,datos.correo(),0);
+            validarEmpresa(con,datos,null); duplicados(con,datos.correo(),0);
             try { return dao.crear(con,datos.nombre(),datos.correo(),datos.telefono(),datos.cargo(),datos.rol(),datos.empresa(),hash); }
             catch(SQLIntegrityConstraintViolationException e) { throw new IllegalArgumentException("El correo ya está registrado. Revisa la cuenta existente."); }
         });
@@ -73,7 +73,7 @@ public final class Usuarios {
             List<Cuenta> administradores=dao.bloquearAdministradores(con); autorizar(con,actor);
             Cuenta anterior=exigirCuenta(con,id,true);
             conservarAdministrador(anterior,datos.rol(),anterior.estado(),activos(administradores));
-            validarEmpresa(con,datos); duplicados(con,datos.correo(),id);
+            validarEmpresa(con,datos,anterior.empresa()); duplicados(con,datos.correo(),id);
             try { dao.editar(con,id,datos.nombre(),datos.correo(),datos.telefono(),datos.cargo(),datos.rol(),datos.empresa()); }
             catch(SQLIntegrityConstraintViolationException e) { throw new IllegalArgumentException("El correo ya está registrado. Revisa la cuenta existente."); }
             if(hash!=null) dao.contrasena(con,id,hash,true);
@@ -114,8 +114,13 @@ public final class Usuarios {
         return c;
     }
 
-    private void validarEmpresa(Connection con,Datos datos) throws SQLException {
-        if(datos.empresa()!=null && !empresas.existe(con,datos.empresa())) throw new IllegalArgumentException("La empresa elegida no existe. Selecciona una de la lista.");
+    private void validarEmpresa(Connection con,Datos datos,Integer anterior) throws SQLException {
+        if (datos.empresa() == null) return;
+        co.aplomo.modelo.Empresa empresa = empresas.buscar(con,datos.empresa(),0,false);
+        if (empresa == null) throw new IllegalArgumentException("La empresa elegida no existe. Selecciona una de la lista.");
+        if (!empresa.activo() && !Objects.equals(anterior,empresa.id())) {
+            throw new IllegalArgumentException("La empresa está inactiva. Reactívala antes de asignar cuentas nuevas.");
+        }
     }
 
     private void duplicados(Connection con,String correo,int mismoId) throws SQLException {

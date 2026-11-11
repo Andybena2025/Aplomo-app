@@ -18,6 +18,7 @@ public final class Router implements HttpHandler {
     private final Autenticacion auth;
     private final Sesiones sesiones;
     private final UsuariosWeb usuarios;
+    private final EmpresasWeb empresas;
 
     /** Construye las rutas con servicios reales (RNF-011). */
     public Router() { this(new Autenticacion(),new Sesiones()); }
@@ -25,7 +26,13 @@ public final class Router implements HttpHandler {
     public Router(Autenticacion auth, Sesiones sesiones) { this(auth,sesiones,new co.aplomo.servicio.Usuarios()); }
     /** Comparte los servicios de cuentas para verificar todo el recorrido HTTP (RNF-011). */
     public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios) {
+        this(auth, sesiones, usuarios, new co.aplomo.servicio.Empresas());
+    }
+    /** Comparte los servicios transaccionales de configuración para las pruebas HTTP (RNF-011). */
+    public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
+                  co.aplomo.servicio.Empresas empresas) {
         this.auth=auth; this.sesiones=sesiones; this.usuarios=new UsuariosWeb(usuarios,sesiones);
+        this.empresas=new EmpresasWeb(empresas);
     }
 
     /** Revisa la sesión antes de atender cualquier ruta interna (RF-002). */
@@ -104,6 +111,11 @@ public final class Router implements HttpHandler {
             Permisos.administrador(s.cuenta());
             usuarios.atender(x,s,f); return;
         }
+        if (ruta.equals("/empresas") || ruta.startsWith("/empresas/") || ruta.startsWith("/sedes/")
+                || ruta.startsWith("/salones/") || ruta.startsWith("/areas/") || ruta.startsWith("/cargos/")
+                || ruta.startsWith("/puestos/")) {
+            empresas.atender(x, s, f); return;
+        }
         if (ruta.startsWith("/fotos/")) {
             Permisos.administrador(s.cuenta()); enviar(x,404,Html.pagina("Foto no disponible","",s)); return;
         }
@@ -148,8 +160,20 @@ public final class Router implements HttpHandler {
         }
         byte[] bytes=x.getRequestBody().readNBytes(16385);
         if (bytes.length>16384) throw new IllegalArgumentException("El formulario es demasiado grande.");
+        return parametros(new String(bytes, StandardCharsets.UTF_8));
+    }
+
+    /** Lee parámetros de consulta sin aceptar campos duplicados ni direcciones excesivas (RNF-004). */
+    public static Map<String,String> consulta(HttpExchange x) {
+        String texto = x.getRequestURI().getRawQuery();
+        if (texto == null) return Map.of();
+        if (texto.length() > 16384) throw new IllegalArgumentException("La dirección es demasiado larga.");
+        return parametros(texto);
+    }
+
+    private static Map<String,String> parametros(String texto) {
         Map<String,String> f=new HashMap<>();
-        for (String par : new String(bytes,StandardCharsets.UTF_8).split("&")) {
+        for (String par : texto.split("&")) {
             if (par.isEmpty()) continue;
             String[] partes=par.split("=",2);
             String clave=URLDecoder.decode(partes[0],StandardCharsets.UTF_8);
