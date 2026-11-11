@@ -62,7 +62,13 @@ public final class Router implements HttpHandler {
                 enviar(x,200,Html.login(s,"",aviso)); return;
             }
             Map<String,String> f = formulario(x);
-            exigirCsrf(s,f);
+            if (!Sesiones.csrfValido(s,f.get("csrf"))) {
+                // RNF-004, RNF-007: rechaza el envío y permite reintentar con un formulario vigente.
+                if (s == null) { s=sesiones.crear(null); ponerCookie(x,s.id()); }
+                enviar(x,403,Html.login(s,f.get("correo"),
+                        "El formulario venció. Vuelve a escribir tu contraseña e inténtalo de nuevo."));
+                return;
+            }
             Cuenta c;
             try { c=auth.ingresar(f.get("correo"),f.get("clave")); }
             catch(SQLException e) { enviar(x,503,Html.login(s,f.get("correo"),"No pudimos verificar el ingreso. Revisa la conexión e inténtalo de nuevo.")); return; }

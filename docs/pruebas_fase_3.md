@@ -59,3 +59,13 @@ Para probar las funciones del paso 3:
 ## Punto de parada
 
 Fase 3 completa (pasos 2 y 3). Quedan para la fase 4 las empresas, sedes, salones, áreas, cargos y puestos (paso 4), sin adelantarlos. La consulta de resultados y fotografías, evaluaciones y demás módulos siguen sus pasos originales. Se conserva la base, el esquema y las credenciales existentes. Se espera el **OK** de Andy antes de comenzar la fase 4.
+
+## Corrección del ingreso al probar la fase 3
+
+La primera conexión desde un hilo HTTP podía fallar con `mvn exec:java` porque JDBC no descubría el controlador con el cargador de clases del hilo. `Conexion` carga explícitamente el controlador MySQL ya autorizado antes de abrir la conexión. Una prueba en otra JVM reproduce ese inicio sin depender del orden de las pruebas.
+
+Un formulario de ingreso vencido sigue siendo rechazado (HTTP 403), pero ahora muestra otro formulario vigente, conserva el correo y permite escribir otra vez la contraseña. Se comprueba el rechazo y un reintento correcto, sin omitir la protección CSRF.
+
+Las dos pruebas nuevas elevan el total a **439**. Para probar manualmente, abrir una página nueva de ingreso en un navegador externo (por ejemplo Chrome o Safari), usando el puerto de la versión actual. El navegador integrado también reprodujo un fallo de sesión que se debe distinguir de la conexión MySQL.
+
+Verificación de esta corrección: `mvn compile test` terminó con **439 aprobadas, 0 fallos, 0 errores y 0 omitidas**. Se reinició `mvn -Daplomo.puerto=8081 exec:java` y se comprobó en Safari que un formulario anterior al reinicio ofrece reintentar; al volver a escribir la clave, el administrador inicial llega a Cambiar contraseña. La elección y el cambio de la contraseña quedan a cargo de Andy. No se avanzó a la fase 4.

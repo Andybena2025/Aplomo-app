@@ -38,6 +38,21 @@ public class HttpSeguridadTest extends co.aplomo.soporte.HttpPrueba {
         assertEquals(303,get("/").statusCode());
     }
 
+    @Test void formularioVencidoPermiteReintentarSinPerderElCorreo() throws Exception {
+        var login = get("/login");
+        reloj.avanzar(Duration.ofMinutes(30));
+        var vencido = post("/login", Map.of("csrf", csrf(login),
+                "correo", cuenta(admin).correo(), "clave", clave));
+        assertEquals(403, vencido.statusCode());
+        assertTrue(vencido.body().contains("El formulario venció"));
+        assertTrue(vencido.body().contains("value=\"" + cuenta(admin).correo() + "\""));
+        assertTrue(vencido.body().contains("<form"));
+        assertFalse(vencido.body().contains(clave));
+        assertNotEquals(csrf(login), csrf(vencido));
+        assertEquals(303, post("/login", Map.of("csrf", csrf(vencido),
+                "correo", cuenta(admin).correo(), "clave", clave)).statusCode());
+    }
+
     @Test void errorDeIngresoEsGenericoYEscapado() throws Exception {
         var login=get("/login");
         var incorrecto=post("/login",Map.of("csrf",csrf(login),"correo",cuenta(admin).correo(),"clave","Mal2026"));

@@ -16,6 +16,12 @@ public class Conexion {
 
     /** Abre y devuelve una conexion nueva a MySQL. Quien la llame debe cerrarla. */
     public static Connection obtener() throws SQLException {
+        // RNF-001: el hilo HTTP de Maven puede no descubrir proveedores JDBC automáticamente.
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("No está disponible el controlador de MySQL.", e);
+        }
         return DriverManager.getConnection(Config.url(), Config.usuario(), Config.clave());
     }
 }
