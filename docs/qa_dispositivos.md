@@ -1,0 +1,41 @@
+# QA de dispositivos — 11 nov 2026
+
+Se revisó el commit inicial `7d8f041` y se corrigieron los fallos observados. La revisión se realizó viendo capturas reales del navegador integrado y midiendo el DOM; no se usaron imágenes generadas ni HTML reconstruido. Son tamaños de viewport, no pruebas en dispositivos físicos ni certificación de Chrome, Edge o Firefox.
+
+## Resultado por tamaño
+
+| Viewport | Comprobado |
+|---|---|
+| 390 × 844 | Cabecera en dos filas: Atrás, logo, avatar y Salir arriba; las cinco pestañas completas abajo. Reservas y Visitas como tarjetas con empresa/sede, fechas, estado y botón legibles. Controles revisados con área mínima 44 × 44. Login sin líneas sobre el texto. |
+| 810 × 1080 | Todas las pestañas, incluida Usuarios, sin deslizar horizontalmente; nombre/rol ocultos. Inicio con cuatro KPI en 2 × 2. Reservas y Visitas conservan tablas dentro del ancho disponible. Login en una columna. |
+| 1080 × 810 | Cabecera completa con nombre, rol y avatar; cuatro KPI en una fila. Columnas de Inicio alineadas. Tablas y login de dos columnas dentro del ancho. |
+| 1366 × 768 | Contenido centrado al máximo de 1080 px, cabecera completa, cuatro KPI en fila, tablas y login de dos columnas sin desbordamiento. |
+
+En las pantallas Inicio, Reservas, Visitas y Login revisadas no se observó desplazamiento horizontal. Las mediciones de tablas y navegación muestran `scrollWidth == clientWidth`. El ancho del documento puede ser menor que el viewport cuando hay barra vertical del navegador.
+
+## Correcciones y trazabilidad
+
+- **RNF-002:** `aplomo.css`, reglas móviles `.nav` y `.nav-tab`: las cinco pestañas caben en 390 px. Controles de móvil/tablet con tamaño mínimo 44 px.
+- **RNF-002 / RNF-007:** `PaginasReservas.lista`, `PaginasVisitas.lista` y `PaginasVisitas.detalle`: contenido de cada celda agrupado en `.cell-value`. La cuadrícula móvil separa etiqueta y valor; los saltos de empresa/sede y fecha/horario no forman columnas accidentales. La etiqueta Puntaje se conserva.
+- **RNF-002:** `aplomo.css`, `.grid2 > section.stack + section.stack`: elimina el margen que desalineaba columnas de Inicio, conservando separación al apilarse.
+- **RNF-002:** `plantillas/login.html`, función `fit`: recorta el dibujo por encima del texto en vista de una columna y lo recalcula al redimensionar. Se conservan foto, logo y animaciones del mock. La condición móvil usa el ancho del viewport, no el del panel de foto; foto y dibujo comparten posición horizontal (92% móvil, 76% escritorio).
+- **RNF-008:** evidencias de adaptación a los cuatro tamaños; queda pendiente la comprobación completa en los tres navegadores exigidos por el plan.
+
+Las capturas finales de cada pantalla están en [evidencia_qa_dispositivos](evidencia_qa_dispositivos/). `mediciones.json` conserva las dimensiones obtenidas del DOM. Los nombres de archivo indican el ancho del viewport confirmado por `innerWidth`; algunas capturas excluyen los 15 px de la barra vertical y por eso su imagen mide 375 px para el viewport de 390 px.
+
+## Pruebas y datos
+
+`mvn compile test`: **495 pruebas ejecutadas, 495 aprobadas, 0 fallos, 0 errores, 0 omitidas**. Surefire usa `rula_ergonomia_pruebas` y `America/Bogota`. La vista de QA también se lanzó con esa base explícita; usó cuentas, empresa, salón, reservas, visita y evaluaciones ficticias dentro de una transacción revertida al cerrarla. No hubo cambios de esquema ni escrituras de pruebas en la base real.
+
+## Cómo repetirlo
+
+1. Con MySQL funcionando y la configuración local existente, ejecutar `mvn compile test` desde la raíz.
+2. Arrancar la aplicación con `mvn -Daplomo.puerto=8081 compile exec:java` y abrir `http://localhost:8081`.
+3. En el modo responsive del navegador elegir, sucesivamente, 390×844, 810×1080, 1080×810 y 1366×768; recargar en cada tamaño.
+4. Revisar Login y, con sesión de Administrador, Inicio, Reservas y Visitas. Usar registros de demostración en la base de pruebas para comprobar filas pobladas; una lista vacía no demuestra el diseño de tarjetas.
+5. En 390 px abrir Usuarios desde su pestaña y abrir Ver reserva / Ver visita. Comprobar que las cinco pestañas están completas, y que estado, fecha y botón se leen sin deslizar lateralmente.
+6. En 810 px verificar KPI en 2×2; en 1080 y 1366 px comprobar KPI en fila y columnas alineadas. Comparar con las capturas guardadas.
+
+## Pendiente
+
+No se inició el Paso 7. Se mantiene la instrucción de Andy del chat: seis condiciones RF-015 con diseño `.opt`, ayudas de RF-015 y Otras observaciones de máximo 255 caracteres; sin ocho casillas, sin altura y sin migración. Las tarjetas definitivas de Evaluaciones y Puestos en rojo corresponden al Paso 8; este QA conserva los contadores actuales de Inicio. No se verificó el acceso desde un iPad/celular físico por la red local ni gestos táctiles reales.

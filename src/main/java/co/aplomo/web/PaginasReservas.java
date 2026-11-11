@@ -30,14 +30,14 @@ public final class PaginasReservas {
             html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Reserva</th><th>Empresa y lugar</th><th>Fecha y horario</th><th>Categoría</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>");
             for (Ficha ficha : reservas) {
                 Reserva r = ficha.reserva();
-                html.append("<tr><td data-label=\"Reserva\">").append(escapar(r.codigo())).append("</td><td data-label=\"Empresa\">")
+                html.append("<tr><td data-label=\"Reserva\"><div class=\"cell-value\">").append(escapar(r.codigo())).append("</div></td><td data-label=\"Empresa\"><div class=\"cell-value\">")
                         .append(escapar(ficha.empresaNombre())).append("<br><span class=\"muted small\">")
                         .append(escapar(ficha.sedeNombre())).append(" · ").append(escapar(ficha.salonNombre()))
-                        .append("</span></td><td data-label=\"Fecha\" class=\"num\">").append(Html.fecha(r.fecha())).append("<br>")
+                        .append("</span></div></td><td data-label=\"Fecha\" class=\"num\"><div class=\"cell-value\">").append(Html.fecha(r.fecha())).append("<br>")
                         .append(escapar(r.inicio().toString())).append("–").append(escapar(r.fin().toString()))
-                        .append("</td><td data-label=\"Categoría\">").append(escapar(categoria(r.categoria()))).append("</td><td data-label=\"Estado\"><span class=\"")
-                        .append(claseEstado(r.estado())).append("\">").append(escapar(estado(r.estado()))).append("</span></td><td>")
-                        .append(enlace("/reservas/" + r.id(), "Ver reserva", false)).append("</td></tr>");
+                        .append("</div></td><td data-label=\"Categoría\"><div class=\"cell-value\">").append(escapar(categoria(r.categoria()))).append("</div></td><td data-label=\"Estado\"><div class=\"cell-value\"><span class=\"")
+                        .append(claseEstado(r.estado())).append("\">").append(escapar(estado(r.estado()))).append("</span></div></td><td><div class=\"cell-value\">")
+                        .append(enlace("/reservas/" + r.id(), "Ver reserva", false)).append("</div></td></tr>");
             }
             html.append("</tbody></table></div>");
         }

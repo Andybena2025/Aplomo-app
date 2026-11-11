@@ -94,11 +94,16 @@
         var PW=1400,PH=933;
         function fit(){
             var W=hero.clientWidth,H=hero.clientHeight;
-            var POSX=W<820?0.92:0.76;
+            var compacto=window.innerWidth<=820;
+            var POSX=compacto?0.92:0.76;
             var k=Math.max(W/PW,H/PH);
             var iw=PW*k,ih=PH*k;
             pz.style.width=iw+'px';
             pz.style.height=ih+'px';
+            // RNF-002: el dibujo móvil termina antes del bloque de marca y descripción.
+            var texto=hero.querySelector('.in'), top=(H-ih)*.5;
+            var inferior=compacto?Math.max(0,ih+top-texto.offsetTop+12):0;
+            pz.style.clipPath='inset(0 0 '+inferior+'px 0)';
             pz.style.left=((W-iw)*POSX)+'px';
             pz.style.top=((H-ih)*0.5)+'px';
         }

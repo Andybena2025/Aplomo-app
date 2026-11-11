@@ -1,0 +1,1130 @@
+[
+  {
+    "page": "inicio",
+    "controls": [
+      {
+        "height": 44,
+        "text": "← Atrás",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Inicio",
+        "width": 48.6953125
+      },
+      {
+        "height": 44,
+        "text": "Empresas",
+        "width": 76.4453125
+      },
+      {
+        "height": 44,
+        "text": "Reservas",
+        "width": 72.703125
+      },
+      {
+        "height": 44,
+        "text": "Visitas",
+        "width": 56.609375
+      },
+      {
+        "height": 44,
+        "text": "Usuarios",
+        "width": 70.3515625
+      },
+      {
+        "height": 44,
+        "text": "AD",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Salir",
+        "width": 53.359375
+      }
+    ],
+    "document": 375,
+    "kpis": [
+      {
+        "x": 16,
+        "y": 235.1953125
+      },
+      {
+        "x": 193.5,
+        "y": 235.1953125
+      },
+      {
+        "x": 16,
+        "y": 366.1953125
+      },
+      {
+        "x": 193.5,
+        "y": 366.1953125
+      }
+    ],
+    "nav": {
+      "scroll": 343,
+      "tabs": [
+        {
+          "left": 16,
+          "right": 64.6953125,
+          "text": "Inicio"
+        },
+        {
+          "left": 66.6953125,
+          "right": 143.140625,
+          "text": "Empresas"
+        },
+        {
+          "left": 145.140625,
+          "right": 217.84375,
+          "text": "Reservas"
+        },
+        {
+          "left": 219.84375,
+          "right": 276.453125,
+          "text": "Visitas"
+        },
+        {
+          "left": 278.453125,
+          "right": 348.8046875,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 343
+    },
+    "tables": [],
+    "width": 390
+  },
+  {
+    "page": "reservas",
+    "controls": [
+      {
+        "height": 44,
+        "text": "← Atrás",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Inicio",
+        "width": 48.6953125
+      },
+      {
+        "height": 44,
+        "text": "Empresas",
+        "width": 76.4453125
+      },
+      {
+        "height": 44,
+        "text": "Reservas",
+        "width": 72.703125
+      },
+      {
+        "height": 44,
+        "text": "Visitas",
+        "width": 56.609375
+      },
+      {
+        "height": 44,
+        "text": "Usuarios",
+        "width": 70.3515625
+      },
+      {
+        "height": 44,
+        "text": "AD",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Salir",
+        "width": 53.359375
+      },
+      {
+        "height": 44,
+        "text": "Ver reserva",
+        "width": 97.6875
+      },
+      {
+        "height": 44,
+        "text": "Ver reserva",
+        "width": 97.6875
+      }
+    ],
+    "document": 375,
+    "kpis": [],
+    "nav": {
+      "scroll": 343,
+      "tabs": [
+        {
+          "left": 16,
+          "right": 64.6953125,
+          "text": "Inicio"
+        },
+        {
+          "left": 66.6953125,
+          "right": 143.140625,
+          "text": "Empresas"
+        },
+        {
+          "left": 145.140625,
+          "right": 217.84375,
+          "text": "Reservas"
+        },
+        {
+          "left": 219.84375,
+          "right": 276.453125,
+          "text": "Visitas"
+        },
+        {
+          "left": 278.453125,
+          "right": 348.8046875,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 343
+    },
+    "tables": [
+      {
+        "scroll": 343,
+        "width": 343
+      }
+    ],
+    "width": 390
+  },
+  {
+    "page": "visitas",
+    "controls": [
+      {
+        "height": 44,
+        "text": "← Atrás",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Inicio",
+        "width": 48.6953125
+      },
+      {
+        "height": 44,
+        "text": "Empresas",
+        "width": 76.4453125
+      },
+      {
+        "height": 44,
+        "text": "Reservas",
+        "width": 72.703125
+      },
+      {
+        "height": 44,
+        "text": "Visitas",
+        "width": 56.609375
+      },
+      {
+        "height": 44,
+        "text": "Usuarios",
+        "width": 70.3515625
+      },
+      {
+        "height": 44,
+        "text": "AD",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Salir",
+        "width": 53.359375
+      },
+      {
+        "height": 44,
+        "text": "Ver visita",
+        "width": 83.53125
+      }
+    ],
+    "document": 390,
+    "kpis": [],
+    "nav": {
+      "scroll": 358,
+      "tabs": [
+        {
+          "left": 16,
+          "right": 64.6953125,
+          "text": "Inicio"
+        },
+        {
+          "left": 66.6953125,
+          "right": 143.140625,
+          "text": "Empresas"
+        },
+        {
+          "left": 145.140625,
+          "right": 217.84375,
+          "text": "Reservas"
+        },
+        {
+          "left": 219.84375,
+          "right": 276.453125,
+          "text": "Visitas"
+        },
+        {
+          "left": 278.453125,
+          "right": 348.8046875,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 358
+    },
+    "tables": [
+      {
+        "scroll": 358,
+        "width": 358
+      }
+    ],
+    "width": 390
+  },
+  {
+    "page": "inicio",
+    "controls": [
+      {
+        "height": 44,
+        "text": "← Atrás",
+        "width": 78.5703125
+      },
+      {
+        "height": 44,
+        "text": "Inicio",
+        "width": 59.2109375
+      },
+      {
+        "height": 44,
+        "text": "Empresas",
+        "width": 89.09375
+      },
+      {
+        "height": 44,
+        "text": "Reservas",
+        "width": 85.0625
+      },
+      {
+        "height": 44,
+        "text": "Visitas",
+        "width": 67.734375
+      },
+      {
+        "height": 44,
+        "text": "Usuarios",
+        "width": 82.53125
+      },
+      {
+        "height": 44,
+        "text": "AD",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Salir",
+        "width": 53.359375
+      }
+    ],
+    "document": 810,
+    "kpis": [
+      {
+        "x": 16,
+        "y": 187.8984375
+      },
+      {
+        "x": 411,
+        "y": 187.8984375
+      },
+      {
+        "x": 16,
+        "y": 302.3984375
+      },
+      {
+        "x": 411,
+        "y": 302.3984375
+      }
+    ],
+    "nav": {
+      "scroll": 443,
+      "tabs": [
+        {
+          "left": 225.75,
+          "right": 284.9609375,
+          "text": "Inicio"
+        },
+        {
+          "left": 288.9609375,
+          "right": 378.0546875,
+          "text": "Empresas"
+        },
+        {
+          "left": 382.0546875,
+          "right": 467.1171875,
+          "text": "Reservas"
+        },
+        {
+          "left": 471.1171875,
+          "right": 538.8515625,
+          "text": "Visitas"
+        },
+        {
+          "left": 542.8515625,
+          "right": 625.3828125,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 443
+    },
+    "tables": [],
+    "width": 810
+  },
+  {
+    "page": "reservas",
+    "controls": [
+      {
+        "height": 44,
+        "text": "← Atrás",
+        "width": 78.5703125
+      },
+      {
+        "height": 44,
+        "text": "Inicio",
+        "width": 59.2109375
+      },
+      {
+        "height": 44,
+        "text": "Empresas",
+        "width": 89.09375
+      },
+      {
+        "height": 44,
+        "text": "Reservas",
+        "width": 85.0625
+      },
+      {
+        "height": 44,
+        "text": "Visitas",
+        "width": 67.734375
+      },
+      {
+        "height": 44,
+        "text": "Usuarios",
+        "width": 82.53125
+      },
+      {
+        "height": 44,
+        "text": "AD",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Salir",
+        "width": 53.359375
+      },
+      {
+        "height": 44,
+        "text": "Ver reserva",
+        "width": 97.6875
+      },
+      {
+        "height": 44,
+        "text": "Ver reserva",
+        "width": 97.6875
+      }
+    ],
+    "document": 810,
+    "kpis": [],
+    "nav": {
+      "scroll": 443,
+      "tabs": [
+        {
+          "left": 225.75,
+          "right": 284.9609375,
+          "text": "Inicio"
+        },
+        {
+          "left": 288.9609375,
+          "right": 378.0546875,
+          "text": "Empresas"
+        },
+        {
+          "left": 382.0546875,
+          "right": 467.1171875,
+          "text": "Reservas"
+        },
+        {
+          "left": 471.1171875,
+          "right": 538.8515625,
+          "text": "Visitas"
+        },
+        {
+          "left": 542.8515625,
+          "right": 625.3828125,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 443
+    },
+    "tables": [
+      {
+        "scroll": 776,
+        "width": 776
+      }
+    ],
+    "width": 810
+  },
+  {
+    "page": "visitas",
+    "controls": [
+      {
+        "height": 44,
+        "text": "← Atrás",
+        "width": 78.5703125
+      },
+      {
+        "height": 44,
+        "text": "Inicio",
+        "width": 59.2109375
+      },
+      {
+        "height": 44,
+        "text": "Empresas",
+        "width": 89.09375
+      },
+      {
+        "height": 44,
+        "text": "Reservas",
+        "width": 85.0625
+      },
+      {
+        "height": 44,
+        "text": "Visitas",
+        "width": 67.734375
+      },
+      {
+        "height": 44,
+        "text": "Usuarios",
+        "width": 82.53125
+      },
+      {
+        "height": 44,
+        "text": "AD",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Salir",
+        "width": 53.359375
+      },
+      {
+        "height": 44,
+        "text": "Ver visita",
+        "width": 83.53125
+      }
+    ],
+    "document": 810,
+    "kpis": [],
+    "nav": {
+      "scroll": 443,
+      "tabs": [
+        {
+          "left": 225.75,
+          "right": 284.9609375,
+          "text": "Inicio"
+        },
+        {
+          "left": 288.9609375,
+          "right": 378.0546875,
+          "text": "Empresas"
+        },
+        {
+          "left": 382.0546875,
+          "right": 467.1171875,
+          "text": "Reservas"
+        },
+        {
+          "left": 471.1171875,
+          "right": 538.8515625,
+          "text": "Visitas"
+        },
+        {
+          "left": 542.8515625,
+          "right": 625.3828125,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 443
+    },
+    "tables": [
+      {
+        "scroll": 776,
+        "width": 776
+      }
+    ],
+    "width": 810
+  },
+  {
+    "page": "inicio",
+    "controls": [
+      {
+        "height": 44,
+        "text": "← Atrás",
+        "width": 78.5703125
+      },
+      {
+        "height": 44,
+        "text": "Inicio",
+        "width": 59.2109375
+      },
+      {
+        "height": 44,
+        "text": "Empresas",
+        "width": 89.09375
+      },
+      {
+        "height": 44,
+        "text": "Reservas",
+        "width": 85.0625
+      },
+      {
+        "height": 44,
+        "text": "Visitas",
+        "width": 67.734375
+      },
+      {
+        "height": 44,
+        "text": "Usuarios",
+        "width": 82.53125
+      },
+      {
+        "height": 44,
+        "text": "AD",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Salir",
+        "width": 53.359375
+      }
+    ],
+    "document": 1080,
+    "kpis": [
+      {
+        "x": 16,
+        "y": 187.8984375
+      },
+      {
+        "x": 281,
+        "y": 187.8984375
+      },
+      {
+        "x": 546,
+        "y": 187.8984375
+      },
+      {
+        "x": 811,
+        "y": 187.8984375
+      }
+    ],
+    "nav": {
+      "scroll": 550,
+      "tabs": [
+        {
+          "left": 225.75,
+          "right": 284.9609375,
+          "text": "Inicio"
+        },
+        {
+          "left": 288.9609375,
+          "right": 378.0546875,
+          "text": "Empresas"
+        },
+        {
+          "left": 382.0546875,
+          "right": 467.1171875,
+          "text": "Reservas"
+        },
+        {
+          "left": 471.1171875,
+          "right": 538.8515625,
+          "text": "Visitas"
+        },
+        {
+          "left": 542.8515625,
+          "right": 625.3828125,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 550
+    },
+    "tables": [],
+    "width": 1080
+  },
+  {
+    "page": "reservas",
+    "controls": [
+      {
+        "height": 44,
+        "text": "← Atrás",
+        "width": 78.5703125
+      },
+      {
+        "height": 44,
+        "text": "Inicio",
+        "width": 59.2109375
+      },
+      {
+        "height": 44,
+        "text": "Empresas",
+        "width": 89.09375
+      },
+      {
+        "height": 44,
+        "text": "Reservas",
+        "width": 85.0625
+      },
+      {
+        "height": 44,
+        "text": "Visitas",
+        "width": 67.734375
+      },
+      {
+        "height": 44,
+        "text": "Usuarios",
+        "width": 82.53125
+      },
+      {
+        "height": 44,
+        "text": "AD",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Salir",
+        "width": 53.359375
+      },
+      {
+        "height": 44,
+        "text": "Ver reserva",
+        "width": 97.6875
+      },
+      {
+        "height": 44,
+        "text": "Ver reserva",
+        "width": 97.6875
+      }
+    ],
+    "document": 1080,
+    "kpis": [],
+    "nav": {
+      "scroll": 550,
+      "tabs": [
+        {
+          "left": 225.75,
+          "right": 284.9609375,
+          "text": "Inicio"
+        },
+        {
+          "left": 288.9609375,
+          "right": 378.0546875,
+          "text": "Empresas"
+        },
+        {
+          "left": 382.0546875,
+          "right": 467.1171875,
+          "text": "Reservas"
+        },
+        {
+          "left": 471.1171875,
+          "right": 538.8515625,
+          "text": "Visitas"
+        },
+        {
+          "left": 542.8515625,
+          "right": 625.3828125,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 550
+    },
+    "tables": [
+      {
+        "scroll": 1046,
+        "width": 1046
+      }
+    ],
+    "width": 1080
+  },
+  {
+    "page": "visitas",
+    "controls": [
+      {
+        "height": 44,
+        "text": "← Atrás",
+        "width": 78.5703125
+      },
+      {
+        "height": 44,
+        "text": "Inicio",
+        "width": 59.2109375
+      },
+      {
+        "height": 44,
+        "text": "Empresas",
+        "width": 89.09375
+      },
+      {
+        "height": 44,
+        "text": "Reservas",
+        "width": 85.0625
+      },
+      {
+        "height": 44,
+        "text": "Visitas",
+        "width": 67.734375
+      },
+      {
+        "height": 44,
+        "text": "Usuarios",
+        "width": 82.53125
+      },
+      {
+        "height": 44,
+        "text": "AD",
+        "width": 44
+      },
+      {
+        "height": 44,
+        "text": "Salir",
+        "width": 53.359375
+      },
+      {
+        "height": 44,
+        "text": "Ver visita",
+        "width": 83.53125
+      }
+    ],
+    "document": 1080,
+    "kpis": [],
+    "nav": {
+      "scroll": 550,
+      "tabs": [
+        {
+          "left": 225.75,
+          "right": 284.9609375,
+          "text": "Inicio"
+        },
+        {
+          "left": 288.9609375,
+          "right": 378.0546875,
+          "text": "Empresas"
+        },
+        {
+          "left": 382.0546875,
+          "right": 467.1171875,
+          "text": "Reservas"
+        },
+        {
+          "left": 471.1171875,
+          "right": 538.8515625,
+          "text": "Visitas"
+        },
+        {
+          "left": 542.8515625,
+          "right": 625.3828125,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 550
+    },
+    "tables": [
+      {
+        "scroll": 1046,
+        "width": 1046
+      }
+    ],
+    "width": 1080
+  },
+  {
+    "page": "inicio",
+    "controls": [
+      {
+        "height": 33.5,
+        "text": "← Atrás",
+        "width": 78.5703125
+      },
+      {
+        "height": 37,
+        "text": "Inicio",
+        "width": 59.2109375
+      },
+      {
+        "height": 37,
+        "text": "Empresas",
+        "width": 89.09375
+      },
+      {
+        "height": 37,
+        "text": "Reservas",
+        "width": 85.0625
+      },
+      {
+        "height": 37,
+        "text": "Visitas",
+        "width": 67.734375
+      },
+      {
+        "height": 37,
+        "text": "Usuarios",
+        "width": 82.53125
+      },
+      {
+        "height": 30,
+        "text": "AD",
+        "width": 30
+      },
+      {
+        "height": 33.5,
+        "text": "Salir",
+        "width": 53.359375
+      }
+    ],
+    "document": 1366,
+    "kpis": [
+      {
+        "x": 159,
+        "y": 187.8984375
+      },
+      {
+        "x": 424,
+        "y": 187.8984375
+      },
+      {
+        "x": 689,
+        "y": 187.8984375
+      },
+      {
+        "x": 954,
+        "y": 187.8984375
+      }
+    ],
+    "nav": {
+      "scroll": 564,
+      "tabs": [
+        {
+          "left": 368.75,
+          "right": 427.9609375,
+          "text": "Inicio"
+        },
+        {
+          "left": 431.9609375,
+          "right": 521.0546875,
+          "text": "Empresas"
+        },
+        {
+          "left": 525.0546875,
+          "right": 610.1171875,
+          "text": "Reservas"
+        },
+        {
+          "left": 614.1171875,
+          "right": 681.8515625,
+          "text": "Visitas"
+        },
+        {
+          "left": 685.8515625,
+          "right": 768.3828125,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 564
+    },
+    "tables": [],
+    "width": 1366
+  },
+  {
+    "page": "reservas",
+    "controls": [
+      {
+        "height": 33.5,
+        "text": "← Atrás",
+        "width": 78.5703125
+      },
+      {
+        "height": 37,
+        "text": "Inicio",
+        "width": 59.2109375
+      },
+      {
+        "height": 37,
+        "text": "Empresas",
+        "width": 89.09375
+      },
+      {
+        "height": 37,
+        "text": "Reservas",
+        "width": 85.0625
+      },
+      {
+        "height": 37,
+        "text": "Visitas",
+        "width": 67.734375
+      },
+      {
+        "height": 37,
+        "text": "Usuarios",
+        "width": 82.53125
+      },
+      {
+        "height": 30,
+        "text": "AD",
+        "width": 30
+      },
+      {
+        "height": 33.5,
+        "text": "Salir",
+        "width": 53.359375
+      },
+      {
+        "height": 33.5,
+        "text": "Ver reserva",
+        "width": 97.6875
+      },
+      {
+        "height": 33.5,
+        "text": "Ver reserva",
+        "width": 97.6875
+      }
+    ],
+    "document": 1366,
+    "kpis": [],
+    "nav": {
+      "scroll": 564,
+      "tabs": [
+        {
+          "left": 368.75,
+          "right": 427.9609375,
+          "text": "Inicio"
+        },
+        {
+          "left": 431.9609375,
+          "right": 521.0546875,
+          "text": "Empresas"
+        },
+        {
+          "left": 525.0546875,
+          "right": 610.1171875,
+          "text": "Reservas"
+        },
+        {
+          "left": 614.1171875,
+          "right": 681.8515625,
+          "text": "Visitas"
+        },
+        {
+          "left": 685.8515625,
+          "right": 768.3828125,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 564
+    },
+    "tables": [
+      {
+        "scroll": 1046,
+        "width": 1046
+      }
+    ],
+    "width": 1366
+  },
+  {
+    "page": "visitas",
+    "controls": [
+      {
+        "height": 33.5,
+        "text": "← Atrás",
+        "width": 78.5703125
+      },
+      {
+        "height": 37,
+        "text": "Inicio",
+        "width": 59.2109375
+      },
+      {
+        "height": 37,
+        "text": "Empresas",
+        "width": 89.09375
+      },
+      {
+        "height": 37,
+        "text": "Reservas",
+        "width": 85.0625
+      },
+      {
+        "height": 37,
+        "text": "Visitas",
+        "width": 67.734375
+      },
+      {
+        "height": 37,
+        "text": "Usuarios",
+        "width": 82.53125
+      },
+      {
+        "height": 30,
+        "text": "AD",
+        "width": 30
+      },
+      {
+        "height": 33.5,
+        "text": "Salir",
+        "width": 53.359375
+      },
+      {
+        "height": 33.5,
+        "text": "Ver visita",
+        "width": 83.53125
+      }
+    ],
+    "document": 1366,
+    "kpis": [],
+    "nav": {
+      "scroll": 564,
+      "tabs": [
+        {
+          "left": 368.75,
+          "right": 427.9609375,
+          "text": "Inicio"
+        },
+        {
+          "left": 431.9609375,
+          "right": 521.0546875,
+          "text": "Empresas"
+        },
+        {
+          "left": 525.0546875,
+          "right": 610.1171875,
+          "text": "Reservas"
+        },
+        {
+          "left": 614.1171875,
+          "right": 681.8515625,
+          "text": "Visitas"
+        },
+        {
+          "left": 685.8515625,
+          "right": 768.3828125,
+          "text": "Usuarios"
+        }
+      ],
+      "width": 564
+    },
+    "tables": [
+      {
+        "scroll": 1046,
+        "width": 1046
+      }
+    ],
+    "width": 1366
+  }
+]

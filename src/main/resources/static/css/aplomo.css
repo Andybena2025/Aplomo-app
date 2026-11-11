@@ -116,11 +116,11 @@ tr.click:hover td{background:var(--card2)}
   table.resp thead{display:none}
   table.resp,table.resp tbody,table.resp tr,table.resp td{display:block;width:100%}
   table.resp tr{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
-  table.resp td{border:0;padding:4px 0;display:flex;gap:8px;align-items:center}
+  table.resp td{border:0;padding:4px 0;display:grid;grid-template-columns:80px minmax(0,1fr);gap:8px;align-items:start}
   table.resp td::before{content:attr(data-label);color:var(--muted);font-size:12px;min-width:80px;flex-shrink:0}
   table.resp td:empty{display:none}
-  table.resp td:last-child{margin-top:8px}
-  table.resp td:last-child::before{display:none}
+  table.resp td:not([data-label]){margin-top:8px;grid-template-columns:minmax(0,1fr)}
+  table.resp td:not([data-label])::before{display:none}
 }
 
 /* ====== Tabs ====== */
@@ -275,3 +275,12 @@ details.card[open] summary{margin-bottom:16px}
 section.stack+section.stack{margin-top:28px}
 .btn.sm+.card,.btn.sm+.aviso,.btn.sm+section{margin-top:16px}
 .card+section.stack,.aviso+section.stack{margin-top:24px}
+
+/* RNF-002, RNF-008: contenido legible y controles táctiles sin recortar pestañas. */
+.cell-value{min-width:0;overflow-wrap:anywhere}
+@media(max-width:1080px){.btn,.btn.sm,.who .avatar,.nav-tab{min-height:44px;min-width:44px}.who .avatar{min-width:44px}}
+@media(max-width:720px){.nav{gap:2px;overflow-x:visible}.nav-tab{padding:8px;font-size:13px;display:flex;align-items:center}.top .wrap{column-gap:12px}}
+.grid2>section.stack+section.stack{margin-top:0}
+@media(max-width:600px){.grid2>section.stack+section.stack{margin-top:12px}}
+
+@media(max-width:820px){.login .hero{background-position:92% center}}

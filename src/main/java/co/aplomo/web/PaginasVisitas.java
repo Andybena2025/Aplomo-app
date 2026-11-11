@@ -22,14 +22,14 @@ public final class PaginasVisitas {
         } else {
             html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Reserva</th><th>Empresa y lugar</th><th>Inicio real</th><th>Estado</th><th>Calificación</th><th>Detalle</th></tr></thead><tbody>");
             for (Ficha ficha : visitas) {
-                html.append("<tr><td data-label=\"Reserva\">").append(escapar(ficha.codigoReserva())).append("</td><td data-label=\"Empresa\">")
+                html.append("<tr><td data-label=\"Reserva\"><div class=\"cell-value\">").append(escapar(ficha.codigoReserva())).append("</div></td><td data-label=\"Empresa\"><div class=\"cell-value\">")
                         .append(escapar(ficha.empresaNombre())).append("<br><span class=\"muted small\">")
                         .append(escapar(ficha.sedeNombre())).append(" · ").append(escapar(ficha.salonNombre()))
-                        .append("</span></td><td data-label=\"Inicio\" class=\"num\">").append(fecha(ficha.visita().inicio()))
-                        .append("</td><td data-label=\"Estado\"><span class=\"").append(claseEstado(ficha.visita().estado())).append("\">")
-                        .append(estado(ficha.visita().estado())).append("</span></td><td data-label=\"Calificación\">")
-                        .append(calificacion(ficha)).append("</td><td>").append(enlace("/visitas/" + ficha.visita().id(), "Ver visita", false))
-                        .append("</td></tr>");
+                        .append("</span></div></td><td data-label=\"Inicio\" class=\"num\"><div class=\"cell-value\">").append(fecha(ficha.visita().inicio()))
+                        .append("</div></td><td data-label=\"Estado\"><div class=\"cell-value\"><span class=\"").append(claseEstado(ficha.visita().estado())).append("\">")
+                        .append(estado(ficha.visita().estado())).append("</span></div></td><td data-label=\"Calificación\"><div class=\"cell-value\">")
+                        .append(calificacion(ficha)).append("</div></td><td><div class=\"cell-value\">").append(enlace("/visitas/" + ficha.visita().id(), "Ver visita", false))
+                        .append("</div></td></tr>");
             }
             html.append("</tbody></table></div>");
         }
@@ -52,10 +52,10 @@ public final class PaginasVisitas {
         else {
             html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Puesto</th><th>Fecha</th><th>Postura</th><th>Puntaje</th></tr></thead><tbody>");
             for (Evaluacion evaluacion : evaluaciones) {
-                html.append("<tr><td data-label=\"Puesto\">Puesto ").append(evaluacion.numero()).append("</td><td data-label=\"Fecha\">")
-                        .append(Html.fecha(evaluacion.fecha())).append("</td><td data-label=\"Postura\">")
-                        .append(escapar(evaluacion.postura())).append("</td><td data-label=\"Puntaje\">")
-                        .append(evaluacion.puntaje() == null ? "Sin puntaje disponible" : evaluacion.puntaje()).append("</td></tr>");
+                html.append("<tr><td data-label=\"Puesto\"><div class=\"cell-value\">Puesto ").append(evaluacion.numero()).append("</div></td><td data-label=\"Fecha\"><div class=\"cell-value\">")
+                        .append(Html.fecha(evaluacion.fecha())).append("</div></td><td data-label=\"Postura\"><div class=\"cell-value\">")
+                        .append(escapar(evaluacion.postura())).append("</div></td><td data-label=\"Puntaje\"><div class=\"cell-value\">")
+                        .append(evaluacion.puntaje() == null ? "Sin puntaje disponible" : evaluacion.puntaje()).append("</div></td></tr>");
             }
             html.append("</tbody></table></div>");
         }
