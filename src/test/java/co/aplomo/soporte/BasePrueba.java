@@ -57,6 +57,23 @@ public abstract class BasePrueba {
         }
     }
 
+    /** Crea un salón dentro de la empresa fixture, sin confirmar sus datos. */
+    protected co.aplomo.modelo.Salon crearSalon() throws Exception {
+        var empresas = new co.aplomo.servicio.Empresas(tx);
+        int sede = empresas.guardar(cuenta(admin), new co.aplomo.modelo.Sede(0, empresa,
+                "Sede de prueba", "Calle 1", "Armenia", "123", "8 a 5", "Sede", true)).id();
+        int salon = empresas.guardar(cuenta(admin), new co.aplomo.modelo.Salon(0, sede,
+                "Salón de prueba", "Salón", 1, 20, true)).id();
+        return empresas.salon(cuenta(admin), salon);
+    }
+
+    /** Construye un horario válido con la misma fecha controlada de la prueba. */
+    protected co.aplomo.servicio.Reservas.Datos solicitud(co.aplomo.modelo.Salon salon) {
+        return new co.aplomo.servicio.Reservas.Datos(empresa, salon.sede(), salon.id(),
+                java.time.LocalDate.now(reloj), java.time.LocalTime.of(9, 0), java.time.LocalTime.of(10, 0),
+                "EVALUACION_INICIAL", "Descripción", "Primera línea\nSegunda línea");
+    }
+
     protected Cuenta cuenta(int id) throws SQLException { return dao.porId(con,id,false); }
 
     @AfterEach

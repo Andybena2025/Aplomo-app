@@ -38,6 +38,11 @@ public final class SalonDao {
         Sql.actualizar(con, "UPDATE salon SET activo = ? WHERE id_salon = ?", activo, id);
     }
 
+    /** RF-028: ofrece solamente opciones activas bajo una jerarquía también activa. */
+    public List<Salon> activos(Connection con) throws SQLException {
+        return Sql.listar(con, "SELECT r.* FROM salon r JOIN sede s ON s.id_sede = r.id_sede JOIN empresa e ON e.id_empresa = s.id_empresa WHERE r.activo = TRUE AND s.activo = TRUE AND e.activo = TRUE ORDER BY r.nombre, r.id_salon", SalonDao::leer);
+    }
+
     private static Salon leer(ResultSet fila) throws SQLException {
         return new Salon(
                 fila.getInt("id_salon"),

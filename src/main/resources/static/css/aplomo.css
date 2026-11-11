@@ -241,3 +241,8 @@ tr.click:hover td{background:var(--card2)}
 
 /* RF-004, RNF-002: enlaces de navegación con el ancho de su texto, como en el mock. */
 .stack>.btn{align-self:flex-start}
+
+/* RF-011: notas con sus párrafos y altas en contexto con controles legibles. */
+.texto-notas{white-space:pre-wrap}
+details.card summary{cursor:pointer;font-weight:500}
+details.card[open] summary{margin-bottom:16px}

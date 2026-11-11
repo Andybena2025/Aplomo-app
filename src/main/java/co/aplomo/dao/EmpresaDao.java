@@ -57,6 +57,11 @@ public final class EmpresaDao {
         Sql.actualizar(con, "UPDATE empresa SET activo = ? WHERE id_empresa = ?", activo, id);
     }
 
+    /** RF-028: ofrece solamente opciones activas bajo una jerarquía también activa. */
+    public List<Empresa> activas(Connection con) throws SQLException {
+        return Sql.listar(con, "SELECT r.* FROM empresa r WHERE r.activo = TRUE ORDER BY r.nombre, r.id_empresa", EmpresaDao::leer);
+    }
+
     private static Empresa leer(ResultSet fila) throws SQLException {
         return new Empresa(
                 fila.getInt("id_empresa"),

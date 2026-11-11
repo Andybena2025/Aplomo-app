@@ -45,7 +45,7 @@ public final class Html {
         String cabecera = "";
         if (s != null && s.cuenta() != null) {
             Cuenta c = s.cuenta();
-            String menu = c.temporal() ? "" : "<a class=\"btn sm\" href=\"/\">Inicio</a><a class=\"btn sm\" href=\"/empresas\">Empresas</a>"
+            String menu = c.temporal() ? "" : "<a class=\"btn sm\" href=\"/\">Inicio</a><a class=\"btn sm\" href=\"/empresas\">Empresas</a><a class=\"btn sm\" href=\"/reservas\">Reservas</a>"
                     + (c.rol() == Rol.ADMINISTRADOR ? "<a class=\"btn sm\" href=\"/usuarios\">Usuarios</a>" : "");
             cabecera = "<header class=\"top\"><div class=\"wrap\"><a class=\"lockup\" href=\"/\">APLOMO.</a>"
                     + "<nav class=\"row\" aria-label=\"Principal\">" + menu + "</nav><div class=\"who\">"
@@ -59,7 +59,7 @@ public final class Html {
                 + "<title>" + escapar(titulo) + " · APLOMO.</title>"
                 + "<link href=\"https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&display=swap\" rel=\"stylesheet\">"
                 + "<link rel=\"stylesheet\" href=\"/static/css/aplomo.css\">"
-                + "<script src=\"/static/js/cuenta.js\" defer></script></head><body>" + cabecera
+                + "<script src=\"/static/js/cuenta.js\" defer></script><script src=\"/static/js/reservas.js\" defer></script></head><body>" + cabecera
                 + "<main class=\"wrap stack\"><div class=\"pagehead\"><div><span class=\"eyebrow\">Ergonomía con precisión</span><h1>"
                 + escapar(titulo) + "</h1></div></div>" + contenido + "</main></body></html>";
     }

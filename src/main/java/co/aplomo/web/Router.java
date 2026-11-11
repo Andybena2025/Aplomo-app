@@ -19,6 +19,7 @@ public final class Router implements HttpHandler {
     private final Sesiones sesiones;
     private final UsuariosWeb usuarios;
     private final EmpresasWeb empresas;
+    private final ReservasWeb reservas;
 
     /** Construye las rutas con servicios reales (RNF-011). */
     public Router() { this(new Autenticacion(),new Sesiones()); }
@@ -31,8 +32,14 @@ public final class Router implements HttpHandler {
     /** Comparte los servicios transaccionales de configuración para las pruebas HTTP (RNF-011). */
     public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
                   co.aplomo.servicio.Empresas empresas) {
+        this(auth, sesiones, usuarios, empresas, new co.aplomo.servicio.Reservas());
+    }
+    /** Comparte los servicios de configuración y agenda para las comprobaciones HTTP. */
+    public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
+                  co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas) {
         this.auth=auth; this.sesiones=sesiones; this.usuarios=new UsuariosWeb(usuarios,sesiones);
         this.empresas=new EmpresasWeb(empresas);
+        this.reservas=new ReservasWeb(reservas, empresas);
     }
 
     /** Revisa la sesión antes de atender cualquier ruta interna (RF-002). */
@@ -116,6 +123,9 @@ public final class Router implements HttpHandler {
                 || ruta.startsWith("/puestos/")) {
             empresas.atender(x, s, f); return;
         }
+        if (ruta.equals("/reservas") || ruta.startsWith("/reservas/")) {
+            reservas.atender(x, s, f); return;
+        }
         if (ruta.startsWith("/fotos/")) {
             Permisos.administrador(s.cuenta()); enviar(x,404,Html.pagina("Foto no disponible","",s)); return;
         }
@@ -158,8 +168,10 @@ public final class Router implements HttpHandler {
         if (tipo == null || !tipo.split(";",2)[0].equalsIgnoreCase("application/x-www-form-urlencoded")) {
             throw new IllegalArgumentException("Envía los datos desde el formulario de la página.");
         }
-        byte[] bytes=x.getRequestBody().readNBytes(16385);
-        if (bytes.length>16384) throw new IllegalArgumentException("El formulario es demasiado grande.");
+        String ruta = x.getRequestURI().getPath();
+        int limite = ruta.startsWith("/reservas") || ruta.startsWith("/visitas") ? 262144 : 16384;
+        byte[] bytes=x.getRequestBody().readNBytes(limite + 1);
+        if (bytes.length > limite) throw new IllegalArgumentException("El formulario es demasiado grande.");
         return parametros(new String(bytes, StandardCharsets.UTF_8));
     }
 
@@ -185,8 +197,13 @@ public final class Router implements HttpHandler {
 
     /** Envía HTML en UTF-8 (RNF-007). */
     public static void enviar(HttpExchange x, int estado, String html) throws IOException {
-        byte[] bytes=html.getBytes(StandardCharsets.UTF_8);
-        x.getResponseHeaders().set("Content-Type","text/html; charset=UTF-8");
+        responder(x, estado, "text/html; charset=UTF-8", html);
+    }
+
+    /** Envía una respuesta con el tipo explícito del contenido generado por la aplicación. */
+    public static void responder(HttpExchange x, int estado, String tipo, String contenido) throws IOException {
+        byte[] bytes=contenido.getBytes(StandardCharsets.UTF_8);
+        x.getResponseHeaders().set("Content-Type",tipo);
         x.sendResponseHeaders(estado,bytes.length);
         x.getResponseBody().write(bytes);
     }

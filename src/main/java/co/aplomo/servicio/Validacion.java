@@ -48,6 +48,16 @@ public final class Validacion {
         throw new IllegalArgumentException("Elige una opción válida para " + campo + ".");
     }
 
+    /** Conserva los párrafos de las notas y respeta el límite real de bytes del campo TEXT. */
+    public static String notas(String valor) {
+        String texto = valor == null ? "" : valor.strip();
+        if (texto.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 65535
+                || texto.codePoints().anyMatch(c -> Character.isISOControl(c) && c != '\n' && c != '\r' && c != '\t')) {
+            throw new IllegalArgumentException("Las notas superan el tamaño permitido o contienen caracteres no válidos.");
+        }
+        return texto;
+    }
+
     /** RF-010: compara nombres sin mayúsculas, tildes ni espacios repetidos. */
     public static String nombre(String valor) {
         return Normalizer.normalize(valor.strip().replaceAll("\\s+", " "), Normalizer.Form.NFD)

@@ -28,3 +28,25 @@ Para probar:
 Paso 4 comprobado. Reservas y visitas se construyen a continuación dentro de esta misma fase. La fase 5 todavía no se inicia.
 
 Se verificaron visualmente en el navegador integrado la navegación Empresas, el listado vacío y el formulario Nueva empresa. Se ajustó el ancho del enlace Volver al estilo del mock, sin crear empresas reales durante la revisión.
+
+## Paso 5: reservas
+
+RF-011, RF-009b, RF-012 y RNF-005. Las reservas se guardan en MySQL con un código `R-` y el identificador automático con al menos cuatro cifras. Un código provisional existe solo dentro de la transacción y se reemplaza antes de confirmar. Los huecos por ROLLBACK son normales y no se reinician contadores.
+
+- Fecha de hoy o posterior según Colombia; hora de fin posterior a inicio; categorías Evaluación inicial, Seguimiento y Reevaluación. La empresa, sede y salón deben corresponder entre sí y estar activos al registrar.
+- Solo fecha, horas, categoría, descripción y notas se editan. Código, relaciones, creador y estado se conservan aunque alguien envíe otros valores en la petición.
+- Esperando → En cola mediante Aceptar. Esperando o En cola → Cancelada con motivo obligatorio. Los estados finales no se reabren. La cancelación se bloquea después de iniciar la visita, siguiendo el enfoque recomendado a Andy para conservar coherentes la reserva y la visita.
+- Creación, edición y cambios de estado registran fecha, cuenta responsable y estado en la misma transacción. Si falla la auditoría, se revierte también la operación.
+- El Usuario solo consulta las reservas de su empresa, filtradas en SQL; no tiene acceso a formularios ni cambios de estado.
+- Nueva reserva permite registrar empresa, sede y salón en formularios desplegables de la misma pantalla. Las listas se actualizan y seleccionan el lugar nuevo sin recargar ni guardar el borrador en el navegador. Los errores conservan los campos.
+
+Comprobación automatizada: **477 pruebas aprobadas, 0 fallos, 0 errores y 0 omitidas**. Se añadieron 20 casos que incluyen límites de fecha y horas, duplicados, contexto de empresa, permisos, estados, notas largas y reversión de una auditoría fallida.
+
+Comprobación visual: en una instancia temporal con transacción revertida se escribieron primero fecha, horario, descripción y notas; después se crearon empresa, sede y salón desde la misma reserva. Todos los valores permanecieron y los tres lugares nuevos quedaron seleccionados. Se guardó la reserva y se aceptó, comprobando el cambio Esperando → En cola. Al cerrar la vista se ejecutó ROLLBACK, sin conservar esos datos de prueba.
+
+Para probar este paso:
+
+1. Abrir Reservas → Nueva reserva. Seleccionar empresa, sede y salón activos y escribir fecha y horas.
+2. Si falta alguno, usar Registrar un lugar en la misma pantalla; al guardar se selecciona y el borrador se conserva.
+3. Guardar y comprobar código, estado Esperando y datos. Aceptar para pasar a En cola.
+4. Editar fecha o notas y comprobar que conserva código y lugar. Cancelar pide un motivo y después impide editar o cambiar de estado.
