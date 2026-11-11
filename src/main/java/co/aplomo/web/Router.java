@@ -163,8 +163,7 @@ public final class Router implements HttpHandler {
             var listaVisitas = visitas.servicio().listar(c);
             long enCurso = listaVisitas.stream().filter(v -> v.visita().estado().equals("EN_CURSO")).count();
             long enCola = listaReservas.stream().filter(r -> r.reserva().estado().equals("EN_COLA")).count();
-            long totalReservas = listaReservas.size();
-            long totalVisitas = listaVisitas.size();
+            long[] resumen=evaluaciones.servicio().resumen(c);
             StringBuilder inicio = new StringBuilder(aviso);
             // Saludo con fecha como en el mock
             inicio.append("<div class=\"pagehead\"><div><span class=\"eyebrow\">")
@@ -174,14 +173,14 @@ public final class Router implements HttpHandler {
             inicio.append("<div class=\"grid4\" style=\"margin-bottom:24px\">")
                     .append(kpi("Visitas en curso", String.valueOf(enCurso), null))
                     .append(kpi("Reservas en cola", String.valueOf(enCola), null))
-                    .append(kpi("Total reservas", String.valueOf(totalReservas), null))
-                    .append(kpi("Total visitas", String.valueOf(totalVisitas), null))
+                    .append(kpi("Evaluaciones", String.valueOf(resumen[0]), null))
+                    .append(kpi("Puestos en rojo", String.valueOf(resumen[1]), "color:var(--rojo)"))
                     .append("</div>");
             // Visitas en curso y reservas recientes como en el mock
             inicio.append("<div class=\"grid2\"><section class=\"stack\"><h3>Visitas en curso</h3>");
             var cursando = listaVisitas.stream().filter(v -> v.visita().estado().equals("EN_CURSO")).toList();
             if (cursando.isEmpty()) {
-                inicio.append("<div class=\"empty\">No hay visitas en curso. Inicia una desde una reserva En cola.</div>");
+                inicio.append(c.rol()==Cuenta.Rol.ADMINISTRADOR ? "<div class=\"empty\">No hay visitas en curso. Inicia una desde una reserva En cola.</div>" : "<div class=\"empty\">No hay visitas en curso disponibles.</div>");
             } else {
                 for (var v : cursando) {
                     inicio.append("<div class=\"card row between\"><div><div>").append(Html.escapar(v.empresaNombre()))
@@ -253,7 +252,7 @@ public final class Router implements HttpHandler {
             throw new IllegalArgumentException("Envía los datos desde el formulario de la página.");
         }
         String ruta = x.getRequestURI().getPath();
-        int limite = ruta.startsWith("/reservas") || ruta.startsWith("/visitas") ? 262144 : 16384;
+        int limite = ruta.startsWith("/reservas") || ruta.startsWith("/visitas") || ruta.startsWith("/evaluaciones") ? 262144 : 16384;
         byte[] bytes=x.getRequestBody().readNBytes(limite + 1);
         if (bytes.length > limite) throw new IllegalArgumentException("El formulario es demasiado grande.");
         return parametros(new String(bytes, StandardCharsets.UTF_8));

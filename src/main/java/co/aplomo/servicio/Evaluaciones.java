@@ -21,18 +21,19 @@ public final class Evaluaciones {
     /** Contenido autorizado y tipo real para la respuesta HTTP de una fotografía. */
     public record Contenido(byte[] bytes, String tipo) {}
     /** Consulta administrativa sin exponer fotografías a cuentas Usuario. */
-    public record Consulta(EvaluacionDao.Ficha ficha, List<EvaluacionDao.Foto> fotos) {}
+    public record Consulta(EvaluacionDao.Ficha ficha, List<EvaluacionDao.Foto> fotos, boolean enCurso) {}
     private final Transacciones tx;
     private final Clock reloj;
     private final Fotos archivos;
     private final BitacoraDao bitacora;
+    private final Analisis analisis;
     private final EvaluacionDao dao = new EvaluacionDao();
 
     /** Usa MySQL, la carpeta fotos/ y la hora de Colombia. */
     public Evaluaciones() { this(new Transacciones(), Clock.system(ZoneId.of("America/Bogota")), new Fotos(), new BitacoraDao()); }
     /** Comparte conexión, reloj y carpeta aislada con las pruebas. */
     public Evaluaciones(Transacciones tx, Clock reloj, Fotos archivos, BitacoraDao bitacora) {
-        this.tx = tx; this.reloj = reloj; this.archivos = archivos; this.bitacora = bitacora;
+        this.tx = tx; this.reloj = reloj; this.archivos = archivos; this.bitacora = bitacora; this.analisis=new Analisis(tx,reloj,archivos,bitacora);
     }
     /** Comprueba permisos y visita abierta antes de ofrecer puestos activos del salón reservado. */
     public Contexto contexto(Cuenta actor, int visita) throws SQLException {
@@ -45,6 +46,11 @@ public final class Evaluaciones {
 
     /** Valida todo, guarda evaluación, condiciones, fotos y auditoría; revierte archivos nuevos ante fallos. */
     public int guardar(Cuenta actor, int visita, Datos entrada, List<Fotos.Entrada> fotos) throws SQLException, IOException {
+        return guardar(actor,visita,entrada,fotos,null);
+    }
+
+    /** Guarda el asistente completo de forma atómica; cualquier fallo revierte también fotos y análisis (RF-021). */
+    public int guardar(Cuenta actor,int visita,Datos entrada,List<Fotos.Entrada> fotos,List<Analisis.Solicitud> solicitudes) throws SQLException,IOException {
         List<String> nuevos = new ArrayList<>();
         try {
             return tx.ejecutar(con -> {
@@ -71,15 +77,26 @@ public final class Evaluaciones {
                 }
                 int id = dao.crear(con, visita, d, d.motivo(), LocalDate.now(reloj));
                 dao.condiciones(con, id, d);
+                List<Integer> idsFotos=new ArrayList<>();
                 for (var imagen : imagenes) {
                     String nombre;
                     try { nombre = archivos.guardar(imagen); }
                     catch (IOException e) { throw new UncheckedIOException(e); }
                     nuevos.add(nombre);
-                    dao.foto(con, id, nombre, imagen.vista(), imagen.descripcion(), imagen.bytes().length);
+                    idsFotos.add(dao.foto(con, id, nombre, imagen.vista(), imagen.descripcion(), imagen.bytes().length));
                 }
                 bitacora.registrar(con, responsable.id(), LocalDateTime.now(reloj), "evaluacion", id, "CREAR", null,
                         null, "Evaluación del puesto " + puesto.numero() + (d.sinFotos() ? " · Sin registro fotográfico" : " · Con fotos"));
+                if(solicitudes!=null) {
+                    if(d.sinFotos()&&!solicitudes.isEmpty())throw new IllegalArgumentException("Sin fotos no se puede guardar un análisis RULA.");
+                    if(!d.sinFotos()&&(solicitudes.isEmpty()||solicitudes.size()>10))throw new IllegalArgumentException("Mide al menos una foto antes de guardar el resultado.");
+                    Set<Integer> usadas=new HashSet<>();
+                    for(var solicitud:solicitudes) {
+                        if(solicitud.foto()<0||solicitud.foto()>=idsFotos.size()||!usadas.add(solicitud.foto()))throw new IllegalArgumentException("Revisa la selección de fotos de los análisis.");
+                        try{analisis.guardarEnTransaccion(con,responsable,idsFotos.get(solicitud.foto()),solicitud.entrada());}catch(IOException x){throw new UncheckedIOException(x);}
+                    }
+                }
+                new AnalisisDao().actualizarPuesto(con,d.puesto());
                 return id;
             });
         } catch (SQLException | RuntimeException fallo) {
@@ -101,7 +118,23 @@ public final class Evaluaciones {
         return tx.ejecutar(con->{
             admin(con,actor);var ficha=dao.consultar(con,id);
             if(ficha==null) throw new SecurityException("La evaluación no está disponible.");
-            return new Consulta(ficha,dao.fotos(con,id));
+            var visita=new VisitaDao().buscar(con,ficha.visita(),0,false,false);
+            return new Consulta(ficha,dao.fotos(con,id),visita!=null&&visita.visita().estado().equals("EN_CURSO"));
+        });
+    }
+
+    /** Comparte el servicio de análisis para vista previa y nuevos análisis de fotos existentes. */
+    public Analisis analisis() { return analisis; }
+
+    /** Cuenta evaluaciones y puestos rojos visibles para las tarjetas de Inicio (RF-024). */
+    public long[] resumen(Cuenta actor) throws SQLException {
+        return tx.ejecutar(c->{
+            Cuenta actual=AccesoDatos.vigente(c,actor);int empresa=AccesoDatos.empresaPermitida(actual);boolean usuario=actual.rol()==Cuenta.Rol.USUARIO;
+            long evaluaciones=Sql.uno(c,"SELECT COUNT(*) FROM evaluacion e JOIN visita v USING(id_visita) JOIN puesto_trabajo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA')",r->r.getLong(1),empresa,empresa,usuario);
+            long rojos;
+            if(!usuario)rojos=Sql.uno(c,"SELECT COUNT(*) FROM puesto_trabajo p JOIN nivel_riesgo n ON p.ultimo_puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo WHERE n.color=?",r->r.getLong(1),"ROJO");
+            else rojos=Sql.uno(c,"SELECT COUNT(*) FROM puesto_trabajo p JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE s.id_empresa=? AND EXISTS (SELECT 1 FROM nivel_riesgo n WHERE n.color=? AND (SELECT MAX(a.puntaje_final) FROM fotografia f JOIN analisis_rula a USING(id_foto) WHERE f.id_evaluacion=(SELECT MAX(e.id_evaluacion) FROM evaluacion e JOIN visita v USING(id_visita) WHERE e.id_puesto=p.id_puesto AND v.estado='FINALIZADA')) BETWEEN n.puntaje_minimo AND n.puntaje_maximo)",r->r.getLong(1),empresa,"ROJO");
+            return new long[]{evaluaciones,rojos};
         });
     }
 

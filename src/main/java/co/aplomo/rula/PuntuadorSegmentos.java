@@ -59,13 +59,13 @@ public final class PuntuadorSegmentos {
     public static int muneca(double grados, boolean desviada) {
         MedidorAngulos.validar(grados, -180, 180);
         double magnitud = Math.abs(grados);
-        return (magnitud <= 5 ? 1 : magnitud <= 15 ? 2 : 3) + punto(desviada);
+        return (magnitud <= MedidorAngulos.NEUTRO ? 1 : magnitud <= 15 ? 2 : 3) + punto(desviada);
     }
 
-    /** Puntúa cuello; cualquier extensión distinta de cero tiene base 4 (RF-018). */
+    /** Puntúa cuello; extensión mayor de 5° tiene base 4; la tolerancia del mock también rige a mano (RF-018). */
     public static int cuello(double grados, boolean girado, boolean inclinado) {
         MedidorAngulos.validar(grados, -180, 180);
-        return (grados < 0 ? 4 : grados <= 10 ? 1 : grados <= 20 ? 2 : 3)
+        return (grados < -MedidorAngulos.NEUTRO ? 4 : grados <= 10 ? 1 : grados <= 20 ? 2 : 3)
                 + punto(girado) + punto(inclinado);
     }
 
@@ -73,7 +73,7 @@ public final class PuntuadorSegmentos {
     public static int tronco(double grados, boolean girado, boolean inclinado, boolean sentadoBienApoyado) {
         MedidorAngulos.validar(grados, -180, 180);
         double magnitud = Math.abs(grados);
-        return (magnitud <= 5 || sentadoBienApoyado ? 1 : magnitud <= 20 ? 2 : magnitud <= 60 ? 3 : 4)
+        return (magnitud <= MedidorAngulos.NEUTRO || sentadoBienApoyado ? 1 : magnitud <= 20 ? 2 : magnitud <= 60 ? 3 : 4)
                 + punto(girado) + punto(inclinado);
     }
 

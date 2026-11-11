@@ -58,8 +58,8 @@ public final class PaginasEvaluacion {
                 .append(slot("perfil_otro", "Perfil · otro lado", "PERFIL", "Toma el perfil del otro lado del cuerpo. La foto de frente sirve para ambos lados.", "perfil"))
                 .append(slot("detalle_otro", "Detalle · otro lado", "OTRA", "Si hace falta, registra también la mano y la muñeca del otro lado.", "detalle"))
                 .append("</div><div class=\"stack\" data-fotos-elegidas></div><p class=\"hint\">Las imágenes de muestra son de demostración, generadas con IA. No se guardan como fotos de la evaluación.</p></div>")
-                .append("<p class=\"banner\">La evaluación se guardará sin puntaje RULA.</p></section><div class=\"aviso\" role=\"alert\" data-error-evaluacion hidden><span></span><button type=\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerrar aviso\">Cerrar</button></div>")
-                .append("<div class=\"wizfoot\"><button type=\"button\" class=\"btn\" data-atras-evaluacion>Cancelar</button><button type=\"button\" class=\"btn p\" data-siguiente>Siguiente →</button><button type=\"submit\" class=\"btn p\" data-guardar-evaluacion hidden>Guardar evaluación</button></div></form><script src=\"/static/js/evaluacion.js\" defer></script>");
+                .append("</section>").append(PaginasAnalisis.pasos()).append("<div class=\"aviso\" role=\"alert\" data-error-evaluacion hidden><span></span><button type=\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerrar aviso\">Cerrar</button></div>")
+                .append("<div class=\"wizfoot\"><button type=\"button\" class=\"btn\" data-atras-evaluacion>Cancelar</button><button type=\"button\" class=\"btn p\" data-siguiente>Siguiente →</button><button type=\"submit\" class=\"btn p\" data-guardar-evaluacion hidden>Guardar evaluación</button></div></form><script src=\"/static/js/analisis.js\" defer></script><script src=\"/static/js/evaluacion.js\" defer></script>");
         return Html.pagina("Nueva evaluación", html.toString(), sesion, false);
     }
 
@@ -72,9 +72,9 @@ public final class PaginasEvaluacion {
     }
 
     /** Muestra los campos guardados y abre las fotos exclusivamente por su ruta protegida. */
-    public static String detalle(Sesion sesion, co.aplomo.servicio.Evaluaciones.Consulta consulta) {
+    public static String detalle(Sesion sesion, co.aplomo.servicio.Evaluaciones.Consulta consulta, List<co.aplomo.dao.AnalisisDao.Resumen> analisis, String aviso) {
         var f=consulta.ficha();var d=f.datos();
-        StringBuilder h=new StringBuilder(PaginasEmpresas.enlace("/visitas/"+f.visita(),"← Volver a la visita",false));
+        StringBuilder h=new StringBuilder(Html.aviso(aviso,true)).append(PaginasEmpresas.enlace("/visitas/"+f.visita(),"← Volver a la visita",false));
         h.append("<section class=\"card stack\"><span class=\"eyebrow\">").append(Html.fecha(f.fecha())).append(" · Registró ")
                 .append(escapar(f.responsable())).append("</span><h2>").append(escapar(d.postura())).append("</h2><p>")
                 .append(d.criterio().equals("MAS_INADECUADA")?"Postura más inadecuada":"Mayor tiempo de exposición").append(" · ").append(d.minutos()).append(" minutos por jornada</p><p>")
@@ -87,6 +87,11 @@ public final class PaginasEvaluacion {
         h.append("<div class=\"grid2\">");
         for(var foto:consulta.fotos())h.append("<figure class=\"card stack foto-guardada\"><img src=\"/fotos/").append(foto.id()).append("\" alt=\"")
                 .append(escapar(foto.descripcion())).append("\"><figcaption>").append(Formularios.etiqueta(foto.vista())).append(" · ").append(escapar(foto.descripcion())).append("</figcaption></figure>");
-        return Html.pagina("Evaluación · Puesto "+f.numero(),h.append("</div></section>").toString(),sesion);
+        h.append("</div></section><section class=\"stack\"><h2>Análisis guardados</h2>");
+        if(analisis.isEmpty())h.append("<p class=\"muted\">Todavía no hay análisis. La evaluación conserva sus datos sin puntaje.</p>");
+        for(var a:analisis)h.append("<div class=\"card row between\"><div>Foto ").append(a.foto()).append(" · ").append(Formularios.etiqueta(a.lado())).append("<div class=\"hint\">").append(Html.fecha(a.fecha().toLocalDate())).append(" · Registró ").append(escapar(a.responsable())).append("</div></div><span class=\"pill ").append(a.color()).append("\">").append(a.puntaje()).append(" · ").append(Formularios.etiqueta(a.color())).append(" · Nivel ").append(a.nivel()).append("</span>").append(PaginasEmpresas.enlace("/evaluaciones/"+f.id()+"/analisis/"+a.id(),"Ver resultado",false)).append("</div>");
+        h.append("</section>");
+        if(consulta.enCurso()&&!consulta.fotos().isEmpty())h.append(PaginasEmpresas.enlace("/evaluaciones/"+f.id()+"/analizar","Analizar fotos / añadir análisis",true));
+        return Html.pagina("Evaluación · Puesto "+f.numero(),h.toString(),sesion);
     }
 }

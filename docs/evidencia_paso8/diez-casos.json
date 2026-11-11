@@ -1,0 +1,62 @@
+[
+  {
+    "caso": 1,
+    "esperado": "Caso 1 · esperado 2",
+    "mostrado": 2,
+    "direccion": "/evaluaciones/348/analisis/232"
+  },
+  {
+    "caso": 2,
+    "esperado": "Caso 2 · esperado 3",
+    "mostrado": 3,
+    "direccion": "/evaluaciones/349/analisis/233"
+  },
+  {
+    "caso": 3,
+    "esperado": "Caso 3 · esperado 4",
+    "mostrado": 4,
+    "direccion": "/evaluaciones/350/analisis/234"
+  },
+  {
+    "caso": 4,
+    "esperado": "Caso 4 · esperado 1",
+    "mostrado": 1,
+    "direccion": "/evaluaciones/351/analisis/235"
+  },
+  {
+    "caso": 5,
+    "esperado": "Caso 5 · esperado 2",
+    "mostrado": 2,
+    "direccion": "/evaluaciones/352/analisis/236"
+  },
+  {
+    "caso": 6,
+    "esperado": "Caso 6 · esperado 2",
+    "mostrado": 2,
+    "direccion": "/evaluaciones/353/analisis/237"
+  },
+  {
+    "caso": 7,
+    "esperado": "Caso 7 · esperado 6",
+    "mostrado": 6,
+    "direccion": "/evaluaciones/354/analisis/238"
+  },
+  {
+    "caso": 8,
+    "esperado": "Caso 8 · esperado 7",
+    "mostrado": 7,
+    "direccion": "/evaluaciones/355/analisis/239"
+  },
+  {
+    "caso": 9,
+    "esperado": "Caso 9 · esperado 4",
+    "mostrado": 4,
+    "direccion": "/evaluaciones/356/analisis/240"
+  },
+  {
+    "caso": 10,
+    "esperado": "Caso 10 · esperado 7",
+    "mostrado": 7,
+    "direccion": "/evaluaciones/357/analisis/241"
+  }
+]

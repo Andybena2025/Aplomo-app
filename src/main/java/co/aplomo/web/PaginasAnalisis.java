@@ -1,0 +1,61 @@
+package co.aplomo.web;
+
+import co.aplomo.rula.*;
+import co.aplomo.rula.MotorRula.*;
+import co.aplomo.seguridad.Sesiones.Sesion;
+import co.aplomo.servicio.Evaluaciones;
+import java.util.*;
+import static co.aplomo.web.Html.escapar;
+
+/** RF-017 a RF-021, RNF-002: pasos 4–6 y resultado con los componentes originales del mock. */
+public final class PaginasAnalisis {
+    private PaginasAnalisis() {}
+    /** Nombre y referencia anatómica de cada segmento, compartidos por medición y desglose. */
+    public static final String[][] SEGMENTOS={{"BRAZO","Brazo","Cadera · Hombro · Codo"},{"ANTEBRAZO","Antebrazo","Hombro · Codo · Muñeca"},{"MUNECA","Muñeca","Codo · Muñeca · Nudillos"},{"CUELLO","Cuello","Cadera · Hombro · Coronilla"},{"TRONCO","Tronco","Cadera · Hombro · vertical"}};
+    /** Casillas observadas por el Administrador; no se infiere nada con IA. */
+    public static final String[][] AJUSTES={{"hombroElevado","Hombro levantado","+1 al brazo"},{"brazoSeparado","Brazo separado del cuerpo","+1 al brazo"},{"brazoApoyado","Brazo apoyado","−1 al brazo"},{"antebrazoCruza","Antebrazo cruza el cuerpo o sale hacia un lado","+1 al antebrazo"},{"munecaDesviada","Muñeca doblada hacia un lado","+1 a la muñeca"},{"cuelloGirado","Cuello girado","+1 al cuello"},{"cuelloInclinado","Cabeza inclinada hacia un lado","+1 al cuello"},{"troncoGirado","Tronco girado","+1 al tronco"},{"troncoInclinado","Tronco inclinado hacia un lado","+1 al tronco"}};
+    /** Presenta los tres pasos nuevos dentro del mismo formulario, sin cálculos en JavaScript. */
+    public static String pasos() {
+        StringBuilder h=new StringBuilder("<section class=\"card stack\" data-paso=\"4\" hidden><h2>Ángulos con 3 puntos</h2><p class=\"muted small\">Marca los seis puntos sobre la foto. Puedes arrastrarlos o escribir los ángulos a mano. Revisa cada foto por separado.</p><div class=\"tabs\" data-tabs-fotos></div><label class=\"check\"><input type=\"checkbox\" data-analizar-foto><span>Analizar esta foto. Si solo sirve de apoyo, conserva la imagen sin calcular un puntaje.</span></label><div data-editor-foto class=\"stack\"><div class=\"field\"><label for=\"ladoAnalisis\">Lado evaluado</label><select id=\"ladoAnalisis\" class=\"input\" data-lado><option value=\"DERECHO\">Derecho · mira hacia la derecha</option><option value=\"IZQUIERDO\">Izquierdo · mira hacia la izquierda</option></select></div><div class=\"measure\"><div class=\"stack\"><div class=\"canvasbox\"><canvas id=\"lienzo\" aria-label=\"Foto para marcar y arrastrar los puntos del cuerpo\"></canvas></div><div class=\"row\"><button type=\"button\" class=\"btn sm\" data-puntos-deshacer>Deshacer</button><button type=\"button\" class=\"btn sm\" data-puntos-borrar>Borrar puntos</button></div><span class=\"hint\">Toca o haz clic para marcar. Arrastra un punto para corregirlo.</span></div><div class=\"stack\"><div class=\"banner\" role=\"status\" data-siguiente-punto>Toca: Cadera (1 de 6)</div><div class=\"seglist\">");
+        for(String[] s:SEGMENTOS)h.append("<div class=\"seg medicion\" data-segmento=\"").append(s[0]).append("\"><div><div>").append(s[1]).append("</div><div class=\"hint\">").append(s[2]).append("</div></div><span class=\"deg\" data-grados>—</span><span class=\"pts\" data-puntos>—</span><div class=\"correccion\"><label class=\"check\"><input type=\"checkbox\" data-manual><span>Escribir ángulo a mano</span></label><input class=\"input num\" type=\"number\" min=\"").append(s[0].equals("ANTEBRAZO")?"0":"-180").append("\" max=\"180\" step=\"0.01\" data-angulo-manual aria-label=\"Ángulo manual de ").append(s[1].toLowerCase(Locale.ROOT)).append("\" hidden></div></div>");
+        h.append("</div><p class=\"hint\">Grados positivos: flexión. Grados negativos: extensión. Tolerancia neutra: 5°. Si la foto no permite medir un segmento, escribe una medición válida obtenida en el puesto.</p></div></div></div></section>")
+                .append("<section class=\"card stack\" data-paso=\"5\" hidden><h2>Ajustes y carga</h2><p class=\"muted small\">Marca solo lo que observas en el puesto. La actividad y la carga se aplican a ambos grupos.</p><div class=\"tabs\" data-tabs-ajustes></div><div class=\"banner\" data-vista-parcial>Completa los ángulos para ver la vista previa.</div><div class=\"card stack\"><span class=\"eyebrow\">1 · Ajustes de la postura</span><div class=\"opts\">");
+        for(var a:AJUSTES)h.append("<label class=\"opt\"><input type=\"checkbox\" data-ajuste=\"").append(a[0]).append("\"><span>").append(a[1]).append(" <span class=\"pts\">").append(a[2]).append("</span></span></label>");
+        h.append("</div><div class=\"grid2\"><div class=\"field\"><label for=\"giroAnalisis\">Giro de muñeca</label><select class=\"input\" id=\"giroAnalisis\" data-giro><option value=\"MEDIO\">Medio</option><option value=\"EXTREMO\">Extremo</option></select></div><label class=\"check\"><input type=\"checkbox\" data-piernas checked><span>Piernas y pies bien apoyados y equilibrados</span></label></div></div><div class=\"card stack\"><span class=\"eyebrow\">2 · Actividad muscular y carga</span><label class=\"check\"><input type=\"checkbox\" data-actividad><span>La postura se mantiene más de 1 minuto o el movimiento se repite más de 4 veces por minuto.</span></label><div class=\"field\"><label for=\"cargaAnalisis\">Carga o fuerza</label><select class=\"input\" id=\"cargaAnalisis\" data-carga>");
+        String[] cargas={"Menos de 2 kg · intermitente","De 2 a 10 kg · intermitente","De 2 a 10 kg · estática o repetitiva","Más de 10 kg · intermitente","Más de 10 kg · estática o repetitiva","Golpes o fuerzas bruscas"};
+        for(int i=0;i<cargas.length;i++)h.append("<option value=\"").append(Carga.values()[i].name()).append("\">").append(cargas[i]).append("</option>");
+        return h.append("</select></div></div></section><section class=\"card stack\" data-paso=\"6\" hidden><h2>Resultado</h2><div data-resultados></div><p class=\"hint\">Revisa el resultado antes de guardar. Cada foto analizada conserva su propio lado, mediciones y puntaje.</p></section>").toString();
+    }
+    /** Genera el semáforo y el desglose únicamente con el resultado del servidor. */
+    public static String resultado(Calculo c) {
+        var r=c.resultado();var n=r.nivel();
+        StringBuilder h=new StringBuilder("<div class=\"resultado-foto stack\" data-calculo><div class=\"result\"><div class=\"score ").append(n.color()).append("\" data-puntaje-final=\"").append(r.puntajeFinal()).append("\" aria-label=\"Puntaje ").append(r.puntajeFinal()).append("\">").append(r.puntajeFinal()).append("</div><div class=\"stack\" style=\"gap:8px\"><span class=\"eyebrow\">Puntaje RULA final</span><span class=\"pill ").append(n.color()).append("\">").append(r.puntajeFinal()).append(" · ").append(escapar(Formularios.etiqueta(n.color()))).append(" · Nivel ").append(n.nivelOficialRula()).append("</span><h3>").append(escapar(n.accion())).append("</h3><p class=\"muted small\">").append(escapar(n.nombre())).append(" · Nivel de actuación oficial RULA ").append(n.nivelOficialRula()).append(".</p></div></div><div class=\"tablewrap\"><table class=\"num\"><thead><tr><th>Grupo</th><th>Segmento</th><th>Ángulo</th><th>Puntos</th></tr></thead><tbody>");
+        for(int i=0;i<c.mediciones().size();i++){
+            var m=c.mediciones().get(i);String[] seg=SEGMENTOS[m.segmento().ordinal()];
+            h.append("<tr data-medicion=\"").append(m.segmento()).append("\" data-grados=\"").append(m.grados()).append("\" data-puntos=\"").append(m.puntos()).append("\"><td>").append(i==0?"A":i==3?"B":"").append("</td><td>").append(seg[1]).append("</td><td>").append(String.format(Locale.ROOT,"%.2f",m.grados())).append("°").append(m.manual()?" · manual":"").append("</td><td>").append(m.puntos()).append("</td></tr>");
+            if(i==2)h.append("<tr><td></td><td>Giro de muñeca</td><td>—</td><td>").append(r.segmentos().giro()).append("</td></tr>");
+        }
+        h.append("<tr><td></td><td>Piernas</td><td>—</td><td>").append(r.segmentos().piernas()).append("</td></tr>");
+        fila(h,"Tabla A · Tabla B",r.tablaA()+" · "+r.tablaB());
+        fila(h,"Actividad muscular · carga (ambos grupos)","+"+r.actividad()+" · +"+r.carga());
+        fila(h,"Grupo A ajustado · Grupo B ajustado",r.puntajeA()+" · "+r.puntajeB());
+        return h.append("</tbody></table></div></div>").toString();
+    }
+    /** Abre los pasos 4–6 para añadir análisis a fotos existentes, sin reemplazar registros anteriores. */
+    public static String continuar(Sesion s,Evaluaciones.Consulta c) {
+        var e=c.ficha();StringBuilder h=new StringBuilder("<div class=\"pagehead\"><div><span class=\"eyebrow\">Puesto ").append(e.numero()).append("</span><h1>").append(escapar(e.datos().postura())).append("</h1></div><span class=\"tag\" id=\"pasoActual\">Paso 4 de 6</span></div><div class=\"steps\" aria-label=\"Pasos de la evaluación\">");
+        String[] nombres={"Puesto y postura","Condiciones","Fotos","Ángulos","Ajustes y carga","Resultado"};
+        for(int i=0;i<6;i++)h.append("<div data-indicador=\"").append(i+1).append("\"><i></i><span>").append(i+1).append(" · ").append(nombres[i]).append("</span></div>");
+        h.append("</div><form data-evaluacion data-continuar=\"").append(e.id()).append("\" action=\"/evaluaciones/").append(e.id()).append("/analisis\" method=\"post\" novalidate>").append(Html.csrf(s)).append("<input type=\"hidden\" name=\"visita\" value=\"").append(e.visita()).append("\"><div data-fotos-guardadas hidden>");
+        for(var f:c.fotos())h.append("<span data-foto-id=\"").append(f.id()).append("\" data-vista=\"").append(f.vista()).append("\" data-descripcion=\"").append(escapar(f.descripcion())).append("\" data-src=\"/fotos/").append(f.id()).append("\"></span>");
+        h.append("</div>").append(pasos()).append("<div class=\"aviso\" role=\"alert\" data-error-evaluacion hidden><span></span><button type=\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerrar aviso\">Cerrar</button></div><div class=\"wizfoot\"><button type=\"button\" class=\"btn\" data-atras-evaluacion>Volver a la evaluación</button><button type=\"button\" class=\"btn p\" data-siguiente>Siguiente →</button><button type=\"submit\" class=\"btn p\" data-guardar-evaluacion hidden>Guardar análisis</button></div></form><script src=\"/static/js/analisis.js\" defer></script><script src=\"/static/js/evaluacion.js\" defer></script>");
+        return Html.pagina("Analizar fotos",h.toString(),s,false);
+    }
+    /** Presenta un análisis guardado, con su resultado, mediciones, fecha y autor. */
+    public static String guardado(Sesion s,co.aplomo.servicio.Analisis.Guardado guardado) {
+        var f=guardado.ficha();String h=PaginasEmpresas.enlace("/evaluaciones/"+f.evaluacion(),"← Volver a la evaluación",false)
+                +"<section class=\"card stack\"><span class=\"eyebrow\">"+Html.fecha(f.fecha().toLocalDate())+" · "+f.fecha().toLocalTime()+" · Registró "+escapar(f.responsable())+"</span><h2>Foto "+f.foto()+" · "+Formularios.etiqueta(f.entrada().lado().name())+"</h2>"+resultado(guardado.calculo())+"</section>";
+        return Html.pagina("Resultado RULA",h,s);
+    }
+    private static void fila(StringBuilder h,String etiqueta,String valor){h.append("<tr><td colspan=\"3\">").append(etiqueta).append("</td><td>").append(valor).append("</td></tr>");}
+}

@@ -21,7 +21,7 @@ public final class MedidorAngulos {
 
     /** Grados: positivo = flexión, negativo = extensión; antebrazo siempre entre 0 y 180. */
     public record Angulos(double brazo, double antebrazo, double muneca, double cuello, double tronco) {
-        /** Valida también los ángulos escritos a mano; solo cero es neutro (RF-017). */
+        /** Valida también los ángulos escritos a mano; la puntuación aplica NEUTRO = 5° (RF-017). */
         public Angulos {
             validar(brazo, -180, 180);
             validar(antebrazo, 0, 180);
@@ -56,7 +56,7 @@ public final class MedidorAngulos {
     }
 
     /** Tolerancia del mock: ≤5° hacia atrás se trata como flexión, no extensión (RF-017). */
-    private static final double NEUTRO = 5;
+    public static final double NEUTRO = 5;
 
     /** Mide cuello respecto al tronco; ≤5° hacia atrás es flexión como en el mock (RF-017). */
     public static double cuello(Punto cadera, Punto hombro, Punto coronilla, Lado lado) {

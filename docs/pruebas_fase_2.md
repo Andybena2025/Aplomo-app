@@ -15,7 +15,7 @@ Cubre RF-018, RF-019, RF-020 y RF-027 en el módulo de cálculo; RNF-001 en la c
 
 ## Decisión sobre posición neutra
 
-Andy eligió los rangos exactos del documento 03: solo **0°** es neutro para muñeca y tronco, salvo el caso explícito de tronco sentado bien apoyado. Por eso el primer caso tiene tronco = 2 y B = 2. No se aplica la tolerancia de 5° del mock. Al medir se normaliza el ruido aritmético a diez decimales para que un ángulo geométrico de 20° no se convierta en 20.00000000000001° y cambie de puntaje. Los ángulos manuales conservan su valor.
+La instrucción vigente de Andy y `AGENTS.md` establecen **NEUTRO = 5°** del mock: muñeca y tronco de hasta 5° tienen base 1; cuello y tronco con hasta 5° hacia atrás cuentan como flexión. Esta regla también se aplica a los ángulos manuales. El texto anterior que atribuía a Andy una decisión de eliminar esa tolerancia era incorrecto y queda corregido aquí. Por eso el primer caso tiene tronco = 1 y Tabla B = 1; su resultado final sigue siendo 2. El ruido aritmético de la medición se normaliza a diez decimales, sin redondear el cálculo a grados enteros.
 
 ## Diez casos calculados a mano
 
@@ -27,7 +27,7 @@ Los casos 1–3 son los del documento 03. Los otros siete completan las pruebas 
 
 | Caso | Entrada | Tabla A | Tabla B | Actividad | Carga | A ajustado | B ajustado | Final | Color / nivel |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| 1 | 1°,85°,9°,10°,2°; sin ajustes; giro medio; piernas apoyadas | 2 | 2 | 0 | 0 | 2 | 2 | 2 | Verde / 1 |
+| 1 | 1°,85°,9°,10°,2°; sin ajustes; giro medio; piernas apoyadas | 2 | 1 | 0 | 0 | 2 | 1 | 2 | Verde / 1 |
 | 2 | Ejemplo | 3 | 3 | 0 | 0 | 3 | 3 | 3 | Amarillo / 2 |
 | 3 | Ejemplo + hombro elevado y brazo separado: brazo = 5 | 5 | 3 | 0 | 0 | 5 | 3 | 4 | Amarillo / 2 |
 | 4 | Neutro | 1 | 1 | 0 | 0 | 1 | 1 | 1 | Verde / 1 |

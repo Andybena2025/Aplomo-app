@@ -29,7 +29,7 @@ class PuntuadorSegmentosTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"-180,4", "-0.01,4", "0,1", "10,1", "10.01,2", "20,2", "20.01,3", "180,3"})
+    @CsvSource({"-180,4", "-5.01,4", "-5,1", "-0.01,1", "0,1", "10,1", "10.01,2", "20,2", "20.01,3", "180,3"})
     void limitesCuello(double g, int esperado) {
         assertEquals(esperado, PuntuadorSegmentos.cuello(g,false,false));
     }

@@ -15,6 +15,9 @@ public final class EvaluacionesWeb {
     /** Recibe el servicio transaccional, también para las pruebas HTTP aisladas. */
     public EvaluacionesWeb(Evaluaciones servicio) { this.servicio=servicio; }
 
+    /** Comparte el servicio autorizado con el panel de Inicio. */
+    public Evaluaciones servicio(){return servicio;}
+
     /** Comprueba permiso antes de leer archivos; los errores AJAX dejan intacto el formulario. */
     public void atender(HttpExchange x, Sesion s) throws IOException, SQLException {
         Permisos.administrador(s.cuenta());
@@ -31,12 +34,40 @@ public final class EvaluacionesWeb {
             } catch (IOException e) { Router.enviar(x,404,"Foto no disponible."); }
             return;
         }
+        if(ruta.equals("/evaluaciones/calcular") && post) {
+            try {
+                var f=Router.formulario(x);
+                if(!Sesiones.csrfValido(s,f.get("csrf"))){responder(x,403,"El formulario venció. Inicia sesión en otra pestaña y vuelve a intentarlo aquí.");return;}
+                var calculo=servicio.analisis().previsualizar(s.cuenta(),entero(f.get("visita"),"visita"),DatosAnalisis.leer(f));
+                Router.enviar(x,200,PaginasAnalisis.resultado(calculo));
+            }catch(IllegalArgumentException e){responder(x,400,e.getMessage());}
+            catch(SQLException e){responder(x,503,"No pudimos calcular. Revisa la conexión e inténtalo de nuevo; tus puntos se conservan.");}
+            return;
+        }
+        if(ruta.matches("/evaluaciones/[1-9][0-9]*/analisis/[1-9][0-9]*")&&!post) {
+            String[] ids=ruta.split("/");var guardado=servicio.analisis().consultar(s.cuenta(),entero(ids[2],"evaluación"),entero(ids[4],"análisis"));
+            Router.enviar(x,200,PaginasAnalisis.guardado(s,guardado));return;
+        }
+        if(ruta.matches("/evaluaciones/[1-9][0-9]*/analizar")&&!post) {
+            int id=entero(ruta.split("/")[2],"evaluación");var consulta=servicio.consultar(s.cuenta(),id);
+            servicio.contexto(s.cuenta(),consulta.ficha().visita());
+            Router.enviar(x,200,PaginasAnalisis.continuar(s,consulta));return;
+        }
+        if(ruta.matches("/evaluaciones/[1-9][0-9]*/analisis")&&post) {
+            try {
+                var f=Router.formulario(x);if(!Sesiones.csrfValido(s,f.get("csrf"))){responder(x,403,"El formulario venció. Inicia sesión en otra pestaña y vuelve a intentarlo aquí.");return;}
+                int id=entero(ruta.split("/")[2],"evaluación");servicio.analisis().guardar(s.cuenta(),id,DatosAnalisis.solicitudes(f));
+                x.getResponseHeaders().set("Location","/evaluaciones/"+id+"?aviso=An%C3%A1lisis+guardado.");responder(x,201,"Análisis guardado.");
+            }catch(IllegalArgumentException e){responder(x,400,e.getMessage());}
+            catch(SQLException|IOException e){responder(x,503,"No pudimos guardar. Tus ángulos y ajustes se conservan; inténtalo de nuevo.");}
+            return;
+        }
         if (ruta.equals("/evaluaciones/nueva") && !post) {
             int visita=entero(Router.consulta(x).get("visita"),"visita");
             Router.enviar(x,200,PaginasEvaluacion.nueva(s,servicio.contexto(s.cuenta(),visita))); return;
         }
         if (!post && ruta.matches("/evaluaciones/[1-9][0-9]*")) {
-            Router.enviar(x,200,PaginasEvaluacion.detalle(s,servicio.consultar(s.cuenta(),entero(ruta.substring(14),"evaluación")))); return;
+            Router.enviar(x,200,PaginasEvaluacion.detalle(s,servicio.consultar(s.cuenta(),entero(ruta.substring(14),"evaluación")),servicio.analisis().listar(s.cuenta(),entero(ruta.substring(14),"evaluación")),Router.consulta(x).get("aviso"))); return;
         }
         if (!ruta.equals("/evaluaciones") || !post) { Router.enviar(x,404,"Página no disponible.");return; }
         try {
@@ -51,8 +82,8 @@ public final class EvaluacionesWeb {
             List<Fotos.Entrada> fotos=new ArrayList<>();
             for(var p:partes) if(p.archivo()!=null && !(p.archivo().isEmpty() && p.bytes().length==0))
                 fotos.add(new Fotos.Entrada(p.bytes(),f.get(p.nombre()+"_vista"),f.get(p.nombre()+"_descripcion")));
-            servicio.guardar(s.cuenta(),visita,datos,fotos);
-            x.getResponseHeaders().set("Location","/visitas/"+visita+"?aviso=Evaluaci%C3%B3n+guardada.");
+            int id=servicio.guardar(s.cuenta(),visita,datos,fotos,"si".equals(f.get("asistente_completo"))?DatosAnalisis.solicitudes(f):null);
+            x.getResponseHeaders().set("Location","/evaluaciones/"+id+"?aviso=Evaluaci%C3%B3n+guardada.");
             responder(x,201,"Evaluación guardada.");
         } catch(IllegalArgumentException e) { responder(x,400,e.getMessage()); }
         catch(SQLException | IOException e) { responder(x,503,"No pudimos guardar la evaluación. Tus campos y fotos siguen seleccionados; inténtalo de nuevo."); }

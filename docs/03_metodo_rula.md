@@ -31,15 +31,15 @@ El Administrador marca puntos sobre la foto ampliada (de perfil, con el movimien
 |---|---|---|
 | Brazo | Extensión ≤ 20° o flexión ≤ 20° = 1 · extensión > 20° o flexión 21–45° = 2 · flexión 46–90° = 3 · flexión > 90° = 4 | +1 hombro elevado · +1 brazo separado del cuerpo · −1 brazo apoyado |
 | Antebrazo | 60–100° = 1 · menos de 60° o más de 100° = 2 | +1 cruza la línea media del cuerpo o trabaja hacia afuera |
-| Muñeca | 0° (neutra) = 1 · hasta 15° de flexión o extensión = 2 · más de 15° = 3 | +1 muñeca desviada (radial o cubital) |
+| Muñeca | Hasta 5° (neutra, tolerancia del mock) = 1 · hasta 15° de flexión o extensión = 2 · más de 15° = 3 | +1 muñeca desviada (radial o cubital) |
 | Giro de muñeca | Medio = 1 · extremo = 2 | Puntaje propio, entra a la Tabla A |
 
 **Grupo B**
 
 | Segmento | Puntos | Ajustes |
 |---|---|---|
-| Cuello | 0–10° = 1 · 11–20° = 2 · más de 20° = 3 · extensión = 4 | +1 girado · +1 inclinado lateralmente |
-| Tronco | 0° (o sentado bien apoyado) = 1 · 1–20° = 2 · 21–60° = 3 · más de 60° = 4 | +1 girado · +1 inclinado lateralmente |
+| Cuello | 0–10° = 1 · 11–20° = 2 · más de 20° = 3 · extensión mayor de 5° = 4 | +1 girado · +1 inclinado lateralmente |
+| Tronco | Hasta 5° (o sentado bien apoyado) = 1 · 1–20° = 2 · 21–60° = 3 · más de 60° = 4 | +1 girado · +1 inclinado lateralmente |
 | Piernas | Bien apoyadas y equilibradas = 1 · no = 2 | — |
 
 ## 3. Tablas
@@ -84,7 +84,7 @@ El nivel se muestra **con nombre y color**, nunca solo con color.
 
 - Pruebas unitarias JUnit que recorren **todas** las combinaciones de las Tablas A, B y C contra los valores de la base.
 - **10 casos calculados a mano** comparados con el sistema. Tres casos ya verificados (puntos de segmento → tablas → final), sin actividad y con carga menor de 2 kg:
-  - Brazo 1° (1), antebrazo 85° (1), muñeca 9° (2), giro medio (1), cuello 10° (1), tronco 2° (2), piernas apoyadas (1) → A = 2, B = 2 → **2 · Verde · Nivel 1**.
+  - Brazo 1° (1), antebrazo 85° (1), muñeca 9° (2), giro medio (1), cuello 10° (1), tronco 2° (1, por NEUTRO = 5°), piernas apoyadas (1) → A = 2, B = 1 → **2 · Verde · Nivel 1**.
   - Brazo 61° (3), antebrazo 47° (2), muñeca 0° (1), giro medio (1), cuello 37° (3), tronco 17° (2), piernas apoyadas (1), sin ajustes → A = 3, B = 3 → **3 · Amarillo · Nivel 2**.
   - El mismo caso con hombro elevado (+1) y brazo separado (+1) → brazo = 5 → A = 5, B = 3 → **4 · Amarillo · Nivel 2** (es el resultado que muestra el mock app en la evaluación de ejemplo).
 

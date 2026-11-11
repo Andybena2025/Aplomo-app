@@ -1,0 +1,487 @@
+[
+  {
+    "paso": 5,
+    "ancho": 390,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Foto 1 · Perfil"
+      },
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Siguiente →"
+      }
+    ],
+    "documento": 375,
+    "navegacion": {
+      "total": 343,
+      "visible": 343
+    }
+  },
+  {
+    "paso": 5,
+    "ancho": 810,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Foto 1 · Perfil"
+      },
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Siguiente →"
+      }
+    ],
+    "documento": 795,
+    "navegacion": {
+      "total": 428,
+      "visible": 428
+    }
+  },
+  {
+    "paso": 5,
+    "ancho": 1080,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Foto 1 · Perfil"
+      },
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Siguiente →"
+      }
+    ],
+    "documento": 1065,
+    "navegacion": {
+      "total": 574,
+      "visible": 574
+    }
+  },
+  {
+    "paso": 5,
+    "ancho": 1366,
+    "botones": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Foto 1 · Perfil"
+      },
+      {
+        "alto": 43,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 43,
+        "texto": "Siguiente →"
+      }
+    ],
+    "documento": 1351,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  },
+  {
+    "paso": 5,
+    "ancho": 1920,
+    "botones": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Foto 1 · Perfil"
+      },
+      {
+        "alto": 43,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 43,
+        "texto": "Siguiente →"
+      }
+    ],
+    "documento": 1905,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  },
+  {
+    "paso": 6,
+    "ancho": 390,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "documento": 375,
+    "navegacion": {
+      "total": 343,
+      "visible": 343
+    }
+  },
+  {
+    "paso": 6,
+    "ancho": 810,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "documento": 795,
+    "navegacion": {
+      "total": 428,
+      "visible": 428
+    }
+  },
+  {
+    "paso": 6,
+    "ancho": 1080,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "documento": 1065,
+    "navegacion": {
+      "total": 574,
+      "visible": 574
+    }
+  },
+  {
+    "paso": 6,
+    "ancho": 1366,
+    "botones": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 43,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 43,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "documento": 1351,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  },
+  {
+    "paso": 6,
+    "ancho": 1920,
+    "botones": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 43,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 43,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "documento": 1905,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  },
+  {
+    "paso": 4,
+    "ancho": 390,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Foto 1 · Perfil"
+      },
+      {
+        "alto": 44,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 44,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 44,
+        "texto": "Volver a la evaluación"
+      },
+      {
+        "alto": 44,
+        "texto": "Siguiente →"
+      }
+    ],
+    "documento": 375,
+    "navegacion": {
+      "total": 343,
+      "visible": 343
+    }
+  },
+  {
+    "paso": 4,
+    "ancho": 810,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Foto 1 · Perfil"
+      },
+      {
+        "alto": 44,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 44,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 44,
+        "texto": "Volver a la evaluación"
+      },
+      {
+        "alto": 44,
+        "texto": "Siguiente →"
+      }
+    ],
+    "documento": 795,
+    "navegacion": {
+      "total": 428,
+      "visible": 428
+    }
+  },
+  {
+    "paso": 4,
+    "ancho": 1080,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Foto 1 · Perfil"
+      },
+      {
+        "alto": 44,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 44,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 44,
+        "texto": "Volver a la evaluación"
+      },
+      {
+        "alto": 44,
+        "texto": "Siguiente →"
+      }
+    ],
+    "documento": 1065,
+    "navegacion": {
+      "total": 574,
+      "visible": 574
+    }
+  },
+  {
+    "paso": 4,
+    "ancho": 1366,
+    "botones": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Foto 1 · Perfil"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 43,
+        "texto": "Volver a la evaluación"
+      },
+      {
+        "alto": 43,
+        "texto": "Siguiente →"
+      }
+    ],
+    "documento": 1351,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  },
+  {
+    "paso": 4,
+    "ancho": 1920,
+    "botones": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "Foto 1 · Perfil"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 43,
+        "texto": "Volver a la evaluación"
+      },
+      {
+        "alto": 43,
+        "texto": "Siguiente →"
+      }
+    ],
+    "documento": 1905,
+    "navegacion": {
+      "total": 603,
+      "visible": 603
+    }
+  }
+]

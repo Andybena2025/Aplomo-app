@@ -2,14 +2,16 @@
 (() => {
   const form = document.querySelector('[data-evaluacion]');
   if (!form) return;
-  let paso = 1, enviando = false;
+  const continuar = Number(form.dataset.continuar || 0);
+  let paso = continuar ? 4 : 1, enviando = false;
   const error = form.querySelector('[data-error-evaluacion]');
   const atras = form.querySelector('[data-atras-evaluacion]');
   const siguiente = form.querySelector('[data-siguiente]');
   const guardar = form.querySelector('[data-guardar-evaluacion]');
   form.querySelectorAll('.slotImg img').forEach(img=>img.dataset.muestra=img.src);
   const elegidas = form.querySelector('[data-fotos-elegidas]');
-  let fotos = [], urls = [];
+  let fotos = continuar ? [...form.querySelectorAll('[data-foto-id]')].map(el=>({id:Number(el.dataset.fotoId),vista:el.dataset.vista,descripcion:el.dataset.descripcion,src:el.dataset.src})) : [], urls = [];
+  const analizador = window.crearAnalizadorAplomo(form,()=>fotos,aviso,actualizarFormulario);
   function aviso(texto) {
     error.hidden = !texto;
     error.querySelector('span').textContent = texto;
@@ -34,24 +36,47 @@
       if (p === paso) s.setAttribute('aria-current','step'); else s.removeAttribute('aria-current');
     });
     document.querySelector('#pasoActual').textContent = `Paso ${paso} de 6`;
-    atras.textContent = paso === 1 ? 'Cancelar' : '← Atrás';
-    siguiente.hidden = paso === 3; guardar.hidden = paso !== 3;
+    atras.textContent = paso === 1 ? 'Cancelar' : continuar && paso === 4 ? 'Volver a la evaluación' : '← Atrás';
+    siguiente.hidden = paso === 6; guardar.hidden = paso !== 6;
     aviso('');
     form.querySelector(`[data-paso="${paso}"] h2`).setAttribute('tabindex','-1');
     form.querySelector(`[data-paso="${paso}"] h2`).focus({preventScroll:true});
     window.scrollTo({top:0,behavior:'smooth'});
   }
-  siguiente.addEventListener('click', () => {
-    const controles = [...form.querySelectorAll(`[data-paso="${paso}"] input, [data-paso="${paso}"] select, [data-paso="${paso}"] textarea`)];
-    if (controles.some(c => !c.reportValidity())) return;
-    mostrar(paso + 1);
+  function validarFotos() {
+    const registro=form.querySelector('[name="registro"]:checked');
+    if (!registro) throw new Error('Elige Con registro fotográfico o Sin registro fotográfico.');
+    const conFotos=registro.value==='CON_FOTOS';
+    if (conFotos && !form.elements.acepta.checked) throw new Error('Marca la aceptación de las fotos o elige Sin registro fotográfico.');
+    if (conFotos && (fotos.length<1 || fotos.length>10)) throw new Error('Agrega de 1 a 10 fotos antes de continuar.');
+    if (conFotos && fotos.some(f=>!f.descripcion.trim() || f.descripcion.length>200)) throw new Error('Cada foto necesita una descripción de hasta 200 caracteres.');
+    return conFotos;
+  }
+  siguiente.addEventListener('click', async () => {
+    if(enviando)return;
+    try {
+      if(paso<3) {
+        const controles=[...form.querySelectorAll(`[data-paso="${paso}"] input, [data-paso="${paso}"] select, [data-paso="${paso}"] textarea`)];
+        if(controles.some(c=>!c.reportValidity()))return;
+        mostrar(paso+1);return;
+      }
+      siguiente.disabled=true;atras.disabled=true;siguiente.textContent='Calculando…';
+      if(paso===3) {
+        if(!validarFotos()) {
+          mostrar(6);form.querySelector('[data-resultados]').textContent='Sin registro fotográfico. Se conservarán los datos de la evaluación sin fotos ni puntaje RULA.';
+        }else{mostrar(4);analizador.iniciar();}
+      }else if(paso===4){await analizador.paso5();mostrar(5);}
+      else if(paso===5){await analizador.paso6();mostrar(6);}
+    }catch(e){aviso(e.message);}
+    finally{siguiente.disabled=false;atras.disabled=false;siguiente.textContent='Siguiente →';}
   });
   atras.addEventListener('click', () => {
-    if (enviando) return;
-    if (paso > 1) mostrar(paso - 1);
-    else if (confirm('¿Salir del asistente? Los datos que todavía no guardaste se perderán.')) {
-      location.assign('/visitas/' + form.elements.visita.value);
-    }
+    if(enviando)return;
+    if(continuar&&paso===4) {
+      if(confirm('¿Volver a la evaluación? Los análisis que todavía no guardaste se perderán.'))location.assign('/evaluaciones/'+continuar);
+    }else if(paso===6&&!continuar&&form.querySelector('[name="registro"]:checked')?.value==='SIN_REGISTRO_FOTOGRAFICO')mostrar(3);
+    else if(paso>1){mostrar(paso-1);if(paso===4)analizador.iniciar();}
+    else if(confirm('¿Salir del asistente? Los datos que todavía no guardaste se perderán.'))location.assign('/visitas/'+form.elements.visita.value);
   });
   form.querySelectorAll('.opt input').forEach(c => c.addEventListener('change', () => c.closest('.opt').classList.toggle('on', c.checked)));
   form.querySelectorAll('[name="registro"]').forEach(r => r.addEventListener('change', () => {
@@ -60,7 +85,7 @@
     if (!conFotos) form.elements.acepta.checked = false;
     aviso('');
   }));
-  form.querySelector('[data-otro-lado]').addEventListener('click', e => {
+  form.querySelector('[data-otro-lado]')?.addEventListener('click', e => {
     const panel = form.querySelector('[data-lado-extra]');
     panel.hidden = !panel.hidden;
     form.querySelectorAll('[data-lado-principal]').forEach(p=>p.hidden=!panel.hidden);
@@ -69,6 +94,7 @@
     e.currentTarget.querySelector('.hint').textContent=panel.hidden?'Si dudas cuál lado tiene más carga, puedes registrar también el otro lado.':'Perfil y detalle del otro lado. La foto de frente sirve para ambos lados.';
   });
   function renderFotos() {
+    if(continuar)return;
     urls.forEach(URL.revokeObjectURL); urls = [];
     elegidas.replaceChildren();
     const cuenta = document.createElement('span'); cuenta.className='eyebrow'; cuenta.textContent=`${fotos.length} de 10 fotos seleccionadas`;
@@ -109,16 +135,17 @@
   }));
   form.addEventListener('submit',async e=>{
     e.preventDefault();if (enviando) return;
-    if (paso!==3) {siguiente.click();return;}
-    const registro=form.querySelector('[name="registro"]:checked');
-    if (!registro) {aviso('Elige Con registro fotográfico o Sin registro fotográfico.');return;}
-    const conFotos=registro.value==='CON_FOTOS';
-    if (conFotos && !form.elements.acepta.checked) {aviso('Marca la aceptación de las fotos o elige Sin registro fotográfico.');return;}
-    if (conFotos && (fotos.length<1 || fotos.length>10)) {aviso('Agrega de 1 a 10 fotos antes de guardar.');return;}
-    if (conFotos && fotos.some(f=>!f.descripcion.trim() || f.descripcion.length>200)) {aviso('Cada foto necesita una descripción de hasta 200 caracteres.');return;}
-    const data=new FormData(form);
-    if (!conFotos) data.delete('acepta');
-    if (conFotos) fotos.forEach((foto,i)=>{data.append(`foto_${i}`,foto.file);data.append(`foto_${i}_vista`,foto.vista);data.append(`foto_${i}_descripcion`,foto.descripcion);});
+    if(paso!==6){siguiente.click();return;}
+    enviando=true;guardar.disabled=true;atras.disabled=true;
+    let conFotos=true;
+    try{if(!continuar)conFotos=validarFotos();if(conFotos)await analizador.paso6();}catch(x){enviando=false;guardar.disabled=false;atras.disabled=false;aviso(x.message);return;}
+    const data=continuar?new URLSearchParams({csrf:form.elements.csrf.value}):new FormData(form);
+    if(!continuar){
+      data.set('asistente_completo','si');
+      if(!conFotos)data.delete('acepta');
+      if(conFotos)fotos.forEach((foto,i)=>{data.append(`foto_${i}`,foto.file);data.append(`foto_${i}_vista`,foto.vista);data.append(`foto_${i}_descripcion`,foto.descripcion);});
+    }
+    if(conFotos)analizador.solicitudes().forEach((datos,i)=>data.append(`analisis_${i}`,datos));
     enviando=true;guardar.disabled=true;atras.disabled=true;guardar.textContent='Guardando…';aviso('');
     try {
       const respuesta=await fetch(form.action,{method:'POST',body:data,credentials:'same-origin',redirect:'manual'});
@@ -128,7 +155,7 @@
       else if ((respuesta.headers.get('Content-Type')||'').startsWith('text/plain')) aviso(await respuesta.text());
       else aviso('No pudimos guardar. Comprueba tu sesión en otra pestaña y vuelve a intentarlo aquí; tus datos se conservan.');
     } catch (_) {aviso('No se pudo conectar. Tus campos y fotos se conservan; revisa la conexión e inténtalo de nuevo.');}
-    finally {enviando=false;guardar.disabled=false;atras.disabled=false;guardar.textContent='Guardar evaluación';}
+    finally {enviando=false;guardar.disabled=false;atras.disabled=false;guardar.textContent=continuar?'Guardar análisis':'Guardar evaluación';}
   });
-  renderFotos();mostrar(1);
+  renderFotos();mostrar(paso);if(continuar)analizador.iniciar();
 })();

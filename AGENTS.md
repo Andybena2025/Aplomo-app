@@ -18,10 +18,10 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 
 ## Estado (actualízalo al terminar cada paso)
 
-- Hechos y aprobados: Paso 0, Paso 1 (motor RULA), Pasos 2 y 3 (acceso y cuentas), Pasos 4, 5 y 6 (empresas, reservas, visitas), QA visual y QA de dispositivos (commit c1cc829).
-- Paso 7 implementado y verificado: asistente de evaluación, pasos 1 a 3 (puesto y postura, seis condiciones y fotos). Informe y límites de la comprobación: `docs/informe_paso7.md`. Pendiente del OK de Andy.
-- Siguiente autorizable: Paso 8, únicamente después del OK de Andy.
-- Después: Pasos 9 a 13. El Paso 14 (IA) solo si Andy lo pide.
+- Hechos y aprobados: Pasos 0 a 7, QA visual y QA de dispositivos. Andy aprobó el Paso 7 en el chat antes de iniciar el Paso 8.
+- Paso 8 implementado y verificado: asistente completo, medición y corrección manual, cálculo RULA en el servidor, historial por foto, semáforo y cuatro tarjetas de Inicio. Informe y límites de comprobación: `docs/informe_paso8.md`. Pendiente del OK de Andy.
+- Siguiente autorizable: Paso 9 (pendientes), únicamente después del OK de Andy.
+- Después: Pasos 10 a 13. El Paso 14 (IA) solo si Andy lo pide.
 
 ## Reglas que no se negocian
 

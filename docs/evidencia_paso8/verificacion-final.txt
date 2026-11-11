@@ -1,0 +1,19 @@
+APLOMO · Paso 8
+11 nov 2026, 11:07 America/Bogota
+
+Proyecto de IntelliJ: mvn compile test — BUILD SUCCESS
+Pruebas: 573
+Fallos: 0
+Errores: 0
+Omitidas: 0
+AnalisisTest: 25
+HttpAnalisisTest: 14
+Límites adicionales de cuello: 2
+
+Auditoría final, solo lectura:
+rula_ergonomia: 0 empresas con ese nombre
+rula_ergonomia_pruebas: 0 empresas con ese nombre
+
+QA visual: ROLLBACK confirmado y fotos temporales retiradas.
+No se modificó el esquema ni se borraron datos reales.
+JavaScript: node --check correcto en analisis.js y evaluacion.js.

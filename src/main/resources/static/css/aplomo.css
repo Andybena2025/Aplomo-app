@@ -315,3 +315,9 @@ section.stack+section.stack{margin-top:28px}
 .foto-guardada{margin:0}.foto-guardada img{width:100%;height:auto;border-radius:10px}.foto-guardada figcaption{overflow-wrap:anywhere}
 
 [data-paso] h2[tabindex="-1"]:focus{outline:none}
+
+/* RF-017 a RF-021: componentes del mock con corrección manual y controles táctiles. */
+.medicion{grid-template-columns:minmax(0,1fr) auto auto}.correccion{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.correccion .check{padding:5px 8px;background:transparent;border:0;font-size:12px}.correccion .input{max-width:130px}
+[data-editor-foto] .field{max-width:440px}.resultado-por-foto+.resultado-por-foto{border-top:1px solid var(--line);padding-top:24px;margin-top:24px}.resultado-foto .pill{white-space:normal;align-self:start}.resultado-foto .score{flex-shrink:0}
+[data-resultados] .tablewrap{max-width:100%}[data-resultados] td{overflow-wrap:anywhere}[data-tabs-fotos] button,[data-tabs-ajustes] button{min-height:44px}
+@media(max-width:600px){.medicion{gap:8px;padding:10px}.medicion .hint{font-size:11px}.medicion .check{min-height:44px}.resultado-foto .score{width:112px;height:112px;font-size:58px}.resultado-foto table{min-width:0}.resultado-foto th,.resultado-foto td{padding:10px 6px;font-size:12px}.resultado-foto .result{gap:14px}}
