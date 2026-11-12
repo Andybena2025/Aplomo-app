@@ -75,5 +75,26 @@ class CalificacionesTest extends BasePrueba {
         var p=centro.puestos().stream().filter(x->x.id()==e.puesto1).findFirst().orElseThrow();
         assertEquals(ultima,p.evaluacion());assertNull(p.puntaje());assertNull(p.riesgo());assertEquals(4,centro.estadisticas().fotosAnalizadas());
     }
+    @Test void totalesDeEmpresaSumanHistorialYEstadoActualSinDuplicarPuestos()throws Exception{
+        var i=servicio.informe(cuenta(admin),empresa);var t=i.totales();assertEquals(3,t.visitas());assertEquals(3,t.puestos());assertEquals(5,t.fotosAnalizadas());
+        assertEquals(Map.of("VERDE",1,"AMARILLO",2),t.colores());assertEquals(Map.of("ABIERTO",1,"ARREGLADO",1),t.pendientes());
+        assertEquals(Map.of("HECHA",1),t.sugerencias().get("MOBILIARIO"));assertEquals(Map.of("EN_PROCESO",1,"PENDIENTE",1),t.sugerencias().get("POSTURA"));
+    }
+    @Test void areaConMasRojoSeCalculaEnTodaLaEmpresaNoDesdeGanadorasDeCadaSede()throws Exception{
+        int produccion=Sql.uno(con,"SELECT id_area FROM area WHERE id_empresa=? AND nombre=?",r->r.getInt(1),empresa,"Producción");
+        int logistica=Sql.insertar(con,"INSERT INTO area(id_empresa,nombre) VALUES(?,?)",empresa,"Logística");int oficina=Sql.insertar(con,"INSERT INTO area(id_empresa,nombre) VALUES(?,?)",empresa,"Oficina");
+        for(int puesto:new int[]{e.puesto1,e.puesto2,e.puestoSur}){
+            Sql.actualizar(con,"UPDATE puesto_trabajo SET id_area=? WHERE id_puesto=?",produccion,puesto);
+            int foto=Sql.uno(con,"SELECT f.id_foto FROM fotografia f JOIN evaluacion ev USING(id_evaluacion) JOIN visita v USING(id_visita) WHERE ev.id_puesto=? AND v.estado='FINALIZADA' ORDER BY ev.id_evaluacion DESC LIMIT 1",r->r.getInt(1),puesto);analisis(foto,5);
+        }
+        int salonSur=Sql.uno(con,"SELECT id_salon FROM puesto_trabajo WHERE id_puesto=?",r->r.getInt(1),e.puestoSur);
+        agregarRojo(e.visitaSur,salonSur,2,produccion);
+        for(int numero=10;numero<13;numero++){agregarRojo(e.visitaReevaluacion,e.salonCentro,numero,logistica);agregarRojo(e.visitaSur,salonSur,numero,oficina);}
+        var i=servicio.informe(cuenta(admin),empresa);
+        assertEquals(List.of("Logística"),sede(i,e.sedeCentro).estadisticas().areasMasRojo());assertEquals(List.of("Oficina"),sede(i,e.sedeSur).estadisticas().areasMasRojo());assertEquals(List.of("Producción"),i.totales().areasMasRojo());
+    }
+    private void agregarRojo(int visita,int salon,int numero,int area)throws Exception{
+        int ev=evaluacion(visita,salon,numero);Sql.actualizar(con,"UPDATE puesto_trabajo p JOIN evaluacion e USING(id_puesto) SET p.id_area=? WHERE e.id_evaluacion=?",area,ev);analisis(foto(ev),5);
+    }
     private SedeResumen sede(InformeEmpresa i,int id){return i.sedes().stream().filter(s->s.sede().id()==id).findFirst().orElseThrow();}
 }

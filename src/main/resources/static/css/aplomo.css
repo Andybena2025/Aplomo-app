@@ -377,3 +377,16 @@ section.stack+section.stack{margin-top:28px}
  .informe-tabla .nota-promedio .promedio{font-size:16pt}.informe-tabla .nota-promedio .small{display:none}
 }
 @media print{.informe-bloque{break-inside:avoid;page-break-inside:avoid}.informe-empresa p{widows:3;orphans:3}}
+
+/* Correcciones previas al Paso 13: portada de empresa y rótulos sin alterar promedios. */
+.informe-imprimir{max-width:320px;gap:8px}.informe-imprimir .hint{margin:0}.etiqueta-promedio-sede{font-size:13px;color:var(--muted)}.sheet .etiqueta-promedio-sede{color:#39362f}.informe-resumen h3{font-size:16px;margin:12px 0 6px}.informe-resumen .nota-promedio .promedio{font-weight:400}.informe-portada .informe-metodo{font-size:10px}.resumen-sugerencias{line-height:1.6}
+@media print{
+ .informe-portada{break-after:page;page-break-after:always}
+ .informe-portada .informe-cifras .box{padding:8px 10px;margin-bottom:8px}
+ .informe-portada .informe-cifras b{font-size:23px;font-weight:400}
+ .informe-portada .informe-cifras .sm{font-size:8px;letter-spacing:.1em}
+ .informe-portada .informe-cifras{margin:10px 0}
+ .informe-portada h1{font-size:27px}.informe-portada h2{font-size:20px}.informe-portada p{font-size:9pt;line-height:1.35;margin:6px 0}
+ .informe-portada .informe-metodo{font-size:8pt;margin-top:12px}
+ .informe-portada .informe-marca{margin-bottom:10px;padding-bottom:10px}
+}

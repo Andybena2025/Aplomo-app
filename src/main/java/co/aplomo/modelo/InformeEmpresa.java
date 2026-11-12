@@ -6,7 +6,7 @@ import java.util.*;
 
 /** RF-025/026: instantánea de resultados Finalizados, sin fotos ni rutas privadas. */
 public record InformeEmpresa(Empresa empresa, LocalDateTime generado, List<SedeResumen> sedes,
-                             Calificacion general, List<String> sedesSinCalificacion, List<Riesgo> leyenda) {
+                             Calificacion general, List<String> sedesSinCalificacion, List<Riesgo> leyenda, Estadisticas totales) {
     /** Promedio del equipo y su clasificación leída de MySQL; no es un nuevo cálculo RULA. */
     public record Calificacion(BigDecimal promedio, int redondeado, Riesgo riesgo) {}
     /** Rango oficial y textos de nivel_riesgo, sin umbrales duplicados. */

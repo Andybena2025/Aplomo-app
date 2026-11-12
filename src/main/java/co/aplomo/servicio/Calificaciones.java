@@ -70,7 +70,12 @@ public final class Calificaciones {
         var calificadas=resumenes.stream().map(SedeResumen::calificacion).filter(Objects::nonNull).toList();
         Calificacion general=calificadas.size()>=MINIMO_SEDES_GENERAL?promediar(calificadas,riesgos):null;
         var faltan=resumenes.stream().filter(s->s.calificacion()==null).map(s->s.sede().nombre()).toList();
-        return new InformeEmpresa(e,LocalDateTime.now(reloj),List.copyOf(resumenes),general,faltan,riesgos);
+        var totales=estadisticas(resumenes.stream().flatMap(s->s.visitas().stream()).toList(),
+                resumenes.stream().flatMap(s->s.puestos().stream()).toList(),
+                resumenes.stream().flatMap(s->s.pendientes().stream()).toList(),
+                resumenes.stream().flatMap(s->s.sugerencias().stream()).toList(),
+                resumenes.stream().mapToInt(s->s.estadisticas().fotosAnalizadas()).sum());
+        return new InformeEmpresa(e,LocalDateTime.now(reloj),List.copyOf(resumenes),general,faltan,riesgos,totales);
     }
 
     private static Estadisticas estadisticas(List<VisitaResumen> vs,List<PuestoResumen> ps,List<PendienteResumen> pa,

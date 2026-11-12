@@ -1,0 +1,202 @@
+[
+  {
+    "vista": "calificaciones",
+    "ancho": 390,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Empresa"
+      },
+      {
+        "alto": 44,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver sede"
+      }
+    ],
+    "documento": 375,
+    "filasMenu": 2,
+    "menu": 343,
+    "menuVisible": 343,
+    "tablas": [],
+    "ventana": 390
+  },
+  {
+    "vista": "calificaciones",
+    "ancho": 810,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Empresa"
+      },
+      {
+        "alto": 44,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver sede"
+      }
+    ],
+    "documento": 795,
+    "filasMenu": 1,
+    "menu": 478,
+    "menuVisible": 478,
+    "tablas": [],
+    "ventana": 810
+  },
+  {
+    "vista": "calificaciones",
+    "ancho": 1080,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Empresa"
+      },
+      {
+        "alto": 44,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "texto": "Ver sede"
+      }
+    ],
+    "documento": 1065,
+    "filasMenu": 1,
+    "menu": 748,
+    "menuVisible": 748,
+    "tablas": [],
+    "ventana": 1080
+  },
+  {
+    "vista": "calificaciones",
+    "ancho": 1366,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 33.5,
+        "texto": "← Empresa"
+      },
+      {
+        "alto": 43,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver sede"
+      }
+    ],
+    "documento": 1366,
+    "filasMenu": 1,
+    "menu": 603,
+    "menuVisible": 603,
+    "tablas": [],
+    "ventana": 1366
+  },
+  {
+    "vista": "calificaciones",
+    "ancho": 1920,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 33.5,
+        "texto": "← Empresa"
+      },
+      {
+        "alto": 43,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Ver sede"
+      }
+    ],
+    "documento": 1920,
+    "filasMenu": 1,
+    "menu": 603,
+    "menuVisible": 603,
+    "tablas": [],
+    "ventana": 1920
+  }
+]

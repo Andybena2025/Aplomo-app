@@ -1,0 +1,227 @@
+[
+  {
+    "vista": "una-sede",
+    "ancho": 390,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Empresa"
+      },
+      {
+        "alto": 44,
+        "texto": "Imprimir o guardar PDF"
+      }
+    ],
+    "documento": 375,
+    "filasMenu": 2,
+    "menu": 343,
+    "menuVisible": 343,
+    "tablas": [
+      {
+        "total": 293,
+        "visible": 293
+      },
+      {
+        "total": 293,
+        "visible": 293
+      },
+      {
+        "total": 293,
+        "visible": 293
+      },
+      {
+        "total": 293,
+        "visible": 293
+      }
+    ],
+    "ventana": 390
+  },
+  {
+    "vista": "una-sede",
+    "ancho": 810,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Empresa"
+      },
+      {
+        "alto": 44,
+        "texto": "Imprimir o guardar PDF"
+      }
+    ],
+    "documento": 795,
+    "filasMenu": 1,
+    "menu": 478,
+    "menuVisible": 478,
+    "tablas": [
+      {
+        "total": 625,
+        "visible": 625
+      },
+      {
+        "total": 625,
+        "visible": 625
+      },
+      {
+        "total": 625,
+        "visible": 625
+      },
+      {
+        "total": 625,
+        "visible": 625
+      }
+    ],
+    "ventana": 810
+  },
+  {
+    "vista": "una-sede",
+    "ancho": 1080,
+    "controles": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "texto": "← Empresa"
+      },
+      {
+        "alto": 44,
+        "texto": "Imprimir o guardar PDF"
+      }
+    ],
+    "documento": 1065,
+    "filasMenu": 1,
+    "menu": 748,
+    "menuVisible": 748,
+    "tablas": [
+      {
+        "total": 698,
+        "visible": 698
+      },
+      {
+        "total": 698,
+        "visible": 698
+      },
+      {
+        "total": 698,
+        "visible": 698
+      },
+      {
+        "total": 698,
+        "visible": 698
+      }
+    ],
+    "ventana": 1080
+  },
+  {
+    "vista": "una-sede",
+    "ancho": 1366,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 33.5,
+        "texto": "← Empresa"
+      },
+      {
+        "alto": 43,
+        "texto": "Imprimir o guardar PDF"
+      }
+    ],
+    "documento": 1351,
+    "filasMenu": 1,
+    "menu": 603,
+    "menuVisible": 603,
+    "tablas": [
+      {
+        "total": 698,
+        "visible": 698
+      },
+      {
+        "total": 698,
+        "visible": 698
+      },
+      {
+        "total": 698,
+        "visible": 698
+      },
+      {
+        "total": 698,
+        "visible": 698
+      }
+    ],
+    "ventana": 1366
+  },
+  {
+    "vista": "una-sede",
+    "ancho": 1920,
+    "controles": [
+      {
+        "alto": 33.5,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 33.5,
+        "texto": "Salir"
+      },
+      {
+        "alto": 33.5,
+        "texto": "← Empresa"
+      },
+      {
+        "alto": 43,
+        "texto": "Imprimir o guardar PDF"
+      }
+    ],
+    "documento": 1905,
+    "filasMenu": 1,
+    "menu": 603,
+    "menuVisible": 603,
+    "tablas": [
+      {
+        "total": 698,
+        "visible": 698
+      },
+      {
+        "total": 698,
+        "visible": 698
+      },
+      {
+        "total": 698,
+        "visible": 698
+      },
+      {
+        "total": 698,
+        "visible": 698
+      }
+    ],
+    "ventana": 1920
+  }
+]

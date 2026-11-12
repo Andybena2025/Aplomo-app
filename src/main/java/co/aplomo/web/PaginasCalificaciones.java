@@ -28,7 +28,7 @@ public final class PaginasCalificaciones {
             h.append("<article class=\"card stack\"><div class=\"row between\"><h3>").append(escapar(sede.sede().nombre()))
                     .append("</h3><span class=\"tag\">").append(sede.sede().activo()?"Activa":"Inactiva").append("</span></div><p class=\"muted small\">")
                     .append(escapar(sede.sede().ciudad())).append(" · ").append(escapar(sede.sede().direccion())).append("</p>")
-                    .append(nota(sede.calificacion())).append("<p>").append(sede.visitas().size()).append(" visitas Finalizadas · ")
+                    .append("<p class=\"etiqueta-promedio-sede\">Promedio histórico de sus visitas Finalizadas</p>").append(nota(sede.calificacion())).append("<p>").append(cantidad(sede.visitas().size(),"visita Finalizada","visitas Finalizadas")).append(" · ")
                     .append(sede.visitas().stream().filter(v->v.calificacion()!=null).count()).append(" con calificación</p>")
                     .append(enlace("/sedes/"+sede.sede().id(),"Ver sede",false)).append("</article>");
         }
@@ -39,11 +39,13 @@ public final class PaginasCalificaciones {
     public static String informe(Sesion s,InformeEmpresa i){
         StringBuilder h=new StringBuilder(encabezado(s,i,true));
         h.append("<p class=\"hint informe-ayuda\">Pulsa Imprimir o guardar PDF. En el diálogo del navegador elige tu impresora o Guardar como PDF.</p>")
-                .append("<div class=\"sheetwrap informe-wrap\"><article class=\"sheet informe-empresa\"><header class=\"informe-marca\"><b>APLOMO.</b><div>Informe general de la empresa<br>")
-                .append(Html.fechaHora(i.generado())).append(" · America/Bogota</div></header><h1>").append(escapar(i.empresa().nombre()))
+                .append("<div class=\"sheetwrap informe-wrap\"><article class=\"sheet informe-empresa\"><section class=\"informe-portada\"><header class=\"informe-marca\"><b>APLOMO.</b><div>Informe general de la empresa<br>")
+                .append(generado(i)).append("</div></header><h1>").append(escapar(i.empresa().nombre()))
                 .append("</h1><p>NIT ").append(escapar(i.empresa().nit())).append("</p><p>").append(escapar(i.empresa().descripcion())).append("</p>")
                 .append("<p>Contacto: ").append(texto(i.empresa().contacto(),"Sin registrar")).append(" · ").append(texto(i.empresa().telefono(),"Sin teléfono"))
-                .append(" · ").append(texto(i.empresa().correo(),"Sin correo")).append("</p><p class=\"informe-metodo\">").append(metodo()).append("</p>");
+                .append(" · ").append(texto(i.empresa().correo(),"Sin correo")).append("</p>");
+        resumen(h,i);
+        h.append("<p class=\"informe-metodo\">").append(metodo()).append("</p></section>");
         for(var sede:i.sedes())sede(h,sede);
         h.append("<section class=\"box informe-general\"><h2>Calificación general entre sedes</h2>").append(general(i)).append(cobertura(i)).append("</section>");
         h.append("<section class=\"informe-leyenda\"><h2>Cómo leer el riesgo</h2><p>El nivel y la acción están escritos para que el informe se entienda en blanco y negro.</p><ul>");
@@ -57,17 +59,17 @@ public final class PaginasCalificaciones {
         return "<div class=\"informe-controles\">"+enlace("/empresas/"+i.empresa().id(),"← Empresa",false)
                 +"<div class=\"pagehead\"><div><span class=\"eyebrow\">"+(informe?"Vista previa":"Indicadores")+"</span><h1>"+(informe?"Informe general":"Calificaciones")
                 +"</h1><p class=\"muted\">"+escapar(i.empresa().nombre())+" · Solo visitas Finalizadas</p></div>"
-                +(informe?"<button class=\"btn p\" type=\"button\" data-imprimir>Imprimir o guardar PDF</button>":s.cuenta().rol()==Cuenta.Rol.ADMINISTRADOR?enlace("/informes/empresa/"+i.empresa().id(),"Generar informe",true):"")
+                +(informe?"<div class=\"stack informe-imprimir\"><button class=\"btn p\" type=\"button\" data-imprimir>Imprimir o guardar PDF</button><p class=\"hint\">En el cuadro de imprimir, desmarca Encabezados y pies de página</p></div>":s.cuenta().rol()==Cuenta.Rol.ADMINISTRADOR?enlace("/informes/empresa/"+i.empresa().id(),"Generar informe",true):"")
                 +"</div></div>";
     }
     private static String metodo(){return "Indicadores del equipo (propuesta), no parte del método RULA; pendientes de validar con la clienta. Puesto: máximo de su última evaluación Finalizada. Visita: promedio guardado de sus puestos. Sede: promedio de visitas con calificación. General: promedio de las sedes calificadas, mínimo "+Calificaciones.MINIMO_SEDES_GENERAL+". Para el color se redondea al entero más cercano (propuesta).";}
     private static String general(InformeEmpresa i){
-        if(i.sedes().size()==1)return "<p><b>No hay calificación general: la empresa tiene una sola sede.</b></p>";
+        if(i.sedes().size()==1)return "<p><b>Sin calificación general.</b> La empresa tiene una sola sede.</p>";
         return i.general()==null?"<p><b>Sin calificación general.</b> Se necesitan al menos "+Calificaciones.MINIMO_SEDES_GENERAL+" sedes calificadas.</p>":nota(i.general());
     }
     private static String cobertura(InformeEmpresa i){
         int n=i.sedes().size()-i.sedesSinCalificacion().size();
-        return "<p class=\"cobertura-sedes\">"+n+" de "+i.sedes().size()+" sedes calificadas · "+(i.sedesSinCalificacion().isEmpty()?"no faltan sedes por calificar":""+(i.sedesSinCalificacion().size()==1?"falta ":"faltan ")+String.join(", ",i.sedesSinCalificacion().stream().map(Html::escapar).toList()))+".</p>";
+        return "<p class=\"cobertura-sedes\">"+n+" de "+i.sedes().size()+(i.sedes().size()==1?" sede calificada · ":" sedes calificadas · ")+(i.sedesSinCalificacion().isEmpty()?"no falta ninguna sede por calificar":""+(i.sedesSinCalificacion().size()==1?"falta ":"faltan ")+String.join(", ",i.sedesSinCalificacion().stream().map(Html::escapar).toList()))+".</p>";
     }
     private static String nota(Calificacion c){
         if(c==null)return "<p class=\"sin-calificacion\">Sin calificación: no hay visitas Finalizadas con puntaje.</p>";
@@ -76,11 +78,11 @@ public final class PaginasCalificaciones {
     }
     private static void sede(StringBuilder h,SedeResumen s){
         h.append("<section class=\"informe-sede\"><h2>").append(escapar(s.sede().nombre())).append(s.sede().activo()?"":" · Inactiva")
-                .append("</h2><p>").append(escapar(s.sede().ciudad())).append(" · ").append(escapar(s.sede().direccion())).append("</p>").append(nota(s.calificacion()));
+                .append("</h2><p>").append(escapar(s.sede().ciudad())).append(" · ").append(escapar(s.sede().direccion())).append("</p><p class=\"etiqueta-promedio-sede\">Promedio histórico de sus visitas Finalizadas</p>").append(nota(s.calificacion()));
         var e=s.estadisticas();h.append("<div class=\"informe-cifras\">");
-        cifra(h,"Visitas Finalizadas",e.visitas());cifra(h,"Puestos evaluados únicos",e.puestos());cifra(h,"Puestos con puntaje",e.conPuntaje());cifra(h,"Fotos analizadas",e.fotosAnalizadas());
-        for(String color:List.of("VERDE","AMARILLO","ROJO"))cifra(h,"Puestos en "+Formularios.etiqueta(color),e.colores().getOrDefault(color,0));
-        cifra(h,"Puestos sin puntaje",e.puestos()-e.conPuntaje());cifra(h,"Pendientes abiertos",e.pendientes().getOrDefault("ABIERTO",0));cifra(h,"Pendientes arreglados",e.pendientes().getOrDefault("ARREGLADO",0));h.append("</div>");
+        cifra(h,"Visita Finalizada","Visitas Finalizadas",e.visitas());cifra(h,"Puesto evaluado único","Puestos evaluados únicos",e.puestos());cifra(h,"Puesto con puntaje","Puestos con puntaje",e.conPuntaje());cifra(h,"Foto analizada","Fotos analizadas",e.fotosAnalizadas());
+        for(String color:List.of("VERDE","AMARILLO","ROJO"))cifra(h,"Puesto en "+Formularios.etiqueta(color),"Puestos en "+Formularios.etiqueta(color),e.colores().getOrDefault(color,0));
+        cifra(h,"Puesto sin puntaje","Puestos sin puntaje",e.puestos()-e.conPuntaje());cifra(h,"Pendiente abierto","Pendientes abiertos",e.pendientes().getOrDefault("ABIERTO",0));cifra(h,"Pendiente arreglado","Pendientes arreglados",e.pendientes().getOrDefault("ARREGLADO",0));h.append("</div>");
         h.append("<div class=\"informe-bloque\"><h3>Visitas y calificaciones históricas</h3>");
         tabla(h,List.of("Reserva","Inicio y fin reales","Calificación"),s.visitas().stream().map(v->List.of(escapar(v.codigo()),Html.fechaHora(v.inicio())+"<br>"+Html.fechaHora(v.fin()),nota(v.calificacion()))).toList());
         h.append("</div><div class=\"informe-bloque\"><h3>Puestos y resultados actuales</h3><p>Una fila por puesto: última evaluación Finalizada; máximo de sus análisis. Una reevaluación Verde sustituye al Rojo anterior en estas cifras.</p>");
@@ -106,7 +108,19 @@ public final class PaginasCalificaciones {
                 .append(" · Límite: ").append(fecha(sg.limite())).append(" · ").append(sg.origen().equals("SISTEMA")?"Sugerencia del sistema":"Escrita por el Administrador").append("</p></div>");
         if(s.sugerencias().isEmpty())h.append("<p>No hay sugerencias activas de visitas Finalizadas.</p>");h.append("</section>");
     }
-    private static void cifra(StringBuilder h,String titulo,int n){h.append("<div class=\"box\"><span class=\"sm\">").append(escapar(titulo)).append("</span><b>").append(n).append("</b></div>");}
+    private static void resumen(StringBuilder h,InformeEmpresa i){
+        var e=i.totales();h.append("<section class=\"informe-resumen\"><h2>Resumen de la empresa</h2><h3>Calificación general</h3>").append(general(i)).append(cobertura(i));
+        h.append("<div class=\"informe-cifras resumen-cifras\">");
+        cifra(h,"Visita Finalizada","Visitas Finalizadas",e.visitas());cifra(h,"Puesto evaluado único","Puestos evaluados únicos",e.puestos());cifra(h,"Foto analizada","Fotos analizadas",e.fotosAnalizadas());
+        for(String color:List.of("VERDE","AMARILLO","ROJO"))cifra(h,"Puesto en "+Formularios.etiqueta(color),"Puestos en "+Formularios.etiqueta(color),e.colores().getOrDefault(color,0));
+        cifra(h,"Pendiente abierto","Pendientes abiertos",e.pendientes().getOrDefault("ABIERTO",0));cifra(h,"Pendiente arreglado","Pendientes arreglados",e.pendientes().getOrDefault("ARREGLADO",0));
+        cifra(h,"Sugerencia activa","Sugerencias activas",e.sugerencias().values().stream().flatMap(m->m.values().stream()).mapToInt(Integer::intValue).sum());h.append("</div><h3>Sugerencias activas por tipo</h3><p class=\"resumen-sugerencias\">");
+        List<String> tipos=new ArrayList<>();for(String tipo:List.of("MOBILIARIO","POSTURA","DESCANSOS","CARGA","OTRA"))tipos.add(etiqueta(tipo)+": "+e.sugerencias().getOrDefault(tipo,Map.of()).values().stream().mapToInt(Integer::intValue).sum());
+        h.append(String.join(" · ",tipos)).append("</p><p><b>Área con más puestos en Rojo de la empresa:</b> ").append(e.areasMasRojo().isEmpty()?"No hay puestos en Rojo.":String.join(", ",e.areasMasRojo().stream().map(Html::escapar).toList())).append("</p></section>");
+    }
+    private static String cantidad(int n,String singular,String plural){return n+" "+(n==1?singular:plural);}
+    private static String generado(InformeEmpresa i){return "<time data-generado datetime=\""+i.generado().atZone(java.time.ZoneId.of("America/Bogota")).toOffsetDateTime()+"\">Generado el "+Html.fechaHora(i.generado())+" · America/Bogota</time>";}
+    private static void cifra(StringBuilder h,String singular,String plural,int n){String titulo=n==1?singular:plural;h.append("<div class=\"box\"><span class=\"sm\">").append(escapar(titulo)).append("</span><b>").append(n).append("</b></div>");}
     private static void conteos(StringBuilder h,String titulo,Map<String,Integer> mapa){h.append("<h4>").append(escapar(titulo)).append("</h4>");tabla(h,List.of("Grupo","Puestos"),new TreeMap<>(mapa).entrySet().stream().map(x->List.of(etiqueta(x.getKey()),""+x.getValue())).toList());}
     private static void tabla(StringBuilder h,List<String> cabeceras,List<List<String>> filas){
         if(filas.isEmpty()){h.append("<p>Sin registros.</p>");return;}

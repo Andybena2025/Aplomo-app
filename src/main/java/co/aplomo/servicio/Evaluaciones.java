@@ -30,7 +30,9 @@ public final class Evaluaciones {
     private final EvaluacionDao dao = new EvaluacionDao();
 
     /** Usa MySQL, la carpeta fotos/ y la hora de Colombia. */
-    public Evaluaciones() { this(new Transacciones(), Clock.system(ZoneId.of("America/Bogota")), new Fotos(), new BitacoraDao()); }
+    public Evaluaciones() { this(new Transacciones()); }
+    /** Usa el reloj REAL de producción en Bogotá; solo sustituye la conexión para las pruebas reversibles. */
+    public Evaluaciones(Transacciones tx) { this(tx, Clock.system(ZoneId.of("America/Bogota")), new Fotos(), new BitacoraDao()); }
     /** Comparte conexión, reloj y carpeta aislada con las pruebas. */
     public Evaluaciones(Transacciones tx, Clock reloj, Fotos archivos, BitacoraDao bitacora) {
         this.tx = tx; this.reloj = reloj; this.archivos = archivos; this.bitacora = bitacora; this.analisis=new Analisis(tx,reloj,archivos,bitacora);

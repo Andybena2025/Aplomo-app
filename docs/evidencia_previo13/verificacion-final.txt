@@ -1,0 +1,10 @@
+Correcciones previas al Paso 13 · 11 nov 2026
+./mvnw compile test: 715 aprobadas, 0 fallos/errores/omitidas.
+Pruebas y QA: rula_ergonomia_pruebas; ROLLBACK confirmado.
+rula_ergonomia: 0 empresas con ese nombre
+rula_ergonomia_pruebas: 0 empresas con ese nombre
+Portada PDF real en una página: general, cobertura, nueve cifras, sugerencias por tipo y área global.
+Detalle por sede desde la segunda página. Ocho páginas PDF revisadas.
+15 observaciones sin desbordamiento; barra en una fila desde 810 px.
+Hora real: producción Clock.system(America/Bogota), probado por HTTP y visto en PDF a las 18:56.
+Sin cambios RULA, esquema o datos reales. Sin secretos ni fotos versionados.
