@@ -1,0 +1,92 @@
+[
+  {
+    "buttons": [
+      {
+        "height": 44,
+        "label": "Detectar puntos"
+      },
+      {
+        "height": 44,
+        "label": "Deshacer"
+      },
+      {
+        "height": 44,
+        "label": "Borrar puntos"
+      }
+    ],
+    "scrollWidth": 375,
+    "width": 390
+  },
+  {
+    "buttons": [
+      {
+        "height": 44,
+        "label": "Detectar puntos"
+      },
+      {
+        "height": 44,
+        "label": "Deshacer"
+      },
+      {
+        "height": 44,
+        "label": "Borrar puntos"
+      }
+    ],
+    "scrollWidth": 795,
+    "width": 810
+  },
+  {
+    "buttons": [
+      {
+        "height": 44,
+        "label": "Detectar puntos"
+      },
+      {
+        "height": 44,
+        "label": "Deshacer"
+      },
+      {
+        "height": 44,
+        "label": "Borrar puntos"
+      }
+    ],
+    "scrollWidth": 1065,
+    "width": 1080
+  },
+  {
+    "buttons": [
+      {
+        "height": 44,
+        "label": "Detectar puntos"
+      },
+      {
+        "height": 44,
+        "label": "Deshacer"
+      },
+      {
+        "height": 44,
+        "label": "Borrar puntos"
+      }
+    ],
+    "scrollWidth": 1351,
+    "width": 1366
+  },
+  {
+    "buttons": [
+      {
+        "height": 44,
+        "label": "Detectar puntos"
+      },
+      {
+        "height": 44,
+        "label": "Deshacer"
+      },
+      {
+        "height": 44,
+        "label": "Borrar puntos"
+      }
+    ],
+    "scrollWidth": 1905,
+    "width": 1920
+  }
+]

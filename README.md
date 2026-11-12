@@ -43,7 +43,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 11 | Consultas: buscar, filtrar y ordenar en las 11 secciones | ✅ Hecho |
 | 12 | Calificación de sedes y empresa + informe general en PDF | ✅ Hecho |
 | 13 | Pulido final, prueba en Chrome, Edge y Firefox, datos de demostración | ⏳ Pendiente |
-| 14 | (Opcional) Detección automática de puntos con IA | 💭 Solo si sobra tiempo |
+| 14 | (Opcional) Detección automática de puntos con IA | ✅ Implementado · pendiente de revisión |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 

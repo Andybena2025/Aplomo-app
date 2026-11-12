@@ -1,0 +1,12 @@
+Paso 14 · 12 nov 2026 · America/Bogota
+TZ=America/Bogota ./mvnw test
+716 pruebas del estado de trabajo; 0 fallos, 0 errores, 0 omitidas. BUILD SUCCESS. Finalizó 14:33:12 -05:00.
+Incluye una prueba previa del Paso 13 sin commit; el commit del Paso 14 conserva 715 pruebas JUnit versionadas.
+8 escenarios aislados del detector aprobados con Node, sin dependencias nuevas.
+Perfil detectado, frontal de apoyo detectado, detalle manual. Lado ajustado y arrastre manual comprobados.
+Offline real en una pestaña de Chrome sin modelo precargado: mensaje exacto; marcado a mano de Cadera a Hombro. Se restauró conexión/caché y se cerró la ventana.
+Fallo solo del CDN, servidor disponible: cinco ángulos manuales y análisis guardado: 1 · Verde · Nivel 1.
+390/810/1080/1366/1920: sin desborde horizontal; detectar/deshacer/borrar de 44 px.
+Usuario: acceso directo a foto y editor denegado.
+QA solo rula_ergonomia_pruebas. Vista cerrada: ROLLBACK completado. Sin cambios en la base real.
+Sin push.

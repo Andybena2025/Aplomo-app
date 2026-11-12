@@ -59,7 +59,7 @@ public final class PaginasEvaluacion {
                 .append(slot("detalle_otro", "Detalle · otro lado", "OTRA", "Si hace falta, registra también la mano y la muñeca del otro lado.", "detalle"))
                 .append("</div><div class=\"stack\" data-fotos-elegidas></div><p class=\"hint\">Las imágenes de muestra son de demostración, generadas con IA. No se guardan como fotos de la evaluación.</p></div>")
                 .append("</section>").append(PaginasAnalisis.pasos()).append("<div class=\"aviso\" role=\"alert\" data-error-evaluacion hidden><span></span><button type=\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerrar aviso\">Cerrar</button></div>")
-                .append("<div class=\"wizfoot\"><button type=\"button\" class=\"btn\" data-atras-evaluacion>Cancelar</button><button type=\"button\" class=\"btn p\" data-siguiente>Siguiente →</button><button type=\"submit\" class=\"btn p\" data-guardar-evaluacion hidden>Guardar evaluación</button></div></form><script src=\"/static/js/analisis.js\" defer></script><script src=\"/static/js/evaluacion.js\" defer></script>");
+                .append("<div class=\"wizfoot\"><button type=\"button\" class=\"btn\" data-atras-evaluacion>Cancelar</button><button type=\"button\" class=\"btn p\" data-siguiente>Siguiente →</button><button type=\"submit\" class=\"btn p\" data-guardar-evaluacion hidden>Guardar evaluación</button></div></form><script src=\"/static/js/deteccion.js\" defer></script><script src=\"/static/js/analisis.js\" defer></script><script src=\"/static/js/evaluacion.js\" defer></script>");
         return Html.pagina("Nueva evaluación", html.toString(), sesion, false);
     }
 

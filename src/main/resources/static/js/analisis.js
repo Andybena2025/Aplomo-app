@@ -6,6 +6,37 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   let activa=0, imagen=null, arrastre=null, temporizador=null, numeroPeticion=0;
   const foto=()=>obtenerFotos()[activa];
   const estado=f=>f.analisis||(f.analisis={habilitada:f.vista==='PERFIL',lado:'DERECHO',puntos:{},manual:{},ajustes:{},giro:'MEDIO',piernas:true,actividad:false,carga:'MENOS_2KG_INTERMITENTE',html:null,revision:0});
+  const detectarBoton=form.querySelector('[data-detectar-puntos]');
+  const estadoDeteccion=form.querySelector('[data-estado-deteccion]');
+  const falloDeteccion='No se encontró una persona en la foto. Marca los puntos a mano.';
+  function mostrarDeteccion(){
+    const f=foto();if(!f)return;const s=estado(f);
+    detectarBoton.disabled=s.ia==='cargando'||f.vista==='OTRA';
+    detectarBoton.textContent=s.ia==='cargando'?'Detectando puntos…':'Detectar puntos';
+    estadoDeteccion.hidden=!s.mensajeIA;estadoDeteccion.textContent=s.mensajeIA||'';
+  }
+  async function autoDetectar(f,forzar=false){
+    if(!f||f.vista==='OTRA')return;
+    const s=estado(f);
+    if(s.ia==='cargando'||(!forzar&&(f.vista!=='PERFIL'||!s.habilitada||s.ia||Object.keys(s.puntos).length||Object.keys(s.manual).length)))return;
+    const revision=s.revision;s.ia='cargando';s.mensajeIA='Detectando puntos…';
+    if(f===foto())mostrarDeteccion();
+    try{
+      const r=await window.AplomoDeteccion.conTiempo(window.AplomoDeteccion.detectarPuntos(f.src||f.preview),60000,'La detección tardó demasiado.');
+      if(!obtenerFotos().includes(f))return;
+      if(s.revision!==revision||(f===foto()&&arrastre)){s.ia='manual';s.mensajeIA='Se conservaron tus correcciones manuales.';return;}
+      if(!r){s.ia='nada';s.mensajeIA=falloDeteccion;return;}
+      s.raw=r.raw;s.ia='ok';s.mensajeIA='Puntos detectados automáticamente: revísalos';
+      if(f.vista==='PERFIL'){
+        s.puntos={...r.L,coronilla:r.L.cabeza};delete s.puntos.cabeza;
+        const lado=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';
+        if(s.lado!==lado){s.lado=lado;s.mensajeIA+=' · Lado ajustado a '+(lado==='DERECHO'?'Derecho':'Izquierdo')+' según la foto.';}
+        s.revision++;s.html=null;
+        if(f===foto()){sincronizar();dibujar();await medir(f).catch(e=>aviso(e.message));}
+      }
+    }catch(_){s.ia='error';s.mensajeIA=falloDeteccion;}
+    finally{if(f===foto())mostrarDeteccion();}
+  }
   function grupos(f){
     const p=estado(f).puntos;
     const grupo=ks=>ks.every(k=>p[k])?ks.map(k=>p[k]):[];
@@ -65,11 +96,11 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     for(const fila of form.querySelectorAll('[data-segmento]')){const k=fila.dataset.segmento,manual=s.manual[k]!==undefined;fila.querySelector('[data-manual]').checked=manual;fila.querySelector('[data-angulo-manual]').hidden=!manual;fila.querySelector('[data-angulo-manual]').value=manual?s.manual[k]:'';}
     for(const el of form.querySelectorAll('[data-ajuste]')){el.checked=!!s.ajustes[el.dataset.ajuste];el.closest('.opt').classList.toggle('on',el.checked);}
     form.querySelector('[data-giro]').value=s.giro;form.querySelector('[data-piernas]').checked=s.piernas;form.querySelector('[data-actividad]').checked=s.actividad;form.querySelector('[data-carga]').value=s.carga;
-    siguientePunto();pintarMedidas(f);
+    siguientePunto();pintarMedidas(f);mostrarDeteccion();
   }
   function cargarFoto(){
     const f=foto();if(!f)return;imagen=null;const img=new Image();
-    img.onload=()=>{if(f!==foto())return;imagen=img;f.ancho=img.naturalWidth;f.alto=img.naturalHeight;dibujar();};
+    img.onload=()=>{if(f!==foto())return;imagen=img;f.ancho=img.naturalWidth;f.alto=img.naturalHeight;dibujar();autoDetectar(f);};
     img.onerror=()=>aviso('No pudimos abrir la foto. Comprueba tu sesión y vuelve a seleccionarla sin cerrar este formulario.');img.src=f.src||f.preview;
   }
   function tabs(){
@@ -104,6 +135,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   cv.addEventListener('touchmove',e=>{if(arrastre)e.preventDefault();},{passive:false});new ResizeObserver(()=>dibujar()).observe(cv.parentElement);
   form.querySelector('[data-puntos-deshacer]').addEventListener('click',()=>{const s=estado(foto()),k=[...marcas].reverse().find(([k])=>s.puntos[k]);if(k){delete s.puntos[k[0]];cambiado();}});
   form.querySelector('[data-puntos-borrar]').addEventListener('click',()=>{estado(foto()).puntos={};cambiado();});
+  detectarBoton.addEventListener('click',()=>autoDetectar(foto(),true));
   form.querySelector('[data-analizar-foto]').addEventListener('change',e=>{estado(foto()).habilitada=e.target.checked;sincronizar();dibujar();});
   form.querySelector('[data-lado]').addEventListener('change',e=>{estado(foto()).lado=e.target.value;cambiado();});
   for(const fila of form.querySelectorAll('[data-segmento]')){
