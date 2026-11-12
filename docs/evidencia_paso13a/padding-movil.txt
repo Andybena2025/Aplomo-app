@@ -1,0 +1,1 @@
+Empresas y Reservas a 390 px: padding 24px; scrollWidth 375px, sin desbordamiento.

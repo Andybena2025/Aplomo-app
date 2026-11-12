@@ -1,0 +1,7 @@
+Paso 13A · 12 nov 2026
+TZ=America/Bogota ./mvnw test
+Proyecto de IntelliJ: 715 pruebas, 0 fallos, 0 errores, 0 omitidas; BUILD SUCCESS.
+15 combinaciones de pantalla y ancho revisadas; 0 desbordes horizontales.
+Dos vistas móviles actualizadas para confirmar padding de 24 px.
+JavaScript: node --check correcto en cuenta.js, interfaz.js y usuarios.js.
+QA en rula_ergonomia_pruebas con ROLLBACK; sin push.

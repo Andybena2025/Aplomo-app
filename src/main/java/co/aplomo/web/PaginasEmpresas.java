@@ -156,7 +156,7 @@ public final class PaginasEmpresas {
 
     /** Enlace de navegación con dirección interna y texto escapados. */
     public static String enlace(String ruta, String texto, boolean principal) {
-        return "<a class=\"btn" + (principal ? " p" : " sm") + "\" href=\"" + escapar(ruta) + "\">" + escapar(texto) + "</a>";
+        return "<a class=\"btn" + (principal ? " p" : "") + "\" href=\"" + escapar(ruta) + "\">" + escapar(texto) + "</a>";
     }
 
     private static String titulo(String tipo, boolean editar) {
@@ -181,7 +181,7 @@ public final class PaginasEmpresas {
         if (!admin(sesion)) return "";
         return "<div class=\"row\">" + enlace(ruta + "/editar", "Editar", false)
                 + "<form method=\"post\" action=\"" + ruta + (activo ? "/desactivar" : "/activar") + "\">"
-                + Html.csrf(sesion) + "<button class=\"btn sm\">" + (activo ? "Desactivar" : "Reactivar") + "</button></form></div>";
+                + Html.csrf(sesion) + "<button class=\"btn\">" + (activo ? "Desactivar" : "Reactivar") + "</button></form></div>";
     }
 
     private static String tarjeta(String nombre, String detalle, boolean activo, String acciones) {
@@ -190,7 +190,7 @@ public final class PaginasEmpresas {
     }
 
     private static String seccion(String titulo, String nueva, String etiqueta) {
-        return "<section class=\"stack\"><div class=\"row between\"><h2>" + escapar(titulo) + "</h2>"
+        return "<section class=\"stack catalogo-seccion\"><div class=\"row between\"><h2>" + escapar(titulo) + "</h2>"
                 + (nueva == null ? "" : enlace(nueva, etiqueta, false)) + "</div><div class=\"grid2\">";
     }
 

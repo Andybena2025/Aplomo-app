@@ -1,0 +1,1 @@
+Teclado: Saltar al contenido + Enter enfoca main#contenido; outline solid. Primera visita a Inicio en una nueva pestaña: fondo animar. Después de Empresas y volver a Inicio: fondo sin animar. Fondo oculto a 390. aria-current correcto en las cinco pantallas. Movimiento reducido protegido por CSS y matchMedia (revisión de código, no cambio de preferencias del sistema).

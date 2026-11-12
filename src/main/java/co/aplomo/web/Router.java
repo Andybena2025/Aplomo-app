@@ -188,6 +188,13 @@ public final class Router implements HttpHandler {
                     .append("<a class=\"kpi-enlace\" href=\"/evaluaciones\">").append(kpi("Evaluaciones", String.valueOf(resumen[0]), null)).append("</a>")
                     .append(kpi("Puestos en rojo", String.valueOf(resumen[1]), "color:var(--rojo)"))
                     .append("</div>");
+            if (c.rol() == Cuenta.Rol.ADMINISTRADOR) {
+                inicio.append("<div class=\"inicio-acciones\">");
+                inicio.append(accionInicio("/reservas/nueva", "Nueva reserva", "Programa una evaluación.", "M5 7h14v13H5z M8 4v6 M16 4v6 M5 12h14"));
+                inicio.append(accionInicio("/reservas", "Iniciar visita", "Continúa desde una reserva en cola.", "M9 5H5v15h14v-5 M12 4h8v8 M20 4L10 14"));
+                inicio.append(accionInicio("/empresas/nueva", "Nueva empresa", "Registra la empresa y sus sedes.", "M5 21V5h10v16 M15 11h4v10 M9 9h2 M9 13h2 M9 17h2 M3 21h18"));
+                inicio.append("</div>");
+            }
             // Visitas en curso y reservas recientes como en el mock
             inicio.append("<div class=\"grid2\"><section class=\"stack\"><h3>Visitas en curso</h3>");
             var cursando = listaVisitas.stream().filter(v -> v.visita().estado().equals("EN_CURSO")).toList();
@@ -230,6 +237,11 @@ public final class Router implements HttpHandler {
             enviar(x,200,Html.pagina("Inicio",inicio.toString(),s,false)); return;
         }
         enviar(x,404,Html.pagina("Página no disponible","<a href=\"/\">Volver al inicio</a>",s));
+    }
+
+    private static String accionInicio(String ruta, String titulo, String ayuda, String trazo) {
+        return "<a class=\"card accion-inicio\" href=\"" + ruta + "\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"" + trazo
+                + "\"/></svg><span><strong>" + titulo + "</strong><span class=\"small muted\">" + ayuda + "</span></span></a>";
     }
 
     private static boolean vigente(Cuenta antes, Cuenta ahora) {

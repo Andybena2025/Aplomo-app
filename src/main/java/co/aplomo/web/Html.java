@@ -119,7 +119,7 @@ public final class Html {
             cabecera = "<header class=\"top\"><div class=\"wrap\">"
                     // Botón Atrás + logo con ícono
                     + "<div class=\"row\" style=\"gap:10px;flex-wrap:nowrap\">"
-                    + "<button class=\"btn sm\" onclick=\"history.back()\" aria-label=\"Atrás\">← <span class=\"hideSm\">Atrás</span></button>"
+                    + "<button class=\"btn\" onclick=\"history.back()\" aria-label=\"Atrás\">← <span>Atrás</span></button>"
                     + "<a href=\"/\" style=\"text-decoration:none\">" + logo(26) + "</a></div>"
                     // Pestañas de navegación
                     + "<nav class=\"nav\" aria-label=\"Menú principal\">" + nav + "</nav>"
@@ -128,9 +128,11 @@ public final class Html {
                     + escapar(c.nombre()) + "</div><div class=\"muted small\">" + escapar(rolTexto) + "</div></div>"
                     + "<a href=\"/cuenta/contrasena\" class=\"avatar\" title=\"Cambiar contraseña\">" + escapar(iniciales) + "</a>"
                     + "<form method=\"post\" action=\"/logout\" style=\"margin:0\">" + csrf(s)
-                    + "<button class=\"btn sm\">Salir</button></form></div>"
+                    + "<button class=\"btn\">Salir</button></form></div>"
                     + "</div></header>";
         }
+        // Una sola salida de navegación; los pasos internos del asistente se conservan.
+        if (!cabecera.isEmpty()) contenido = contenido.replaceAll("<a\\b[^>]*>\\s*(?:←[^<]*|Volver (?:a |al )[^<]*)</a>", "");
         String pagehead = conPagehead
                 ? "<div class=\"pagehead\"><div><span class=\"eyebrow\">Ergonomía con precisión</span><h1>" + escapar(titulo) + "</h1></div></div>"
                 : "";
@@ -139,8 +141,14 @@ public final class Html {
                 + "<title>" + escapar(titulo) + " · APLOMO.</title>"
                 + "<link href=\"https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&display=swap\" rel=\"stylesheet\">"
                 + "<link rel=\"stylesheet\" href=\"/static/css/aplomo.css\">"
-                + "<script src=\"/static/js/cuenta.js\" defer></script><script src=\"/static/js/reservas.js\" defer></script></head><body>" + cabecera
-                + "<main class=\"wrap\">" + pagehead + contenido + "</main></body></html>";
+                + "<script src=\"/static/js/interfaz.js\" defer></script><script src=\"/static/js/cuenta.js\" defer></script><script src=\"/static/js/reservas.js\" defer></script></head><body>" + "<a class=\"saltar\" href=\"#contenido\">Saltar al contenido</a>" + cabecera + fondo()
+                + "<main id=\"contenido\" class=\"wrap\" tabindex=\"-1\">" + pagehead + contenido + "</main></body></html>";
+    }
+
+    private static String fondo() {
+        try (var entrada = Html.class.getResourceAsStream("/plantillas/fondo.html")) {
+            return entrada == null ? "" : new String(entrada.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) { return ""; }
     }
 
     /** RF-020: etiqueta completa con color y nivel leídos de MySQL, sin recalcular RULA. */

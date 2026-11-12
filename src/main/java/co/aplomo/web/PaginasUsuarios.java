@@ -14,22 +14,28 @@ public final class PaginasUsuarios {
     public static String lista(Sesion s,List<Cuenta> cuentas,List<Opcion> empresas,String aviso) {
         Map<Integer,String> nombres=new HashMap<>(); empresas.forEach(e->nombres.put(e.id(),e.nombre()));
         StringBuilder contenido=new StringBuilder(Html.aviso(aviso,true));
-        contenido.append("<div class=\"row between\"><p class=\"muted\">").append(Html.plural(cuentas.size(), "cuenta"))
-                .append(" registrada").append(cuentas.size() == 1 ? "" : "s").append("</p><a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a></div><div class=\"grid2\">");
+        contenido.append("<form class=\"card usuarios-filtros\" data-filtros-usuarios role=\"search\"><div class=\"field\"><label for=\"usuarios-buscar\">Buscar</label><input class=\"input\" id=\"usuarios-buscar\" type=\"search\" name=\"q\" aria-label=\"Buscar por nombre o correo\"></div>")
+                .append("<div class=\"field\"><label for=\"usuarios-rol\">Rol</label><select class=\"input\" id=\"usuarios-rol\" name=\"rol\"><option value=\"\">Todos</option><option value=\"ADMINISTRADOR\">Administrador</option><option value=\"USUARIO\">Usuario</option></select></div>")
+                .append("<div class=\"field\"><label for=\"usuarios-empresa\">Empresa</label><select class=\"input\" id=\"usuarios-empresa\" name=\"empresa\"><option value=\"\">Todos</option><option value=\"independiente\">Independiente</option>");
+        for(Opcion e:empresas) contenido.append(opcion(Integer.toString(e.id()),e.nombre(),false));
+        contenido.append("</select></div><div class=\"row\"><button class=\"btn p\" type=\"submit\">Aplicar filtros</button><button class=\"btn\" type=\"reset\">Limpiar filtros</button></div></form>")
+                .append("<div class=\"row between usuarios-cabecera\"><p class=\"muted\" role=\"status\" aria-live=\"polite\" data-contador-usuarios>").append(Html.plural(cuentas.size(), "cuenta"))
+                .append(" registrada").append(cuentas.size() == 1 ? "" : "s").append("</p><a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a></div>")
+                .append("<div class=\"tablewrap\"><table class=\"resp usuarios-table\"><thead><tr><th scope=\"col\">Nombre y correo</th><th scope=\"col\">Rol</th><th scope=\"col\">Empresa</th><th scope=\"col\">Estado</th><th scope=\"col\">Acciones</th></tr></thead><tbody>");
         for(Cuenta c:cuentas) {
-            contenido.append("<article class=\"card stack\"><div class=\"row between\"><h2>").append(Html.escapar(c.nombre()))
-                    .append("</h2><span class=\"").append(claseEstado(c.estado())).append("\">").append(estado(c.estado())).append("</span></div><dl class=\"datos-cuenta\">")
-                    .append(dato("Correo",c.correo())).append(dato("Teléfono",c.telefono())).append(dato("Cargo",c.cargo()))
-                    .append(dato("Rol",c.rol()==Rol.ADMINISTRADOR ? "Administrador" : "Usuario"))
-                    .append(dato("Empresa",c.empresa()==null ? "Independiente" : nombres.getOrDefault(c.empresa(),"Empresa asignada")))
-                    .append(dato("Contraseña",c.temporal() ? "Cambio obligatorio al ingresar" : "Definitiva"))
-                    .append("</dl><div class=\"row\"><a class=\"btn sm\" href=\"/usuarios/").append(c.id()).append("/editar\">Editar</a>")
+            contenido.append("<tr data-cuenta data-rol=\"").append(c.rol().name()).append("\" data-empresa=\"").append(c.empresa()==null ? "independiente" : c.empresa()).append("\">")
+                    .append("<td data-label=\"Nombre y correo\"><div class=\"cell-value\" data-nombre-correo><b>").append(Html.escapar(c.nombre())).append("</b><div class=\"small muted\">").append(Html.escapar(c.correo())).append("</div></div></td>")
+                    .append("<td data-label=\"Rol\"><div class=\"cell-value\">").append(c.rol()==Rol.ADMINISTRADOR ? "Administrador" : "Usuario").append("</div></td>")
+                    .append("<td data-label=\"Empresa\"><div class=\"cell-value\">").append(Html.escapar(c.empresa()==null ? "Independiente" : nombres.getOrDefault(c.empresa(),"Empresa asignada"))).append("</div></td>")
+                    .append("<td data-label=\"Estado\"><div class=\"cell-value\"><span class=\"").append(claseEstado(c.estado())).append("\">").append(estado(c.estado())).append("</span></div></td>")
+                    .append("<td data-label=\"Acciones\"><div class=\"cell-value row\"><a class=\"btn sm\" href=\"/usuarios/").append(c.id()).append("/editar\">Editar</a>")
                     .append("<form method=\"post\" action=\"/usuarios/").append(c.id())
                     .append(c.estado()==Estado.INACTIVA ? "/activar\">" : "/desactivar\">")
                     .append(Html.csrf(s)).append("<button class=\"btn sm\">")
-                    .append(c.estado()==Estado.INACTIVA ? "Activar" : "Desactivar").append("</button></form></div></article>");
+                    .append(c.estado()==Estado.INACTIVA ? "Activar" : "Desactivar").append("</button></form></div></td></tr>");
         }
-        contenido.append("</div>"); return Html.pagina("Usuarios",contenido.toString(),s);
+        contenido.append("</tbody></table></div><p class=\"empty\" data-usuarios-vacios hidden>No hay registros con estos filtros. Cambia la búsqueda o limpia los filtros.</p><script src=\"/static/js/usuarios.js\" defer></script>");
+        return Html.pagina("Usuarios",contenido.toString(),s);
     }
 
     private static String dato(String titulo,String valor) { return "<div><dt>"+Html.escapar(titulo)+"</dt><dd>"+Html.escapar(valor)+"</dd></div>"; }

@@ -1,0 +1,1 @@
+Nombre GABRIELA: 1; Rol USUARIO: 2; Rol + Otra empresa QA: 1; Sin resultados: visible; correo Johan: 1; Limpiar: 4. Aplicar permanece habilitado.

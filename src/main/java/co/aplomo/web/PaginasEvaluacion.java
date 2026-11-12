@@ -66,7 +66,7 @@ public final class PaginasEvaluacion {
     private static String slot(String id, String titulo, String vista, String ayuda, String muestra) {
         return "<section class=\"slot\" data-slot-id=\""+id+"\"><div class=\"slotTop\"><span class=\"eyebrow\">"+titulo+"</span><span class=\"tag\">Muestra</span></div>"
                 +"<div class=\"slotImg\"><img src=\"/static/img/muestra_"+muestra+".jpg\" alt=\"Muestra de "+titulo.toLowerCase(Locale.ROOT)+"\"><span class=\"slotLbl\">Muestra</span></div>"
-                +"<p class=\"small\">"+ayuda+"</p><div class=\"row\"><button class=\"btn sm\" type=\"button\" data-elegir-foto=\"cam_"+id+"\">Tomar foto</button><button class=\"btn sm p\" type=\"button\" data-elegir-foto=\"foto_"+id+"\">Subir foto</button></div>"
+                +"<p class=\"small\">"+ayuda+"</p><div class=\"row\"><button class=\"btn\" type=\"button\" data-elegir-foto=\"cam_"+id+"\">Tomar foto</button><button class=\"btn p\" type=\"button\" data-elegir-foto=\"foto_"+id+"\">Subir foto</button></div>"
                 +"<input id=\"cam_"+id+"\" type=\"file\" accept=\"image/jpeg,image/png\" capture=\"environment\" data-fotos data-vista=\""+vista+"\" data-titulo=\""+titulo+"\" hidden>"
                 +"<input id=\"foto_"+id+"\" type=\"file\" accept=\"image/jpeg,image/png\" multiple data-fotos data-vista=\""+vista+"\" data-titulo=\""+titulo+"\" hidden><span class=\"hint\">JPG o PNG · máximo 5 MB por foto</span></section>";
     }

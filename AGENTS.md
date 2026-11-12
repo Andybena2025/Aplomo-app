@@ -24,6 +24,7 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 - Paso 11 implementado y verificado: once tablas con búsqueda, filtros y orden; permisos por empresa y resultados solo Finalizados; reservas propias en sus cuatro estados. Informe: `docs/informe_paso11.md`. Aprobado por Andy el 11 nov 2026.
 - Paso 12 implementado y verificado: calificaciones por sede, general con mínimo dos sedes calificadas, cobertura, informe imprimible y PDF nativo. Informe: `docs/informe_paso12.md`. Aprobado por Andy el 11 nov 2026.
 - Correcciones previas al Paso 13 comprobadas: resumen de empresa en la primera página, rótulo histórico por sede, hora real de Bogotá, singular/plural y nota de impresión. Informe: `docs/correcciones_previas_paso13.md`.
+- Paso 13A implementado: correcciones visuales del profesor Arle, tabla responsive de Usuarios, accesos de Inicio y accesibilidad. Ver `docs/informe_paso13a.md`. Sin push por instrucción de Andy; pendiente de su revisión. El Paso 13 general sigue sin cerrar.
 - Paso 13 autorizado por Andy para continuar después del commit separado de correcciones. El Paso 14 (IA) solo si Andy lo pide.
 
 ## Reglas que no se negocian

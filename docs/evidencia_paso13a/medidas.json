@@ -1,0 +1,969 @@
+[
+  {
+    "page": "inicio",
+    "backVisible": true,
+    "current": "Inicio",
+    "headerButtons": [
+      {
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "← Atrás"
+      },
+      {
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Salir"
+      }
+    ],
+    "help": [
+      {
+        "height": 19.5,
+        "line": "19.5px"
+      },
+      {
+        "height": 19.5,
+        "line": "19.5px"
+      },
+      {
+        "height": 19.5,
+        "line": "19.5px"
+      }
+    ],
+    "scroll": 1440,
+    "width": 1440
+  },
+  {
+    "page": "inicio",
+    "backVisible": true,
+    "current": "Inicio",
+    "headerButtons": [
+      {
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "← Atrás"
+      },
+      {
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Salir"
+      }
+    ],
+    "help": [
+      {
+        "height": 19.5,
+        "line": "19.5px"
+      },
+      {
+        "height": 19.5,
+        "line": "19.5px"
+      },
+      {
+        "height": 19.5,
+        "line": "19.5px"
+      }
+    ],
+    "scroll": 1024,
+    "width": 1024
+  },
+  {
+    "page": "inicio",
+    "backVisible": true,
+    "current": "Inicio",
+    "headerButtons": [
+      {
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "← Atrás"
+      },
+      {
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Salir"
+      }
+    ],
+    "help": [
+      {
+        "height": 19.5,
+        "line": "19.5px"
+      },
+      {
+        "height": 19.5,
+        "line": "19.5px"
+      },
+      {
+        "height": 19.5,
+        "line": "19.5px"
+      }
+    ],
+    "scroll": 375,
+    "width": 390
+  },
+  {
+    "page": "empresas",
+    "back": "←\nAtrás",
+    "buttons": [
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Empresas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Áreas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Cargos"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Sedes"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Salones"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Puestos"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Reservas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Visitas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Evaluaciones"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Pendientes de arreglo"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Sugerencias"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Aplicar filtros"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Limpiar filtros"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nueva empresa"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver empresa"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver empresa"
+      }
+    ],
+    "client": 1440,
+    "current": "Empresas",
+    "duplicados": 0,
+    "inputs": [
+      44,
+      44,
+      44,
+      44,
+      44
+    ],
+    "scroll": 1440,
+    "width": 1440
+  },
+  {
+    "page": "empresas",
+    "back": "←\nAtrás",
+    "buttons": [
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Empresas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Áreas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Cargos"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Sedes"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Salones"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Puestos"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Reservas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Visitas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Evaluaciones"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Pendientes de arreglo"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Sugerencias"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Aplicar filtros"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Limpiar filtros"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nueva empresa"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver empresa"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver empresa"
+      }
+    ],
+    "client": 1024,
+    "current": "Empresas",
+    "duplicados": 0,
+    "inputs": [
+      44,
+      44,
+      44,
+      44,
+      44
+    ],
+    "scroll": 1024,
+    "width": 1024
+  },
+  {
+    "page": "empresas",
+    "back": "←\nAtrás",
+    "buttons": [
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Empresas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Áreas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Cargos"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Sedes"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Salones"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Puestos"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Reservas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Visitas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Evaluaciones"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Pendientes de arreglo"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Sugerencias"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Aplicar filtros"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Limpiar filtros"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nueva empresa"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver empresa"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver empresa"
+      }
+    ],
+    "client": 375,
+    "current": "Empresas",
+    "duplicados": 0,
+    "inputs": [
+      44,
+      44,
+      44,
+      44,
+      44
+    ],
+    "scroll": 375,
+    "width": 390
+  },
+  {
+    "page": "detalle-empresa",
+    "back": "←\nAtrás",
+    "buttons": [
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Editar"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver calificaciones"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Generar informe"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nueva sede"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Consultar sedes"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver sede"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nueva área"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Consultar áreas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nuevo cargo"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Consultar cargos"
+      }
+    ],
+    "client": 1425,
+    "current": "Empresas",
+    "duplicados": 0,
+    "inputs": [],
+    "scroll": 1425,
+    "width": 1440
+  },
+  {
+    "page": "detalle-empresa",
+    "back": "←\nAtrás",
+    "buttons": [
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Editar"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver calificaciones"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Generar informe"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nueva sede"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Consultar sedes"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver sede"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nueva área"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Consultar áreas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nuevo cargo"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Consultar cargos"
+      }
+    ],
+    "client": 1009,
+    "current": "Empresas",
+    "duplicados": 0,
+    "inputs": [],
+    "scroll": 1009,
+    "width": 1024
+  },
+  {
+    "page": "detalle-empresa",
+    "back": "←\nAtrás",
+    "buttons": [
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Editar"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver calificaciones"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Generar informe"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nueva sede"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Consultar sedes"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver sede"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nueva área"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Consultar áreas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nuevo cargo"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Consultar cargos"
+      }
+    ],
+    "client": 375,
+    "current": "Empresas",
+    "duplicados": 0,
+    "inputs": [],
+    "scroll": 375,
+    "width": 390
+  },
+  {
+    "page": "reservas",
+    "back": "←\nAtrás",
+    "buttons": [
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Empresas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Áreas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Cargos"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Sedes"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Salones"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Puestos"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Reservas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Visitas"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Evaluaciones"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Pendientes de arreglo"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Sugerencias"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Aplicar filtros"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Limpiar filtros"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Nueva reserva"
+      },
+      {
+        "font": "15px",
+        "height": 44,
+        "padding": "0px 20px",
+        "text": "Ver reserva"
+      }
+    ],
+    "client": 1440,
+    "current": "Reservas",
+    "duplicados": 0,
+    "inputs": [
+      44,
+      44,
+      44,
+      44,
+      44,
+      46,
+      46,
+      44,
+      44
+    ],
+    "scroll": 1440,
+    "width": 1440
+  },
+  {
+    "page": "reservas",
+    "current": "Reservas",
+    "scroll": 1024,
+    "width": 1024
+  },
+  {
+    "page": "reservas",
+    "current": "Reservas",
+    "scroll": 375,
+    "width": 390
+  },
+  {
+    "page": "usuarios",
+    "buttons": [
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      }
+    ],
+    "scroll": 1440,
+    "tableDisplay": "table",
+    "width": 1440
+  },
+  {
+    "page": "usuarios",
+    "buttons": [
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 36,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      }
+    ],
+    "scroll": 1024,
+    "tableDisplay": "table",
+    "width": 1024
+  },
+  {
+    "page": "usuarios",
+    "buttons": [
+      {
+        "font": "14px",
+        "height": 44,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 44,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "14px",
+        "height": 44,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 44,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "14px",
+        "height": 44,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 44,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      },
+      {
+        "font": "14px",
+        "height": 44,
+        "padding": "0px 14px",
+        "text": "Editar"
+      },
+      {
+        "font": "14px",
+        "height": 44,
+        "padding": "0px 14px",
+        "text": "Desactivar"
+      }
+    ],
+    "scroll": 375,
+    "tableDisplay": "block",
+    "width": 390
+  }
+]
