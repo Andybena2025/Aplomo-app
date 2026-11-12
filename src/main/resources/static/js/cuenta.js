@@ -1,10 +1,20 @@
 /* RNF-002, RNF-007: avisos accesibles y envío con indicador; las reglas se validan en Java. */
 document.querySelectorAll('[data-cerrar]').forEach(b => b.addEventListener('click', () => b.closest('.aviso').remove()));
 document.querySelectorAll('[data-confirmacion]').forEach(a => setTimeout(() => a.remove(), 5000));
-document.querySelectorAll('form:not([data-filtros-usuarios]):not([data-alta-reserva]):not([data-evaluacion]):not([data-pendiente-form]):not([data-sugerencia-form])').forEach(f => f.addEventListener('submit', () => {
-  const b = f.querySelector('button[type="submit"],button:not([type])');
-  if (b) { b.disabled = true; b.textContent = 'Procesando…'; }
+const formulariosNormales=document.querySelectorAll('form:not([data-filtros-usuarios]):not([data-alta-reserva]):not([data-evaluacion]):not([data-pendiente-form]):not([data-sugerencia-form])');
+formulariosNormales.forEach(f=>f.addEventListener('submit',e=>{
+  if(e.defaultPrevented)return;
+  if(f.dataset.enviando){e.preventDefault();return;}
+  const b=e.submitter||f.querySelector('button[type="submit"],button:not([type])');
+  f.dataset.enviando='si';
+  const guardar=f.method.toUpperCase()==='POST'&&!['/login','/logout'].includes(new URL(f.action,location.href).pathname);
+  if(b){b.dataset.textoAnterior=b.textContent;b.dataset.envioNormal='si';b.disabled=true;b.textContent=guardar?'Guardando…':'Cargando…';}
 }));
+/* Volver con el historial restaura controles conservados por la caché del navegador. */
+window.addEventListener('pageshow',()=>{
+  formulariosNormales.forEach(f=>delete f.dataset.enviando);
+  document.querySelectorAll('[data-envio-normal]').forEach(b=>{b.disabled=false;b.textContent=b.dataset.textoAnterior;delete b.dataset.textoAnterior;delete b.dataset.envioNormal;});
+});
 /* Resaltar la pestaña activa según la ruta actual (como el mock). */
 (function(){
   var path = location.pathname;

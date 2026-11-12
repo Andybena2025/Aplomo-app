@@ -15,7 +15,7 @@
   function aviso(texto) {
     error.hidden = !texto;
     error.querySelector('span').textContent = texto;
-    if (texto) error.scrollIntoView({block:'nearest',behavior:'smooth'});
+    if (texto) error.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   }
   form.querySelector('[data-cerrar-error]').addEventListener('click', () => aviso(''));
   async function actualizarFormulario() {
@@ -41,7 +41,7 @@
     aviso('');
     form.querySelector(`[data-paso="${paso}"] h2`).setAttribute('tabindex','-1');
     form.querySelector(`[data-paso="${paso}"] h2`).focus({preventScroll:true});
-    window.scrollTo({top:0,behavior:'smooth'});
+    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   }
   function validarFotos() {
     const registro=form.querySelector('[name="registro"]:checked');
@@ -60,14 +60,14 @@
         if(controles.some(c=>!c.reportValidity()))return;
         mostrar(paso+1);return;
       }
-      siguiente.disabled=true;atras.disabled=true;siguiente.textContent='Calculando…';
+      siguiente.disabled=true;atras.disabled=true;siguiente.textContent='Cargando…';
       if(paso===3) {
         if(!validarFotos()) {
           mostrar(6);form.querySelector('[data-resultados]').textContent='Sin registro fotográfico. Se conservarán los datos de la evaluación sin fotos ni puntaje RULA.';
         }else{mostrar(4);analizador.iniciar();}
       }else if(paso===4){await analizador.paso5();mostrar(5);}
       else if(paso===5){await analizador.paso6();mostrar(6);}
-    }catch(e){aviso(e.message);}
+    }catch(e){aviso(e instanceof TypeError?'No se pudo conectar. Tus campos y fotos se conservan; revisa la conexión e inténtalo de nuevo.':e.message);}
     finally{siguiente.disabled=false;atras.disabled=false;siguiente.textContent='Siguiente →';}
   });
   atras.addEventListener('click', () => {
@@ -138,7 +138,7 @@
     if(paso!==6){siguiente.click();return;}
     enviando=true;guardar.disabled=true;atras.disabled=true;
     let conFotos=true;
-    try{if(!continuar)conFotos=validarFotos();if(conFotos)await analizador.paso6();}catch(x){enviando=false;guardar.disabled=false;atras.disabled=false;aviso(x.message);return;}
+    try{if(!continuar)conFotos=validarFotos();if(conFotos)await analizador.paso6();}catch(x){enviando=false;guardar.disabled=false;atras.disabled=false;aviso(x instanceof TypeError?'No se pudo conectar. Tus campos y fotos se conservan; revisa la conexión e inténtalo de nuevo.':x.message);return;}
     const data=continuar?new URLSearchParams({csrf:form.elements.csrf.value}):new FormData(form);
     if(!continuar){
       data.set('asistente_completo','si');
@@ -146,7 +146,7 @@
       if(conFotos)fotos.forEach((foto,i)=>{data.append(`foto_${i}`,foto.file);data.append(`foto_${i}_vista`,foto.vista);data.append(`foto_${i}_descripcion`,foto.descripcion);});
     }
     if(conFotos)analizador.solicitudes().forEach((datos,i)=>data.append(`analisis_${i}`,datos));
-    enviando=true;guardar.disabled=true;atras.disabled=true;guardar.textContent='Guardando…';aviso('');
+    enviando=true;guardar.disabled=true;atras.disabled=true;guardar.textContent='Guardando…';aviso('');const terminarProgreso=window.AplomoProgreso?.iniciar('Guardando la evaluación…');
     try {
       const respuesta=await fetch(form.action,{method:'POST',body:data,credentials:'same-origin',redirect:'manual'});
       if (respuesta.status===201) {location.assign(respuesta.headers.get('Location'));return;}
@@ -155,7 +155,7 @@
       else if ((respuesta.headers.get('Content-Type')||'').startsWith('text/plain')) aviso(await respuesta.text());
       else aviso('No pudimos guardar. Comprueba tu sesión en otra pestaña y vuelve a intentarlo aquí; tus datos se conservan.');
     } catch (_) {aviso('No se pudo conectar. Tus campos y fotos se conservan; revisa la conexión e inténtalo de nuevo.');}
-    finally {enviando=false;guardar.disabled=false;atras.disabled=false;guardar.textContent=continuar?'Guardar análisis':'Guardar evaluación';}
+    finally {terminarProgreso?.();enviando=false;guardar.disabled=false;atras.disabled=false;guardar.textContent=continuar?'Guardar análisis':'Guardar evaluación';}
   });
   renderFotos();mostrar(paso);if(continuar)analizador.iniciar();
 })();

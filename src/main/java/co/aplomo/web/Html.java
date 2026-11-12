@@ -141,7 +141,7 @@ public final class Html {
                 + "<title>" + escapar(titulo) + " · APLOMO.</title>"
                 + "<link href=\"https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&display=swap\" rel=\"stylesheet\">"
                 + "<link rel=\"stylesheet\" href=\"/static/css/aplomo.css\">"
-                + "<script src=\"/static/js/interfaz.js\" defer></script><script src=\"/static/js/cuenta.js\" defer></script><script src=\"/static/js/reservas.js\" defer></script></head><body>" + "<a class=\"saltar\" href=\"#contenido\">Saltar al contenido</a>" + cabecera + fondo()
+                + "<script src=\"/static/js/interfaz.js\" defer></script><script src=\"/static/js/progreso.js\" defer></script><script src=\"/static/js/cuenta.js\" defer></script><script src=\"/static/js/reservas.js\" defer></script></head><body>" + "<a class=\"saltar\" href=\"#contenido\">Saltar al contenido</a>" + cabecera + fondo()
                 + "<main id=\"contenido\" class=\"wrap\" tabindex=\"-1\">" + pagehead + contenido + "</main></body></html>";
     }
 

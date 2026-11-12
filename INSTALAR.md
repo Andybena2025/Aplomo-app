@@ -76,6 +76,48 @@ Con la app corriendo, conecta el celular al **mismo Wi-Fi** que el computador y 
 
 ---
 
+## Datos de demostración (opcional y manual)
+
+`docs/base_de_datos/datos_demo.sql` **no se carga al iniciar ni instalar la app**. Requiere una cuenta de Administrador activa. No crea usuarios ni contraseñas; vincula los registros a un Administrador existente. Solo inserta lo que falta: repetirlo no duplica filas ni cambia los estados ya editados.
+
+Incluye Ensambles del Quindío, Muebles Cafeteros y la Corporación Universitaria Empresarial Alexander von Humboldt con Sede principal, Sede Alcázar y Sede Anova (Medicina). Los nombres y direcciones proceden del mock; no se verificó su vigencia. Puestos, contactos y resultados son ficticios y se identifican como demostración.
+
+Hay cinco reservas, una visita Finalizada, tres evaluaciones (1 · Verde · Nivel 1; 3 · Amarillo · Nivel 2; 7 · Rojo · Nivel 4), sus mediciones manuales, un pendiente abierto y sugerencias. Los resultados corresponden a los casos 4, 2 y 8 del plan de pruebas, comprobados con el motor RULA existente. **No son una valoración de las personas o lugares mostrados.**
+
+Desde la raíz del proyecto, copia la imagen de muestra generada con IA para los tres registros de demostración. Se usa la misma imagen ilustrativa; los ángulos provienen de los casos manuales, no de medir esa imagen.
+
+Mac:
+
+```bash
+mkdir -p fotos
+cp -n src/main/resources/static/img/muestra_perfil.jpg fotos/de100001-493b-4bc9-a64e-d51b4ea3c901.jpg
+cp -n src/main/resources/static/img/muestra_perfil.jpg fotos/de100002-493b-4bc9-a64e-d51b4ea3c902.jpg
+cp -n src/main/resources/static/img/muestra_perfil.jpg fotos/de100003-493b-4bc9-a64e-d51b4ea3c903.jpg
+```
+
+Windows (PowerShell):
+
+```powershell
+New-Item -ItemType Directory -Force fotos | Out-Null
+foreach ($archivoDemo in @('de100001-493b-4bc9-a64e-d51b4ea3c901.jpg','de100002-493b-4bc9-a64e-d51b4ea3c902.jpg','de100003-493b-4bc9-a64e-d51b4ea3c903.jpg')) {
+    if (-not (Test-Path (Join-Path fotos $archivoDemo))) {
+        Copy-Item src/main/resources/static/img/muestra_perfil.jpg (Join-Path fotos $archivoDemo)
+    }
+}
+```
+
+Carga primero en la base de pruebas. En Mac o en **Símbolo del sistema** de Windows (no PowerShell), ejecuta:
+
+```bash
+mysql --default-character-set=utf8mb4 -u root -p rula_ergonomia_pruebas < docs/base_de_datos/datos_demo.sql
+```
+
+Escribe la contraseña de MySQL cuando la pida. Para cargar voluntariamente estos datos en la base de la app, sustituye el nombre por `rula_ergonomia`. No vuelvas a ejecutar el script de creación de la base para cargar la demostración. Las fotos permanecen en la carpeta ignorada por Git y solo el Administrador puede verlas.
+
+La demostración aparece en las listas de Empresas y Reservas. En la universidad, Sede principal tiene la visita Finalizada y los tres colores; las otras dos sedes no tienen calificación, por lo que se muestra la cobertura y «Sin calificación general».
+
+---
+
 ## Pruebas (opcional)
 
 Las pruebas usan una base aparte, **`rula_ergonomia_pruebas`**, para no ensuciar la real.
@@ -85,7 +127,7 @@ bash scripts/crear_base_pruebas.sh   # Mac; en Windows usa "Git Bash" con el mis
 ./mvnw test                           # Windows: mvnw.cmd test
 ```
 
-Deben aprobar **715 pruebas**.
+Deben aprobar **718 pruebas**.
 
 ---
 

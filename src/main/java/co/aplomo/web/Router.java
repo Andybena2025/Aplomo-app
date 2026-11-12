@@ -295,8 +295,13 @@ public final class Router implements HttpHandler {
         for (String par : texto.split("&")) {
             if (par.isEmpty()) continue;
             String[] partes=par.split("=",2);
-            String clave=URLDecoder.decode(partes[0],StandardCharsets.UTF_8);
-            String valor=URLDecoder.decode(partes.length==2 ? partes[1] : "",StandardCharsets.UTF_8);
+            String clave,valor;
+            try {
+                clave=URLDecoder.decode(partes[0],StandardCharsets.UTF_8);
+                valor=URLDecoder.decode(partes.length==2 ? partes[1] : "",StandardCharsets.UTF_8);
+            } catch (IllegalArgumentException error) {
+                throw new IllegalArgumentException("No pudimos leer los datos del formulario. Recarga la página e inténtalo de nuevo.");
+            }
             if (f.putIfAbsent(clave,valor)!=null) throw new IllegalArgumentException("El formulario contiene campos repetidos. Recarga la página.");
         }
         return f;

@@ -15,6 +15,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** HTTP real con cookies y MySQL; todo dato de prueba se revierte al terminar. */
 public class HttpSeguridadTest extends co.aplomo.soporte.HttpPrueba {
+    @Test void formularioDañadoMuestraUnMensajeClaroSinDetallesTecnicos() throws Exception {
+        var respuesta=cliente.send(HttpRequest.newBuilder(URI.create(raiz+"/login"))
+                .header("Content-Type","application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString("correo=%ZZ&clave=Prueba123"))
+                .build(),HttpResponse.BodyHandlers.ofString());
+        assertEquals(400,respuesta.statusCode());
+        assertTrue(respuesta.body().contains("No pudimos leer los datos del formulario."));
+        assertFalse(respuesta.body().contains("URLDecoder"));
+        assertFalse(respuesta.body().contains("Exception"));
+    }
+
     @Test void anonimoNoEntraYElLoginConservaElEstilo() throws Exception {
         assertEquals("/login",get("/").headers().firstValue("Location").orElseThrow());
         assertEquals(303,get("/usuarios").statusCode());

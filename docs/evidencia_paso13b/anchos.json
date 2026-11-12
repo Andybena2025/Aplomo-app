@@ -1,0 +1,107 @@
+[
+  {
+    "width": 390,
+    "page": "inicio",
+    "desborda": false,
+    "documento": 375,
+    "viewport": 390
+  },
+  {
+    "width": 390,
+    "page": "reservas",
+    "desborda": false,
+    "documento": 375,
+    "viewport": 390
+  },
+  {
+    "width": 390,
+    "page": "usuarios",
+    "desborda": false,
+    "documento": 375,
+    "viewport": 390
+  },
+  {
+    "width": 810,
+    "page": "inicio",
+    "desborda": false,
+    "documento": 795,
+    "viewport": 810
+  },
+  {
+    "width": 810,
+    "page": "reservas",
+    "desborda": false,
+    "documento": 795,
+    "viewport": 810
+  },
+  {
+    "width": 810,
+    "page": "usuarios",
+    "desborda": false,
+    "documento": 810,
+    "viewport": 810
+  },
+  {
+    "width": 1080,
+    "page": "inicio",
+    "desborda": false,
+    "documento": 1065,
+    "viewport": 1080
+  },
+  {
+    "width": 1080,
+    "page": "reservas",
+    "desborda": false,
+    "documento": 1065,
+    "viewport": 1080
+  },
+  {
+    "width": 1080,
+    "page": "usuarios",
+    "desborda": false,
+    "documento": 1080,
+    "viewport": 1080
+  },
+  {
+    "width": 1366,
+    "page": "inicio",
+    "desborda": false,
+    "documento": 1351,
+    "viewport": 1366
+  },
+  {
+    "width": 1366,
+    "page": "reservas",
+    "desborda": false,
+    "documento": 1351,
+    "viewport": 1366
+  },
+  {
+    "width": 1366,
+    "page": "usuarios",
+    "desborda": false,
+    "documento": 1366,
+    "viewport": 1366
+  },
+  {
+    "width": 1920,
+    "page": "inicio",
+    "desborda": false,
+    "documento": 1905,
+    "viewport": 1920
+  },
+  {
+    "width": 1920,
+    "page": "reservas",
+    "desborda": false,
+    "documento": 1905,
+    "viewport": 1920
+  },
+  {
+    "width": 1920,
+    "page": "usuarios",
+    "desborda": false,
+    "documento": 1920,
+    "viewport": 1920
+  }
+]

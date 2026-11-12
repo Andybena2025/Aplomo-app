@@ -26,7 +26,9 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 - Correcciones previas al Paso 13 comprobadas: resumen de empresa en la primera página, rótulo histórico por sede, hora real de Bogotá, singular/plural y nota de impresión. Informe: `docs/correcciones_previas_paso13.md`.
 - Paso 13A implementado: correcciones visuales del profesor Arle, tabla responsive de Usuarios, accesos de Inicio y accesibilidad. Ver `docs/informe_paso13a.md`. Sin push por instrucción de Andy; pendiente de su revisión. El Paso 13 general sigue sin cerrar.
 - Paso 13 autorizado por Andy para continuar después del commit separado de correcciones. El Paso 14 (IA) solo si Andy lo pide.
-- Paso 14 autorizado explícitamente por Andy el 12 nov 2026: detección MediaPipe del mock implementada, con revisión manual, carga limitada y salida manual ante fallo. Ver `docs/informe_paso14.md`; sin push y pendiente de su revisión. El Paso 13 general conserva cambios locales sin commit (avisos de carga y prueba de rendimiento); no se da por terminado.
+- Paso 14 autorizado explícitamente por Andy el 12 nov 2026: detección MediaPipe del mock implementada, con revisión manual, carga limitada y salida manual ante fallo. Ver `docs/informe_paso14.md`; sin push y pendiente de su revisión. Los avisos de carga y la prueba de rendimiento que estaban sin commit se integraron en el Paso 13B.
+
+- Paso 13B implementado y comprobado el 12 nov 2026: carga con bloqueo de doble envío, mensajes claros, SQL demo opcional e idempotente, rendimiento con 1.000 registros en 16 tablas, 718 pruebas aprobadas y recorrido completo en Chrome 156, Edge 157 y Firefox 160. Ver `docs/informe_paso13b.md` y `docs/qa_dispositivos.md`. QA y demo solo en `rula_ergonomia_pruebas`, revertidos al cerrar. Sin push; pendiente de revisión de Andy. No se certifican dispositivos físicos ni las dos últimas versiones estables de cada navegador; no se descargaron nuevas copias.
 
 ## Reglas que no se negocian
 

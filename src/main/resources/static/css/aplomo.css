@@ -427,3 +427,15 @@ main.wrap{position:relative;z-index:1;min-width:0}
 @media(max-width:719px){.fondo{display:none}}
 @media(prefers-reduced-motion:reduce){.pz-svg *,.fondo.animar .pz-svg *{animation:none!important;transition:none!important;stroke-dashoffset:0!important}.pz-svg :is(.gd,.plumb,.bob,.jt,.lb){opacity:1!important}}
 @media print{.fondo,.saltar{display:none!important}}
+
+
+/* RNF-003: aviso neutro para acciones que superan un segundo, con los componentes del mock. */
+.progreso{background:var(--card);color:var(--ivory);border-color:var(--line2);position:fixed;right:24px;bottom:24px;z-index:100;max-width:calc(100vw - 32px);box-shadow:0 8px 24px #0005;pointer-events:none}.progreso[hidden]{display:none}
+@media(max-width:720px){.progreso{right:16px;bottom:16px}}
+@media print{.progreso{display:none!important}}
+
+/* Paso 13B: superficies táctiles también en tabletas con puntero grueso. */
+@media(pointer:coarse){
+ button,.btn.sm,.tabs button,.who .avatar,.nav-tab,.opt,.check,summary,.orden-columna{min-height:44px;min-width:44px}
+ .link,.orden-columna,.top .row>a{display:inline-flex;align-items:center;min-height:44px;min-width:44px}
+}

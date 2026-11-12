@@ -39,6 +39,7 @@
 
   for (const alta of altas) alta.addEventListener('submit', async evento => {
     evento.preventDefault();
+    if(alta.dataset.enviando)return;
     const error = alta.querySelector('[data-error-alta]');
     const boton = alta.querySelector('button');
     const etiqueta = boton.textContent;
@@ -52,6 +53,8 @@
       error.textContent = 'Selecciona primero la sede del nuevo salón.';
       return;
     }
+    alta.dataset.enviando='si';
+    const terminarProgreso=window.AplomoProgreso?.iniciar('Guardando el lugar…');
     boton.disabled = true;
     boton.textContent = 'Guardando…';
     try {
@@ -83,9 +86,11 @@
       alta.closest('details').open = false;
       aviso.textContent = datos.get('aviso') || 'Lugar registrado. Puedes continuar con la reserva.';
       aviso.classList.add('aviso');
+      if(!datos.get('aviso')||datos.get('aviso')==='Lugar registrado. Puedes continuar con la reserva.')window.AplomoProgreso?.confirmar(aviso,aviso.textContent);
     } catch (fallo) {
-      error.textContent = fallo.message || 'No pudimos completar la acción. Tus datos siguen escritos.';
+      error.textContent = fallo instanceof TypeError ? 'No se pudo conectar. Tus datos siguen escritos; revisa la conexión e inténtalo de nuevo.' : fallo.message || 'No pudimos completar la acción. Tus datos siguen escritos.';
     } finally {
+      terminarProgreso?.();delete alta.dataset.enviando;
       boton.disabled = false;
       boton.textContent = etiqueta;
     }

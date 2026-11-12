@@ -39,3 +39,43 @@ Las capturas finales de cada pantalla están en [evidencia_qa_dispositivos](evid
 ## Pendiente
 
 No se inició el Paso 7. Se mantiene la instrucción de Andy del chat: seis condiciones RF-015 con diseño `.opt`, ayudas de RF-015 y Otras observaciones de máximo 255 caracteres; sin ocho casillas, sin altura y sin migración. Las tarjetas definitivas de Evaluaciones y Puestos en rojo corresponden al Paso 8; este QA conserva los contadores actuales de Inicio. No se verificó el acceso desde un iPad/celular físico por la red local ni gestos táctiles reales.
+
+
+## Actualización · Paso 13B · 12 nov 2026
+
+El registro anterior describe el estado de los Pasos 6/QA del 11 nov; su apartado «Pendiente» y su ancho máximo de 1080 px son históricos. El avance actual figura en AGENTS.md. El Paso 13A ya amplió `.wrap` a 1240 px; no se repitieron sus correcciones ni las pruebas del Paso 14.
+
+### Recorrido real en los tres navegadores
+
+Se reutilizaron las copias oficiales temporales existentes, **sin descargar ni instalar navegadores**. Versiones verificadas en los metadatos de cada aplicación; los nombres antiguos de sus carpetas no indican la versión actual. Servidor temporal local 8087, clases reales de la aplicación, reloj real de America/Bogota, conexión explícita a `rula_ergonomia_pruebas`. Se cargó el SQL demo dentro de una transacción reversible y se usaron fotos de muestra generadas con IA en una carpeta temporal. Nada de este ensayo se cargó en la base real.
+
+| Navegador | Recorrido comprobado el 12 nov | Resultado |
+|---|---|---|
+| Chrome for Testing 156.0.8078.80 | Login → Empresas → universidad y sus tres sedes → nueva reserva 11:00–12:00 → aceptar → iniciar visita → nueva evaluación → condiciones → consentimiento → subir JPG de perfil → detección de seis puntos → ajustes → resultado → guardar → informe de empresa → Salir | ✅ Evaluación nueva guardada una vez; resultado 3 · Amarillo · Nivel 2. Informe disponible y salida vuelve al login. |
+| Microsoft Edge 157.0.4341.46 | Mismo recorrido con reserva 10:00–11:00 y evaluación nueva con JPG | ✅ Detección de seis puntos, resultado 3 · Amarillo · Nivel 2, guardado, informe y salida correctos. |
+| Firefox 160.0 | Mismo recorrido con reserva 09:00–10:00; ángulos manuales 61/47/0/37/17, actividad marcada y carga menor de 2 kg | ✅ Detección inicial también disponible; resultado manual 4 · Amarillo · Nivel 2, guardado, informe y salida correctos. |
+
+Las tres visitas nuevas se dejaron En curso en la transacción de ensayo. El informe mostró la visita Finalizada del SQL demo y sus tres colores; **no se afirmó que mostrara resultados de las visitas En curso**. La selección de carga en Firefox requirió recuperar el foco de su menú nativo; la evaluación se guardó con el valor observado, sin atribuirle el caso Rojo. No se añadieron términos con HTML al título de las posturas del recorrido.
+
+Evidencias: [Chrome resultado](evidencia_paso13b/chrome-resultado.png), [Edge resultado](evidencia_paso13b/edge-resultado.png), [Firefox resultado](evidencia_paso13b/firefox-resultado.png), e informes `chrome-informe.png`, `edge-informe.png`, `firefox-informe.png` en la misma carpeta. En el informe se vio «Generado el 12 nov 2026 … · America/Bogota», con la hora real.
+
+### Carga, errores y permisos
+
+- Se añadieron demoras **solo al servidor temporal de QA**, nunca al producto: 8 segundos al guardar evaluación / abrir informe y 4 al filtrar reservas. En los tres navegadores Guardando… quedó desactivado hasta responder. Generar informe cambió a Cargando… y se protegió contra otra activación. El filtro mostró Cargando… desactivado. Capturas `*-guardando.png`, `chrome-informe-cargando.png` y `filtros-cargando.png`.
+- Revisión de avisos de formularios, sesión, fotos, evaluación, pendientes, sugerencias e informe. El formulario con codificación dañada ahora responde con una instrucción en español, sin el mensaje técnico de URLDecoder; prueba HTTP incluida. También se tradujeron las fallas de conexión que podían mostrar «Failed to fetch» / «NetworkError» en reservas, análisis y evaluación; el ensayo JS de red fallida comprueba conservación de campos y reintento. Las confirmaciones desaparecen en 4–5 segundos; advertencias y errores permanecen hasta cerrarlos. El trabajo previo de carga no se reimplementó.
+- Se inició sesión de Usuario y se escribió a mano `/usuarios` y `/informes/empresa/24414` (empresa diferente): ambos mostraron Acceso denegado. Evidencias `usuario-acceso-denegado.png` y `usuario-otra-empresa-denegado.png`. Las pruebas HTTP existentes siguen comprobando fotos y resultados En curso protegidos.
+- La consola capturada por el navegador integrado no registró errores ni avisos durante el recorrido visual de Inicio, Reservas y Usuarios. La consola visible de Chrome durante la emulación de Usuarios estaba vacía. No se afirma haber registrado automáticamente toda la consola de Edge/Firefox.
+
+### Tamaños y tacto
+
+Se revisaron Inicio, Reservas y Usuarios con datos, a 390, 810, 1080, 1366 y 1920 px de ancho, altura 900 px, en el navegador integrado. Los 15 pares pantalla/tamaño no desbordaron horizontalmente; [anchos.json](evidencia_paso13b/anchos.json) conserva `innerWidth` y el ancho real del documento. Las capturas tienen nombres `inicio-390.png`, `reservas-810.png`, `usuarios-1920.png`, etc. Se conserva el diseño del Paso 13A: cabecera, marfil, tipografías, tarjetas de Inicio y tabla responsive de Usuarios.
+
+Además, Chrome DevTools en modo **Mobile**, a 390 y 810 px, activó el puntero táctil emulado. Se abrieron Usuarios y sus filtros; los botones de tabla, navegación, opciones, avatar y controles pequeños reciben un mínimo 44 × 44 px bajo `@media(pointer:coarse)`; campos y selects ya tienen mínimo 44 px. Capturas `chrome-tactil-390.png`, `chrome-tactil-usuarios-390.png` y `chrome-tactil-usuarios-810.png`. Se restauró el tamaño del navegador integrado y se cerraron las ventanas privadas de ensayo.
+
+**Límites:** esta es emulación, no una prueba con el dedo sobre un celular o tableta físicos. RNF-008 pide las dos últimas versiones estables de cada navegador: este recorrido comprueba exactamente las tres versiones indicadas, no certifica las seis combinaciones ni su condición de «últimas» versiones. No se descargaron otras para ampliar esa cobertura. La revisión de impresión/PDF ya realizada en el Paso 12 no se repitió aquí.
+
+### Pruebas, rendimiento y limpieza
+
+`TZ=America/Bogota ./mvnw test`: **718 aprobadas; 0 fallos, 0 errores, 0 omitidas**, 66 segundos, terminado el 12 nov 2026 a las 15:25:40 -05. Incluye el rendimiento pendiente del Paso 13: 20 repeticiones de listado / guardado / informe, 1.000 filas en cada una de 16 tablas operativas; P95 de 172,77 / 38,47 / 164,00 ms, respectivamente. Los catálogos oficiales RULA conservaron su tamaño y contenido. [Datos de rendimiento](evidencia_paso13b/rendimiento.json).
+
+El cierre del servidor temporal confirmó **ROLLBACK completado** y retiró únicamente su carpeta temporal de fotos. Las empresas, reservas, visitas, evaluaciones y cuentas de este recorrido no persisten. Las fotos reales y `config/db.properties` permanecieron fuera de Git. No hubo cambios de esquema, borrado de documentos ni push.
