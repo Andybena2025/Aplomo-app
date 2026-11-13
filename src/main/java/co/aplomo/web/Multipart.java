@@ -39,7 +39,7 @@ public final class Multipart {
             if (!n.find()) throw error(); String nombre = n.group(1);
             Matcher a = Pattern.compile("(?:^|;)\\s*filename=\"([^\"]*)\"").matcher(d.group(1));
             String archivo = a.find() ? a.group(1) : null;
-            if (!nombres.add(nombre) || partes.size() >= 64) throw error();
+            if (!nombres.add(nombre) || partes.size() >= 80) throw error();
             int inicio = finCabecera + 4, fin = indice(body, separador, inicio);
             if (fin < 0) throw error();
             if (archivo == null && fin - inicio > 16384) throw new IllegalArgumentException("Un campo del formulario es demasiado largo.");

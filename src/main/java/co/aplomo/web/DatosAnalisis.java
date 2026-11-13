@@ -16,26 +16,30 @@ public final class DatosAnalisis {
     public static Entrada leer(Map<String,String> f) {
         var mediciones=new EnumMap<Segmento,Medicion>(Segmento.class);
         for(var s:Segmento.values()) {
-            List<Punto> ps=new ArrayList<>();String texto=f.getOrDefault(s+"_puntos","");
-            if(!texto.isBlank())for(String par:texto.split(";",-1)) {
-                String[] xy=par.split(",",-1);if(xy.length!=2)throw new IllegalArgumentException("Revisa los puntos de la foto.");
-                ps.add(new Punto(numero(xy[0]),numero(xy[1])));
-            }
-            String modo=opcion(f.get(s+"_modo"),"el modo de medición","PUNTOS","MANUAL");
-            mediciones.put(s,new Medicion(ps,modo.equals("MANUAL")?numero(f.get(s+"_grados")):null));
+            mediciones.put(s,medicion(f,s));
         }
         return new Entrada(Lado.valueOf(opcion(f.get("lado"),"el lado","DERECHO","IZQUIERDO")),entero(f.get("ancho")),entero(f.get("alto")),mediciones,
                 new Ajustes(si(f,"hombroElevado"),si(f,"brazoSeparado"),si(f,"brazoApoyado"),si(f,"antebrazoCruza"),si(f,"munecaDesviada"),Giro.valueOf(opcion(f.get("giro"),"el giro","MEDIO","EXTREMO")),si(f,"cuelloGirado"),si(f,"cuelloInclinado"),si(f,"troncoGirado"),si(f,"troncoInclinado"),si(f,"piernasApoyadas"),false),si(f,"actividad"),MotorRula.Carga.valueOf(opcion(f.get("carga"),"la carga",Arrays.stream(MotorRula.Carga.values()).map(Enum::name).toArray(String[]::new))));
     }
-    /** Lee hasta diez análisis codificados, rechazando índices y campos repetidos. */
+    /** Una medición; el módulo RULA valida y mide, sin duplicar fórmulas en la pantalla. */
+    public static Medicion medicion(Map<String,String> f,Segmento segmento) {
+        List<Punto> ps=new ArrayList<>();String texto=f.getOrDefault(segmento+"_puntos","");
+        if(!texto.isBlank())for(String par:texto.split(";",-1)) {
+            String[] xy=par.split(",",-1);if(xy.length!=2)throw new IllegalArgumentException("Revisa los puntos de la foto.");
+            ps.add(new Punto(numero(xy[0]),numero(xy[1])));
+        }
+        String modo=opcion(f.get(segmento+"_modo"),"el modo de medición","PUNTOS","MANUAL");
+        return new Medicion(ps,modo.equals("MANUAL")?numero(f.get(segmento+"_grados")):null);
+    }
+    /** Lee hasta veinte análisis codificados, rechazando índices y campos repetidos. */
     public static List<Analisis.Solicitud> solicitudes(Map<String,String> f) {
         List<Analisis.Solicitud> lista=new ArrayList<>();
-        for(int i=0;i<10;i++)if(f.containsKey("analisis_"+i)) {
+        for(int i=0;i<20;i++)if(f.containsKey("analisis_"+i)) {
             var datos=campos(f.get("analisis_"+i));int foto;
             try{foto=Integer.parseInt(datos.get("foto"));}catch(RuntimeException x){throw new IllegalArgumentException("Revisa la foto seleccionada.");}
             lista.add(new Analisis.Solicitud(foto,leer(datos)));
         }
-        for(String clave:f.keySet())if(clave.startsWith("analisis_")&&!clave.matches("analisis_[0-9]"))throw new IllegalArgumentException("Guarda hasta diez análisis a la vez.");
+        for(String clave:f.keySet())if(clave.startsWith("analisis_")&&!clave.matches("analisis_(?:[0-9]|1[0-9])"))throw new IllegalArgumentException("Guarda hasta veinte análisis a la vez.");
         return List.copyOf(lista);
     }
     /** Descodifica campos de una única foto sin permitir duplicados ni entradas excesivas. */

@@ -561,3 +561,32 @@ header.top{position:relative;z-index:3}
 @media(max-width:1100px){.tour-opciones{grid-template-columns:repeat(3,minmax(0,1fr))}.tour-uso{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.tour-opciones{grid-template-columns:repeat(2,minmax(0,1fr))}.tour-puestos{grid-template-columns:1fr}.tour-opcion>span{padding-inline:12px}.tour-progreso .row{flex-wrap:nowrap}.tour-progreso #pasoActual{font-size:13px}.tour-pregunta{padding:20px}}
 @media(prefers-reduced-motion:reduce){.tour-entra{animation:none}.tour-pregunta{transition:none}}
+
+/* Paso 13E-B · Fotografías, recorrido corporal y ajustes en hoja inferior. */
+.btn[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.tour-postura{overflow:hidden}
+.tour-postura>span{padding:0;gap:0;justify-content:flex-start}
+.tour-postura img{width:100%;height:180px;object-fit:cover;border-radius:13px 13px 0 0}
+.tour-postura>span>span{display:flex;align-items:center;justify-content:center;flex:1;width:100%;box-sizing:border-box;padding:20px 14px;min-height:72px}
+.tour-postura>input{z-index:1;box-shadow:0 0 0 3px rgba(14,14,16,.75)}
+[data-cuerpo] [data-paso="8"] .measure{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
+.cuerpo-rangos{min-width:0}
+.cuerpo-rangos .tour-opciones{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cuerpo-rangos .tour-opcion>span,.hoja-cuerpo .tour-opcion>span{padding-inline:12px}
+.cuerpo-rangos .tour-opcion img,.hoja-cuerpo .tour-opcion img{height:130px;object-fit:contain}
+.cuerpo-pildoras{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cuerpo-pildoras [aria-current="step"]{border-color:var(--ivory);color:var(--ivory)}
+[data-cuerpo-cabecera]{margin-bottom:24px}
+[data-cuerpo] [data-tabs-fotos],[data-cuerpo] [data-tabs-ajustes]{margin-block:12px}
+[data-cuerpo] [data-tabs-fotos] button,[data-cuerpo] [data-tabs-ajustes] button{min-height:48px}
+.hoja-cuerpo{position:fixed;inset:auto 16px 16px;margin:0 auto;width:calc(100% - 32px);max-width:1120px;max-height:85vh;box-sizing:border-box;overflow-y:auto;border:1px solid var(--line2);border-radius:20px;padding:24px;background:var(--card);color:var(--ivory);box-shadow:0 24px 80px #0008}
+.hoja-cuerpo:not([open]){display:none!important}
+.hoja-cuerpo[open]{animation:hojaEntra .22s ease-out}
+.hoja-cuerpo::backdrop{background:rgba(0,0,0,.72)}
+.hoja-cuerpo .tour-opciones{grid-template-columns:repeat(4,minmax(0,1fr))}
+.hoja-cuerpo [data-listo-hoja]{align-self:flex-start}
+@keyframes hojaEntra{from{opacity:.35;transform:translateY(28px)}to{opacity:1;transform:none}}
+@media(max-width:1200px){.cuerpo-rangos .tour-opciones{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){[data-cuerpo] [data-paso="8"] .measure{grid-template-columns:1fr}.hoja-cuerpo .tour-opciones{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.tour-postura>span{padding-inline:0}.tour-postura img{height:180px}.tour-postura>span>span{padding:16px 10px}.hoja-cuerpo{padding:20px;inset:auto 8px 8px;width:calc(100% - 16px)}.cuerpo-rangos .tour-opcion img,.hoja-cuerpo .tour-opcion img{height:110px}}
+@media(prefers-reduced-motion:reduce){.hoja-cuerpo[open]{animation:none}}

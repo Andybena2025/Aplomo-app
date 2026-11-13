@@ -60,7 +60,7 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
         int id=numero==1?puesto:planta;String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+id).body();
         assertTrue(h.contains("data-modo>"+modo));assertTrue(h.contains("name=\"puesto\" value=\""+id+"\""));assertTrue(h.contains("La persona firmó el consentimiento físico y queda archivado"));
         assertTrue(h.contains("role=\"radiogroup\""));assertTrue(h.contains("Editar descripción"));assertTrue(h.contains("data-ninguna-condicion"));assertTrue(h.contains("data-paso=\"9\""));
-        assertFalse(h.contains("data-piernas checked"));assertTrue(h.contains("data-giro><option value=\"\""));assertTrue(h.contains("data-carga><option value=\"\""));assertFalse(h.contains("postura_de_pie.jpg"));
+        assertFalse(h.contains("data-piernas checked"));assertTrue(h.contains("data-giro><option value=\"\""));assertTrue(h.contains("data-carga><option value=\"\""));assertTrue(h.contains("postura_de_pie.jpg"));
     }
     @Test void puestoAjenoOInactivoNoPuedeEntrarPorDireccionManual()throws Exception {
         var otro=new Empresas(tx).salon(cuenta(admin),new Empresas(tx).guardar(cuenta(admin),new Salon(0,salon.sede(),"Otro salón","Prueba",1,20,true)).id());int ajeno=new Empresas(tx).guardar(cuenta(admin),new Puesto(0,otro.id(),null,null,1,"Ajeno","MESA","Centro",null,true)).id();

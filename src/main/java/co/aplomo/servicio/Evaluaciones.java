@@ -91,10 +91,11 @@ public final class Evaluaciones {
                         null, "Evaluación del puesto " + puesto.numero() + (d.sinFotos() ? " · Sin registro fotográfico" : " · Con fotos"));
                 if(solicitudes!=null) {
                     if(d.sinFotos()&&!solicitudes.isEmpty())throw new IllegalArgumentException("Sin fotos no se puede guardar un análisis RULA.");
-                    if(!d.sinFotos()&&(solicitudes.isEmpty()||solicitudes.size()>10))throw new IllegalArgumentException("Mide al menos una foto antes de guardar el resultado.");
-                    Set<Integer> usadas=new HashSet<>();
+                    if(!d.sinFotos()&&(solicitudes.isEmpty()||solicitudes.size()>20))throw new IllegalArgumentException("Mide al menos una foto antes de guardar el resultado.");
+                    Set<String> usadas=new HashSet<>();
                     for(var solicitud:solicitudes) {
-                        if(solicitud.foto()<0||solicitud.foto()>=idsFotos.size()||!usadas.add(solicitud.foto()))throw new IllegalArgumentException("Revisa la selección de fotos de los análisis.");
+                        if(solicitud==null||solicitud.entrada()==null||solicitud.entrada().lado()==null)throw new IllegalArgumentException("Completa el lado y las mediciones de la foto.");
+                        if(solicitud.foto()<0||solicitud.foto()>=idsFotos.size()||!usadas.add(solicitud.foto()+":"+solicitud.entrada().lado()))throw new IllegalArgumentException("Revisa la selección de fotos de los análisis.");
                         try{analisis.guardarEnTransaccion(con,responsable,idsFotos.get(solicitud.foto()),solicitud.entrada());}catch(IOException x){throw new UncheckedIOException(x);}
                     }
                 }

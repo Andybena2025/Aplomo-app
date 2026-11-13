@@ -24,6 +24,10 @@ public final class Analisis {
     public MotorRula.Calculo previsualizar(Cuenta actor,int visita,MotorRula.Entrada entrada) throws SQLException {
         return tx.ejecutar(c->{admin(c,actor);abierta(c,visita,false);tablas.cargar(c);return new MotorRula(tablas).calcular(entrada);});
     }
+    /** Autoriza una vista previa parcial sin completar respuestas desconocidas ni calcular un total. */
+    public void autorizarParcial(Cuenta actor,int visita) throws SQLException {
+        tx.ejecutar(c->{admin(c,actor);abierta(c,visita,false);return null;});
+    }
     /** Inserta un análisis dentro de la transacción de una evaluación, usando las dimensiones reales de su foto. */
     int guardarEnTransaccion(Connection c,Cuenta actor,int foto,MotorRula.Entrada entrada) throws SQLException,IOException {
         if(entrada==null)throw new IllegalArgumentException("Completa las mediciones de la foto.");
@@ -46,12 +50,13 @@ public final class Analisis {
                 if(e==null)throw new SecurityException("La evaluación no está disponible.");
                 var previa=abierta(c,e.visita(),false);new ReservaDao().buscar(c,previa.visita().reserva(),0,true);abierta(c,e.visita(),true);
                 new PuestoDao().buscar(c,e.puesto(),0,true);
-                if(solicitudes==null||solicitudes.isEmpty()||solicitudes.size()>10)throw new IllegalArgumentException("Completa al menos una foto y guarda hasta diez análisis a la vez.");
-                Set<Integer> vistas=new HashSet<>();
+                if(solicitudes==null||solicitudes.isEmpty()||solicitudes.size()>20)throw new IllegalArgumentException("Completa al menos una foto y guarda hasta veinte análisis a la vez.");
+                Set<String> vistas=new HashSet<>();
                 for(var s:solicitudes){
+                    if(s==null||s.entrada()==null||s.entrada().lado()==null)throw new IllegalArgumentException("Completa el lado y las mediciones de la foto.");
                     var f=new EvaluacionDao().foto(c,s.foto());
                     if(f==null||f.evaluacion()!=evaluacion)throw new SecurityException("La foto no pertenece a esta evaluación.");
-                    if(!vistas.add(s.foto()))throw new IllegalArgumentException("Selecciona cada foto una sola vez; puedes volver a analizarla después.");
+                    if(!vistas.add(s.foto()+":"+s.entrada().lado()))throw new IllegalArgumentException("Selecciona cada foto y lado una sola vez; puedes volver a analizarlos después.");
                     try{guardarEnTransaccion(c,responsable,s.foto(),s.entrada());}catch(IOException x){throw new UncheckedIOException(x);}
                 }
                 dao.actualizarPuesto(c,e.puesto());return null;

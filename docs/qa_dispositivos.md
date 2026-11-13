@@ -113,3 +113,10 @@ Safari instalado: recorrido Planta sin fotos con consentimiento físico, nota y 
 28 medidas finales de visita, postura, condiciones, fotos, ajustes provisionales y resultado a 1366/1024/390; visita/postura/condiciones/fotos/resultado también 810/1080. Sin desbordamiento, botones 48/44 y mosaicos ≥160. Navegación fija: Atrás a 12 px con scroll de 2755 px. Capturas en `capturas_13e/fase_a/`; medidas iniciales y finales separadas. 745 pruebas aprobadas; tres avisos MediaPipe/WebGL, sin errores JS.
 
 Dos ensayos reversibles en rula_ergonomia_pruebas cerrados con ROLLBACK; fotos temporales retiradas. Sin QA en base real, sin descargar navegadores ni guardar contraseñas. Imágenes tour pendientes de Claude, con fallback de texto/borde. Dedo físico y cambio real de movimiento reducido no probados. B/C y nuevo paso de lado/Ambos esperan OK de Andy. [Informe completo](informe_paso13e.md).
+
+
+## Paso 13E-B · 13 nov 2026
+
+Recorrido corporal y dos correcciones de A: ver `informe_paso13e.md`, Fase B. 783 pruebas aprobadas; datos solo en `rula_ergonomia_pruebas` y ambos servidores QA revertidos. Navegador integrado: recorrido Ambos completo y guardado, una foto con análisis Derecho 3 e Izquierdo 7; cero errores JS, tres avisos MediaPipe. Safari instalado: carga local, elección de lado, detección, hoja inferior, Escape, confirmación de brazo con ajuste y avance mostrando 4 puntos del segmento / final Pendiente. No se guardaron credenciales ficticias ni se descargaron navegadores.
+
+27 registros sin desbordamiento en `capturas_13e/fase_b/mediciones-finales.json`; postura y brazo a anchos efectivos 390/810/1024/1080/1366/1920. Fotos de postura de 180 px cover; mosaicos mínimo 209,8 px; botones 48/44. Algunas capturas de hoja, esfuerzo y resultado usan un ancho efectivo menor que el nominal de su nombre: el JSON conserva la medida real y el informe explica el límite. Foco atrapado Tab/Shift+Tab y Escape verificados; no se certifica dedo físico, movimiento reducido real ni QA nuevo Chrome/Edge/Firefox. Fase C no iniciada.

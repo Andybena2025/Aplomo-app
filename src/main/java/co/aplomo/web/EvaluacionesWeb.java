@@ -38,6 +38,10 @@ public final class EvaluacionesWeb {
             try {
                 var f=Router.formulario(x);
                 if(!Sesiones.csrfValido(s,f.get("csrf"))){responder(x,403,"El formulario venció. Inicia sesión en otra pestaña y vuelve a intentarlo aquí.");return;}
+                if(f.containsKey("segmento")) {
+                    servicio.analisis().autorizarParcial(s.cuenta(),entero(f.get("visita"),"visita"));
+                    Router.enviar(x,200,RecorridoCuerpo.parcial(f));return;
+                }
                 var calculo=servicio.analisis().previsualizar(s.cuenta(),entero(f.get("visita"),"visita"),DatosAnalisis.leer(f));
                 Map<String,Boolean> condiciones=Map.of("escritorio_muy_alto",si(f,"escritorio"),"pantalla_muy_alta",si(f,"pantalla"),"pies_colgando",si(f,"pies"),"tiene_apoyapies",si(f,"apoyapies"),"silla_con_apoyabrazos",si(f,"apoyabrazos"),"silla_regulable",si(f,"regulable"));
                 var propuestas=servicio.sugerencias().previsualizar(s.cuenta(),calculo,condiciones);String resultado=PaginasAnalisis.resultado(calculo);StringBuilder html=new StringBuilder(resultado.substring(0,resultado.length()-6)).append("<div class=\"stack\"><span class=\"eyebrow\">Sugerencias del sistema</span>");

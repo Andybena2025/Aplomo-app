@@ -229,6 +229,8 @@ Los valores marcados como "(propuesta)" son del equipo y están pendientes de va
 
 **Regla de negocio.** El ángulo se calcula con los tres puntos y se puede corregir moviendo los puntos o escribiéndolo a mano. La foto debe tomarse de frente o de perfil, con el movimiento paralelo a la cámara. RULA se aplica al lado derecho y al izquierdo por separado; si hay duda, se analizan los dos. Si falta un dato o tiene un valor imposible, no se calcula. Fuente: lista acordada en clase (5-nov-2026), n.º 17.
 
+**Actualización del Paso 13E-B autorizada por Andy (13 nov 2026).** El nuevo formulario recorre Brazo, Antebrazo, Muñeca, Giro, Cuello, Tronco y Piernas; las mediciones/detección existentes sugieren un rango que requiere confirmación. Un rango diferente o sin puntos utiliza el ángulo representativo aprobado como corrección manual. La corrección escrita conserva su valor real. Derecho/Izquierdo/Ambos produce análisis independientes por foto y lado, sin mezclar sus respuestas. Los ajustes se confirman por segmento en una hoja inferior accesible, con Ninguno explícito.
+
 ### RF-018 · Calcular los puntos RULA de cada foto
 
 - **Módulo:** Cálculo RULA · **Rol:** Administrador · **Prioridad:** Alta
@@ -236,6 +238,8 @@ Los valores marcados como "(propuesta)" son del equipo y están pendientes de va
 **Descripción.** El sistema deberá asignar puntos a cada parte del cuerpo según su ángulo y sus ajustes, obtener el puntaje del Grupo A (Tabla A) y del Grupo B (Tabla B) y, con la Tabla C, el puntaje final de 1 a 7.
 
 **Regla de negocio.** Se usan las reglas y tablas del método RULA (Ergonautas). Ajustes: +1 hombro elevado, +1 brazo separado del cuerpo, −1 brazo apoyado, +1 antebrazo cruzando la línea media o hacia afuera, +1 muñeca desviada, +1 cuello girado, +1 cuello inclinado lateralmente, +1 tronco girado, +1 tronco inclinado lateralmente. El cálculo se muestra antes de guardar. Fuente: lista acordada en clase (5-nov-2026), n.º 18.
+
+**Puntaje parcial, decisión de Andy (13 nov 2026).** Durante el recorrido se muestran únicamente los puntos del segmento confirmado, incluidos sus ajustes, calculados por el servidor mediante el motor existente. El puntaje final permanece Pendiente mientras falten segmentos, actividad o carga; nunca se completa con respuestas supuestas. El cálculo y las tablas MySQL no se modifican.
 
 ### RF-019 · Sumar puntos por actividad muscular y carga
 

@@ -96,3 +96,84 @@ No se hicieron cambios de esquema, cálculo RULA, dependencias ni roles. La docu
 ### Git y parada de fase
 
 Commit solicitado para esta entrega: `Paso 13E-A: visita, contexto y fotos guiados`. La salida real de `git log --oneline` y el resultado del push se comunican al ejecutar ambos, en el resumen final. Solo se sube a `origin main` si origin sigue apuntando exactamente a `https://github.com/Andybena2025/Aplomo-app.git`. README cambia únicamente fila 13 y número de pruebas; INSTALAR, solo número. Estado y decisiones se actualizan en AGENTS. **Se espera el OK de Andy antes de B.**
+
+
+## Fase B · Recorrido corporal · 13 nov 2026
+
+Andy aprobó explícitamente A y autorizó B; **C sigue esperando su OK**. Antes de programar se comprobaron `origin` y `main` y se ejecutó `git pull --rebase origin main`, incorporando las imágenes de Claude de `f8b45c6` y `3fdc88a`. Se usaron sus nombres exactos, incluidos `postura_de_pie.jpg`, `postura_computador.jpg` y `muneca_desviada.png`. Las observaciones de A que decían imágenes pendientes quedan resueltas para esta entrega.
+
+### Qué cambió
+
+Después de fotos aparece Derecho / Izquierdo / Ambos. Cada foto Para medir tiene sus propias respuestas por lado; las De apoyo siguen sin análisis. El recorrido pregunta Brazo, Antebrazo, Muñeca, Giro de muñeca, Cuello, Tronco y Piernas, con progreso, Atrás y marcas de completado. Foto grande y mosaicos comparten pantalla en escritorio; en celular se apilan. Solo los puntos del segmento actual se resaltan; los restantes quedan tenues. Se conserva detección y arrastre. Si la detección corresponde al perfil opuesto al lado elegido, no se reutilizan sus puntos: se avisa y sigue disponible la elección por observación directa.
+
+Los 18 rangos usan exactamente las imágenes y ángulos representativos del encargo. Confirmar el sugerido conserva el ángulo real medido; elegir otro o trabajar sin puntos guarda el representativo con corrección manual. Corregir medición conserva el número escrito, incluso si pertenece al mismo mosaico sugerido; Usar los puntos de la foto restaura la medición. No se introdujeron fórmulas de clasificación RULA en JavaScript.
+
+Brazo, antebrazo, muñeca, cuello y tronco abren la hoja inferior nativa, con título, `role="dialog"`, `aria-modal`, foco atrapado, Escape y devolución del foco. Ajustes múltiples y Ninguno son excluyentes. **Listo confirma y avanza; Cerrar/Escape descarta los cambios sin confirmar ni avanzar.** Giro y piernas requieren elección expresa. Pies colgando llega con Sin buen apoyo sugerido, pero no cuenta como respuesta hasta confirmarlo. No se ve en la foto oculta el lienzo para ese segmento y permite observación directa.
+
+Andy aprobó en este chat que el chip parcial muestre **solo los puntos del segmento confirmado, calculados por el servidor con sus ajustes confirmados**. Se reutiliza `/evaluaciones/calcular`, protegido por sesión, Administrador, visita En curso y CSRF; no se creó una ruta. La respuesta parcial nunca contiene el puntaje final. Los componentes aislados Giro/Piernas se proyectan desde el puntuador existente, sin usar valores auxiliares para calcular o presentar un resultado completo. El final dice **Pendiente** durante recorrido y esfuerzo; no se solicita un cálculo completo hasta que todos los análisis tienen segmentos, actividad y carga respondidos. El servidor además rechaza un cálculo completo con cualquiera de esos datos ausente.
+
+Ambos guarda un análisis por foto y lado en la transacción existente. La validación admite hasta 20 análisis (10 fotos × 2 lados), con unicidad foto+lado por envío, conservando el mayor de la evaluación. El límite de partes multipart pasa de 64 a 80 para permitir los 20 análisis más metadatos de 10 fotos; los límites de archivos, tamaños y cuerpo permanecen. Los campos visuales del recorrido no se envían al guardar. No cambian esquema, rutas, roles, dependencias ni el paquete `co.aplomo.rula`; NEUTRO=5° y tablas leídas de MySQL permanecen intactos.
+
+Los dos ajustes de QA de A están incluidos: llegada sin borde ámbar ni aviso; Responde para continuar solo tras intentar continuar sin respuesta. Continuar incompleto usa `aria-disabled` y el manejador bloquea el avance, permitiendo mostrar la ayuda al intento con mouse o teclado; durante operaciones en curso se desactiva también de forma nativa. Las fotos de postura llenan el ancho superior del mosaico a 180 px, con cover y esquinas superiores redondeadas; pictogramas contain.
+
+### Trazabilidad de B y regresiones de A
+
+| Requisito / encargo | Archivo y método | Prueba / evidencia |
+|---|---|---|
+| RF-014 · contexto preservado / fotos de postura | `PaginasEvaluacion.nueva`; `aplomo.css`, `.tour-postura`; `evaluacion.js`, `mostrar` | `HttpRecorridoTest` (22 casos), `HttpCuerpoTest.paginaUsaLosArchivosExactosDialogoYNingunAvisoInicial`; fotos cargadas a 180 px cover en seis anchos. |
+| RF-015 · condiciones explícitas / sugerencia de piernas | `recorrido.js`, `refrescar` / `continuar`; contexto existente | Pies colgando sugiere sin apoyo, sin completar el segmento; confirmación sin cambiar la sugerencia observada en navegador. Ninguna y nota conservan pruebas de A. |
+| RF-016 / RNF-006 · archivos y privacidad | `evaluacion.js`, envío; `Evaluaciones.guardar`; `Multipart.leer` | Suite de límites/tipo real/consentimiento existente; `ambosGuardaDosAnalisisPorFotoEnUnaTransaccionYConservaElMayor`, 1 y 10 fotos; Usuario denegado por dirección directa. |
+| RF-017 / B2–B3 · mediciones, rangos, manual | `RecorridoCuerpo.RANGOS` / `parcial`; `DatosAnalisis.medicion`; `analisis.js`, `dibujar` / grupos / detección; `recorrido.js`, `prepararEleccion` | `RangosRecorridoTest.todosLosMosaicosProducenLosPuntosAprobados`: 18 casos independientes contra `PuntuadorSegmentos`, assets existentes. HTTP conserva 52° y rango 60°; navegador guarda 52° manual y antebrazo 85,86° medido. |
+| RF-018 · puntos del segmento confirmado | `RecorridoCuerpo.parcial` / `puntuar`; `EvaluacionesWeb.atender`; `Analisis.autorizarParcial`; `recorrido.js`, `sondear` | `parcialNoMuestraUnFinalNiInventaAjustesYConservaElAnguloReal`, `observadoPuntuaSoloElComponenteConfirmado` (4), `parcialValidaPuntosYCasillasSinGuardarNiAceptarCodigoDeCliente`; Safari muestra Brazo: 4 puntos después de confirmar hombro. |
+| RF-018 / RF-019 · final solo completo | `DatosAnalisis.leer`; `analisis.js`, `todoListo` / `respondido` / `medir`; `recorrido.js`, esfuerzo | `finalSoloApareceCuandoEstanTodosLosSegmentosActividadYCarga`: 9 casos retirando cada segmento, giro, piernas, actividad y carga. Respuesta 400 sin marcador final; completa 200 con marcador. Navegador Ambos: cero marcadores finales antes de esfuerzo y cuando solo un lado lo había completado. |
+| RF-020 / RF-021 · Ambos y guardado del servidor | `Evaluaciones.guardar`; `Analisis.guardarVarios`; `DatosAnalisis.solicitudes`; `analisis.js`, `paso6` | 2/20 análisis y 10/100 mediciones para 1/10 fotos; mayor 7 y un pendiente. Duplicar foto+lado rechaza y revierte datos/archivos. Navegador: una foto, Derecho 3 · Amarillo · Nivel 2 e Izquierdo 7 · Rojo · Nivel 4, mismos resultados guardados. |
+| RNF-002 / B1, B4–B7 · recorrido, teclado y ayuda | `RecorridoCuerpo.pasos`; `recorrido.js`, `abrirHoja` / `cerrarHoja` / foco / `continuar`; `evaluacion.js`, `actualizarGuia` | Hoja sin ajustes iniciales; Ninguno excluyente; Tab y Shift+Tab envueltos, Escape conserva la pregunta sin confirmar; sugerencia de piernas confirmada explícitamente. Safari nativo y capturas de llegada/intento. |
+| RNF-003 / RNF-007 · espera y errores en español | `recorrido.js`, `sondear` / Listo; `evaluacion.js`, manejo del intento | Listo muestra Cargando… durante respuesta; errores conservan datos; llegada sin aviso y aviso solo al intento. Rendimiento completo nuevamente en verde. |
+| RNF-004 / RNF-006 · permisos | `EvaluacionesWeb.atender`; `Analisis.autorizarParcial`; controles existentes | `usuarioNoObtieneMedicionesParcialesNiFotosPorDireccionManual`, CSRF incorrecto 403; captura de Usuario abriendo dirección nueva y recibiendo Acceso denegado. Las pruebas de acceso a fotos existentes siguen en verde. |
+
+### Pruebas y correcciones comprobadas
+
+`TZ=America/Bogota ./mvnw -Daplomo.evidencia.rendimiento=docs/capturas_13e/fase_b/rendimiento.json test`: **783 aprobadas, 0 fallos, 0 errores, 0 omitidas; BUILD SUCCESS**. Compilación incluida; resumen exacto en `fase_b/pruebas.txt`. Son 745 anteriores + 18 rangos + 20 casos HTTP. Solo cambió una expectativa de A que suponía ausente una imagen ahora incorporada por Claude. `node --check` y `git diff --check` aprobados.
+
+El primer ensayo visual encontró que tocar el mosaico ya sugerido no abría la hoja, que Continuar podía quedar bloqueado tras confirmar piernas y que una corrección escrita podía ser reemplazada por el representativo. Se corrigieron los manejadores de click/cambio, actualización de ocupación y conservación del manual; la versión final se recorrió y guardó nuevamente. Se corrigieron también las etiquetas de Foto 1 en ambos lados y se mantuvo el final Pendiente durante esfuerzo. No se ocultaron fallos ni se aflojaron expectativas del motor.
+
+Ensayo final integrado: Derecho con brazo 52° manual, hombro levantado y antebrazo 85,86° por puntos; Izquierdo por observación directa con 110/40/25/30/75° manuales, muñeca desviada y giro extremo; actividad y carga distintas y explícitas por lado. El resultado fue 3 y 7 respectivamente. La evaluación guardada muestra **dos análisis de la misma foto** y conserva el máximo. Safari instalado confirmó detección, sugerencia de 85,92°, hoja, Escape y brazo 60° con hombro levantado = 4 puntos; no se atribuye a Safari el guardado completo de Ambos, hecho en el navegador integrado.
+
+### Evidencia visual y límites
+
+`docs/capturas_13e/fase_b/`: postura, brazo sugerido, corrección, hoja, giro sin responder y tras intento, piernas sugeridas, esfuerzo pendiente, resultado Ambos, guardado, permisos y Safari. Se inspeccionaron visualmente las capturas de escritorio y celular, y la pantalla nativa de Safari.
+
+`mediciones-finales.json` contiene **27 registros sin desbordamiento** (scrollWidth ≤ clientWidth). Postura y brazo se midieron a innerWidth 390/810/1024/1080/1366/1920; imágenes de postura 180 px cover. Altura mínima observada de mosaico 209,8 px, por encima de 160; botones 48 px y encabezado 44, con diferencias subpíxel. Las capturas se nombran por el tamaño solicitado. **Algunas capturas de hoja, esfuerzo y resultado tuvieron un ancho efectivo menor al solicitado** (el JSON conserva innerWidth real, por ejemplo 354 para la hoja nominal 390); se verificó que tampoco desbordan, pero no se presentan como mediciones exactas de esos tamaños. La cobertura exacta de 390/810/1080/1366 de esta fase corresponde a postura y brazo.
+
+`consola-final.json`: cero errores JS y tres avisos de MediaPipe/WebGL, no una consola vacía. No se descargaron Chrome, Edge ni Firefox. No se probó dedo físico ni se cambió la preferencia real de movimiento reducido; su tratamiento está implementado en CSS/JS. No se certifica WCAG completa ni compatibilidad con dos versiones estables de cada navegador.
+
+Los dos servidores QA de B usaron exclusivamente `rula_ergonomia_pruebas`, cuentas ficticias, fotos temporales propias y transacciones revertidas: **QA13E: ROLLBACK completado** en ambos cierres. No se guardaron sus contraseñas en Safari. Se cerraron las ventanas/pestañas creadas y se retiró el tamaño forzado del navegador. No se cargaron datos de QA ni se borró contenido de la base real.
+
+### Checklist y lo que NO se hizo
+
+- ✅ 783 pruebas en verde y compilación correcta; evidencia de rendimiento actualizada.
+- ✅ Diseño del recorrido B aprobado por texto: siete segmentos, 18 mosaicos, hoja inferior, imágenes exactas y ajustes explícitos; capturas conservadas. Esfuerzo y resultado siguen siendo el puente existente, no se afirma que C esté implementada.
+- ✅ 390 / 810 / 1080 / 1366 sin desplazamiento horizontal en postura y brazo; tamaños adicionales y otros pasos registrados con sus anchos reales.
+- ✅ Opciones ≥160 px, botones 48/44, radios/checkboxes nativos, foco atrapado y Escape comprobados.
+- ❌ Dedo en iPad/celular físico: pendiente.
+- ✅ Usuario denegado escribiendo la dirección; validaciones de sesión/CSRF y fotos conservadas.
+- ✅ Tildes y mensajes en español revisados; sin advertencias de respuesta al llegar.
+- ✅ Cero errores en consola integrada; tres avisos del runtime de detección documentados.
+- ✅ `config/db.properties` y `fotos/` fuera de Git; sin credenciales en evidencia, sin cambios SQL ni motor.
+- ❌ Preferencia física de movimiento reducido y QA nuevo Chrome/Edge/Firefox: no realizados; sin descargas.
+- ❌ Fase C: esfuerzo en dos pantallas de mosaicos, resultado reorganizado, siguiente puesto, recordar contexto/esfuerzo y adaptar Añadir análisis. Esperan el OK de Andy. Las imágenes ya están, pero esos flujos aún no se implementaron.
+
+### Cómo lo prueba Andy
+
+1. Entra como Administrador, abre una visita En curso y elige un puesto activo. Completa consentimiento, postura, momento, tiempo y condiciones; comprueba que ninguna pantalla recién abierta muestra aviso ámbar. Intenta continuar sin contestar: debe aparecer ayuda sin avanzar.
+2. Agrega una foto lateral JPG/PNG y elige Para medir; las otras pueden ser De apoyo. Continúa y elige Derecho, Izquierdo o Ambos, sin valor inicial.
+3. En Brazo revisa los tres puntos resaltados y el mosaico sugerido con ángulo real. Tócalo, confirma un ajuste o Ninguno y pulsa Listo. Escape debe cerrar conservando la pregunta sin confirmar los cambios de la hoja.
+4. Prueba Corregir medición con 52°: el ángulo debe conservarse. Elige otro mosaico o No se ve en la foto: debe usar su representativo como corrección manual. Usar los puntos de la foto restaura la medición.
+5. Completa los siete segmentos. Giro no tiene respuesta inicial; Pies colgando solo sugiere el apoyo de piernas y exige confirmación. El chip muestra puntos del segmento confirmado; el final dice Pendiente.
+6. En Ambos repite para el otro lado, completa actividad y carga de cada foto/lado en el puente actual y revisa el resultado. Mientras falte una respuesta no debe aparecer un puntaje final; al guardar deben existir dos análisis independientes por la misma foto.
+7. Como Usuario intenta escribir la dirección de Nueva evaluación: Acceso denegado. No debe ver fotos. En celular/tableta revisa mosaicos, hoja, foco y Atrás sin deslizar de lado.
+8. Ejecuta `TZ=America/Bogota ./mvnw test` con la base de pruebas preparada: 783 aprobadas.
+
+### Git y parada
+
+Commit de esta entrega: `Paso 13E-B: recorrido corporal guiado y ajustes`; el resumen final comunica el hash real y confirma el resultado del push. Padres incorporados: `9a2a5f2` (A), `f8b45c6` y `3fdc88a` (imágenes de Claude). Se verifica origin exacto `https://github.com/Andybena2025/Aplomo-app.git` y rama main antes del push normal, sin forzar. README actualiza únicamente fila 13 y cantidad de pruebas; INSTALAR solo cantidad. **B queda para revisión de Andy; se detiene antes de C.**

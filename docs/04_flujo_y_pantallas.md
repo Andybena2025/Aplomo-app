@@ -33,11 +33,14 @@ Una pregunta de contexto visible por pantalla, progreso y Atrás sin perder resp
 4. **Tiempo**: menos de 1 h / 1–2 / 2–4 / más de 4, guardando 30/90/180/300 minutos.
 5. **Condiciones**: las seis originales y Ninguna excluyente; observación opcional de 255 caracteres. Motivo lo arma el servidor con momento y postura; la nota solo queda en observaciones.
 6. **Fotos**: Con fotos / Sin fotos. Con fotos mantiene 1–10 JPG/PNG de 5 MB, vista y descripción; cada una Para medir / De apoyo. Sin fotos pasa a Guardar, sin puntaje.
-7. **Ángulos (puente provisional)**: lienzo actual, puntos/detección/arrastre o ángulos manuales y selector de lado actual.
-8. **Ajustes y carga (puente provisional)**: preguntas existentes, sin valores preseleccionados; ajustes requiere alguno o Ninguno. Giro, piernas, actividad y carga requieren respuesta explícita.
-9. **Resultado (puente provisional)**: cálculo del servidor, revisión y guardado como antes; un análisis por foto elegida para medir, pendientes rojos y sugerencias existentes.
+7. **Lado (13E-B autorizado por Andy):** Derecho / Izquierdo / Ambos, sin elección inicial. Ambos recorre cada lado por separado y crea un análisis por foto y lado.
+8. **Recorrido corporal:** Brazo → Antebrazo → Muñeca → Giro de muñeca → Cuello → Tronco → Piernas. Foto con los puntos del segmento destacados, mosaicos sugeridos por su ángulo real y confirmación explícita. Cambiar el rango o elegir por observación directa guarda su ángulo representativo como manual. Corregir medición conserva el valor escrito; Usar los puntos de la foto permite restaurarlo. Los ajustes se confirman en una hoja inferior con Ninguno excluyente. Escape cierra sin confirmar ni avanzar. Pies colgando sugiere sin apoyo, pero exige confirmación.
+9. **Actividad y carga (puente provisional):** controles anteriores por foto y lado, sin respuestas iniciales. Puntaje parcial muestra solo el segmento confirmado con sus ajustes, calculado por el servidor; el final permanece Pendiente hasta completar todos los segmentos, actividad y carga de todos los análisis.
+10. **Resultado (puente provisional):** cálculo completo del servidor, revisión y guardado; Ambos guarda dos análisis de una misma foto. Se mantienen pendientes y sugerencias existentes.
 
-Andy indicó conservar este puente para seguir calculando entre fases. **Pendientes de OK para B:** pantalla Derecho/Izquierdo/Ambos, recorrido corporal, mosaicos de rango y hoja inferior. **Pendientes de C:** esfuerzo por pantalla, resultado reorganizado, siguiente puesto, respuestas recordadas y recorrido corporal compartido al añadir análisis. No se presentan como funciones ya implementadas.
+El borde ámbar y Responde para continuar aparecen únicamente tras intentar continuar sin respuesta. Al llegar no se muestra error. Las fotos de postura llenan el ancho superior del mosaico con 180 px de alto; los pictogramas conservan contain.
+
+**Pendientes de C y de su OK:** esfuerzo en dos pantallas de mosaicos, resultado reorganizado, siguiente puesto, respuestas recordadas y recorrido corporal compartido al añadir análisis. La dirección de Añadir análisis mantiene todavía el editor anterior.
 
 Al terminar las evaluaciones, **Finalizar visita** (RF-013b): requiere al menos una evaluación guardada; pide notas; calcula la calificación (promedio) y pasa la reserva a Finalizada.
 

@@ -1,0 +1,2804 @@
+[
+  {
+    "pagina": "postura",
+    "ancho": 1351,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1351,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 254,
+        "ancho": 280.5
+      },
+      {
+        "alto": 254,
+        "ancho": 280.5
+      },
+      {
+        "alto": 254,
+        "ancho": 280.5
+      },
+      {
+        "alto": 254,
+        "ancho": 280.5
+      },
+      {
+        "alto": 270,
+        "ancho": 280.5
+      },
+      {
+        "alto": 270,
+        "ancho": 280.5
+      },
+      {
+        "alto": 270,
+        "ancho": 280.5
+      },
+      {
+        "alto": 270,
+        "ancho": 280.5
+      }
+    ],
+    "paso": "Paso 2 de 16",
+    "preguntas": [
+      "2"
+    ],
+    "viewport": 1366
+  },
+  {
+    "pagina": "postura",
+    "ancho": 1009,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1009,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 299,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 299,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 299,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 299,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 299,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 299,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 299,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 299,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 254,
+        "ancho": 301
+      },
+      {
+        "alto": 254,
+        "ancho": 301
+      },
+      {
+        "alto": 254,
+        "ancho": 301
+      },
+      {
+        "alto": 254,
+        "ancho": 301
+      },
+      {
+        "alto": 254,
+        "ancho": 301
+      },
+      {
+        "alto": 254,
+        "ancho": 301
+      },
+      {
+        "alto": 254,
+        "ancho": 301
+      },
+      {
+        "alto": 254,
+        "ancho": 301
+      }
+    ],
+    "paso": "Paso 2 de 16",
+    "preguntas": [
+      "2"
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "postura",
+    "ancho": 375,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 375,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 142.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 142.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 142.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 142.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 142.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 142.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 142.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 142.5,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 262,
+        "ancho": 144.5
+      },
+      {
+        "alto": 262,
+        "ancho": 144.5
+      },
+      {
+        "alto": 262,
+        "ancho": 144.5
+      },
+      {
+        "alto": 262,
+        "ancho": 144.5
+      },
+      {
+        "alto": 286,
+        "ancho": 144.5
+      },
+      {
+        "alto": 286,
+        "ancho": 144.5
+      },
+      {
+        "alto": 286,
+        "ancho": 144.5
+      },
+      {
+        "alto": 286,
+        "ancho": 144.5
+      }
+    ],
+    "paso": "Paso 2 de 16",
+    "preguntas": [
+      "2"
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "postura",
+    "ancho": 795,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 795,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 227.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 227.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 227.671875,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 227.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 227.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 227.671875,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 227.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 227.6640625,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 254,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 254,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 254,
+        "ancho": 229.671875
+      },
+      {
+        "alto": 270,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 270,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 270,
+        "ancho": 229.671875
+      },
+      {
+        "alto": 254,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 254,
+        "ancho": 229.6640625
+      }
+    ],
+    "paso": "Paso 2 de 16",
+    "preguntas": [
+      "2"
+    ],
+    "viewport": 810
+  },
+  {
+    "pagina": "postura",
+    "ancho": 1065,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1065,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 317.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 317.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 317.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 317.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 317.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 317.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 317.6640625,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 317.6640625,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 254,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 254,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 254,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 254,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 254,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 254,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 254,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 254,
+        "ancho": 319.6640625
+      }
+    ],
+    "paso": "Paso 2 de 16",
+    "preguntas": [
+      "2"
+    ],
+    "viewport": 1080
+  },
+  {
+    "pagina": "postura",
+    "ancho": 1905,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1905,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 180,
+        "ancho": 278.5,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 254,
+        "ancho": 280.5
+      },
+      {
+        "alto": 254,
+        "ancho": 280.5
+      },
+      {
+        "alto": 254,
+        "ancho": 280.5
+      },
+      {
+        "alto": 254,
+        "ancho": 280.5
+      },
+      {
+        "alto": 270,
+        "ancho": 280.5
+      },
+      {
+        "alto": 270,
+        "ancho": 280.5
+      },
+      {
+        "alto": 270,
+        "ancho": 280.5
+      },
+      {
+        "alto": 270,
+        "ancho": 280.5
+      }
+    ],
+    "paso": "Paso 2 de 16",
+    "preguntas": [
+      "2"
+    ],
+    "viewport": 1920
+  },
+  {
+    "pagina": "brazo-sugerido",
+    "ancho": 1351,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 48,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1351,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 230,
+        "ancho": 210.5
+      },
+      {
+        "alto": 230,
+        "ancho": 210.5
+      },
+      {
+        "alto": 230,
+        "ancho": 210.5
+      },
+      {
+        "alto": 230,
+        "ancho": 210.5
+      },
+      {
+        "alto": 230,
+        "ancho": 210.5
+      }
+    ],
+    "paso": "Paso 8 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 1366
+  },
+  {
+    "pagina": "brazo-sugerido",
+    "ancho": 1009,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 48,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1009,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 230,
+        "ancho": 255.3359375
+      },
+      {
+        "alto": 230,
+        "ancho": 255.34375
+      },
+      {
+        "alto": 230,
+        "ancho": 255.3359375
+      },
+      {
+        "alto": 230,
+        "ancho": 255.34375
+      },
+      {
+        "alto": 230,
+        "ancho": 255.3359375
+      }
+    ],
+    "paso": "Paso 8 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "brazo-sugerido",
+    "ancho": 375,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 48,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 375,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 234,
+        "ancho": 140.5
+      },
+      {
+        "alto": 234,
+        "ancho": 140.5
+      },
+      {
+        "alto": 210,
+        "ancho": 140.5
+      },
+      {
+        "alto": 210,
+        "ancho": 140.5
+      },
+      {
+        "alto": 210,
+        "ancho": 140.5
+      }
+    ],
+    "paso": "Paso 8 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "brazo-sugerido",
+    "ancho": 795,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 48,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 795,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 230,
+        "ancho": 350.5
+      },
+      {
+        "alto": 230,
+        "ancho": 350.5
+      },
+      {
+        "alto": 230,
+        "ancho": 350.5
+      },
+      {
+        "alto": 230,
+        "ancho": 350.5
+      },
+      {
+        "alto": 230,
+        "ancho": 350.5
+      }
+    ],
+    "paso": "Paso 8 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 810
+  },
+  {
+    "pagina": "brazo-sugerido",
+    "ancho": 1065,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 48,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1065,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 230,
+        "ancho": 271.4375
+      },
+      {
+        "alto": 230,
+        "ancho": 271.4375
+      },
+      {
+        "alto": 230,
+        "ancho": 271.4375
+      },
+      {
+        "alto": 230,
+        "ancho": 271.4375
+      },
+      {
+        "alto": 230,
+        "ancho": 271.4375
+      }
+    ],
+    "paso": "Paso 8 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 1080
+  },
+  {
+    "pagina": "brazo-sugerido",
+    "ancho": 1905,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 48,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1905,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 230,
+        "ancho": 210.5
+      },
+      {
+        "alto": 230,
+        "ancho": 210.5
+      },
+      {
+        "alto": 230,
+        "ancho": 210.5
+      },
+      {
+        "alto": 230,
+        "ancho": 210.5
+      },
+      {
+        "alto": 230,
+        "ancho": 210.5
+      }
+    ],
+    "paso": "Paso 8 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 1920
+  },
+  {
+    "pagina": "hoja-brazo",
+    "ancho": 1228,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 43.99857711791992,
+        "texto": "Salir"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Cerrar"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Listo"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1228,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 229.8082275390625,
+        "ancho": 208.27413940429688
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 208.27413940429688
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 208.28125
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 208.27413940429688
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 208.27413940429688
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 258.5440368652344
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 258.5511169433594
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 258.5511169433594
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 258.5511169433594
+      }
+    ],
+    "paso": "Paso 8 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 1242
+  },
+  {
+    "pagina": "hoja-brazo",
+    "ancho": 917,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 43.99857711791992,
+        "texto": "Salir"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Cerrar"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Listo"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 917,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 229.8082275390625,
+        "ancho": 229.0269775390625
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 229.0269775390625
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 229.0269775390625
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 229.0269775390625
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 229.0269775390625
+      },
+      {
+        "alto": 253.8068084716797,
+        "ancho": 199.86505126953125
+      },
+      {
+        "alto": 253.8068084716797,
+        "ancho": 199.86505126953125
+      },
+      {
+        "alto": 253.8068084716797,
+        "ancho": 199.86505126953125
+      },
+      {
+        "alto": 253.8068084716797,
+        "ancho": 199.8721466064453
+      }
+    ],
+    "paso": "Paso 8 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 931
+  },
+  {
+    "pagina": "hoja-brazo",
+    "ancho": 341,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 43.99857711791992,
+        "texto": "Salir"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Cerrar"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Listo"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 341,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 233.8068084716797,
+        "ancho": 123.55113220214844
+      },
+      {
+        "alto": 233.8068084716797,
+        "ancho": 123.55823516845705
+      },
+      {
+        "alto": 209.8082275390625,
+        "ancho": 123.55113220214844
+      },
+      {
+        "alto": 209.8082275390625,
+        "ancho": 123.55823516845705
+      },
+      {
+        "alto": 209.8082275390625,
+        "ancho": 123.55113220214844
+      },
+      {
+        "alto": 257.8053894042969,
+        "ancho": 135.546875
+      },
+      {
+        "alto": 257.8053894042969,
+        "ancho": 135.546875
+      },
+      {
+        "alto": 257.8053894042969,
+        "ancho": 135.546875
+      },
+      {
+        "alto": 257.8053894042969,
+        "ancho": 135.546875
+      }
+    ],
+    "paso": "Paso 8 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 354
+  },
+  {
+    "pagina": "giro-intento-incompleto",
+    "ancho": 1228,
+    "aviso": true,
+    "botones": [
+      {
+        "alto": 43.99857711791992,
+        "texto": "Salir"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1228,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 229.8082275390625,
+        "ancho": 208.27413940429688
+      },
+      {
+        "alto": 229.8082275390625,
+        "ancho": 208.27413940429688
+      }
+    ],
+    "paso": "Paso 11 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 1242
+  },
+  {
+    "pagina": "giro-intento-incompleto",
+    "ancho": 1009,
+    "aviso": true,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 48,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1009,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 230,
+        "ancho": 255.3359375
+      },
+      {
+        "alto": 230,
+        "ancho": 255.34375
+      }
+    ],
+    "paso": "Paso 11 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "giro-intento-incompleto",
+    "ancho": 375,
+    "aviso": true,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Detectar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Deshacer"
+      },
+      {
+        "alto": 48,
+        "texto": "Borrar puntos"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 375,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 234,
+        "ancho": 140.5
+      },
+      {
+        "alto": 234,
+        "ancho": 140.5
+      }
+    ],
+    "paso": "Paso 11 de 23",
+    "preguntas": [
+      "8"
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "esfuerzo-pendiente",
+    "ancho": 1228,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 43.99857711791992,
+        "texto": "Salir"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1228,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 22 de 23",
+    "preguntas": [
+      "9"
+    ],
+    "viewport": 1242
+  },
+  {
+    "pagina": "esfuerzo-pendiente",
+    "ancho": 1009,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 1009,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 22 de 23",
+    "preguntas": [
+      "9"
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "esfuerzo-pendiente",
+    "ancho": 375,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Derecho · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Foto 1 · Izquierdo · Perfil"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "client": 375,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 22 de 23",
+    "preguntas": [
+      "9"
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "resultado-ambos",
+    "ancho": 1228,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 43.99857711791992,
+        "texto": "Salir"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "client": 1228,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 23 de 23",
+    "preguntas": [
+      "10"
+    ],
+    "viewport": 1242
+  },
+  {
+    "pagina": "resultado-ambos",
+    "ancho": 1009,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "client": 1009,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 23 de 23",
+    "preguntas": [
+      "10"
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "resultado-ambos",
+    "ancho": 375,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "client": 375,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 23 de 23",
+    "preguntas": [
+      "10"
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "resultado-ambos",
+    "ancho": 795,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "client": 795,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 23 de 23",
+    "preguntas": [
+      "10"
+    ],
+    "viewport": 810
+  },
+  {
+    "pagina": "resultado-ambos",
+    "ancho": 722,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 43.99857711791992,
+        "texto": "Salir"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "client": 722,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 23 de 23",
+    "preguntas": [
+      "10"
+    ],
+    "viewport": 736
+  },
+  {
+    "pagina": "resultado-ambos",
+    "ancho": 968,
+    "aviso": false,
+    "botones": [
+      {
+        "alto": 43.99857711791992,
+        "texto": "Salir"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 47.99715805053711,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "client": 968,
+    "imagenes": [
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      },
+      {
+        "ajuste": "cover",
+        "alto": 0,
+        "ancho": 0,
+        "carga": true
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 23 de 23",
+    "preguntas": [
+      "10"
+    ],
+    "viewport": 982
+  }
+]

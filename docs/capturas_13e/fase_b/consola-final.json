@@ -1,0 +1,20 @@
+[
+  {
+    "level": "warn",
+    "message": "I0000 00:00:1794610334.463000       1 gl_context_webgl.cc:151] Successfully created a WebGL context with major version 3 and handle 3",
+    "timestamp": "2026-11-13T22:52:14.465Z",
+    "url": "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_solution_simd_wasm_bin.js"
+  },
+  {
+    "level": "warn",
+    "message": "I0000 00:00:1794610334.467000       1 gl_context.cc:359] GL version: 3.0 (OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium)))",
+    "timestamp": "2026-11-13T22:52:14.467Z",
+    "url": "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_solution_simd_wasm_bin.js"
+  },
+  {
+    "level": "warn",
+    "message": "W0000 00:00:1794610334.467000       1 gl_context.cc:1000] OpenGL error checking is disabled",
+    "timestamp": "2026-11-13T22:52:14.468Z",
+    "url": "https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose_solution_simd_wasm_bin.js"
+  }
+]

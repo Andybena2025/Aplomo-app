@@ -3,9 +3,11 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   const marcas=[['cadera','Cadera'],['hombro','Hombro'],['codo','Codo'],['muneca','Muñeca'],['nudillos','Nudillos'],['coronilla','Coronilla']];
   const segmentos=['BRAZO','ANTEBRAZO','MUNECA','CUELLO','TRONCO'];
   const cv=form.querySelector('#lienzo'), ctx=cv.getContext('2d');
-  let activa=0, imagen=null, arrastre=null, temporizador=null, numeroPeticion=0;
+  let activa=0, imagen=null, arrastre=null, temporizador=null, numeroPeticion=0, destacado=null;
+  const gruposMarcas={BRAZO:['cadera','hombro','codo'],ANTEBRAZO:['hombro','codo','muneca'],MUNECA:['codo','muneca','nudillos'],CUELLO:['cadera','hombro','coronilla'],TRONCO:['cadera','hombro']};
+  const marcasActuales=()=>destacado?(gruposMarcas[destacado]||[]).map(k=>marcas.find(m=>m[0]===k)):marcas;
   const foto=()=>obtenerFotos()[activa];
-  const estado=f=>f.analisis||(f.analisis={habilitada:form.dataset.tour?f.uso==='MEDIR':f.vista==='PERFIL',lado:'DERECHO',puntos:{},manual:{},ajustes:{},ajustesConfirmados:false,giro:'',piernas:null,actividad:null,carga:'',html:null,revision:0});
+  const estado=f=>f.analisis||(f.analisis={habilitada:form.dataset.tour?f.uso==='MEDIR':f.vista==='PERFIL',lado:f.ladoFijo||'DERECHO',puntos:{},manual:{},ajustes:{},ajustesConfirmados:false,giro:'',piernas:null,actividad:null,carga:'',html:null,revision:0});
   const detectarBoton=form.querySelector('[data-detectar-puntos]');
   const estadoDeteccion=form.querySelector('[data-estado-deteccion]');
   const falloDeteccion='No se encontró una persona en la foto. Marca los puntos a mano.';
@@ -26,11 +28,13 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
       if(!obtenerFotos().includes(f))return;
       if(s.revision!==revision||(f===foto()&&arrastre)){s.ia='manual';s.mensajeIA='Se conservaron tus correcciones manuales.';return;}
       if(!r){s.ia='nada';s.mensajeIA=falloDeteccion;return;}
+      const perfil=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';
+      if(f.ladoFijo&&perfil!==f.ladoFijo){s.ia='otroPerfil';s.mensajeIA='Esta foto muestra el otro perfil. Usa otra foto o elige los rangos por observación directa.';return;}
       s.raw=r.raw;s.ia='ok';s.mensajeIA='Puntos detectados automáticamente: revísalos';
       if(f.vista==='PERFIL'){
         s.puntos={...r.L,coronilla:r.L.cabeza};delete s.puntos.cabeza;
         const lado=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';
-        if(s.lado!==lado){s.lado=lado;s.mensajeIA+=' · Lado ajustado a '+(lado==='DERECHO'?'Derecho':'Izquierdo')+' según la foto.';}
+        if(!f.ladoFijo&&s.lado!==lado){s.lado=lado;s.mensajeIA+=' · Lado ajustado a '+(lado==='DERECHO'?'Derecho':'Izquierdo')+' según la foto.';}
         s.revision++;s.html=null;
         if(f===foto()){sincronizar();dibujar();await medir(f).catch(e=>aviso(e.message));}
       }
@@ -44,14 +48,14 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   }
   function completo(f){const s=estado(f),g=grupos(f);return segmentos.every(k=>s.manual[k]!==undefined?s.manual[k]!==''&&Number.isFinite(Number(s.manual[k])):g[k].length===3);}
   function parametros(f,indice){
-    const s=estado(f),g=grupos(f),p=new URLSearchParams({foto:String(f.id||indice),lado:s.lado,ancho:String(f.ancho||1),alto:String(f.alto||1),giro:s.giro,piernasApoyadas:s.piernas===null?'':s.piernas?'si':'no',actividad:s.actividad===null?'':s.actividad?'si':'no',carga:s.carga});
+    const s=estado(f),g=grupos(f),p=new URLSearchParams({foto:String(f.id??f.indiceFoto??indice),lado:s.lado,ancho:String(f.ancho||1),alto:String(f.alto||1),giro:s.giro,piernasApoyadas:s.piernas===null?'':s.piernas?'si':'no',actividad:s.actividad===null?'':s.actividad?'si':'no',carga:s.carga});
     for(const k of segmentos){p.set(k+'_modo',s.manual[k]!==undefined?'MANUAL':'PUNTOS');p.set(k+'_puntos',g[k].map(q=>q.x.toFixed(6)+','+q.y.toFixed(6)).join(';'));if(s.manual[k]!==undefined)p.set(k+'_grados',s.manual[k]);}
     for(const el of form.querySelectorAll('[data-ajuste]'))p.set(el.dataset.ajuste,s.ajustes[el.dataset.ajuste]?'si':'no');
     return p;
   }
   function siguientePunto(){
-    const f=foto();if(!f)return;const s=estado(f),sig=marcas.find(([k])=>!s.puntos[k]);
-    form.querySelector('[data-siguiente-punto]').textContent=sig?'Toca: '+sig[1]+' ('+(marcas.indexOf(sig)+1)+' de 6)':'Listo: los 6 puntos están marcados.';
+    const f=foto();if(!f)return;const s=estado(f),lista=marcasActuales(),sig=lista.find(([k])=>!s.puntos[k]);
+    form.querySelector('[data-siguiente-punto]').textContent=sig?'Toca: '+sig[1]+' ('+(lista.indexOf(sig)+1)+' de '+lista.length+')':destacado==='PIERNAS'?'Observa el apoyo de las piernas y los pies.':destacado==='GIRO'?'Observa el giro de la muñeca.':'Listo: los puntos de este segmento están marcados.';
   }
   function dibujar(){
     if(!imagen||!foto())return;
@@ -59,9 +63,11 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);cv.style.aspectRatio=imagen.naturalWidth+'/'+imagen.naturalHeight;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);ctx.drawImage(imagen,0,0,w,h);
     if(w<=0)return;
     const P={};for(const [k]of marcas)if(s.puntos[k])P[k]={x:s.puntos[k].x*w,y:s.puntos[k].y*h};
+    const iluminados=new Set(destacado?(gruposMarcas[destacado]||[]):marcas.map(m=>m[0]));
     const escala=w/600;ctx.lineWidth=Math.max(2,2.4*escala);ctx.strokeStyle='#EDE6D8';ctx.lineCap='round';
-    for(const[a,b]of[['cadera','hombro'],['hombro','codo'],['codo','muneca'],['muneca','nudillos'],['hombro','coronilla']])if(P[a]&&P[b]){ctx.beginPath();ctx.moveTo(P[a].x,P[a].y);ctx.lineTo(P[b].x,P[b].y);ctx.stroke();}
-    if(P.cadera){ctx.save();ctx.setLineDash([5,6]);ctx.strokeStyle='rgba(201,204,210,.75)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(P.cadera.x,P.cadera.y);ctx.lineTo(P.cadera.x,P.cadera.y-160*escala);ctx.stroke();ctx.restore();}
+    for(const[a,b]of[['cadera','hombro'],['hombro','codo'],['codo','muneca'],['muneca','nudillos'],['hombro','coronilla']])if(P[a]&&P[b]){ctx.globalAlpha=iluminados.has(a)&&iluminados.has(b)?1:.14;ctx.beginPath();ctx.moveTo(P[a].x,P[a].y);ctx.lineTo(P[b].x,P[b].y);ctx.stroke();}
+    ctx.globalAlpha=1;
+    if(P.cadera){ctx.save();ctx.globalAlpha=!destacado||destacado==='TRONCO'?1:.14;ctx.setLineDash([5,6]);ctx.strokeStyle='rgba(201,204,210,.75)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(P.cadera.x,P.cadera.y);ctx.lineTo(P.cadera.x,P.cadera.y-160*escala);ctx.stroke();ctx.restore();}
     // Arcos del mock: solo dibujan el ángulo recibido de Java, sin medir ni puntuar en el navegador.
     const arco=(v,a,b,texto)=>{
       if(!P[v]||!P[a]||!P[b])return;
@@ -71,15 +77,17 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
       const medio=inicio+recorrido/2,x=P[v].x+Math.cos(medio)*(radio+16),y=P[v].y+Math.sin(medio)*(radio+16);ctx.font='600 12px Inter, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';const ancho=ctx.measureText(texto).width+10;ctx.fillStyle='rgba(11,11,12,.85)';ctx.fillRect(x-ancho/2,y-9,ancho,18);ctx.fillStyle='#EDE6D8';ctx.fillText(texto,x,y);ctx.restore();
     };
     const texto=k=>s.medidas&&s.medidas[k]?Number(s.medidas[k].grados).toFixed(1)+'°'+(s.medidas[k].manual?'*':''):null;
-    if(texto('BRAZO'))arco('hombro','cadera','codo',texto('BRAZO'));
-    if(P.hombro&&P.codo&&P.muneca){P._e1={x:P.codo.x+(P.codo.x-P.hombro.x)*.4,y:P.codo.y+(P.codo.y-P.hombro.y)*.4};if(texto('ANTEBRAZO'))arco('codo','_e1','muneca',texto('ANTEBRAZO'));}
-    if(P.codo&&P.muneca&&P.nudillos){P._e2={x:P.muneca.x+(P.muneca.x-P.codo.x)*.4,y:P.muneca.y+(P.muneca.y-P.codo.y)*.4};if(texto('MUNECA'))arco('muneca','_e2','nudillos',texto('MUNECA'));}
-    if(P.cadera&&P.hombro){P._e3={x:P.hombro.x+(P.hombro.x-P.cadera.x)*.4,y:P.hombro.y+(P.hombro.y-P.cadera.y)*.4};P._v={x:P.cadera.x,y:P.cadera.y-100};if(texto('CUELLO'))arco('hombro','_e3','coronilla',texto('CUELLO'));if(texto('TRONCO'))arco('cadera','_v','hombro',texto('TRONCO'));}
-    for(const[k,t]of marcas)if(P[k]){const p=P[k];if(arrastre===k){ctx.beginPath();ctx.arc(p.x,p.y,16*escala,0,Math.PI*2);ctx.fillStyle='rgba(237,230,216,.18)';ctx.fill();}ctx.beginPath();ctx.arc(p.x,p.y,Math.max(5,6.5*escala),0,Math.PI*2);ctx.fillStyle='#0B0B0C';ctx.fill();ctx.strokeStyle='#EDE6D8';ctx.lineWidth=2.4;ctx.stroke();ctx.font='12px Inter, sans-serif';ctx.fillStyle='#EDE6D8';ctx.fillText(t,Math.min(p.x+10,w-65),Math.max(15,p.y-10));}
+    if((!destacado||destacado==='BRAZO')&&texto('BRAZO'))arco('hombro','cadera','codo',texto('BRAZO'));
+    if(P.hombro&&P.codo&&P.muneca){P._e1={x:P.codo.x+(P.codo.x-P.hombro.x)*.4,y:P.codo.y+(P.codo.y-P.hombro.y)*.4};if((!destacado||destacado==='ANTEBRAZO')&&texto('ANTEBRAZO'))arco('codo','_e1','muneca',texto('ANTEBRAZO'));}
+    if(P.codo&&P.muneca&&P.nudillos){P._e2={x:P.muneca.x+(P.muneca.x-P.codo.x)*.4,y:P.muneca.y+(P.muneca.y-P.codo.y)*.4};if((!destacado||destacado==='MUNECA')&&texto('MUNECA'))arco('muneca','_e2','nudillos',texto('MUNECA'));}
+    if(P.cadera&&P.hombro){P._e3={x:P.hombro.x+(P.hombro.x-P.cadera.x)*.4,y:P.hombro.y+(P.hombro.y-P.cadera.y)*.4};P._v={x:P.cadera.x,y:P.cadera.y-100};if((!destacado||destacado==='CUELLO')&&texto('CUELLO'))arco('hombro','_e3','coronilla',texto('CUELLO'));if((!destacado||destacado==='TRONCO')&&texto('TRONCO'))arco('cadera','_v','hombro',texto('TRONCO'));}
+    for(const[k,t]of marcas)if(P[k]){ctx.globalAlpha=iluminados.has(k)?1:.14;const p=P[k];if(arrastre===k){ctx.beginPath();ctx.arc(p.x,p.y,16*escala,0,Math.PI*2);ctx.fillStyle='rgba(237,230,216,.18)';ctx.fill();}ctx.beginPath();ctx.arc(p.x,p.y,Math.max(5,6.5*escala),0,Math.PI*2);ctx.fillStyle='#0B0B0C';ctx.fill();ctx.strokeStyle='#EDE6D8';ctx.lineWidth=2.4;ctx.stroke();ctx.font='12px Inter, sans-serif';ctx.fillStyle='#EDE6D8';ctx.fillText(t,Math.min(p.x+10,w-65),Math.max(15,p.y-10));}
+    ctx.globalAlpha=1;
+    if(destacado==='TRONCO'&&P.cadera){ctx.beginPath();ctx.arc(P.cadera.x,6,5,0,Math.PI*2);ctx.fillStyle='#EDE6D8';ctx.fill();ctx.fillText('Vertical',Math.min(P.cadera.x+10,w-60),18);}
   }
   function pintarMedidas(f){
     if(f!==foto())return;const s=estado(f),pagina=s.html?new DOMParser().parseFromString(s.html,'text/html'):null;
-    s.medidas={};
+    if(!form.dataset.cuerpo)s.medidas={};else s.medidas=s.medidas||{};
     for(const fila of form.querySelectorAll('[data-segmento]')){
       const k=fila.dataset.segmento,m=pagina&&pagina.querySelector('[data-medicion="'+k+'"]');
       if(m)s.medidas[k]={grados:m.dataset.grados,manual:m.textContent.includes('manual')};
@@ -106,12 +114,12 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   function tabs(){
     for(const destino of ['[data-tabs-fotos]','[data-tabs-ajustes]']){
       const cont=form.querySelector(destino);cont.replaceChildren();
-      obtenerFotos().forEach((f,i)=>{const b=document.createElement('button');b.type='button';b.textContent='Foto '+(i+1)+' · '+(f.vista==='PERFIL'?'Perfil':f.vista==='FRENTE'?'Frente':'Detalle');b.classList.toggle('on',i===activa);b.addEventListener('click',()=>{activa=i;tabs();sincronizar();cargarFoto();});cont.append(b);});
+      obtenerFotos().forEach((f,i)=>{const b=document.createElement('button');b.type='button';b.className='btn sm';b.textContent='Foto '+((f.indiceFoto??i)+1)+(f.ladoFijo?' · '+(f.ladoFijo==='DERECHO'?'Derecho':'Izquierdo'):'')+' · '+(f.vista==='PERFIL'?'Perfil':f.vista==='FRENTE'?'Frente':'Detalle');b.classList.toggle('on',i===activa);b.addEventListener('click',()=>{activa=i;tabs();sincronizar();cargarFoto();form.dispatchEvent(new Event('aplomo:foto'));});cont.append(b);});
     }
   }
   async function medir(f,exigir=false){
     const s=estado(f);if(!s.habilitada||!completo(f)){if(exigir)throw new Error('Completa los ángulos de la foto '+(obtenerFotos().indexOf(f)+1)+': marca sus puntos o escribe los cinco ángulos.');return;}
-    if(!respondido(f))return;
+    if(!respondido(f)||form.dataset.cuerpo&&!todoListo())return;
     const revision=s.revision,peticion=++numeroPeticion,p=parametros(f,obtenerFotos().indexOf(f));p.set('csrf',form.elements.csrf.value);p.set('visita',form.elements.visita.value);for(const k of ['escritorio','pantalla','pies','apoyapies','apoyabrazos','regulable']){const e=form.elements[k];p.set(k,e?.type==='checkbox'?(e.checked?'si':'no'):(e?.value||'no'));}
     const terminarProgreso=window.AplomoProgreso?.iniciar('Calculando el resultado…');
     try{
@@ -124,41 +132,48 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
       throw error;
     }finally{terminarProgreso?.();}
   }
-  function cambiado(){
-    const f=foto();if(!f)return;const s=estado(f);s.revision++;s.html=null;pintarMedidas(f);siguientePunto();dibujar();clearTimeout(temporizador);form.dispatchEvent(new Event('aplomo:analisis'));
+  function cambiado(segmento){
+    const f=foto();if(!f)return;const s=estado(f);s.revision++;s.html=null;if(form.dataset.cuerpo&&s.recorrido){for(const k of segmentos)if(segmento===k||(segmento==='PUNTOS'&&s.manual[k]===undefined))s.recorrido.confirmados[k]=false;}pintarMedidas(f);siguientePunto();dibujar();clearTimeout(temporizador);form.dispatchEvent(new Event('aplomo:analisis'));
     temporizador=setTimeout(()=>medir(f).catch(e=>aviso(e.message)),180);
   }
   const posicion=e=>{const r=cv.getBoundingClientRect();return{x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))};};
   cv.addEventListener('pointerdown',e=>{
-    if(!foto()||!imagen)return;e.preventDefault();const s=estado(foto()),p=posicion(e),r=cv.getBoundingClientRect(),dedo=e.pointerType!=='mouse';let cercano=null,distancia=Infinity;
+    if(!foto()||!imagen||(destacado==='PIERNAS'||destacado==='GIRO'))return;e.preventDefault();const s=estado(foto()),p=posicion(e),r=cv.getBoundingClientRect(),dedo=e.pointerType!=='mouse';let cercano=null,distancia=Infinity;
     for(const[k]of marcas)if(s.puntos[k]){const q=s.puntos[k],d=Math.hypot((q.x-p.x)*r.width,(q.y-p.y)*r.height);if(d<distancia){distancia=d;cercano=k;}}
-    const sig=marcas.find(([k])=>!s.puntos[k]);
+    const sig=marcasActuales().find(([k])=>!s.puntos[k]);
     if(cercano&&(distancia<(dedo?44:22)||(!sig&&distancia<(dedo?90:40)))){arrastre=cercano;try{cv.setPointerCapture(e.pointerId);}catch(_){}dibujar();return;}
-    if(!sig)return;s.puntos[sig[0]]=p;cambiado();
+    if(!sig)return;s.puntos[sig[0]]=p;cambiado('PUNTOS');
   });
   cv.addEventListener('pointermove',e=>{if(!arrastre)return;e.preventDefault();estado(foto()).puntos[arrastre]=posicion(e);dibujar();});
-  function terminar(){if(!arrastre)return;arrastre=null;cambiado();}
+  function terminar(){if(!arrastre)return;arrastre=null;cambiado('PUNTOS');}
   cv.addEventListener('pointerup',terminar);cv.addEventListener('pointercancel',terminar);cv.addEventListener('lostpointercapture',terminar);cv.addEventListener('contextmenu',e=>e.preventDefault());
   cv.addEventListener('touchmove',e=>{if(arrastre)e.preventDefault();},{passive:false});new ResizeObserver(()=>dibujar()).observe(cv.parentElement);
-  form.querySelector('[data-puntos-deshacer]').addEventListener('click',()=>{const s=estado(foto()),k=[...marcas].reverse().find(([k])=>s.puntos[k]);if(k){delete s.puntos[k[0]];cambiado();}});
-  form.querySelector('[data-puntos-borrar]').addEventListener('click',()=>{estado(foto()).puntos={};cambiado();});
+  form.querySelector('[data-puntos-deshacer]').addEventListener('click',()=>{const s=estado(foto()),k=[...marcas].reverse().find(([k])=>s.puntos[k]);if(k){delete s.puntos[k[0]];cambiado('PUNTOS');}});
+  form.querySelector('[data-puntos-borrar]').addEventListener('click',()=>{estado(foto()).puntos={};cambiado('PUNTOS');});
   detectarBoton.addEventListener('click',()=>autoDetectar(foto(),true));
   form.querySelector('[data-analizar-foto]').addEventListener('change',e=>{estado(foto()).habilitada=e.target.checked;sincronizar();dibujar();});
   form.querySelector('[data-lado]').addEventListener('change',e=>{estado(foto()).lado=e.target.value;cambiado();});
   for(const fila of form.querySelectorAll('[data-segmento]')){
-    const k=fila.dataset.segmento;fila.querySelector('[data-manual]').addEventListener('change',e=>{const s=estado(foto());if(e.target.checked)s.manual[k]='';else delete s.manual[k];sincronizar();cambiado();});
-    fila.querySelector('[data-angulo-manual]').addEventListener('input',e=>{estado(foto()).manual[k]=e.target.value;cambiado();});
+    const k=fila.dataset.segmento;fila.querySelector('[data-manual]').addEventListener('change',e=>{const s=estado(foto());if(e.target.checked)s.manual[k]='';else delete s.manual[k];sincronizar();cambiado(k);});
+    fila.querySelector('[data-angulo-manual]').addEventListener('input',e=>{estado(foto()).manual[k]=e.target.value;cambiado(k);});
   }
   for(const el of form.querySelectorAll('[data-ajuste]'))el.addEventListener('change',()=>{const s=estado(foto());s.ajustes[el.dataset.ajuste]=el.checked;s.ajustesConfirmados=Object.values(s.ajustes).some(Boolean);sincronizar();cambiado();});
   form.querySelector('[data-ningun-ajuste]').addEventListener('change',e=>{const s=estado(foto());s.ajustes={};s.ajustesConfirmados=e.target.checked;sincronizar();cambiado();});
   for(const[selector,k]of[['[data-giro]','giro'],['[data-piernas]','piernas'],['[data-actividad]','actividad'],['[data-carga]','carga']])form.querySelector(selector).addEventListener('change',e=>{estado(foto())[k]=['piernas','actividad'].includes(k)?(e.target.value===''?null:e.target.value==='si'):e.target.value;cambiado();});
-  function respondido(f){const s=estado(f);return s.ajustesConfirmados&&!!s.giro&&s.piernas!==null&&s.actividad!==null&&!!s.carga;}
+  function todoListo(){const fs=obtenerFotos().filter(f=>estado(f).habilitada);return fs.length>0&&fs.every(f=>completo(f)&&respondido(f));}
+  function respondido(f){const s=estado(f);return (!form.dataset.cuerpo||s.recorrido&&['BRAZO','ANTEBRAZO','MUNECA','GIRO','CUELLO','TRONCO','PIERNAS'].every(k=>s.recorrido.confirmados[k]))&&s.ajustesConfirmados&&!!s.giro&&s.piernas!==null&&s.actividad!==null&&!!s.carga;}
   return {
+    datos(){const f=foto();return f?{foto:f,estado:estado(f),indice:activa,grupos:grupos(f)}:null;},
+    seleccionar(i){const cambio=activa!==i;activa=i;tabs();sincronizar();if(cambio||!imagen)cargarFoto();},
+    destacar(k){destacado=k;dibujar();siguientePunto();},
+    actualizar(k){cambiado(k);sincronizar();},
+    repintar(){dibujar();},
+    parametrosActuales(){const f=foto();return f?parametros(f,activa):null;},
     medicionesCompletas(){const fs=obtenerFotos().filter(f=>estado(f).habilitada);return !!fs.length&&fs.every(completo);},
     respuestasCompletas(){return obtenerFotos().filter(f=>estado(f).habilitada).every(respondido);},
     iniciar(){const fs=obtenerFotos();fs.forEach(estado);if(!form.dataset.tour&&fs.length&&!fs.some(f=>estado(f).habilitada))estado(fs[0]).habilitada=true;activa=Math.min(activa,Math.max(0,fs.length-1));tabs();sincronizar();cargarFoto();},
     async paso5(){const fs=obtenerFotos().filter(f=>estado(f).habilitada);if(!fs.length)throw new Error('Selecciona al menos una foto para analizar.');for(const f of fs)await medir(f,true);if(!estado(foto()).habilitada)activa=obtenerFotos().indexOf(fs[0]);tabs();sincronizar();},
-    async paso6(){for(const f of obtenerFotos().filter(f=>estado(f).habilitada))if(!respondido(f))throw new Error('Responde los ajustes (o Ninguno), el giro de muñeca, las piernas, la actividad y la carga de cada foto.');await this.paso5();const destino=form.querySelector('[data-resultados]');destino.replaceChildren();for(const[f,i]of obtenerFotos().map((f,i)=>[f,i]).filter(([f])=>estado(f).habilitada)){const bloque=document.createElement('div');bloque.className='stack resultado-por-foto';const titulo=document.createElement('h3');titulo.textContent='Foto '+(i+1)+' · '+(estado(f).lado==='DERECHO'?'Lado derecho':'Lado izquierdo');bloque.append(titulo);const contenido=new DOMParser().parseFromString(estado(f).html,'text/html').querySelector('[data-calculo]');bloque.append(contenido);destino.append(bloque);}},
+    async paso6(){for(const f of obtenerFotos().filter(f=>estado(f).habilitada))if(!respondido(f))throw new Error('Responde los ajustes (o Ninguno), el giro de muñeca, las piernas, la actividad y la carga de cada foto.');await this.paso5();const destino=form.querySelector('[data-resultados]');destino.replaceChildren();for(const[f,i]of obtenerFotos().map((f,i)=>[f,i]).filter(([f])=>estado(f).habilitada)){const bloque=document.createElement('div');bloque.className='stack resultado-por-foto';const titulo=document.createElement('h3');titulo.textContent='Foto '+((f.indiceFoto??i)+1)+' · '+(estado(f).lado==='DERECHO'?'Lado derecho':'Lado izquierdo');bloque.append(titulo);const contenido=new DOMParser().parseFromString(estado(f).html,'text/html').querySelector('[data-calculo]');bloque.append(contenido);destino.append(bloque);}},
     solicitudes(){return obtenerFotos().flatMap((f,i)=>estado(f).habilitada?[parametros(f,i).toString()]:[]);}
   };
 };
