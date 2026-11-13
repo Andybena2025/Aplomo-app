@@ -1,0 +1,559 @@
+[
+  {
+    "pagina": "reservas",
+    "width": 1440,
+    "ancho": 1425,
+    "botones": [
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      }
+    ],
+    "etiquetasFondo": 0,
+    "nav": [
+      {
+        "fila": 10,
+        "texto": "Inicio"
+      },
+      {
+        "fila": 10,
+        "texto": "Empresas"
+      },
+      {
+        "fila": 10,
+        "texto": "Reservas"
+      },
+      {
+        "fila": 10,
+        "texto": "Visitas"
+      },
+      {
+        "fila": 10,
+        "texto": "Pendientes"
+      },
+      {
+        "fila": 10,
+        "texto": "Usuarios"
+      }
+    ],
+    "plegables": [
+      {
+        "abierto": false,
+        "caja": 46,
+        "linea": 44,
+        "texto": "Ver otras secciones"
+      },
+      {
+        "abierto": false,
+        "caja": 46,
+        "linea": 44,
+        "texto": "Más filtros"
+      }
+    ],
+    "tablas": [
+      {
+        "ancho": 1206,
+        "color": "rgb(14, 14, 16)",
+        "contenido": 1206
+      }
+    ],
+    "viewport": 1440
+  },
+  {
+    "pagina": "reservas",
+    "width": 1024,
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      }
+    ],
+    "etiquetasFondo": 0,
+    "nav": [
+      {
+        "fila": 10,
+        "texto": "Inicio"
+      },
+      {
+        "fila": 10,
+        "texto": "Empresas"
+      },
+      {
+        "fila": 10,
+        "texto": "Reservas"
+      },
+      {
+        "fila": 10,
+        "texto": "Visitas"
+      },
+      {
+        "fila": 10,
+        "texto": "Pendientes"
+      },
+      {
+        "fila": 10,
+        "texto": "Usuarios"
+      }
+    ],
+    "plegables": [
+      {
+        "abierto": false,
+        "caja": 46,
+        "linea": 44,
+        "texto": "Ver otras secciones"
+      },
+      {
+        "abierto": false,
+        "caja": 46,
+        "linea": 44,
+        "texto": "Más filtros"
+      }
+    ],
+    "tablas": [
+      {
+        "ancho": 975,
+        "color": "rgb(14, 14, 16)",
+        "contenido": 975
+      }
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "reservas",
+    "width": 390,
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 44,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 44,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 44,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 44,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 44,
+        "lineas": 1,
+        "texto": "Ver reserva",
+        "whiteSpace": "nowrap"
+      }
+    ],
+    "etiquetasFondo": 0,
+    "nav": [
+      {
+        "fila": 56,
+        "texto": "Inicio"
+      },
+      {
+        "fila": 56,
+        "texto": "Empresas"
+      },
+      {
+        "fila": 56,
+        "texto": "Reservas"
+      },
+      {
+        "fila": 56,
+        "texto": "Visitas"
+      },
+      {
+        "fila": 56,
+        "texto": "Pendientes"
+      },
+      {
+        "fila": 56,
+        "texto": "Usuarios"
+      }
+    ],
+    "plegables": [
+      {
+        "abierto": false,
+        "caja": 46,
+        "linea": 44,
+        "texto": "Ver otras secciones"
+      },
+      {
+        "abierto": false,
+        "caja": 46,
+        "linea": 44,
+        "texto": "Más filtros"
+      }
+    ],
+    "tablas": [
+      {
+        "ancho": 343,
+        "color": "rgb(14, 14, 16)",
+        "contenido": 343
+      }
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "usuarios",
+    "width": 1440,
+    "ancho": 1440,
+    "calificacion": [],
+    "cobertura": [],
+    "fotos": [],
+    "navFilas": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "pagina": "evaluacion",
+    "width": 1440,
+    "ancho": 1425,
+    "calificacion": [],
+    "cobertura": [],
+    "fotos": [
+      {
+        "ajuste": "contain",
+        "alto": 520,
+        "cargada": true,
+        "centro": "50% 50%",
+        "maximo": "520px"
+      }
+    ],
+    "navFilas": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "pagina": "informe",
+    "width": 1440,
+    "ancho": 1425,
+    "calificacion": [
+      "2,35Promedio2 · Verde · Nivel 1Clasificación con promedio redondeado · No necesita cambios"
+    ],
+    "cobertura": [
+      "2 de 3 sedes calificadas · falta Sede Anova (Medicina).",
+      "2 de 3 sedes calificadas · falta Sede Anova (Medicina)."
+    ],
+    "fotos": [],
+    "navFilas": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "pagina": "usuarios",
+    "width": 1024,
+    "ancho": 1024,
+    "calificacion": [],
+    "cobertura": [],
+    "fotos": [],
+    "navFilas": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "evaluacion",
+    "width": 1024,
+    "ancho": 1009,
+    "calificacion": [],
+    "cobertura": [],
+    "fotos": [
+      {
+        "ajuste": "contain",
+        "alto": 520,
+        "cargada": true,
+        "centro": "50% 50%",
+        "maximo": "520px"
+      }
+    ],
+    "navFilas": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "informe",
+    "width": 1024,
+    "ancho": 1009,
+    "calificacion": [
+      "2,35Promedio2 · Verde · Nivel 1Clasificación con promedio redondeado · No necesita cambios"
+    ],
+    "cobertura": [
+      "2 de 3 sedes calificadas · falta Sede Anova (Medicina).",
+      "2 de 3 sedes calificadas · falta Sede Anova (Medicina)."
+    ],
+    "fotos": [],
+    "navFilas": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "usuarios",
+    "width": 390,
+    "ancho": 375,
+    "calificacion": [],
+    "cobertura": [],
+    "fotos": [],
+    "navFilas": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "evaluacion",
+    "width": 390,
+    "ancho": 375,
+    "calificacion": [],
+    "cobertura": [],
+    "fotos": [
+      {
+        "ajuste": "contain",
+        "alto": 360,
+        "cargada": true,
+        "centro": "50% 50%",
+        "maximo": "360px"
+      }
+    ],
+    "navFilas": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "informe",
+    "width": 390,
+    "ancho": 375,
+    "calificacion": [
+      "2,35Promedio2 · Verde · Nivel 1Clasificación con promedio redondeado · No necesita cambios"
+    ],
+    "cobertura": [
+      "2 de 3 sedes calificadas · falta Sede Anova (Medicina).",
+      "2 de 3 sedes calificadas · falta Sede Anova (Medicina)."
+    ],
+    "fotos": [],
+    "navFilas": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "pendientes",
+    "width": 1440,
+    "ancho": 1440,
+    "botones": [
+      {
+        "alto": 36,
+        "texto": "Ver pendiente",
+        "whiteSpace": "nowrap"
+      }
+    ],
+    "viewport": 1440
+  },
+  {
+    "pagina": "sugerencias",
+    "width": 1440,
+    "ancho": 1440,
+    "botones": [
+      {
+        "alto": 36,
+        "texto": "Ver sugerencia",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "texto": "Ver sugerencia",
+        "whiteSpace": "nowrap"
+      }
+    ],
+    "viewport": 1440
+  },
+  {
+    "pagina": "pendientes",
+    "width": 1024,
+    "ancho": 1024,
+    "botones": [
+      {
+        "alto": 36,
+        "texto": "Ver pendiente",
+        "whiteSpace": "nowrap"
+      }
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "sugerencias",
+    "width": 1024,
+    "ancho": 1024,
+    "botones": [
+      {
+        "alto": 36,
+        "texto": "Ver sugerencia",
+        "whiteSpace": "nowrap"
+      },
+      {
+        "alto": 36,
+        "texto": "Ver sugerencia",
+        "whiteSpace": "nowrap"
+      }
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "reservas",
+    "width": 810,
+    "ancho": 795,
+    "navFilas": [
+      10
+    ],
+    "viewport": 810
+  },
+  {
+    "pagina": "usuarios",
+    "width": 810,
+    "ancho": 810,
+    "navFilas": [
+      10
+    ],
+    "viewport": 810
+  },
+  {
+    "pagina": "reservas",
+    "width": 1080,
+    "ancho": 1065,
+    "navFilas": [
+      10
+    ],
+    "viewport": 1080
+  },
+  {
+    "pagina": "usuarios",
+    "width": 1080,
+    "ancho": 1080,
+    "navFilas": [
+      10
+    ],
+    "viewport": 1080
+  },
+  {
+    "pagina": "reservas",
+    "width": 1366,
+    "ancho": 1351,
+    "navFilas": [
+      10
+    ],
+    "viewport": 1366
+  },
+  {
+    "pagina": "usuarios",
+    "width": 1366,
+    "ancho": 1366,
+    "navFilas": [
+      10
+    ],
+    "viewport": 1366
+  },
+  {
+    "pagina": "reservas",
+    "width": 1920,
+    "ancho": 1905,
+    "navFilas": [
+      10
+    ],
+    "viewport": 1920
+  },
+  {
+    "pagina": "usuarios",
+    "width": 1920,
+    "ancho": 1920,
+    "navFilas": [
+      10
+    ],
+    "viewport": 1920
+  }
+]

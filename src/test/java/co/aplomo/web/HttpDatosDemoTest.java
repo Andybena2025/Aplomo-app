@@ -31,6 +31,13 @@ class HttpDatosDemoTest extends HttpPrueba {
   DatosDemoPrueba.cargar(con);assertEquals(primera,cantidades());assertEquals("ARREGLADO",Sql.uno(con,"SELECT estado FROM pendiente_arreglo WHERE id_pendiente=?",r->r.getString(1),pendiente));
   entrar(admin);var informe=get("/informes/empresa/"+universidad);assertEquals(200,informe.statusCode());
   for(String etiqueta:List.of("1 · Verde · Nivel 1","3 · Amarillo · Nivel 2","7 · Rojo · Nivel 4","Sede Alcázar","Sede Anova (Medicina)"))assertTrue(informe.body().contains(etiqueta),etiqueta);
-  assertTrue(informe.body().contains("Sin calificación general"));
+  assertTrue(informe.body().contains("2 de 3 sedes calificadas · falta Sede Anova (Medicina)"));
+  assertFalse(informe.body().contains("Sin calificación general"));
+  var segunda=Sql.uno(con,"SELECT a.id_analisis FROM analisis_rula a JOIN fotografia f USING(id_foto) JOIN evaluacion e USING(id_evaluacion) JOIN visita v USING(id_visita) JOIN reserva r USING(id_reserva) WHERE r.codigo=?",r->r.getInt(1),"DEMO-FIN-02");
+  var esperado=motor.calcular(CasosRulaPrueba.todos().get(3).entrada());
+  assertEquals(esperado.resultado().puntajeFinal(),Sql.<Integer>uno(con,"SELECT puntaje_final FROM analisis_rula WHERE id_analisis=?",r->r.getInt(1),segunda));
+  var medidasAlcazar=new co.aplomo.dao.AnalisisDao().mediciones(con,segunda);assertEquals(5,medidasAlcazar.size());
+  for(var m:esperado.mediciones()){var guardada=medidasAlcazar.stream().filter(x->x.segmento()==m.segmento()).findFirst().orElseThrow();assertEquals(m.grados(),guardada.grados(),.001);assertEquals(m.puntos(),guardada.puntos());}
+  assertEquals(2,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM visita v JOIN reserva r USING(id_reserva) WHERE r.codigo IN ('DEMO-FIN-01','DEMO-FIN-02') AND v.estado='FINALIZADA'",r->r.getInt(1)));
  }
 }

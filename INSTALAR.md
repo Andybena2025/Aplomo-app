@@ -82,9 +82,9 @@ Con la app corriendo, conecta el celular al **mismo Wi-Fi** que el computador y 
 
 Incluye Ensambles del Quindío, Muebles Cafeteros y la Corporación Universitaria Empresarial Alexander von Humboldt con Sede principal, Sede Alcázar y Sede Anova (Medicina). Los nombres y direcciones proceden del mock; no se verificó su vigencia. Puestos, contactos y resultados son ficticios y se identifican como demostración.
 
-Hay cinco reservas, una visita Finalizada, tres evaluaciones (1 · Verde · Nivel 1; 3 · Amarillo · Nivel 2; 7 · Rojo · Nivel 4), sus mediciones manuales, un pendiente abierto y sugerencias. Los resultados corresponden a los casos 4, 2 y 8 del plan de pruebas, comprobados con el motor RULA existente. **No son una valoración de las personas o lugares mostrados.**
+Hay seis reservas, dos visitas Finalizadas, cuatro evaluaciones (dos Verdes de puntaje 1; una Amarilla de puntaje 3; una Roja de puntaje 7), sus mediciones manuales, un pendiente abierto y sugerencias. Los resultados corresponden a los casos 4, 2 y 8 del plan de pruebas, comprobados con el motor RULA existente. **No son una valoración de las personas o lugares mostrados.**
 
-Desde la raíz del proyecto, copia la imagen de muestra generada con IA para los tres registros de demostración. Se usa la misma imagen ilustrativa; los ángulos provienen de los casos manuales, no de medir esa imagen.
+Desde la raíz del proyecto, copia la imagen de muestra generada con IA para los cuatro registros de demostración. Se usa la misma imagen ilustrativa; los ángulos provienen de los casos manuales, no de medir esa imagen.
 
 Mac:
 
@@ -93,13 +93,14 @@ mkdir -p fotos
 cp -n src/main/resources/static/img/muestra_perfil.jpg fotos/de100001-493b-4bc9-a64e-d51b4ea3c901.jpg
 cp -n src/main/resources/static/img/muestra_perfil.jpg fotos/de100002-493b-4bc9-a64e-d51b4ea3c902.jpg
 cp -n src/main/resources/static/img/muestra_perfil.jpg fotos/de100003-493b-4bc9-a64e-d51b4ea3c903.jpg
+cp -n src/main/resources/static/img/muestra_perfil.jpg fotos/de100004-493b-4bc9-a64e-d51b4ea3c904.jpg
 ```
 
 Windows (PowerShell):
 
 ```powershell
 New-Item -ItemType Directory -Force fotos | Out-Null
-foreach ($archivoDemo in @('de100001-493b-4bc9-a64e-d51b4ea3c901.jpg','de100002-493b-4bc9-a64e-d51b4ea3c902.jpg','de100003-493b-4bc9-a64e-d51b4ea3c903.jpg')) {
+foreach ($archivoDemo in @('de100001-493b-4bc9-a64e-d51b4ea3c901.jpg','de100002-493b-4bc9-a64e-d51b4ea3c902.jpg','de100003-493b-4bc9-a64e-d51b4ea3c903.jpg','de100004-493b-4bc9-a64e-d51b4ea3c904.jpg')) {
     if (-not (Test-Path (Join-Path fotos $archivoDemo))) {
         Copy-Item src/main/resources/static/img/muestra_perfil.jpg (Join-Path fotos $archivoDemo)
     }
@@ -114,7 +115,7 @@ mysql --default-character-set=utf8mb4 -u root -p rula_ergonomia_pruebas < docs/b
 
 Escribe la contraseña de MySQL cuando la pida. Para cargar voluntariamente estos datos en la base de la app, sustituye el nombre por `rula_ergonomia`. No vuelvas a ejecutar el script de creación de la base para cargar la demostración. Las fotos permanecen en la carpeta ignorada por Git y solo el Administrador puede verlas.
 
-La demostración aparece en las listas de Empresas y Reservas. En la universidad, Sede principal tiene la visita Finalizada y los tres colores; las otras dos sedes no tienen calificación, por lo que se muestra la cobertura y «Sin calificación general».
+La demostración aparece en las listas de Empresas y Reservas. En la universidad, Sede principal tiene la visita Finalizada y los tres colores; Alcázar tiene la segunda visita Finalizada y un puesto Verde (caso manual 4). Hay calificación general con cobertura «2 de 3 sedes calificadas · falta Sede Anova (Medicina)». El SQL establece `SET NAMES utf8mb4` antes de iniciar la transacción para conservar tildes.
 
 ---
 

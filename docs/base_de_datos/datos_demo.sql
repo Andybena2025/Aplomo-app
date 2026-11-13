@@ -8,6 +8,8 @@
 
 -- Resultados 1, 3 y 7 comprobados con MotorRula y tablas MySQL: casos 4, 2 y 8 de docs/03.
 
+SET NAMES utf8mb4;
+
 START TRANSACTION;
 
 SET @demo_admin = (SELECT id_cuenta FROM cuenta WHERE rol='ADMINISTRADOR' AND estado='ACTIVA' ORDER BY id_cuenta LIMIT 1);
@@ -323,6 +325,77 @@ WHERE NOT EXISTS (SELECT 1 FROM sugerencia WHERE id_evaluacion=@ev2 AND titulo='
 INSERT INTO sugerencia (id_evaluacion,titulo,descripcion,tipo,prioridad,estado,origen,activo)
 SELECT @ev3,'Revisar la postura de trabajo','Sugerencia ficticia: revisar la postura y acercar las piezas antes de reevaluar.','POSTURA','ALTA','PENDIENTE','ADMINISTRADOR',TRUE
 WHERE NOT EXISTS (SELECT 1 FROM sugerencia WHERE id_evaluacion=@ev3 AND titulo='Revisar la postura de trabajo');
+
+-- Segunda sede calificada: caso Verde 4 del motor RULA, únicamente para demostración.
+INSERT INTO puesto_trabajo (id_salon,id_area,id_cargo,numero,descripcion,tipo,ubicacion,ultimo_puntaje)
+SELECT @l4,@area,@cargo,1,'Revisión de piezas de demostración','MESA','Demostración',1
+WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@l4 AND numero=1);
+
+SET @p4 = (SELECT id_puesto FROM puesto_trabajo WHERE id_salon=@l4 AND numero=1 LIMIT 1);
+
+INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,notas,estado)
+SELECT @l4,@demo_admin,'DEMO-FIN-02','2026-11-10','08:00','10:00','EVALUACION_INICIAL','Reserva de demostración APLOMO.','Datos ficticios. No representa una visita real.','FINALIZADA'
+WHERE NOT EXISTS (SELECT 1 FROM reserva WHERE codigo='DEMO-FIN-02');
+
+SET @r6 = (SELECT id_reserva FROM reserva WHERE codigo='DEMO-FIN-02' LIMIT 1);
+
+INSERT INTO visita (id_reserva,hora_real_inicio,hora_real_fin,notas,calificacion_final,estado)
+SELECT @r6,'2026-11-10 08:00:00','2026-11-10 10:00:00','Visita ficticia de Alcázar para demostrar la calificación general.',1,'FINALIZADA'
+WHERE NOT EXISTS (SELECT 1 FROM visita WHERE id_reserva=@r6);
+
+SET @v2 = (SELECT id_visita FROM visita WHERE id_reserva=@r6 LIMIT 1);
+
+INSERT INTO evaluacion (id_visita,id_puesto,fecha,postura,criterio,motivo,minutos_jornada,persona_acepto,registro_fotografico)
+SELECT @v2,@p4,'2026-11-10','Revisión de piezas en Mantenimiento','MAS_INADECUADA','Caso ficticio de demostración, con ángulos manuales del plan de pruebas.',120,TRUE,'CON_FOTOS'
+WHERE NOT EXISTS (SELECT 1 FROM evaluacion WHERE id_visita=@v2 AND id_puesto=@p4);
+
+SET @ev4 = (SELECT id_evaluacion FROM evaluacion WHERE id_visita=@v2 AND id_puesto=@p4 LIMIT 1);
+
+INSERT INTO condiciones_puesto (id_evaluacion,escritorio_muy_alto,pantalla_muy_alta,pies_colgando,tiene_apoyapies,silla_con_apoyabrazos,silla_regulable,otras_observaciones)
+SELECT @ev4,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,'Demostración: no es una valoración de una persona real.'
+WHERE NOT EXISTS (SELECT 1 FROM condiciones_puesto WHERE id_evaluacion=@ev4);
+
+INSERT INTO fotografia (id_evaluacion,nombre_archivo,ruta,tamano_kb,vista,descripcion)
+SELECT @ev4,'de100004-493b-4bc9-a64e-d51b4ea3c904.jpg','de100004-493b-4bc9-a64e-d51b4ea3c904.jpg',60,'PERFIL','Imagen de muestra generada con IA. Resultado ficticio del caso manual, no una medición de esta imagen.'
+WHERE NOT EXISTS (SELECT 1 FROM fotografia WHERE id_evaluacion=@ev4 AND nombre_archivo='de100004-493b-4bc9-a64e-d51b4ea3c904.jpg');
+
+SET @f4 = (SELECT id_foto FROM fotografia WHERE id_evaluacion=@ev4 AND nombre_archivo='de100004-493b-4bc9-a64e-d51b4ea3c904.jpg' LIMIT 1);
+
+SET @nivel4 = (SELECT id_nivel FROM nivel_riesgo WHERE 1 BETWEEN puntaje_minimo AND puntaje_maximo LIMIT 1);
+
+INSERT INTO analisis_rula (id_foto,id_nivel,fecha_hora,lado,hombro_elevado,brazo_separado,brazo_apoyado,antebrazo_cruza_linea_media,muneca_desviada,giro_muneca,cuello_girado,cuello_inclinado,tronco_girado,tronco_inclinado,piernas_apoyadas,postura_estatica_o_repetitiva,carga,puntaje_a,puntaje_b,puntaje_final)
+SELECT @f4,@nivel4,'2026-11-10 09:00:00','DERECHO',FALSE,FALSE,FALSE,FALSE,FALSE,'MEDIO',FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,'MENOS_2KG_INTERMITENTE',1,1,1
+WHERE NOT EXISTS (SELECT 1 FROM analisis_rula WHERE id_foto=@f4);
+
+SET @a4 = (SELECT id_analisis FROM analisis_rula WHERE id_foto=@f4 LIMIT 1);
+
+INSERT INTO medicion_angulo (id_analisis,segmento,puntos_marcados,angulo_grados,puntos,corregido_a_mano)
+SELECT @a4,'BRAZO','[]',0,1,TRUE
+WHERE NOT EXISTS (SELECT 1 FROM medicion_angulo WHERE id_analisis=@a4 AND segmento='BRAZO');
+
+INSERT INTO medicion_angulo (id_analisis,segmento,puntos_marcados,angulo_grados,puntos,corregido_a_mano)
+SELECT @a4,'ANTEBRAZO','[]',90,1,TRUE
+WHERE NOT EXISTS (SELECT 1 FROM medicion_angulo WHERE id_analisis=@a4 AND segmento='ANTEBRAZO');
+
+INSERT INTO medicion_angulo (id_analisis,segmento,puntos_marcados,angulo_grados,puntos,corregido_a_mano)
+SELECT @a4,'MUNECA','[]',0,1,TRUE
+WHERE NOT EXISTS (SELECT 1 FROM medicion_angulo WHERE id_analisis=@a4 AND segmento='MUNECA');
+
+INSERT INTO medicion_angulo (id_analisis,segmento,puntos_marcados,angulo_grados,puntos,corregido_a_mano)
+SELECT @a4,'CUELLO','[]',0,1,TRUE
+WHERE NOT EXISTS (SELECT 1 FROM medicion_angulo WHERE id_analisis=@a4 AND segmento='CUELLO');
+
+INSERT INTO medicion_angulo (id_analisis,segmento,puntos_marcados,angulo_grados,puntos,corregido_a_mano)
+SELECT @a4,'TRONCO','[]',0,1,TRUE
+WHERE NOT EXISTS (SELECT 1 FROM medicion_angulo WHERE id_analisis=@a4 AND segmento='TRONCO');
+
+INSERT INTO bitacora (id_cuenta,fecha_hora,tabla,id_registro,accion,detalle)
+SELECT @demo_admin,'2026-11-10 09:00:00','evaluacion',@ev4,'CREAR','Demostración APLOMO: registro ficticio.'
+WHERE NOT EXISTS (SELECT 1 FROM bitacora WHERE tabla='evaluacion' AND id_registro=@ev4 AND accion='CREAR');
+
+INSERT INTO bitacora (id_cuenta,fecha_hora,tabla,id_registro,accion,detalle)
+SELECT @demo_admin,'2026-11-10 09:00:00','analisis_rula',@a4,'CREAR','Demostración APLOMO: registro ficticio.'
+WHERE NOT EXISTS (SELECT 1 FROM bitacora WHERE tabla='analisis_rula' AND id_registro=@a4 AND accion='CREAR');
 
 COMMIT;
 

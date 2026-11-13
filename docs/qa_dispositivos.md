@@ -79,3 +79,10 @@ Además, Chrome DevTools en modo **Mobile**, a 390 y 810 px, activó el puntero 
 `TZ=America/Bogota ./mvnw test`: **718 aprobadas; 0 fallos, 0 errores, 0 omitidas**, 66 segundos, terminado el 12 nov 2026 a las 15:25:40 -05. Incluye el rendimiento pendiente del Paso 13: 20 repeticiones de listado / guardado / informe, 1.000 filas en cada una de 16 tablas operativas; P95 de 172,77 / 38,47 / 164,00 ms, respectivamente. Los catálogos oficiales RULA conservaron su tamaño y contenido. [Datos de rendimiento](evidencia_paso13b/rendimiento.json).
 
 El cierre del servidor temporal confirmó **ROLLBACK completado** y retiró únicamente su carpeta temporal de fotos. Las empresas, reservas, visitas, evaluaciones y cuentas de este recorrido no persisten. Las fotos reales y `config/db.properties` permanecieron fuera de Git. No hubo cambios de esquema, borrado de documentos ni push.
+
+
+## Correcciones · Paso 13C · 13 nov 2026
+
+Reservas, Usuarios, detalle de evaluación e informe revisados visualmente a 1440/1024/390 px en el navegador integrado. Sin desbordamiento horizontal; «Ver reserva» en una línea y 36 px de alto en escritorio; 44 px móvil. Plegables cerrados: 46 px con bordes (summary de 44 px), sin hueco; abren y cierran con clic/teclado. Fotos completas centradas y limitadas a 520/360 px. Fondo sin texto, tablas opacas y seis pestañas en una fila a 390. Comprobaciones adicionales de Reservas/Usuarios a 810/1080/1366/1920 y de Pendientes/Sugerencias a 1024/1440, sin desbordamiento.
+
+El demo opcional ahora tiene dos visitas Finalizadas (principal y Alcázar), cuatro evaluaciones y calificación general 2,35, con «2 de 3 sedes calificadas · falta Sede Anova (Medicina)». Idempotencia y caso Verde de Alcázar comparados con MotorRula. 718 pruebas aprobadas; consola registrada sin errores antes de la prueba intencional de acceso denegado. Datos de QA y carpeta temporal de fotos revertidos al cerrar; base real sin carga demo. Informe y límites: [informe_paso13c.md](informe_paso13c.md); capturas y medidas en [evidencia_paso13c](evidencia_paso13c/). No se descargaron navegadores ni se repitió el recorrido de tres navegadores del Paso 13B.

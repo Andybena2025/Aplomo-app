@@ -313,7 +313,7 @@ section.stack+section.stack{margin-top:var(--s6)}
 [data-evaluacion] .slotLbl{pointer-events:none}
 @media(max-width:600px){.slots{grid-template-columns:minmax(0,1fr)}.foto-elegida{grid-template-columns:minmax(0,1fr)}.foto-elegida img{max-height:240px}.wizfoot .btn{min-height:44px}}
 
-.foto-guardada{margin:0}.foto-guardada img{width:100%;height:auto;border-radius:10px}.foto-guardada figcaption{overflow-wrap:anywhere}
+.foto-guardada{margin:0}.foto-guardada img{display:block;width:100%;height:auto;max-height:520px;object-fit:contain;object-position:center;margin-inline:auto;border-radius:10px}.foto-guardada figcaption{overflow-wrap:anywhere}
 
 [data-paso] h2[tabindex="-1"]:focus{outline:none}
 
@@ -439,3 +439,17 @@ main.wrap{position:relative;z-index:1;min-width:0}
  button,.btn.sm,.tabs button,.who .avatar,.nav-tab,.opt,.check,summary,.orden-columna{min-height:44px;min-width:44px}
  .link,.orden-columna,.top .row>a{display:inline-flex;align-items:center;min-height:44px;min-width:44px}
 }
+
+/* Paso 13C: acciones legibles y plegables sin contenido reservado al cerrarse. */
+:is(.consultas-table,.sugerencias-table,.pendientes-table) .btn{white-space:nowrap;overflow-wrap:normal;flex-shrink:0}
+@media(min-width:721px){:is(.consultas-table,.sugerencias-table,.pendientes-table) .btn{height:36px;min-height:36px;padding:0 14px;font-size:14px}}
+:is(.consultas-secciones,.filtros-extra){display:block;align-self:start;min-height:0;height:auto}
+:is(.consultas-secciones,.filtros-extra)>summary{display:flex;align-items:center;gap:8px}
+:is(.consultas-secciones,.filtros-extra)>summary::before{content:'▸';flex:none}
+:is(.consultas-secciones,.filtros-extra)[open]>summary::before{content:'▾'}
+:is(.consultas-secciones,.filtros-extra):not([open]){padding-block:0}
+:is(.consultas-secciones,.filtros-extra):not([open])>:not(summary){display:none!important}
+.fondo :is(text,.lb){display:none!important}
+@media screen{.tablewrap{position:relative;z-index:1;background:var(--bg)}}
+@media(max-width:720px){.foto-guardada img{max-height:360px}}
+@media(max-width:420px){.top .nav{flex-wrap:nowrap;justify-content:space-between;gap:1px}.top .nav-tab{padding-inline:3px;font-size:12px;min-width:0}}
