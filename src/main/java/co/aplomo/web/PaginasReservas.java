@@ -107,7 +107,7 @@ public final class PaginasReservas {
                 .append("<div class=\"row\"><button class=\"btn p\">Guardar reserva</button>")
                 .append(enlace("/reservas", "Volver a reservas", false)).append("</div></form>");
         if (nueva) html.append(altas(sesion));
-        return Html.pagina(nueva ? "Nueva reserva" : "Editar " + contexto.anterior().reserva().codigo(), html.toString(), sesion);
+        return Html.pagina(nueva ? "Nueva reserva" : "Editar " + contexto.anterior().reserva().codigo(), nueva?Html.conPanel(html.toString(),"Mide la jornada real.","Agenda la visita en el horario real de trabajo: RULA evalúa la postura que el trabajador mantiene más tiempo."):html.toString(), sesion);
     }
 
     /** Fragmento de catálogos que se renueva al crear un lugar sin recargar el formulario principal. */

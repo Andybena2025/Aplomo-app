@@ -1,0 +1,1173 @@
+[
+  {
+    "pagina": "inicio",
+    "width": 1920,
+    "ancho": 1905,
+    "atras": false,
+    "conteos": [
+      {
+        "cantidad": "2",
+        "color": "VERDE"
+      },
+      {
+        "cantidad": "1",
+        "color": "AMARILLO"
+      },
+      {
+        "cantidad": "1",
+        "color": "ROJO"
+      }
+    ],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "flex"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "block"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "block"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1295.296875,
+      "height": 1230.296875,
+      "left": 332.5,
+      "right": 1572.5,
+      "top": 65,
+      "width": 1240,
+      "x": 332.5,
+      "y": 65
+    },
+    "logoCabecera": "none",
+    "panel": false,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1920
+  },
+  {
+    "pagina": "inicio",
+    "width": 1440,
+    "ancho": 1425,
+    "atras": false,
+    "conteos": [
+      {
+        "cantidad": "2",
+        "color": "VERDE"
+      },
+      {
+        "cantidad": "1",
+        "color": "AMARILLO"
+      },
+      {
+        "cantidad": "1",
+        "color": "ROJO"
+      }
+    ],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "flex"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "block"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "block"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1295.296875,
+      "height": 1230.296875,
+      "left": 92.5,
+      "right": 1332.5,
+      "top": 65,
+      "width": 1240,
+      "x": 92.5,
+      "y": 65
+    },
+    "logoCabecera": "none",
+    "panel": false,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1440
+  },
+  {
+    "pagina": "inicio",
+    "width": 390,
+    "ancho": 375,
+    "atras": false,
+    "conteos": [
+      {
+        "cantidad": "2",
+        "color": "VERDE"
+      },
+      {
+        "cantidad": "1",
+        "color": "AMARILLO"
+      },
+      {
+        "cantidad": "1",
+        "color": "ROJO"
+      }
+    ],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 2369.03125,
+      "height": 2256.03125,
+      "left": 0,
+      "right": 375,
+      "top": 113,
+      "width": 375,
+      "x": 0,
+      "y": 113
+    },
+    "logoCabecera": "block",
+    "panel": false,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 390
+  },
+  {
+    "pagina": "nueva-empresa",
+    "width": 1920,
+    "ancho": 1920,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "flex"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "block"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "block"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 931,
+      "height": 866,
+      "left": 340,
+      "right": 1580,
+      "top": 65,
+      "width": 1240,
+      "x": 340,
+      "y": 65
+    },
+    "logoCabecera": "none",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1920
+  },
+  {
+    "pagina": "inicio",
+    "width": 1400,
+    "ancho": 1385,
+    "atras": false,
+    "conteos": [
+      {
+        "cantidad": "2",
+        "color": "VERDE"
+      },
+      {
+        "cantidad": "1",
+        "color": "AMARILLO"
+      },
+      {
+        "cantidad": "1",
+        "color": "ROJO"
+      }
+    ],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "flex"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "block"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "block"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1295.296875,
+      "height": 1230.296875,
+      "left": 72.5,
+      "right": 1312.5,
+      "top": 65,
+      "width": 1240,
+      "x": 72.5,
+      "y": 65
+    },
+    "logoCabecera": "none",
+    "panel": false,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1400,
+    "lateralesSinInteraccion": true,
+    "tarjetasOpacas": true
+  },
+  {
+    "pagina": "nueva-empresa",
+    "width": 1400,
+    "ancho": 1385,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "flex"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "block"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "block"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 896.3984375,
+      "height": 831.3984375,
+      "left": 72.5,
+      "right": 1312.5,
+      "top": 65,
+      "width": 1240,
+      "x": 72.5,
+      "y": 65
+    },
+    "logoCabecera": "none",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1400,
+    "columnaFormulario": 648.3515625,
+    "lateralesSinInteraccion": true,
+    "tarjetasOpacas": true
+  },
+  {
+    "pagina": "inicio",
+    "width": 1440,
+    "ancho": 1425,
+    "atras": false,
+    "conteos": [
+      {
+        "cantidad": "2",
+        "color": "VERDE"
+      },
+      {
+        "cantidad": "1",
+        "color": "AMARILLO"
+      },
+      {
+        "cantidad": "1",
+        "color": "ROJO"
+      }
+    ],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "flex"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "block"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "block"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1295.296875,
+      "height": 1230.296875,
+      "left": 92.5,
+      "right": 1332.5,
+      "top": 65,
+      "width": 1240,
+      "x": 92.5,
+      "y": 65
+    },
+    "logoCabecera": "none",
+    "panel": false,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1440,
+    "lateralesSinInteraccion": true,
+    "tarjetasOpacas": true
+  },
+  {
+    "pagina": "nueva-empresa",
+    "width": 1440,
+    "ancho": 1425,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "flex"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "block"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "block"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 896.3984375,
+      "height": 831.3984375,
+      "left": 92.5,
+      "right": 1332.5,
+      "top": 65,
+      "width": 1240,
+      "x": 92.5,
+      "y": 65
+    },
+    "logoCabecera": "none",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1440,
+    "columnaFormulario": 648.3515625,
+    "lateralesSinInteraccion": true,
+    "tarjetasOpacas": true
+  },
+  {
+    "pagina": "inicio",
+    "width": 1500,
+    "ancho": 1485,
+    "atras": false,
+    "conteos": [
+      {
+        "cantidad": "2",
+        "color": "VERDE"
+      },
+      {
+        "cantidad": "1",
+        "color": "AMARILLO"
+      },
+      {
+        "cantidad": "1",
+        "color": "ROJO"
+      }
+    ],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "flex"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "block"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "block"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1295.296875,
+      "height": 1230.296875,
+      "left": 122.5,
+      "right": 1362.5,
+      "top": 65,
+      "width": 1240,
+      "x": 122.5,
+      "y": 65
+    },
+    "logoCabecera": "none",
+    "panel": false,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1500,
+    "lateralesSinInteraccion": true,
+    "tarjetasOpacas": true
+  },
+  {
+    "pagina": "nueva-empresa",
+    "width": 1500,
+    "ancho": 1485,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "flex"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "block"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "block"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 896.3984375,
+      "height": 831.3984375,
+      "left": 122.5,
+      "right": 1362.5,
+      "top": 65,
+      "width": 1240,
+      "x": 122.5,
+      "y": 65
+    },
+    "logoCabecera": "none",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1500,
+    "columnaFormulario": 648.3515625,
+    "lateralesSinInteraccion": true,
+    "tarjetasOpacas": true
+  },
+  {
+    "pagina": "inicio",
+    "width": 1600,
+    "ancho": 1585,
+    "atras": false,
+    "conteos": [
+      {
+        "cantidad": "2",
+        "color": "VERDE"
+      },
+      {
+        "cantidad": "1",
+        "color": "AMARILLO"
+      },
+      {
+        "cantidad": "1",
+        "color": "ROJO"
+      }
+    ],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "flex"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "block"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "block"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1295.296875,
+      "height": 1230.296875,
+      "left": 172.5,
+      "right": 1412.5,
+      "top": 65,
+      "width": 1240,
+      "x": 172.5,
+      "y": 65
+    },
+    "logoCabecera": "none",
+    "panel": false,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1600,
+    "lateralesSinInteraccion": true,
+    "tarjetasOpacas": true
+  },
+  {
+    "pagina": "nueva-empresa",
+    "width": 1600,
+    "ancho": 1585,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "flex"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "block"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "block"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 896.3984375,
+      "height": 831.3984375,
+      "left": 172.5,
+      "right": 1412.5,
+      "top": 65,
+      "width": 1240,
+      "x": 172.5,
+      "y": 65
+    },
+    "logoCabecera": "none",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1600,
+    "columnaFormulario": 648.3515625,
+    "lateralesSinInteraccion": true,
+    "tarjetasOpacas": true
+  },
+  {
+    "pagina": "/",
+    "width": 810,
+    "ancho": 795,
+    "atras": false,
+    "conteos": [
+      {
+        "cantidad": "2",
+        "color": "VERDE"
+      },
+      {
+        "cantidad": "1",
+        "color": "AMARILLO"
+      },
+      {
+        "cantidad": "1",
+        "color": "ROJO"
+      }
+    ],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1522.796875,
+      "height": 1457.796875,
+      "left": 0,
+      "right": 795,
+      "top": 65,
+      "width": 795,
+      "x": 0,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": false,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 810
+  },
+  {
+    "pagina": "/empresas/nueva",
+    "width": 810,
+    "ancho": 795,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 896.3984375,
+      "height": 831.3984375,
+      "left": 0,
+      "right": 795,
+      "top": 65,
+      "width": 795,
+      "x": 0,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 810
+  },
+  {
+    "pagina": "/reservas/nueva",
+    "width": 810,
+    "ancho": 795,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1612.8984375,
+      "height": 1547.8984375,
+      "left": 0,
+      "right": 795,
+      "top": 65,
+      "width": 795,
+      "x": 0,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 810
+  },
+  {
+    "pagina": "/usuarios/nuevo",
+    "width": 810,
+    "ancho": 795,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1069.3984375,
+      "height": 1004.3984375,
+      "left": 0,
+      "right": 795,
+      "top": 65,
+      "width": 795,
+      "x": 0,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 810
+  },
+  {
+    "pagina": "/",
+    "width": 1080,
+    "ancho": 1065,
+    "atras": false,
+    "conteos": [
+      {
+        "cantidad": "2",
+        "color": "VERDE"
+      },
+      {
+        "cantidad": "1",
+        "color": "AMARILLO"
+      },
+      {
+        "cantidad": "1",
+        "color": "ROJO"
+      }
+    ],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1343.296875,
+      "height": 1278.296875,
+      "left": 0,
+      "right": 1065,
+      "top": 65,
+      "width": 1065,
+      "x": 0,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": false,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1080
+  },
+  {
+    "pagina": "/empresas/nueva",
+    "width": 1080,
+    "ancho": 1065,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 896.3984375,
+      "height": 831.3984375,
+      "left": 0,
+      "right": 1065,
+      "top": 65,
+      "width": 1065,
+      "x": 0,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1080
+  },
+  {
+    "pagina": "/reservas/nueva",
+    "width": 1080,
+    "ancho": 1065,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1428.3984375,
+      "height": 1363.3984375,
+      "left": 0,
+      "right": 1065,
+      "top": 65,
+      "width": 1065,
+      "x": 0,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1080
+  },
+  {
+    "pagina": "/usuarios/nuevo",
+    "width": 1080,
+    "ancho": 1065,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1030.3984375,
+      "height": 965.3984375,
+      "left": 0,
+      "right": 1065,
+      "top": 65,
+      "width": 1065,
+      "x": 0,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1080
+  },
+  {
+    "pagina": "/",
+    "width": 1366,
+    "ancho": 1351,
+    "atras": false,
+    "conteos": [
+      {
+        "cantidad": "2",
+        "color": "VERDE"
+      },
+      {
+        "cantidad": "1",
+        "color": "AMARILLO"
+      },
+      {
+        "cantidad": "1",
+        "color": "ROJO"
+      }
+    ],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1295.296875,
+      "height": 1230.296875,
+      "left": 55.5,
+      "right": 1295.5,
+      "top": 65,
+      "width": 1240,
+      "x": 55.5,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": false,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1366
+  },
+  {
+    "pagina": "/empresas/nueva",
+    "width": 1366,
+    "ancho": 1351,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 896.3984375,
+      "height": 831.3984375,
+      "left": 55.5,
+      "right": 1295.5,
+      "top": 65,
+      "width": 1240,
+      "x": 55.5,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1366
+  },
+  {
+    "pagina": "/reservas/nueva",
+    "width": 1366,
+    "ancho": 1351,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1428.3984375,
+      "height": 1363.3984375,
+      "left": 55.5,
+      "right": 1295.5,
+      "top": 65,
+      "width": 1240,
+      "x": 55.5,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1366
+  },
+  {
+    "pagina": "/usuarios/nuevo",
+    "width": 1366,
+    "ancho": 1351,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 944.8984375,
+      "height": 879.8984375,
+      "left": 55.5,
+      "right": 1295.5,
+      "top": 65,
+      "width": 1240,
+      "x": 55.5,
+      "y": 65
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 1366
+  },
+  {
+    "pagina": "/",
+    "width": 390,
+    "ancho": 375,
+    "atras": false,
+    "conteos": [
+      {
+        "cantidad": "2",
+        "color": "VERDE"
+      },
+      {
+        "cantidad": "1",
+        "color": "AMARILLO"
+      },
+      {
+        "cantidad": "1",
+        "color": "ROJO"
+      }
+    ],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 2369.03125,
+      "height": 2256.03125,
+      "left": 0,
+      "right": 375,
+      "top": 113,
+      "width": 375,
+      "x": 0,
+      "y": 113
+    },
+    "logoCabecera": "block",
+    "panel": false,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 390
+  },
+  {
+    "pagina": "/empresas/nueva",
+    "width": 390,
+    "ancho": 375,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 929.6953125,
+      "height": 816.6953125,
+      "left": 0,
+      "right": 375,
+      "top": 113,
+      "width": 375,
+      "x": 0,
+      "y": 113
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 390
+  },
+  {
+    "pagina": "/reservas/nueva",
+    "width": 390,
+    "ancho": 375,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1694.1953125,
+      "height": 1581.1953125,
+      "left": 0,
+      "right": 375,
+      "top": 113,
+      "width": 375,
+      "x": 0,
+      "y": 113
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 390
+  },
+  {
+    "pagina": "/usuarios/nuevo",
+    "width": 390,
+    "ancho": 375,
+    "atras": true,
+    "conteos": [],
+    "decoracion": [
+      {
+        "clase": "riel riel-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-izq",
+        "display": "none"
+      },
+      {
+        "clase": "deco deco-der",
+        "display": "none"
+      }
+    ],
+    "fondoAntiguo": false,
+    "horizonteMain": {
+      "bottom": 1102.6953125,
+      "height": 989.6953125,
+      "left": 0,
+      "right": 375,
+      "top": 113,
+      "width": 375,
+      "x": 0,
+      "y": 113
+    },
+    "logoCabecera": "block",
+    "panel": true,
+    "pie": "PLOMO.Ergonomía con precisión · Método RULA© 2026 APLOMO",
+    "viewport": 390
+  }
+]

@@ -13,7 +13,7 @@ public final class PaginasPendientes {
                 .append(Formularios.selector(Map.of("estado",estado),"estado","Mostrar",List.of(new Formularios.Opcion("ABIERTO","Abiertos"),new Formularios.Opcion("ARREGLADO","Arreglados"),new Formularios.Opcion("TODOS","Todos")),true))
                 .append(Formularios.selector(Map.of("orden",orden),"orden","Ordenar por",List.of(new Formularios.Opcion("prioridad","Prioridad"),new Formularios.Opcion("fecha","Fecha de registro"),new Formularios.Opcion("limite","Fecha límite")),true))
                 .append("<button class=\"btn\">Aplicar</button></form><p class=\"muted\">").append(Html.plural(lista.size(),"pendiente")).append("</p>");
-        if(lista.isEmpty())h.append("<div class=\"empty\">No hay pendientes disponibles con este filtro.</div>");
+        if(lista.isEmpty())h.append(Html.vacio("No hay pendientes disponibles con este filtro.",""));
         else{
             h.append("<div class=\"tablewrap\"><table class=\"resp pendientes-table\"><thead><tr><th>Puesto y ubicación</th><th>Resultado</th><th>Seguimiento</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>");
             for(var f:lista){var p=f.pendiente();h.append("<tr>");celda(h,"Puesto", "<b>Puesto "+f.numero()+"</b><br>"+escapar(f.empresaNombre())+"<div class=\"muted small\">"+escapar(f.sedeNombre())+" · "+escapar(f.salonNombre())+"</div>");

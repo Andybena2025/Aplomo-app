@@ -1,0 +1,6 @@
+TZ=America/Bogota ./mvnw -Daplomo.evidencia.rendimiento=docs/capturas_13d2/rendimiento.json test
+[INFO] Tests run: 724, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  01:06 min
+[INFO] Finished at: 2026-11-13T12:36:49-05:00
+QA13D2: ROLLBACK completado (servidor de ensayo cerrado antes de la suite final)

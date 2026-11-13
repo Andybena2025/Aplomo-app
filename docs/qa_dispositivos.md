@@ -93,3 +93,14 @@ El demo opcional ahora tiene dos visitas Finalizadas (principal y Alcázar), cua
 Antes/después en seis páginas (Inicio, Usuarios, Reservas, detalle de reserva, detalle de empresa y Nueva empresa) a 1440/1024/390. Las 18 combinaciones posteriores muestran únicamente acciones de 48 px y encabezado de 44 px; las filas Editar/Desactivar comparten coordenada vertical. Menú de seis pestañas a 13 px en una fila a 390. Acciones junto al título, Nueva sede junto a Consultar sedes, y CTA en Inicio vacío. También se midieron las seis páginas a 810/1080/1366/1920: cero desbordamientos del documento y cero alturas fuera de 48/44.
 
 718 pruebas aprobadas después de actualizar solo una expectativa HTML que esperaba la etiqueta anterior de Pendientes. Consola integrada sin errores antes de la prueba intencional de acceso denegado. Pruebas visuales sobre `rula_ergonomia_pruebas`, con ROLLBACK confirmado antes y después; no se cargó el demo en la base real. Fase A de Trazo vivo cancelada; no se aplicaron sus cambios de marca ni se crearon sus archivos. Ver [informe_paso13d1.md](informe_paso13d1.md) y [evidencia_paso13d1](evidencia_paso13d1/). Los límites de equipo físico y Safari/iPad real siguen documentados.
+
+
+## Identidad de marca · Paso 13D-2 · 13 nov 2026
+
+Safari instalado 26.6.2 revisado de forma nativa con cuenta ficticia en ventana privada: login, Inicio, Nueva empresa, Nueva reserva, Nuevo usuario y pie. Ventanas de aproximadamente 895 y 1324 px CSS; capturas `safari-*.png`. Login directo a Inicio sin Atrás, consejos exactos y pie correcto. Sin guardar credenciales ni cambiar preferencias.
+
+Navegador integrado: Inicio 1920/1440/390 y Nueva empresa/login 1920 capturados; Inicio/Nueva empresa medidos entre 1400 y 1600, con capturas adicionales 1400/1600. Inicio y los tres formularios medidos además a 390/810/1080/1366: 28 registros en total, sin desbordamiento horizontal. Semáforo real del demo: 2 Verde, 1 Amarillo, 1 Rojo. Vacío dinámico de Usuarios conserva ocultamiento, logo y texto; en página corta, pie/documento/viewport terminan a 1000 px. Consola integrada sin errores ni avisos.
+
+724 pruebas aprobadas. Ensayo solo en `rula_ergonomia_pruebas`, ROLLBACK confirmado y carpeta propia de fotos retirada antes de la suite final. No se cargó el demo en la base real. Evidencia: `capturas_13d2/`; detalle: [informe_paso13d2.md](informe_paso13d2.md).
+
+**Pendientes por decisión expresa de Andy:** sin descargas; Chrome/Edge/Firefox de esta versión no probados. Claude hará QA en Chromium. Tampoco se certifica dedo en dispositivo físico, dos versiones estables, cambio real de movimiento reducido ni nueva impresión; las reglas CSS respectivas están presentes. Safari y el navegador integrado se identifican por separado y no se presentan como cobertura de los tres navegadores.

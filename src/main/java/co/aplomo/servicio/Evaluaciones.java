@@ -140,13 +140,17 @@ public final class Evaluaciones {
     /** RF-025/026: comparte transacciones y fecha de generación con los indicadores y el informe. */
     public Calificaciones calificaciones(){return new Calificaciones(tx,reloj);}
 
-    /** Cuenta evaluaciones y puestos rojos visibles para las tarjetas de Inicio (RF-024). */
+    /** Cuenta evaluaciones y colores de puestos para Inicio; el Usuario conserva su alcance anterior (RF-024). */
     public long[] resumen(Cuenta actor) throws SQLException {
         return tx.ejecutar(c->{
             Cuenta actual=AccesoDatos.vigente(c,actor);int empresa=AccesoDatos.empresaPermitida(actual);boolean usuario=actual.rol()==Cuenta.Rol.USUARIO;
             long evaluaciones=Sql.uno(c,"SELECT COUNT(*) FROM evaluacion e JOIN visita v USING(id_visita) JOIN puesto_trabajo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA')",r->r.getLong(1),empresa,empresa,usuario);
             long rojos;
-            if(!usuario)rojos=Sql.uno(c,"SELECT COUNT(*) FROM puesto_trabajo p JOIN nivel_riesgo n ON p.ultimo_puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo WHERE n.color=?",r->r.getLong(1),"ROJO");
+            if(!usuario){
+                Map<String,Long> colores=new HashMap<>();
+                for(var fila:Sql.listar(c,"SELECT n.color,COUNT(*) FROM puesto_trabajo p JOIN nivel_riesgo n ON p.ultimo_puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo GROUP BY n.color",r->Map.entry(r.getString(1),r.getLong(2))))colores.put(fila.getKey(),fila.getValue());
+                return new long[]{evaluaciones,colores.getOrDefault("ROJO",0L),colores.getOrDefault("VERDE",0L),colores.getOrDefault("AMARILLO",0L)};
+            }
             else rojos=Sql.uno(c,"SELECT COUNT(*) FROM puesto_trabajo p JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE s.id_empresa=? AND EXISTS (SELECT 1 FROM nivel_riesgo n WHERE n.color=? AND (SELECT MAX(a.puntaje_final) FROM fotografia f JOIN analisis_rula a USING(id_foto) WHERE f.id_evaluacion=(SELECT MAX(e.id_evaluacion) FROM evaluacion e JOIN visita v USING(id_visita) WHERE e.id_puesto=p.id_puesto AND v.estado='FINALIZADA')) BETWEEN n.puntaje_minimo AND n.puntaje_maximo)",r->r.getLong(1),empresa,"ROJO");
             return new long[]{evaluaciones,rojos};
         });

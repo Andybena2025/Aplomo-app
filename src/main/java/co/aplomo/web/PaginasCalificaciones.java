@@ -32,7 +32,7 @@ public final class PaginasCalificaciones {
                     .append(sede.visitas().stream().filter(v->v.calificacion()!=null).count()).append(" con calificación</p>")
                     .append(enlace("/sedes/"+sede.sede().id(),"Ver sede",false)).append("</article>");
         }
-        if(i.sedes().isEmpty())h.append("<div class=\"empty\">Esta empresa aún no tiene sedes. Registra su estructura antes de evaluar.</div>");
+        if(i.sedes().isEmpty())h.append(Html.vacio("Esta empresa aún no tiene sedes. Registra su estructura antes de evaluar.",""));
         return Html.pagina("Calificaciones",h.append("</div></section>").toString(),s,false);
     }
     /** Informe general: hoja clara del mock, sin bibliotecas PDF ni fotografías privadas. */

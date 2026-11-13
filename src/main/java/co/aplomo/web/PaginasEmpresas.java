@@ -132,10 +132,12 @@ public final class PaginasEmpresas {
         String accion = contexto.id() > 0 ? "/" + contexto.tipo() + "/" + contexto.id() + "/editar"
                 : rutaNueva(contexto.tipo(), contexto.padre());
         String titulo = titulo(contexto.tipo(), contexto.id() > 0);
-        return Html.pagina(titulo, enlace(contexto.volver(), "← Volver", false) + Html.aviso(error, false)
+        String contenido = enlace(contexto.volver(), "← Volver", false) + Html.aviso(error, false)
                 + "<form class=\"card stack cuenta-form\" method=\"post\" action=\"" + accion + "\">"
                 + Html.csrf(sesion) + campos + "<div class=\"row\"><button class=\"btn p\">Guardar</button>"
-                + enlace(contexto.volver(), "Cancelar", false) + "</div></form>", sesion);
+                + enlace(contexto.volver(), "Cancelar", false) + "</div></form>";
+        if(contexto.tipo().equals("empresas")&&contexto.id()==0)contenido=Html.conPanel(contenido,"Cada puesto, medido con precisión.","Usa el nombre legal y el NIT exactos: así aparecen en el informe PDF que recibe la empresa.");
+        return Html.pagina(titulo,contenido,sesion);
     }
 
     /** Dirección de alta dentro del contexto padre, que evita relaciones editables desde el formulario. */

@@ -9,7 +9,7 @@ public final class PaginasSugerencias {
         StringBuilder h=new StringBuilder(enlace("/pendientes","← Pendientes",false));
         if(contexto!=null){h.append(contexto(contexto)).append(avisoMinimo(contexto,filas.size(),admin(s)));if(admin(s))h.append("<div class=\"row acciones-sugerencias\">").append(enlace("/sugerencias/nueva?evaluacion="+contexto.evaluacion(),"Escribir sugerencia",true)).append("</div>");}
         h.append("<p class=\"muted\">").append(Html.plural(filas.size(),"sugerencia")).append("</p>");
-        if(filas.isEmpty())h.append("<div class=\"empty\">No hay sugerencias disponibles. El análisis se conserva aunque no haya reglas que apliquen.</div>");
+        if(filas.isEmpty())h.append(Html.vacio("No hay sugerencias disponibles. El análisis se conserva aunque no haya reglas que apliquen.",""));
         else{h.append("<div class=\"tablewrap\"><table class=\"resp sugerencias-table\"><thead><tr>"+(contexto==null?"<th>Puesto</th>":"")+"<th>Sugerencia</th><th>Origen</th><th>Prioridad</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>");for(var f:filas){var a=f.sugerencia();var c=f.contexto();h.append("<tr>");if(contexto==null)celda(h,"Puesto","Puesto "+c.numero()+"<div class=\"muted small\">"+escapar(c.empresaNombre())+" · "+escapar(c.sedeNombre())+" · "+escapar(c.salonNombre())+"</div>");celda(h,"Sugerencia",escapar(a.titulo())+"<div class=\"muted small\">"+Formularios.etiqueta(a.tipo())+"</div>");celda(h,"Origen",origen(a));celda(h,"Prioridad",Formularios.etiqueta(a.prioridad()));celda(h,"Estado",estado(a.estado()));celda(h,"Detalle",enlace("/sugerencias/"+a.id(),"Ver sugerencia",false));h.append("</tr>");}h.append("</tbody></table></div>");}
         return pagina("Sugerencias",h.toString(),s);
     }

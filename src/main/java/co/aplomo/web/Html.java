@@ -131,6 +131,11 @@ public final class Html {
 
     /** Versión con control del pagehead para páginas que definen su propio encabezado (como Inicio). */
     public static String pagina(String titulo, String contenido, Sesion s, boolean conPagehead) {
+        return pagina(titulo,contenido,s,conPagehead,true);
+    }
+
+    /** Permite que Inicio omita Atrás sin afectar el resto de páginas. */
+    public static String pagina(String titulo, String contenido, Sesion s, boolean conPagehead, boolean atras) {
         String cabecera = "";
         if (s != null && s.cuenta() != null) {
             Cuenta c = s.cuenta();
@@ -149,8 +154,8 @@ public final class Html {
             cabecera = "<header class=\"top\"><div class=\"wrap\">"
                     // Botón Atrás + logo con ícono
                     + "<div class=\"row\" style=\"gap:10px;flex-wrap:nowrap\">"
-                    + "<button class=\"btn\" onclick=\"history.back()\" aria-label=\"Atrás\">← <span>Atrás</span></button>"
-                    + "<a href=\"/\" style=\"text-decoration:none\">" + logo(26) + "</a></div>"
+                    + (atras ? "<button class=\"btn\" onclick=\"history.back()\" aria-label=\"Atrás\">← <span>Atrás</span></button>" : "")
+                    + "<a class=\"logo-cabecera\" href=\"/\" style=\"text-decoration:none\">" + logo(26) + "</a></div>"
                     // Pestañas de navegación
                     + "<nav class=\"nav\" aria-label=\"Menú principal\">" + nav + "</nav>"
                     // Nombre + rol + avatar + Salir (Cambiar contraseña dentro del menú de cuenta)
@@ -171,14 +176,32 @@ public final class Html {
                 + "<title>" + escapar(titulo) + " · APLOMO.</title>"
                 + "<link href=\"https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&display=swap\" rel=\"stylesheet\">"
                 + "<link rel=\"stylesheet\" href=\"/static/css/aplomo.css\">"
-                + "<script src=\"/static/js/interfaz.js\" defer></script><script src=\"/static/js/progreso.js\" defer></script><script src=\"/static/js/cuenta.js\" defer></script><script src=\"/static/js/reservas.js\" defer></script></head><body>" + "<a class=\"saltar\" href=\"#contenido\">Saltar al contenido</a>" + cabecera + fondo()
-                + "<main id=\"contenido\" class=\"wrap\" tabindex=\"-1\">" + pagehead + contenido + "</main></body></html>";
+                + "<script src=\"/static/js/interfaz.js\" defer></script><script src=\"/static/js/progreso.js\" defer></script><script src=\"/static/js/cuenta.js\" defer></script><script src=\"/static/js/reservas.js\" defer></script></head><body>" + "<a class=\"saltar\" href=\"#contenido\">Saltar al contenido</a>" + cabecera + (cabecera.isEmpty()?"":laterales())
+                + "<main id=\"contenido\" class=\"wrap\" tabindex=\"-1\">" + pagehead + contenido + "</main>" + (cabecera.isEmpty()?"":pie()) + "</body></html>";
     }
 
-    private static String fondo() {
-        try (var entrada = Html.class.getResourceAsStream("/plantillas/fondo.html")) {
-            return entrada == null ? "" : new String(entrada.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) { return ""; }
+    private static String icono(int altura) { return String.format(LOGO_SVG,altura,altura,0,0).replace(" style=\"margin-bottom:0px;margin-right:0px\"",""); }
+
+    /** Estado vacío de marca; conserva las acciones ya autorizadas por la página. */
+    public static String vacio(String texto,String acciones) {
+        return "<div class=\"empty marca\">"+icono(52)+"<p>"+escapar(texto)+"</p>"+acciones+"</div>";
+    }
+
+    /** Panel cosmético junto a un formulario, sin modificar sus campos ni su envío. */
+    public static String conPanel(String formulario,String lema,String consejo) {
+        return "<div class=\"con-panel\"><div class=\"panel-formulario\">"+formulario+"</div><aside class=\"panel-marca\"><div><p class=\"lema\">"+escapar(lema)+"</p><div class=\"consejo\"><b>Consejo RULA</b><p>"+escapar(consejo)+"</p></div></div></aside></div>";
+    }
+
+    private static String pie() {
+        return "<footer class=\"pie\"><div class=\"wrap\"><span class=\"marca\" role=\"img\" aria-label=\"APLOMO.\">"+icono(20)+"<span>PLOMO.</span></span><span class=\"lema\">Ergonomía con precisión · Método RULA</span><span>© 2026 APLOMO</span></div></footer>";
+    }
+
+    private static String laterales() {
+        StringBuilder h=new StringBuilder("<div class=\"riel riel-izq\" aria-hidden=\"true\"><span class=\"marca-v\">APLOMO.</span><span class=\"lema-v\">Ergonomía con precisión</span></div><div class=\"deco deco-izq\" aria-hidden=\"true\"><svg viewBox=\"0 0 300 300\"><path class=\"dc-h\" d=\"M20,150 A130,130 0 0 1 280,150\"/><g class=\"dc-h\">");
+        for(int a=-90;a<=90;a+=5){double r=a%15==0?116:123,v=Math.toRadians(a);h.append(String.format(java.util.Locale.ROOT,"<line x1=\"%.3f\" y1=\"%.3f\" x2=\"%.3f\" y2=\"%.3f\"/>",150+r*Math.sin(v),150-r*Math.cos(v),150+130*Math.sin(v),150-130*Math.cos(v)));}
+        h.append("</g><line class=\"dc-p\" x1=\"150\" y1=\"0\" x2=\"150\" y2=\"300\"/><path class=\"dc-arc\" pathLength=\"1\" d=\"M150,90 A60,60 0 0 1 184.41,100.85\"/><g class=\"dc-aguja\"><line x1=\"150\" y1=\"150\" x2=\"150\" y2=\"34\"/><circle class=\"dc-f\" cx=\"150\" cy=\"34\" r=\"3.2\"/></g><circle class=\"dc-f\" cx=\"150\" cy=\"150\" r=\"4\"/></svg></div><div class=\"deco deco-der\" aria-hidden=\"true\"><svg viewBox=\"0 0 300 380\"><line class=\"dc-p\" x1=\"150\" y1=\"0\" x2=\"150\" y2=\"184\"/><path class=\"dc-h\" d=\"M118.81,336.72 A150,150 0 0 0 181.19,336.72\"/><g class=\"dc-h\">");
+        for(int a=-12;a<=12;a+=6){double v=Math.toRadians(a);h.append(String.format(java.util.Locale.ROOT,"<line x1=\"%.3f\" y1=\"%.3f\" x2=\"%.3f\" y2=\"%.3f\"/>",150+150*Math.sin(v),190+150*Math.cos(v),150+158*Math.sin(v),190+158*Math.cos(v)));}
+        return h.append("</g><g class=\"dc-logo\" transform=\"translate(50,170) scale(2)\"><line x1=\"50\" y1=\"10\" x2=\"16\" y2=\"90\" stroke-width=\"4\"/><line x1=\"50\" y1=\"10\" x2=\"84\" y2=\"90\" stroke-width=\"4\"/><path d=\"M31.2,54.2 A48,48 0 0 0 68.8,54.2\" stroke-width=\"2.2\" stroke-dasharray=\"3.6 3.6\" opacity=\".85\"/></g><g class=\"dc-plomo\"><g class=\"dc-logo\" transform=\"translate(50,170) scale(2)\"><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"64\" stroke-width=\"1.6\"/><path class=\"dc-f\" d=\"M47.84,64 h4.32 v2.16 L55.04,70.48 L50,82.72 L44.96,70.48 L47.84,66.16 Z\"/></g></g><circle class=\"dc-f\" cx=\"150\" cy=\"190\" r=\"7.2\"/></svg></div>").toString();
     }
 
     /** RF-020: etiqueta completa con color y nivel leídos de MySQL, sin recalcular RULA. */

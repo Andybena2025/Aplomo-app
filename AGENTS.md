@@ -34,6 +34,9 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 
 - Paso 13D-1 implementado y comprobado el 13 nov 2026: acciones de 48 px (44 px en encabezado), grupos de acciones junto al título, etiquetas de sección consistentes, marcador nativo de plegables oculto, menú móvil de 13 px y enlace en Inicio vacío a Reservas. 718 pruebas aprobadas. Capturas antes/después de seis páginas a 1440/1024/390 y medidas adicionales a 810/1080/1366/1920 en `docs/evidencia_paso13d1/`; informe en `docs/informe_paso13d1.md`. Solo presentación; datos de ensayo revertidos, sin cambios de lógica, rutas, permisos, cálculos ni marca. Fase A de Trazo vivo cancelada explícitamente por Andy antes de crear archivos: no quedó `docs/preview_13d/`. Commit y push a origin/main autorizados por Andy para este paso; pendiente de su revisión del resultado.
 
+- Paso 13D-2 implementado y comprobado el 13 nov 2026: compás y plomada laterales desde 1400 px, pie de marca con sesión, paneles de los tres formularios nuevos, vacíos con logo y semáforo administrativo con conteos reales. Inicio sin Atrás y login Bienvenido, sin nueva bienvenida. 724 pruebas aprobadas; 28 medidas sin desbordamiento y capturas en `docs/capturas_13d2/`; informe `docs/informe_paso13d2.md`. QA nativo en Safari instalado; Andy indicó expresamente no descargar y dejar Chrome/Edge/Firefox pendientes (Claude hará QA en Chromium), autorizando terminar, commit y push a origin/main del repo verificado. Prueba física táctil pendiente; movimiento reducido e impresión configurados en CSS, sin comprobación física nueva. Ensayo solo en base de pruebas y revertido. Pendiente de revisión del resultado por Andy.
+
+
 ## Reglas que no se negocian
 
 1. **Un paso de `docs/06` a la vez.** Nunca empieces el siguiente sin el "OK" de Andy.

@@ -34,7 +34,7 @@ public final class PaginasUsuarios {
                     .append(Html.csrf(s)).append("<button class=\"btn sm\">")
                     .append(c.estado()==Estado.INACTIVA ? "Activar" : "Desactivar").append("</button></form></div></td></tr>");
         }
-        contenido.append("</tbody></table></div><p class=\"empty\" data-usuarios-vacios hidden>No hay registros con estos filtros. Cambia la búsqueda o limpia los filtros.</p><script src=\"/static/js/usuarios.js\" defer></script>");
+        contenido.append("</tbody></table></div>").append(Html.vacio("No hay registros con estos filtros. Cambia la búsqueda o limpia los filtros.","").replace("class=\"empty marca\"","class=\"empty marca\" data-usuarios-vacios hidden")).append("<script src=\"/static/js/usuarios.js\" defer></script>");
         return Html.pagina("Usuarios",contenido.toString(),s,"Gestión · Usuarios","<a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a>");
     }
 
@@ -76,7 +76,7 @@ public final class PaginasUsuarios {
                 .append(nuevo ? "Se exigirá cambiarla al ingresar." : "Deja el campo vacío para conservar la contraseña actual.")
                 .append("</p><div class=\"row\"><button class=\"btn p\">").append(nuevo ? "Crear usuario" : "Guardar cambios")
                 .append("</button><a class=\"btn\" href=\"/usuarios\">Volver a usuarios</a></div></form>");
-        return Html.pagina(nuevo ? "Nuevo usuario" : "Editar usuario",form.toString(),s);
+        return Html.pagina(nuevo ? "Nuevo usuario" : "Editar usuario",nuevo?Html.conPanel(form.toString(),"Cada empresa, solo lo suyo.","La cuenta de Usuario solo consulta resultados finalizados de su empresa; las evaluaciones las hace el Administrador."):form.toString(),s);
     }
 
     private static String opcion(String valor,String texto,boolean seleccionada) {

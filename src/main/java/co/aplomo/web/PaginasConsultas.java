@@ -15,7 +15,7 @@ public final class PaginasConsultas {
         h.append(filtros(pagina,contexto!=null));
         String contador=pagina.filas().isEmpty()?"0 resultados":pagina.filas().size()==1?"1 "+s.singular():pagina.filas().size()+" "+(s==SeccionConsulta.PENDIENTES?"pendientes":s.titulo().toLowerCase(Locale.forLanguageTag("es")));
         h.append("<p class=\"muted consultas-contador\" role=\"status\">").append(contador).append("</p>");
-        if(pagina.filas().isEmpty())h.append("<div class=\"empty\">No hay registros con estos filtros. Cambia la búsqueda o limpia los filtros.</div>");
+        if(pagina.filas().isEmpty())h.append(Html.vacio("No hay registros con estos filtros. Cambia la búsqueda o limpia los filtros.",""));
         else{
             var columnas=s.columnas().stream().filter(x->!(contexto!=null&&x.clave().equals("numero"))).toList();
             h.append("<div class=\"tablewrap\"><table class=\"resp consultas-table ").append(s==SeccionConsulta.SUGERENCIAS?"sugerencias-table":"").append("\"><thead><tr>");

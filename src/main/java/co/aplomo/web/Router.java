@@ -196,10 +196,19 @@ public final class Router implements HttpHandler {
                 inicio.append("</div>");
             }
             // Visitas en curso y reservas recientes como en el mock
-            inicio.append("<div class=\"grid2\"><section class=\"stack\"><h3>Visitas en curso</h3>");
+            inicio.append("<div class=\"grid2\"><section class=\"stack\">");
+            if(c.rol()==Cuenta.Rol.ADMINISTRADOR){
+                inicio.append("<h3>Semáforo de puestos</h3><div class=\"semaforo\">")
+                    .append(semaforo("VERDE",resumen[2],"Aceptable","/evaluaciones"))
+                    .append(semaforo("AMARILLO",resumen[3],"En observación","/evaluaciones"))
+                    .append(semaforo("ROJO",resumen[1],"Pendiente","/pendientes"));
+                if(resumen[1]+resumen[2]+resumen[3]>0)inicio.append("<div class=\"barra\" aria-hidden=\"true\"><i style=\"flex:").append(resumen[2]).append(";background:var(--verde)\"></i><i style=\"flex:").append(resumen[3]).append(";background:var(--amarillo)\"></i><i style=\"flex:").append(resumen[1]).append(";background:var(--rojo)\"></i></div>");
+                inicio.append("</div>");
+            }
+            inicio.append("<h3>Visitas en curso</h3>");
             var cursando = listaVisitas.stream().filter(v -> v.visita().estado().equals("EN_CURSO")).toList();
             if (cursando.isEmpty()) {
-                inicio.append(c.rol()==Cuenta.Rol.ADMINISTRADOR ? "<div class=\"empty empty-con-accion\"><p>No hay visitas en curso. Inicia una desde una reserva En cola.</p><a class=\"btn p\" href=\"/reservas\">Iniciar desde una reserva</a></div>" : "<div class=\"empty\">No hay visitas en curso disponibles.</div>");
+                inicio.append(c.rol()==Cuenta.Rol.ADMINISTRADOR ? Html.vacio("No hay visitas en curso. Inicia una desde una reserva En cola.","<a class=\"btn p\" href=\"/reservas\">Iniciar desde una reserva</a>") : Html.vacio("No hay visitas en curso disponibles.",""));
             } else {
                 for (var v : cursando) {
                     inicio.append("<div class=\"card row between\"><div><div>").append(Html.escapar(v.empresaNombre()))
@@ -213,7 +222,7 @@ public final class Router implements HttpHandler {
             var pendientes = listaReservas.stream()
                     .filter(r -> r.reserva().estado().equals("EN_COLA") || r.reserva().estado().equals("ESPERANDO")).toList();
             if (pendientes.isEmpty()) {
-                inicio.append("<div class=\"empty\">No hay reservas pendientes.</div>");
+                inicio.append(Html.vacio("No hay reservas pendientes.",""));
             } else {
                 for (var r : pendientes) {
                     inicio.append("<div class=\"card stack\" style=\"gap:10px\"><div class=\"row between\"><div><div>")
@@ -234,7 +243,7 @@ public final class Router implements HttpHandler {
                 }
             }
             inicio.append("</section></div>");
-            enviar(x,200,Html.pagina("Inicio",inicio.toString(),s,false)); return;
+            enviar(x,200,Html.pagina("Inicio", inicio.toString(), s, false, false)); return;
         }
         enviar(x,404,Html.pagina("Página no disponible","<a href=\"/\">Volver al inicio</a>",s));
     }
@@ -323,6 +332,10 @@ public final class Router implements HttpHandler {
     /** Redirige después de un POST para evitar repetir operaciones al recargar (RNF-002). */
     public static void redirigir(HttpExchange x, String ruta) throws IOException {
         x.getResponseHeaders().set("Location",ruta); x.sendResponseHeaders(303,-1);
+    }
+
+    private static String semaforo(String color,long cantidad,String texto,String ruta){
+        return "<a class=\"s\" href=\""+ruta+"\" data-color=\""+color+"\" data-cantidad=\""+cantidad+"\"><b style=\"color:var(--"+color.toLowerCase(java.util.Locale.ROOT)+")\">"+cantidad+"</b><span>"+Formularios.etiqueta(color)+"<br>"+texto+"</span></a>";
     }
 
     private static String kpi(String titulo, String valor, String estilo) {
