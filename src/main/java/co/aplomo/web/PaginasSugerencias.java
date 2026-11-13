@@ -40,7 +40,7 @@ public final class PaginasSugerencias {
     private static String estado(String e){return "<span class=\"tag\">"+(e.equals("HECHA")?"Hecha":e.equals("EN_PROCESO")?"En proceso":"Pendiente")+"</span>";}
     private static List<Formularios.Opcion> opciones(String... val){return Arrays.stream(val).map(x->new Formularios.Opcion(x,Formularios.etiqueta(x))).toList();}
     private static String dato(String n,String v){return "<div><dt>"+n+"</dt><dd>"+escapar(v)+"</dd></div>";}
-    private static String pagina(String t,String h,Sesion s){return Html.pagina(t,"<div class=\"pagehead\"><div><span class=\"eyebrow\">Mejoras del puesto</span><h1>"+escapar(t)+"</h1></div></div>"+h,s,false);}
+    private static String pagina(String t,String h,Sesion s){return Html.pagina(t,"<div class=\"pagehead\"><div><span class=\"eyebrow\">Mejoras · Sugerencias</span><h1>"+escapar(t)+"</h1></div></div>"+h,s,false);}
     private static void celda(StringBuilder h,String n,String v){h.append("<td data-label=\"").append(n).append("\"><div class=\"cell-value\">").append(v).append("</div></td>");}
     private static boolean admin(Sesion s){return s.cuenta().rol()==Cuenta.Rol.ADMINISTRADOR;}
 }

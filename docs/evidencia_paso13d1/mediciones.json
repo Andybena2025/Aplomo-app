@@ -1,0 +1,3926 @@
+[
+  {
+    "estado": "antes",
+    "pagina": "inicio",
+    "width": 1440,
+    "accionesTitulo": [],
+    "ancho": 1425,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 30,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "13 NOV 2026",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "antes",
+    "pagina": "usuarios",
+    "width": 1440,
+    "accionesTitulo": [],
+    "ancho": 1440,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 30,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nuevo usuario"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "antes",
+    "pagina": "reservas",
+    "width": 1440,
+    "accionesTitulo": [],
+    "ancho": 1425,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 30,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "Consultas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "antes",
+    "pagina": "detalle-reserva",
+    "width": 1440,
+    "accionesTitulo": [],
+    "ancho": 1440,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 30,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar reserva"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Iniciar visita"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Cancelar reserva"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "antes",
+    "pagina": "detalle-empresa",
+    "width": 1440,
+    "accionesTitulo": [],
+    "ancho": 1425,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 30,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver calificaciones"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nueva sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Consultar sedes"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nueva área"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Consultar áreas"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nuevo cargo"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Consultar cargos"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "antes",
+    "pagina": "formulario",
+    "width": 1440,
+    "accionesTitulo": [],
+    "ancho": 1440,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 30,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Guardar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Cancelar"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "antes",
+    "pagina": "inicio",
+    "width": 1024,
+    "accionesTitulo": [],
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "13 NOV 2026",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "antes",
+    "pagina": "usuarios",
+    "width": 1024,
+    "accionesTitulo": [],
+    "ancho": 1024,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nuevo usuario"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "antes",
+    "pagina": "reservas",
+    "width": 1024,
+    "accionesTitulo": [],
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "Consultas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "antes",
+    "pagina": "detalle-reserva",
+    "width": 1024,
+    "accionesTitulo": [],
+    "ancho": 1024,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar reserva"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Iniciar visita"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Cancelar reserva"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "antes",
+    "pagina": "detalle-empresa",
+    "width": 1024,
+    "accionesTitulo": [],
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver calificaciones"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nueva sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Consultar sedes"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nueva área"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Consultar áreas"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nuevo cargo"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Consultar cargos"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "antes",
+    "pagina": "formulario",
+    "width": 1024,
+    "accionesTitulo": [],
+    "ancho": 1024,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Guardar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Cancelar"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "antes",
+    "pagina": "inicio",
+    "width": 390,
+    "accionesTitulo": [],
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 36,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "13 NOV 2026",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "antes",
+    "pagina": "usuarios",
+    "width": 390,
+    "accionesTitulo": [],
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nuevo usuario"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "antes",
+    "pagina": "reservas",
+    "width": 390,
+    "accionesTitulo": [],
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "Consultas",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "antes",
+    "pagina": "detalle-reserva",
+    "width": 390,
+    "accionesTitulo": [],
+    "ancho": 390,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar reserva"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Iniciar visita"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Cancelar reserva"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "antes",
+    "pagina": "detalle-empresa",
+    "width": 390,
+    "accionesTitulo": [],
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver calificaciones"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nueva sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Consultar sedes"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nueva área"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Consultar áreas"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Nuevo cargo"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Consultar cargos"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "antes",
+    "pagina": "formulario",
+    "width": 390,
+    "accionesTitulo": [],
+    "ancho": 390,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Guardar"
+      },
+      {
+        "alto": 44,
+        "cabecera": false,
+        "texto": "Cancelar"
+      }
+    ],
+    "eyebrow": "Ergonomía con precisión",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "despues",
+    "pagina": "inicio",
+    "width": 1440,
+    "accionesTitulo": [],
+    "ancho": 1425,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar desde una reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "13 NOV 2026",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "despues",
+    "pagina": "usuarios",
+    "width": 1440,
+    "accionesTitulo": [
+      "Nuevo usuario"
+    ],
+    "ancho": 1440,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo usuario"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Usuarios",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "despues",
+    "pagina": "reservas",
+    "width": 1440,
+    "accionesTitulo": [
+      "Nueva reserva"
+    ],
+    "ancho": 1425,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Consulta",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "despues",
+    "pagina": "detalle-reserva",
+    "width": 1440,
+    "accionesTitulo": [],
+    "ancho": 1440,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar visita"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Detalle",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "despues",
+    "pagina": "detalle-empresa",
+    "width": 1440,
+    "accionesTitulo": [
+      "Ver calificaciones",
+      "Generar informe"
+    ],
+    "ancho": 1425,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver calificaciones"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar sedes"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva área"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar áreas"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo cargo"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar cargos"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "despues",
+    "pagina": "formulario",
+    "width": 1440,
+    "accionesTitulo": [],
+    "ancho": 1440,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Guardar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1440
+  },
+  {
+    "estado": "despues",
+    "pagina": "inicio",
+    "width": 1024,
+    "accionesTitulo": [],
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar desde una reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "13 NOV 2026",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "despues",
+    "pagina": "usuarios",
+    "width": 1024,
+    "accionesTitulo": [
+      "Nuevo usuario"
+    ],
+    "ancho": 1024,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo usuario"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Usuarios",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "despues",
+    "pagina": "reservas",
+    "width": 1024,
+    "accionesTitulo": [
+      "Nueva reserva"
+    ],
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Consulta",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "despues",
+    "pagina": "detalle-reserva",
+    "width": 1024,
+    "accionesTitulo": [],
+    "ancho": 1024,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar visita"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Detalle",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "despues",
+    "pagina": "detalle-empresa",
+    "width": 1024,
+    "accionesTitulo": [
+      "Ver calificaciones",
+      "Generar informe"
+    ],
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver calificaciones"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar sedes"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva área"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar áreas"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo cargo"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar cargos"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "despues",
+    "pagina": "formulario",
+    "width": 1024,
+    "accionesTitulo": [],
+    "ancho": 1024,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Guardar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1024
+  },
+  {
+    "estado": "despues",
+    "pagina": "inicio",
+    "width": 390,
+    "accionesTitulo": [],
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar desde una reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "13 NOV 2026",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "despues",
+    "pagina": "usuarios",
+    "width": 390,
+    "accionesTitulo": [
+      "Nuevo usuario"
+    ],
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo usuario"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Usuarios",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "despues",
+    "pagina": "reservas",
+    "width": 390,
+    "accionesTitulo": [
+      "Nueva reserva"
+    ],
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Consulta",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "despues",
+    "pagina": "detalle-reserva",
+    "width": 390,
+    "accionesTitulo": [],
+    "ancho": 390,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar visita"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Detalle",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "despues",
+    "pagina": "detalle-empresa",
+    "width": 390,
+    "accionesTitulo": [
+      "Ver calificaciones",
+      "Generar informe"
+    ],
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver calificaciones"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar sedes"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva área"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar áreas"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo cargo"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar cargos"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "despues",
+    "pagina": "formulario",
+    "width": 390,
+    "accionesTitulo": [],
+    "ancho": 390,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Guardar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      56
+    ],
+    "viewport": 390
+  },
+  {
+    "estado": "adicional",
+    "pagina": "inicio",
+    "width": 810,
+    "accionesTitulo": [],
+    "ancho": 795,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar desde una reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "13 NOV 2026",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 810
+  },
+  {
+    "estado": "adicional",
+    "pagina": "usuarios",
+    "width": 810,
+    "accionesTitulo": [
+      "Nuevo usuario"
+    ],
+    "ancho": 810,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo usuario"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Usuarios",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 810
+  },
+  {
+    "estado": "adicional",
+    "pagina": "reservas",
+    "width": 810,
+    "accionesTitulo": [
+      "Nueva reserva"
+    ],
+    "ancho": 795,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Consulta",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 810
+  },
+  {
+    "estado": "adicional",
+    "pagina": "detalle-reserva",
+    "width": 810,
+    "accionesTitulo": [],
+    "ancho": 810,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar visita"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Detalle",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 810
+  },
+  {
+    "estado": "adicional",
+    "pagina": "detalle-empresa",
+    "width": 810,
+    "accionesTitulo": [
+      "Ver calificaciones",
+      "Generar informe"
+    ],
+    "ancho": 795,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver calificaciones"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar sedes"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva área"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar áreas"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo cargo"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar cargos"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 810
+  },
+  {
+    "estado": "adicional",
+    "pagina": "formulario",
+    "width": 810,
+    "accionesTitulo": [],
+    "ancho": 810,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Guardar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 810
+  },
+  {
+    "estado": "adicional",
+    "pagina": "inicio",
+    "width": 1080,
+    "accionesTitulo": [],
+    "ancho": 1065,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar desde una reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "13 NOV 2026",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1080
+  },
+  {
+    "estado": "adicional",
+    "pagina": "usuarios",
+    "width": 1080,
+    "accionesTitulo": [
+      "Nuevo usuario"
+    ],
+    "ancho": 1080,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo usuario"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Usuarios",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1080
+  },
+  {
+    "estado": "adicional",
+    "pagina": "reservas",
+    "width": 1080,
+    "accionesTitulo": [
+      "Nueva reserva"
+    ],
+    "ancho": 1065,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Consulta",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1080
+  },
+  {
+    "estado": "adicional",
+    "pagina": "detalle-reserva",
+    "width": 1080,
+    "accionesTitulo": [],
+    "ancho": 1080,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar visita"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Detalle",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1080
+  },
+  {
+    "estado": "adicional",
+    "pagina": "detalle-empresa",
+    "width": 1080,
+    "accionesTitulo": [
+      "Ver calificaciones",
+      "Generar informe"
+    ],
+    "ancho": 1065,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver calificaciones"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar sedes"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva área"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar áreas"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo cargo"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar cargos"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1080
+  },
+  {
+    "estado": "adicional",
+    "pagina": "formulario",
+    "width": 1080,
+    "accionesTitulo": [],
+    "ancho": 1080,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Guardar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1080
+  },
+  {
+    "estado": "adicional",
+    "pagina": "inicio",
+    "width": 1366,
+    "accionesTitulo": [],
+    "ancho": 1351,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar desde una reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "13 NOV 2026",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1366
+  },
+  {
+    "estado": "adicional",
+    "pagina": "usuarios",
+    "width": 1366,
+    "accionesTitulo": [
+      "Nuevo usuario"
+    ],
+    "ancho": 1366,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo usuario"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Usuarios",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1366
+  },
+  {
+    "estado": "adicional",
+    "pagina": "reservas",
+    "width": 1366,
+    "accionesTitulo": [
+      "Nueva reserva"
+    ],
+    "ancho": 1351,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Consulta",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1366
+  },
+  {
+    "estado": "adicional",
+    "pagina": "detalle-reserva",
+    "width": 1366,
+    "accionesTitulo": [],
+    "ancho": 1366,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar visita"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Detalle",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1366
+  },
+  {
+    "estado": "adicional",
+    "pagina": "detalle-empresa",
+    "width": 1366,
+    "accionesTitulo": [
+      "Ver calificaciones",
+      "Generar informe"
+    ],
+    "ancho": 1351,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver calificaciones"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar sedes"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva área"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar áreas"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo cargo"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar cargos"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1366
+  },
+  {
+    "estado": "adicional",
+    "pagina": "formulario",
+    "width": 1366,
+    "accionesTitulo": [],
+    "ancho": 1366,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Guardar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1366
+  },
+  {
+    "estado": "adicional",
+    "pagina": "inicio",
+    "width": 1920,
+    "accionesTitulo": [],
+    "ancho": 1905,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar desde una reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "13 NOV 2026",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1920
+  },
+  {
+    "estado": "adicional",
+    "pagina": "usuarios",
+    "width": 1920,
+    "accionesTitulo": [
+      "Nuevo usuario"
+    ],
+    "ancho": 1920,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo usuario"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Usuarios",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1920
+  },
+  {
+    "estado": "adicional",
+    "pagina": "reservas",
+    "width": 1920,
+    "accionesTitulo": [
+      "Nueva reserva"
+    ],
+    "ancho": 1905,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Aplicar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Limpiar filtros"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Consulta",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1920
+  },
+  {
+    "estado": "adicional",
+    "pagina": "detalle-reserva",
+    "width": 1920,
+    "accionesTitulo": [],
+    "ancho": 1920,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar reserva"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Iniciar visita"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar reserva"
+      }
+    ],
+    "eyebrow": "Reservas · Detalle",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1920
+  },
+  {
+    "estado": "adicional",
+    "pagina": "detalle-empresa",
+    "width": 1920,
+    "accionesTitulo": [
+      "Ver calificaciones",
+      "Generar informe"
+    ],
+    "ancho": 1905,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver calificaciones"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Generar informe"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar sedes"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Ver sede"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nueva área"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar áreas"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Nuevo cargo"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Consultar cargos"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Editar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Desactivar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1920
+  },
+  {
+    "estado": "adicional",
+    "pagina": "formulario",
+    "width": 1920,
+    "accionesTitulo": [],
+    "ancho": 1920,
+    "botones": [
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "AD"
+      },
+      {
+        "alto": 44,
+        "cabecera": true,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Guardar"
+      },
+      {
+        "alto": 48,
+        "cabecera": false,
+        "texto": "Cancelar"
+      }
+    ],
+    "eyebrow": "Gestión · Empresas",
+    "filasMenu": [
+      10
+    ],
+    "viewport": 1920
+  }
+]

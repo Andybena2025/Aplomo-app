@@ -75,7 +75,7 @@ public final class PaginasReservas {
             html.append(enlace("/visitas/" + ficha.visita(), "Ver visita", false));
         }
         html.append("</section>");
-        return Html.pagina(r.codigo(), html.toString(), sesion);
+        return Html.pagina(r.codigo(), html.toString(), sesion,"Reservas · Detalle","");
     }
 
     /** Presenta el formulario de alta o edición manteniendo todos los datos no secretos. */

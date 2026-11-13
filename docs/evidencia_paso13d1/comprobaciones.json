@@ -1,0 +1,179 @@
+[
+  {
+    "pagina": "usuarios",
+    "width": 1440,
+    "acciones": [
+      {
+        "botones": [
+          "Editar",
+          "Desactivar"
+        ],
+        "filas": [
+          485
+        ]
+      },
+      {
+        "botones": [
+          "Editar",
+          "Desactivar"
+        ],
+        "filas": [
+          558
+        ]
+      },
+      {
+        "botones": [
+          "Editar",
+          "Desactivar"
+        ],
+        "filas": [
+          631
+        ]
+      }
+    ],
+    "scrollInterno": [
+      {
+        "ancho": 1206,
+        "contenido": 1206,
+        "overflow": "auto"
+      }
+    ]
+  },
+  {
+    "pagina": "usuarios",
+    "width": 1024,
+    "acciones": [
+      {
+        "botones": [
+          "Editar",
+          "Desactivar"
+        ],
+        "filas": [
+          485
+        ]
+      },
+      {
+        "botones": [
+          "Editar",
+          "Desactivar"
+        ],
+        "filas": [
+          558
+        ]
+      },
+      {
+        "botones": [
+          "Editar",
+          "Desactivar"
+        ],
+        "filas": [
+          631
+        ]
+      }
+    ],
+    "scrollInterno": [
+      {
+        "ancho": 990,
+        "contenido": 990,
+        "overflow": "auto"
+      }
+    ]
+  },
+  {
+    "pagina": "usuarios",
+    "width": 390,
+    "acciones": [
+      {
+        "botones": [
+          "Editar",
+          "Desactivar"
+        ],
+        "filas": [
+          817
+        ]
+      },
+      {
+        "botones": [
+          "Editar",
+          "Desactivar"
+        ],
+        "filas": [
+          1057
+        ]
+      },
+      {
+        "botones": [
+          "Editar",
+          "Desactivar"
+        ],
+        "filas": [
+          1298
+        ]
+      }
+    ],
+    "scrollInterno": [
+      {
+        "ancho": 343,
+        "contenido": 343,
+        "overflow": "auto"
+      }
+    ]
+  },
+  {
+    "pagina": "reservas",
+    "flechas": [
+      {
+        "indicador": "\"▸\"",
+        "listStyle": "none",
+        "texto": "Ver otras secciones",
+        "webkit": "flex"
+      },
+      {
+        "indicador": "\"▸\"",
+        "listStyle": "none",
+        "texto": "Más filtros",
+        "webkit": "flex"
+      }
+    ],
+    "fuenteMenu": [
+      "13px"
+    ]
+  },
+  {
+    "pagina": "detalle-empresa",
+    "secciones": [
+      {
+        "acciones": [
+          "Nueva sede",
+          "Consultar sedes"
+        ],
+        "titulo": "Sedes"
+      },
+      {
+        "acciones": [
+          "Nueva área",
+          "Consultar áreas"
+        ],
+        "titulo": "Áreas"
+      },
+      {
+        "acciones": [
+          "Nuevo cargo",
+          "Consultar cargos"
+        ],
+        "titulo": "Cargos"
+      }
+    ]
+  },
+  {
+    "pagina": "empresas",
+    "acciones": [
+      "Nueva empresa"
+    ],
+    "etiqueta": "Gestión · Empresas"
+  },
+  {
+    "pagina": "inicio",
+    "enlace": "/reservas"
+  }
+]

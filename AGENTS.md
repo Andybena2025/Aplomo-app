@@ -32,6 +32,8 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 
 - Paso 13C implementado y comprobado el 13 nov 2026: botones de consulta en una línea (36 px escritorio, 44 px móvil), plegables cerrados sin huecos, fotos limitadas y centradas, fondo sin etiquetas ni transparencia en tablas y menú móvil en una fila. Demo manual con utf8mb4 y segunda visita Finalizada en Alcázar: general 2,35 y cobertura 2 de 3 sedes. 718 pruebas aprobadas; QA reversible solo en `rula_ergonomia_pruebas`. Ver `docs/informe_paso13c.md`. Andy autorizó commit y push a `origin main` del repositorio `Andybena2025/Aplomo-app`; pendiente de su revisión del resultado. Los límites de QA físico y dos versiones estables del Paso 13B continúan documentados.
 
+- Paso 13D-1 implementado y comprobado el 13 nov 2026: acciones de 48 px (44 px en encabezado), grupos de acciones junto al título, etiquetas de sección consistentes, marcador nativo de plegables oculto, menú móvil de 13 px y enlace en Inicio vacío a Reservas. 718 pruebas aprobadas. Capturas antes/después de seis páginas a 1440/1024/390 y medidas adicionales a 810/1080/1366/1920 en `docs/evidencia_paso13d1/`; informe en `docs/informe_paso13d1.md`. Solo presentación; datos de ensayo revertidos, sin cambios de lógica, rutas, permisos, cálculos ni marca. Fase A de Trazo vivo cancelada explícitamente por Andy antes de crear archivos: no quedó `docs/preview_13d/`. Commit y push a origin/main autorizados por Andy para este paso; pendiente de su revisión del resultado.
+
 ## Reglas que no se negocian
 
 1. **Un paso de `docs/06` a la vez.** Nunca empieces el siguiente sin el "OK" de Andy.

@@ -43,7 +43,7 @@ public final class PaginasAnalisis {
     }
     /** Abre los pasos 4–6 para añadir análisis a fotos existentes, sin reemplazar registros anteriores. */
     public static String continuar(Sesion s,Evaluaciones.Consulta c) {
-        var e=c.ficha();StringBuilder h=new StringBuilder("<div class=\"pagehead\"><div><span class=\"eyebrow\">Puesto ").append(e.numero()).append("</span><h1>").append(escapar(e.datos().postura())).append("</h1></div><span class=\"tag\" id=\"pasoActual\">Paso 4 de 6</span></div><div class=\"steps\" aria-label=\"Pasos de la evaluación\">");
+        var e=c.ficha();StringBuilder h=new StringBuilder("<div class=\"pagehead\"><div><span class=\"eyebrow\">Evaluaciones · Medición</span><h1>").append(escapar(e.datos().postura())).append("</h1><p class=\"muted\">Puesto ").append(e.numero()).append("</p></div><span class=\"tag\" id=\"pasoActual\">Paso 4 de 6</span></div><div class=\"steps\" aria-label=\"Pasos de la evaluación\">");
         String[] nombres={"Puesto y postura","Condiciones","Fotos","Ángulos","Ajustes y carga","Resultado"};
         for(int i=0;i<6;i++)h.append("<div data-indicador=\"").append(i+1).append("\"><i></i><span>").append(i+1).append(" · ").append(nombres[i]).append("</span></div>");
         h.append("</div><form data-evaluacion data-continuar=\"").append(e.id()).append("\" action=\"/evaluaciones/").append(e.id()).append("/analisis\" method=\"post\" novalidate>").append(Html.csrf(s)).append("<input type=\"hidden\" name=\"visita\" value=\"").append(e.visita()).append("\"><div data-fotos-guardadas hidden>");

@@ -20,7 +20,7 @@ public final class PaginasUsuarios {
         for(Opcion e:empresas) contenido.append(opcion(Integer.toString(e.id()),e.nombre(),false));
         contenido.append("</select></div><div class=\"row\"><button class=\"btn p\" type=\"submit\">Aplicar filtros</button><button class=\"btn\" type=\"reset\">Limpiar filtros</button></div></form>")
                 .append("<div class=\"row between usuarios-cabecera\"><p class=\"muted\" role=\"status\" aria-live=\"polite\" data-contador-usuarios>").append(Html.plural(cuentas.size(), "cuenta"))
-                .append(" registrada").append(cuentas.size() == 1 ? "" : "s").append("</p><a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a></div>")
+                .append(" registrada").append(cuentas.size() == 1 ? "" : "s").append("</p></div>")
                 .append("<div class=\"tablewrap\"><table class=\"resp usuarios-table\"><thead><tr><th scope=\"col\">Nombre y correo</th><th scope=\"col\">Rol</th><th scope=\"col\">Empresa</th><th scope=\"col\">Estado</th><th scope=\"col\">Acciones</th></tr></thead><tbody>");
         for(Cuenta c:cuentas) {
             contenido.append("<tr data-cuenta data-rol=\"").append(c.rol().name()).append("\" data-empresa=\"").append(c.empresa()==null ? "independiente" : c.empresa()).append("\">")
@@ -35,7 +35,7 @@ public final class PaginasUsuarios {
                     .append(c.estado()==Estado.INACTIVA ? "Activar" : "Desactivar").append("</button></form></div></td></tr>");
         }
         contenido.append("</tbody></table></div><p class=\"empty\" data-usuarios-vacios hidden>No hay registros con estos filtros. Cambia la búsqueda o limpia los filtros.</p><script src=\"/static/js/usuarios.js\" defer></script>");
-        return Html.pagina("Usuarios",contenido.toString(),s);
+        return Html.pagina("Usuarios",contenido.toString(),s,"Gestión · Usuarios","<a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a>");
     }
 
     private static String dato(String titulo,String valor) { return "<div><dt>"+Html.escapar(titulo)+"</dt><dd>"+Html.escapar(valor)+"</dd></div>"; }

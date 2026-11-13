@@ -57,7 +57,7 @@ public final class PaginasCalificaciones {
     }
     private static String encabezado(Sesion s,InformeEmpresa i,boolean informe){
         return "<div class=\"informe-controles\">"+enlace("/empresas/"+i.empresa().id(),"← Empresa",false)
-                +"<div class=\"pagehead\"><div><span class=\"eyebrow\">"+(informe?"Vista previa":"Indicadores")+"</span><h1>"+(informe?"Informe general":"Calificaciones")
+                +"<div class=\"pagehead\"><div><span class=\"eyebrow\">"+(informe?"Informes · Empresa":"Consultas · Calificaciones")+"</span><h1>"+(informe?"Informe general":"Calificaciones")
                 +"</h1><p class=\"muted\">"+escapar(i.empresa().nombre())+" · Solo visitas Finalizadas</p></div>"
                 +(informe?"<div class=\"stack informe-imprimir\"><button class=\"btn p\" type=\"button\" data-imprimir>Imprimir o guardar PDF</button><p class=\"hint\">En el cuadro de imprimir, desmarca Encabezados y pies de página</p></div>":s.cuenta().rol()==Cuenta.Rol.ADMINISTRADOR?enlace("/informes/empresa/"+i.empresa().id(),"Generar informe",true):"")
                 +"</div></div>";

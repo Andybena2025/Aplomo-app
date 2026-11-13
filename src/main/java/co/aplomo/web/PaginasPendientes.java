@@ -51,7 +51,7 @@ public final class PaginasPendientes {
     }
     /** Nombre de seguimiento derivado del color ya calculado; no altera ni calcula RULA. */
     public static String clasificacion(String color){return switch(color){case "VERDE"->"Aceptable";case "AMARILLO"->"En observación";default->"Requiere arreglo";};}
-    private static String pagina(String titulo,String contenido,Sesion s){return Html.pagina(titulo,"<div class=\"pagehead\"><div><span class=\"eyebrow\">Seguimiento</span><h1>"+escapar(titulo)+"</h1></div></div>"+contenido,s,false);}
+    private static String pagina(String titulo,String contenido,Sesion s){return Html.pagina(titulo,"<div class=\"pagehead\"><div><span class=\"eyebrow\">Seguimiento · Pendientes</span><h1>"+escapar(titulo)+"</h1></div></div>"+contenido,s,false);}
     private static boolean admin(Sesion s){return s.cuenta().rol()==Rol.ADMINISTRADOR;}
     private static String estado(String s){return "<span class=\"tag\">"+(s.equals("ARREGLADO")?"Arreglado":"Abierto")+"</span>";}
     private static String dato(String nombre,String valor){return "<div><dt>"+escapar(nombre)+"</dt><dd class=\"texto-notas\">"+escapar(valor)+"</dd></div>";}

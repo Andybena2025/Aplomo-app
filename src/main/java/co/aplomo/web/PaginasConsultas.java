@@ -7,11 +7,12 @@ public final class PaginasConsultas {
     /** Genera la sección con su contador, filtros y enlaces de ordenación accesibles. */
     public static String lista(Sesion sesion,Pagina pagina,Contexto contexto){
         var s=pagina.seccion();var f=pagina.filtros();boolean admin=sesion.cuenta().rol()==Cuenta.Rol.ADMINISTRADOR;
-        StringBuilder h=new StringBuilder("<div class=\"pagehead\"><div><span class=\"eyebrow\">").append(s==SeccionConsulta.PENDIENTES?"Seguimiento":"Consultas").append("</span><h1>").append(s.titulo()).append("</h1></div></div><details class=\"guia consultas-secciones\"><summary>Ver otras secciones</summary><div class=\"row\">");
+        String etiqueta=s==SeccionConsulta.EMPRESAS?"Gestión · Empresas":s==SeccionConsulta.RESERVAS?"Reservas · Consulta":s==SeccionConsulta.PENDIENTES?"Seguimiento · Pendientes":"Consultas · "+s.titulo();
+        StringBuilder h=new StringBuilder(Html.encabezado(etiqueta,s.titulo(),admin?accion(s,f,contexto):""));
+        h.append("<details class=\"guia consultas-secciones\"><summary>Ver otras secciones</summary><div class=\"row\">");
         for(var otra:SeccionConsulta.values())h.append(enlace(otra.ruta(),otra.titulo(),false));h.append("</div></details>");
         if(contexto!=null)h.append(PaginasSugerencias.contexto(contexto));
         h.append(filtros(pagina,contexto!=null));
-        String accion=accion(s,f,contexto);if(admin&&!accion.isEmpty())h.append("<div class=\"row acciones-sugerencias\">").append(accion).append("</div>");
         String contador=pagina.filas().isEmpty()?"0 resultados":pagina.filas().size()==1?"1 "+s.singular():pagina.filas().size()+" "+(s==SeccionConsulta.PENDIENTES?"pendientes":s.titulo().toLowerCase(Locale.forLanguageTag("es")));
         h.append("<p class=\"muted consultas-contador\" role=\"status\">").append(contador).append("</p>");
         if(pagina.filas().isEmpty())h.append("<div class=\"empty\">No hay registros con estos filtros. Cambia la búsqueda o limpia los filtros.</div>");

@@ -99,6 +99,36 @@ public final class Html {
         return pagina(titulo, contenido, s, true);
     }
 
+    /** Encabezado de sección con las acciones de página agrupadas junto al título. */
+    public static String encabezado(String seccion, String titulo, String acciones) {
+        return "<div class=\"pagehead\"><div><span class=\"eyebrow\">" + escapar(seccion)
+                + "</span><h1>" + escapar(titulo) + "</h1></div>"
+                + (acciones.isEmpty() ? "" : "<div class=\"row pagehead-acciones\">" + acciones + "</div>") + "</div>";
+    }
+
+    /** Presentación con contexto explícito, conservando la cabecera y las autorizaciones existentes. */
+    public static String pagina(String titulo, String contenido, Sesion s, String seccion, String acciones) {
+        return pagina(titulo, encabezado(seccion, titulo, acciones) + contenido, s, false);
+    }
+
+    private static String seccion(String titulo) {
+        String t = titulo.toLowerCase(java.util.Locale.ROOT);
+        if (t.contains("usuario")) return "Gestión · Usuarios";
+        if (t.contains("empresa")) return "Gestión · Empresas";
+        if (t.contains("sede")) return "Gestión · Sedes";
+        if (t.contains("salón")) return "Gestión · Salones";
+        if (t.contains("área")) return "Gestión · Áreas";
+        if (t.contains("cargo")) return "Gestión · Cargos";
+        if (t.contains("evaluación")) return "Evaluaciones · Detalle";
+        if (t.contains("rula") || t.contains("analizar")) return "Evaluaciones · Resultado";
+        if (t.contains("reserva")) return "Reservas · Formulario";
+        if (t.contains("visita")) return "Visitas · Detalle";
+        if (t.contains("puesto")) return "Gestión · Puestos";
+        if (t.contains("contraseña")) return "Cuenta · Contraseña";
+        if (t.contains("calificaci")) return "Consultas · Calificaciones";
+        return "Gestión · " + titulo;
+    }
+
     /** Versión con control del pagehead para páginas que definen su propio encabezado (como Inicio). */
     public static String pagina(String titulo, String contenido, Sesion s, boolean conPagehead) {
         String cabecera = "";
@@ -134,7 +164,7 @@ public final class Html {
         // Una sola salida de navegación; los pasos internos del asistente se conservan.
         if (!cabecera.isEmpty()) contenido = contenido.replaceAll("<a\\b[^>]*>\\s*(?:←[^<]*|Volver (?:a |al )[^<]*)</a>", "");
         String pagehead = conPagehead
-                ? "<div class=\"pagehead\"><div><span class=\"eyebrow\">Ergonomía con precisión</span><h1>" + escapar(titulo) + "</h1></div></div>"
+                ? encabezado(seccion(titulo), titulo, "")
                 : "";
         return "<!doctype html><html lang=\"es\"><head><meta charset=\"UTF-8\">"
                 + "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">"

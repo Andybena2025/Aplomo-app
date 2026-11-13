@@ -43,25 +43,21 @@ public final class PaginasEmpresas {
                 .append(dato("Teléfono", empresa.telefono())).append(dato("Correo", empresa.correo()))
                 .append(dato("Contacto", empresa.contacto())).append("</dl>")
                 .append(acciones(sesion, ruta, empresa.activo())).append("</section>");
-        html.append("<div class=\"row acciones-informe\">").append(enlace("/calificaciones?empresa="+empresa.id(),"Ver calificaciones",false));
-        if(admin(sesion))html.append(enlace("/informes/empresa/"+empresa.id(),"Generar informe",true));
-        html.append("</div>");
-        html.append(seccion("Sedes", admin(sesion) && empresa.activo() ? ruta + "/sedes/nuevo" : null, "Nueva sede"));
-        html.append(enlace("/sedes?empresa="+empresa.id(),"Consultar sedes",false));
+        String accionesPagina=enlace("/calificaciones?empresa="+empresa.id(),"Ver calificaciones",false);
+        if(admin(sesion))accionesPagina+=enlace("/informes/empresa/"+empresa.id(),"Generar informe",true);
+        html.append(seccion("Sedes", admin(sesion) && empresa.activo() ? ruta + "/sedes/nuevo" : null, "Nueva sede",enlace("/sedes?empresa="+empresa.id(),"Consultar sedes",false)));
         for (Sede sede : sedes) {
             html.append(tarjeta(sede.nombre(), sede.ciudad() + " · " + sede.direccion(), sede.activo(),
                     enlace("/sedes/" + sede.id(), "Ver sede", false)));
         }
         html.append(finSeccion(sedes.isEmpty(), "No hay sedes registradas."));
-        html.append(seccion("Áreas", admin(sesion) && empresa.activo() ? ruta + "/areas/nuevo" : null, "Nueva área"));
-        html.append(enlace("/areas?empresa="+empresa.id(),"Consultar áreas",false));
+        html.append(seccion("Áreas", admin(sesion) && empresa.activo() ? ruta + "/areas/nuevo" : null, "Nueva área",enlace("/areas?empresa="+empresa.id(),"Consultar áreas",false)));
         for (Area area : areas) html.append(tarjeta(area.nombre(), "", area.activo(), acciones(sesion, "/areas/" + area.id(), area.activo())));
         html.append(finSeccion(areas.isEmpty(), "No hay áreas registradas."));
-        html.append(seccion("Cargos", admin(sesion) && empresa.activo() ? ruta + "/cargos/nuevo" : null, "Nuevo cargo"));
-        html.append(enlace("/cargos?empresa="+empresa.id(),"Consultar cargos",false));
+        html.append(seccion("Cargos", admin(sesion) && empresa.activo() ? ruta + "/cargos/nuevo" : null, "Nuevo cargo",enlace("/cargos?empresa="+empresa.id(),"Consultar cargos",false)));
         for (Cargo cargo : cargos) html.append(tarjeta(cargo.nombre(), etiqueta(cargo.tipo()), cargo.activo(), acciones(sesion, "/cargos/" + cargo.id(), cargo.activo())));
         html.append(finSeccion(cargos.isEmpty(), "No hay cargos registrados."));
-        return Html.pagina(empresa.nombre(), html.toString(), sesion);
+        return Html.pagina(empresa.nombre(), html.toString(), sesion,"Gestión · Empresas",accionesPagina);
     }
 
     /** Muestra los datos de una sede y sus salones sin perder los registros inactivos. */
@@ -74,12 +70,11 @@ public final class PaginasEmpresas {
                 .append(dato("Teléfono", sede.telefono())).append(dato("Horario", sede.horario()))
                 .append(dato("Descripción", sede.descripcion())).append("</dl>")
                 .append(acciones(sesion, ruta, sede.activo())).append("</section>")
-                .append(seccion("Salones", admin(sesion) && sede.activo() && empresa.activo() ? ruta + "/salones/nuevo" : null, "Nuevo salón"));
-        html.append(enlace("/salones?empresa="+empresa.id()+"&sede="+sede.id(),"Consultar salones",false));
+                .append(seccion("Salones", admin(sesion) && sede.activo() && empresa.activo() ? ruta + "/salones/nuevo" : null, "Nuevo salón",enlace("/salones?empresa="+empresa.id()+"&sede="+sede.id(),"Consultar salones",false)));
         for (Salon salon : salones) html.append(tarjeta(salon.nombre(), "Piso " + salon.piso() + " · Capacidad " + salon.capacidad(),
                 salon.activo(), enlace("/salones/" + salon.id(), "Ver salón", false)));
         html.append(finSeccion(salones.isEmpty(), "No hay salones registrados."));
-        return Html.pagina(sede.nombre(), html.toString(), sesion);
+        return Html.pagina(sede.nombre(), html.toString(), sesion,"Gestión · Sedes","");
     }
 
     /** Muestra el salón y los puestos, con el número y su último puntaje si ya existe. */
@@ -99,7 +94,7 @@ public final class PaginasEmpresas {
             html.append(tarjeta("Puesto " + puesto.numero(), detalle, puesto.activo(), (puesto.puntaje()==null?"":Html.riesgo(puesto.puntaje(),puesto.color(),puesto.nivel()))+acciones(sesion, "/puestos/" + puesto.id(), puesto.activo())));
         }
         html.append(finSeccion(puestos.isEmpty(), "No hay puestos registrados."));
-        return Html.pagina(salon.nombre(), html.toString(), sesion);
+        return Html.pagina(salon.nombre(), html.toString(), sesion,"Gestión · Salones","");
     }
 
     /** Presenta un formulario sin hacer consultas, conservando sus campos si guardar falla. */
@@ -190,8 +185,12 @@ public final class PaginasEmpresas {
     }
 
     private static String seccion(String titulo, String nueva, String etiqueta) {
-        return "<section class=\"stack catalogo-seccion\"><div class=\"row between\"><h2>" + escapar(titulo) + "</h2>"
-                + (nueva == null ? "" : enlace(nueva, etiqueta, false)) + "</div><div class=\"grid2\">";
+        return seccion(titulo,nueva,etiqueta,"");
+    }
+
+    private static String seccion(String titulo, String nueva, String etiqueta, String consulta) {
+        return "<section class=\"stack catalogo-seccion\"><div class=\"pagehead\"><h2>" + escapar(titulo) + "</h2><div class=\"row pagehead-acciones\">"
+                + (nueva == null ? "" : enlace(nueva, etiqueta, false)) + consulta + "</div></div><div class=\"grid2\">";
     }
 
     private static String finSeccion(boolean vacio, String aviso) {

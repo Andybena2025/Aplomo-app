@@ -20,9 +20,9 @@ public final class PaginasEvaluacion {
     /** Presenta un único formulario para volver entre pasos sin perder campos ni archivos seleccionados. */
     public static String nueva(Sesion sesion, Contexto contexto) {
         var ficha = contexto.visita();
-        StringBuilder html = new StringBuilder("<div class=\"pagehead\"><div><span class=\"eyebrow\">")
+        StringBuilder html = new StringBuilder("<div class=\"pagehead\"><div><span class=\"eyebrow\">Evaluaciones · Nueva</span><h1>Nueva evaluación</h1><p class=\"muted\">")
                 .append(escapar(ficha.empresaNombre())).append(" · ").append(escapar(ficha.salonNombre()))
-                .append("</span><h1>Nueva evaluación</h1></div><span class=\"tag\" id=\"pasoActual\">Paso 1 de 6</span></div>")
+                .append("</p></div><span class=\"tag\" id=\"pasoActual\">Paso 1 de 6</span></div>")
                 .append("<div class=\"steps\" aria-label=\"Pasos de la evaluación\">");
         String[] pasos = {"Puesto y postura", "Condiciones", "Fotos", "Ángulos", "Ajustes y carga", "Resultado"};
         for (int i=0;i<pasos.length;i++) html.append("<div data-indicador=\"").append(i+1).append("\" class=\"")

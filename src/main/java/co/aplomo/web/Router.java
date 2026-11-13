@@ -199,7 +199,7 @@ public final class Router implements HttpHandler {
             inicio.append("<div class=\"grid2\"><section class=\"stack\"><h3>Visitas en curso</h3>");
             var cursando = listaVisitas.stream().filter(v -> v.visita().estado().equals("EN_CURSO")).toList();
             if (cursando.isEmpty()) {
-                inicio.append(c.rol()==Cuenta.Rol.ADMINISTRADOR ? "<div class=\"empty\">No hay visitas en curso. Inicia una desde una reserva En cola.</div>" : "<div class=\"empty\">No hay visitas en curso disponibles.</div>");
+                inicio.append(c.rol()==Cuenta.Rol.ADMINISTRADOR ? "<div class=\"empty empty-con-accion\"><p>No hay visitas en curso. Inicia una desde una reserva En cola.</p><a class=\"btn p\" href=\"/reservas\">Iniciar desde una reserva</a></div>" : "<div class=\"empty\">No hay visitas en curso disponibles.</div>");
             } else {
                 for (var v : cursando) {
                     inicio.append("<div class=\"card row between\"><div><div>").append(Html.escapar(v.empresaNombre()))

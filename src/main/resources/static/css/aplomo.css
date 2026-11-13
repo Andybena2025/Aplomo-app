@@ -453,3 +453,23 @@ main.wrap{position:relative;z-index:1;min-width:0}
 @media screen{.tablewrap{position:relative;z-index:1;background:var(--bg)}}
 @media(max-width:720px){.foto-guardada img{max-height:360px}}
 @media(max-width:420px){.top .nav{flex-wrap:nowrap;justify-content:space-between;gap:1px}.top .nav-tab{padding-inline:3px;font-size:12px;min-width:0}}
+
+/* Paso 13D-1: un solo tamaño de acción; el encabezado conserva 44 px. */
+:root body button,:root body .btn,:root body .btn.sm{height:48px;min-height:48px;padding:0 24px;font-size:16px;white-space:nowrap;flex-shrink:0}
+:root body table button,:root body table .btn,:root body table .btn.sm{height:48px;min-height:48px;padding:0 20px;font-size:15px}
+:root body .top .btn,:root body .top button{height:44px;min-height:44px;max-height:44px;padding:0 20px;font-size:15px}
+:root body .top .avatar{height:44px;width:44px;min-height:44px;min-width:44px;padding:0}
+.tablewrap{max-width:100%;overflow-x:auto}
+.tablewrap :is(td[data-label="Acciones"],td[data-label="Detalle"]) .cell-value{display:flex;flex-wrap:nowrap;align-items:center;gap:12px;min-width:max-content;white-space:nowrap}
+.tablewrap td:has(.btn){white-space:nowrap}.tablewrap td .row:has(.btn){flex-wrap:nowrap}.tablewrap td form{margin:0;flex:none}
+.usuarios-table{table-layout:auto}
+.pagehead{align-items:center}.pagehead>div:first-child{min-width:0;flex:1 1 130px}
+.pagehead-acciones{margin-left:auto;justify-content:flex-end;max-width:100%}
+.catalogo-seccion>.pagehead{margin-bottom:0}.catalogo-seccion>.pagehead h2{margin:0}
+.card.stack>.btn,.card.stack>.row:has(.btn){align-self:flex-start;margin-top:auto}
+.card.row.between:has(>.btn){flex-direction:column;align-items:flex-start;justify-content:flex-start}.card.row.between>.btn{margin-top:auto}
+.empty-con-accion{display:flex;flex-direction:column;align-items:flex-start;gap:16px;text-align:left}
+:is(.consultas-secciones,.filtros-extra)>summary{list-style:none}
+:is(.consultas-secciones,.filtros-extra)>summary::-webkit-details-marker{display:none}
+@media(max-width:720px){.tablewrap{overflow-x:auto}.pagehead-acciones{margin-left:auto}.usuarios-table .cell-value.row{gap:12px}}
+@media(max-width:420px){.top .nav{gap:0}.top .nav-tab{font-size:13px;padding-inline:2px;min-width:0}}

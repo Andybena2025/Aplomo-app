@@ -1,0 +1,6 @@
+[INFO] Tests run: 718, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  58.384 s
+[INFO] Finished at: 2026-11-13T11:06:08-05:00
+QA13D1 antes: ROLLBACK completado
+QA13D1 después: ROLLBACK completado
