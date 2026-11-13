@@ -1,0 +1,110 @@
+Paso 13D-2 · Identidad de marca (cosmético). Aprobado por Andy a partir del mockup v4 "Compás y plomada".
+Trabaja en el repo actual (rama main). Antes de empezar: git remote -v debe ser https://github.com/Andybena2025/Aplomo-app.git; si no, DETENTE y avísame.
+Regla: solo cosmética. No cambies rutas, permisos, SQL ni lógica RULA. Los textos visibles van en español.
+
+1. Presentarlo como producto real
+- Quita del sitio todo texto "v1", "Proyecto Nuclear" o "Software real" (pie, login, títulos). La etiqueta superior del login dice "Bienvenido".
+- Inicio ("/"): sin botón Atrás. El resto de las páginas se queda igual.
+
+2. Pie de marca en todas las páginas con sesión (layout compartido en Html.java)
+<footer class="pie"><div class="wrap"><span class="marca">[svg logo]<span>PLOMO.</span></span><span class="lema">Ergonomía con precisión · Método RULA</span><span>© 2026 APLOMO</span></div></footer>
+El body es una columna flex para que el pie quede abajo aunque haya poco contenido.
+
+3. Laterales de marca (solo con sesión, ≥1400px; ocultos en pantallas más pequeñas y al imprimir)
+- Quita el fondo actual fondo() / plantillas/fondo.html de las páginas con sesión (el login no cambia).
+- Izquierda: <div class="riel riel-izq" aria-hidden="true"><span class="marca-v">APLOMO.</span><span class="lema-v">Ergonomía con precisión</span></div>
+  Detrás: <div class="deco deco-izq" aria-hidden="true"> con un SVG de compás (viewBox 0 0 300 300, centro 150,150):
+   · semicírculo superior r=130 (path "M20,150 A130,130 0 0 1 280,150"), clase dc-h
+   · marcas cada 5° de -90° a 90°: línea de r=123 a r=130; cada 15°, de r=116 a r=130 (genéralas con un bucle en Java; x=150+r·sin(a), y=150−r·cos(a)), dentro de <g class="dc-h">
+   · línea de plomada <line class="dc-p" x1="150" y1="0" x2="150" y2="300"/>
+   · arco <path class="dc-arc" pathLength="1" d="M150,90 A60,60 0 0 1 184.41,100.85"/>
+   · aguja <g class="dc-aguja"><line x1="150" y1="150" x2="150" y2="34"/><circle class="dc-f" cx="150" cy="34" r="3.2"/></g> y centro <circle class="dc-f" cx="150" cy="150" r="4"/>
+- Derecha: <div class="deco deco-der" aria-hidden="true"> con un SVG (viewBox 0 0 300 380):
+   · <line class="dc-p" x1="150" y1="0" x2="150" y2="184"/>
+   · <path class="dc-h" d="M118.81,336.72 A150,150 0 0 0 181.19,336.72"/> y 5 marcas en −12°, −6°, 0°, 6° y 12° (de r=150 a r=158 alrededor de 150,190)
+   · <g class="dc-logo" transform="translate(50,170) scale(2)">: las 2 patas del logo (stroke-width 4) y el arco punteado del logo
+   · <g class="dc-plomo"><g class="dc-logo" transform="translate(50,170) scale(2)">: la línea de plomada del logo + la plomada (path con clase dc-f)</g></g>
+   · <circle class="dc-f" cx="150" cy="190" r="7.2"/>
+   Toma las coordenadas de LOGO_SVG en Html.java. Ya no hay logo en la cabecera a ≥1400px: lo reemplazan los laterales.
+
+4. Formularios Nueva empresa / Nueva reserva / Nuevo usuario: el formulario va dentro de <div class="con-panel">, y a su lado un
+<aside class="panel-marca"><div><p class="lema">LEMA</p><div class="consejo"><b>Consejo RULA</b><p>TEXTO</p></div></div></aside>
+- empresas/nueva: "Cada puesto, medido con precisión." / "Usa el nombre legal y el NIT exactos: así aparecen en el informe PDF que recibe la empresa."
+- reservas/nueva: "Mide la jornada real." / "Agenda la visita en el horario real de trabajo: RULA evalúa la postura que el trabajador mantiene más tiempo."
+- usuarios/nuevo: "Cada empresa, solo lo suyo." / "La cuenta de Usuario solo consulta resultados finalizados de su empresa; las evaluaciones las hace el Administrador."
+
+5. Inicio · "Semáforo de puestos" (Administrador), encima de "Visitas en curso": 3 tarjetas con conteos REALES. Reutiliza la consulta de la tarjeta "Puestos en rojo" y amplíala a Verde y Amarillo.
+<h3>Semáforo de puestos</h3><div class="semaforo"><a class="s" href="/evaluaciones"><b style="color:var(--verde)">N</b><span>Verde<br>Aceptable</span></a> … Amarillo "En observación" → /evaluaciones … Rojo "Pendiente" → /pendientes <div class="barra"><i style="flex:N;background:var(--verde)"></i>…</div></div>
+Si las tres cuentas son 0, oculta la barra.
+
+6. Estados vacíos con marca: todo .empty visible pasa a ser "empty marca", con el logo (svg) arriba y el texto en <p>; si ya tenía un botón, se conserva.
+
+7. Bienvenida tras iniciar sesión (solo una vez por sesión, 1,5 s; con prefers-reduced-motion no se muestra):
+<div class="splash" aria-hidden="true"><div class="lk">[svg logo]<span>PLOMO.</span></div><div class="lema-s">Ergonomía con precisión</div><div class="linea"></div></div>. Desaparece con un fundido; mientras está visible, no bloquea el teclado.
+
+8. CSS: agrega al final de aplomo.css (ajusta selectores al markup real si difiere):
+body{min-height:100vh;display:flex;flex-direction:column}
+body>main{position:relative;z-index:1;flex:1 0 auto;width:100%;box-sizing:border-box}
+header.top{position:relative;z-index:3}
+.pie{position:relative;z-index:1;margin-top:72px;border-top:1px solid var(--line);background:rgba(14,14,16,.85)}
+.pie .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:76px;color:var(--muted);font-size:13px;letter-spacing:.04em}
+.pie .marca{display:flex;align-items:flex-end;color:var(--ivory);font-family:var(--serif);font-size:21px;letter-spacing:.02em}
+.pie .marca svg{width:20px;height:20px;margin-bottom:3px}
+.pie .lema{font-size:11px;letter-spacing:.24em;text-transform:uppercase}
+.con-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.82fr);gap:28px;align-items:start}
+.panel-marca{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:36px}
+.panel-marca .lema{font-family:var(--serif);font-size:40px;line-height:1.05;margin:0 0 18px;max-width:12ch}
+.panel-marca .consejo{border-top:1px solid var(--line);padding-top:18px;max-width:46ch}
+.panel-marca .consejo b{display:block;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:500}
+.panel-marca .consejo p{margin:0;font-size:16px;color:var(--plat)}
+.empty.marca{display:flex;flex-direction:column;align-items:center;gap:14px;padding:36px 24px;text-align:center;border-style:dashed;background:var(--bg)}
+.empty.marca svg{width:52px;height:52px;color:var(--muted)}
+.empty.marca p{margin:0}
+.semaforo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.semaforo a.s{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--card)}
+.semaforo .s b{display:block;font-family:var(--serif);font-size:40px;font-weight:400;line-height:1}
+.semaforo .s span{display:block;font-size:13px;color:var(--muted);margin-top:6px;line-height:1.35}
+.semaforo .barra{grid-column:1/-1;height:6px;border-radius:99px;overflow:hidden;display:flex;gap:3px}
+.semaforo .barra i{display:block;border-radius:99px}
+.splash{position:fixed;inset:0;z-index:50;background:radial-gradient(ellipse at 50% 45%,#1a1a1d 0%,var(--bg) 62%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;animation:splashFuera .5s ease 1.5s forwards;pointer-events:none}
+@keyframes splashFuera{to{opacity:0;visibility:hidden}}
+.splash .lk{display:flex;align-items:flex-end;font-family:var(--serif);font-size:128px;line-height:.9;color:var(--ivory);letter-spacing:.02em}
+.splash .lk svg{width:104px;height:104px;margin-bottom:10px}
+.splash .lema-s{font-size:14px;letter-spacing:.42em;text-transform:uppercase;color:var(--muted)}
+.splash .linea{width:240px;height:1px;background:linear-gradient(90deg,transparent,var(--ivory),transparent);opacity:.6;margin-top:14px}
+:root{--g:calc((100vw - 1240px)/2)}
+.riel,.deco{display:none;position:fixed;pointer-events:none}
+.riel{top:64px;bottom:0;width:var(--g);z-index:2;align-items:center;justify-content:center}
+.riel-izq{left:0}.riel-der{right:0}
+.riel-izq .marca-v,.riel-izq .lema-v{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+.riel-izq .marca-v{font-family:var(--serif);font-size:var(--rf);letter-spacing:.06em;line-height:1;background:linear-gradient(180deg,rgba(237,230,216,.82) 44%,#fff 50%,rgba(237,230,216,.82) 56%);background-size:100% 320%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:brillo 14s ease-in-out infinite}
+.riel-izq .lema-v{font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--muted);margin-left:16px}
+@keyframes brillo{0%{background-position:0 100%}18%,100%{background-position:0 0}}
+.deco{z-index:1;top:calc(32px + 50vh);transform:translateY(-50%)}
+.deco svg{width:100%;height:100%;overflow:visible}
+.deco *{fill:none;stroke:var(--ivory);stroke-linecap:round}
+.deco .dc-f{fill:var(--ivory);stroke:none}
+.deco-izq{left:calc(var(--g)/2 - var(--dial)/2);width:var(--dial);height:var(--dial);opacity:.26}
+.deco-der{right:calc(var(--g)/2 - var(--plom)/2);width:var(--plom);height:calc(var(--plom)*380/300);transform:translateY(-67%)}
+.dc-h{stroke-width:1.2}.dc-p{stroke-width:1;stroke-dasharray:3 6;opacity:.8}
+.deco-der .dc-h,.deco-der .dc-p{opacity:.22}
+.deco-der .dc-logo{opacity:.85}
+.dc-arc{stroke-width:1.6;stroke-dasharray:1;stroke-dashoffset:1;animation:dcArco 16s ease infinite}
+.dc-aguja{stroke-width:1.6;transform-box:view-box;transform-origin:150px 150px;animation:dcAguja 16s cubic-bezier(.5,0,.2,1) infinite}
+.dc-plomo{transform-box:view-box;transform-origin:150px 190px;animation:dcPendulo 14s ease-in-out infinite}
+@keyframes dcAguja{0%,8%{transform:rotate(0)}28%,72%{transform:rotate(35deg)}92%,100%{transform:rotate(0)}}
+@keyframes dcArco{0%,26%{stroke-dashoffset:1;opacity:1}36%,70%{stroke-dashoffset:0;opacity:1}78%,100%{stroke-dashoffset:0;opacity:0}}
+@keyframes dcPendulo{0%{transform:rotate(0)}8%{transform:rotate(6deg)}17%{transform:rotate(-4.5deg)}26%{transform:rotate(3deg)}35%{transform:rotate(-1.8deg)}44%{transform:rotate(.8deg)}52%,100%{transform:rotate(0)}}
+@media(min-width:1400px){.riel{display:flex}.deco{display:block}.top .lockup{display:none}:root{--rf:44px;--dial:calc(var(--g)*.9);--plom:calc(var(--g)*1.15)}.riel-izq .lema-v{display:none}}
+@media(min-width:1600px){:root{--rf:84px;--dial:250px;--plom:300px}.riel-izq .lema-v{display:block}}
+@media(min-width:1800px){:root{--rf:112px;--dial:300px;--plom:380px}}
+@media(max-width:720px){.con-panel{grid-template-columns:1fr}.panel-marca{display:none}.pie .wrap{flex-direction:column;align-items:flex-start;gap:6px;padding-block:22px}.semaforo .s b{font-size:32px}.semaforo .s{padding:12px}}
+@media(prefers-reduced-motion:reduce){.deco *,.riel-izq .marca-v{animation:none!important}.dc-arc{stroke-dashoffset:0}.dc-aguja{transform:rotate(35deg)}.splash{display:none}}
+@media print{.riel,.deco,.pie,.splash{display:none!important}}
+
+9. Verificación (obligatoria)
+- mvn test: todos los tests pasan (718 o más). Agrega tests para: el pie con "© 2026 APLOMO", que Inicio no tenga Atrás, el semáforo con conteos reales y que no quede "Proyecto Nuclear" en ninguna página.
+- Capturas de pantalla en docs/capturas_13d2/: Inicio a 1920, 1440 y 390 px; Nueva empresa a 1920 px; el login. Revisa que no haya desbordamiento horizontal y que nada tape el contenido a 1400–1600 px.
+- Chrome, Edge y Firefox.
+- Commit "Paso 13D-2: identidad de marca (compás, plomada, pie, semáforo)" y push a origin main (solo después de verificar el remote).
+- Al terminar, entrega un resumen de 6 líneas: commit, número de tests y cualquier diferencia con este prompt.
