@@ -1,5 +1,7 @@
 Paso 13D-2 · Identidad de marca (cosmético). Aprobado por Andy a partir del mockup v4 "Compás y plomada".
 Trabaja en el repo actual (rama main). Antes de empezar: git remote -v debe ser https://github.com/Andybena2025/Aplomo-app.git; si no, DETENTE y avísame.
+Primero: git pull origin main (trae docs/mockup_13d2/).
+Guía visual: docs/mockup_13d2/APLOMO_Mockup_v4_Compas_y_Plomada.pdf y 12_animacion_compas_plomada.gif. Úsala como referencia del resultado final; si algo no coincide, mandan las medidas y el CSS de este prompt.
 Regla: solo cosmética. No cambies rutas, permisos, SQL ni lógica RULA. Los textos visibles van en español.
 
 1. Presentarlo como producto real
@@ -39,8 +41,7 @@ Si las tres cuentas son 0, oculta la barra.
 
 6. Estados vacíos con marca: todo .empty visible pasa a ser "empty marca", con el logo (svg) arriba y el texto en <p>; si ya tenía un botón, se conserva.
 
-7. Bienvenida tras iniciar sesión (solo una vez por sesión, 1,5 s; con prefers-reduced-motion no se muestra):
-<div class="splash" aria-hidden="true"><div class="lk">[svg logo]<span>PLOMO.</span></div><div class="lema-s">Ergonomía con precisión</div><div class="linea"></div></div>. Desaparece con un fundido; mientras está visible, no bloquea el teclado.
+7. SIN pantalla de bienvenida: después del login se entra directo a Inicio. Ignora la página 2 ("Bienvenida") del PDF.
 
 8. CSS: agrega al final de aplomo.css (ajusta selectores al markup real si difiere):
 body{min-height:100vh;display:flex;flex-direction:column}
@@ -66,12 +67,6 @@ header.top{position:relative;z-index:3}
 .semaforo .s span{display:block;font-size:13px;color:var(--muted);margin-top:6px;line-height:1.35}
 .semaforo .barra{grid-column:1/-1;height:6px;border-radius:99px;overflow:hidden;display:flex;gap:3px}
 .semaforo .barra i{display:block;border-radius:99px}
-.splash{position:fixed;inset:0;z-index:50;background:radial-gradient(ellipse at 50% 45%,#1a1a1d 0%,var(--bg) 62%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;animation:splashFuera .5s ease 1.5s forwards;pointer-events:none}
-@keyframes splashFuera{to{opacity:0;visibility:hidden}}
-.splash .lk{display:flex;align-items:flex-end;font-family:var(--serif);font-size:128px;line-height:.9;color:var(--ivory);letter-spacing:.02em}
-.splash .lk svg{width:104px;height:104px;margin-bottom:10px}
-.splash .lema-s{font-size:14px;letter-spacing:.42em;text-transform:uppercase;color:var(--muted)}
-.splash .linea{width:240px;height:1px;background:linear-gradient(90deg,transparent,var(--ivory),transparent);opacity:.6;margin-top:14px}
 :root{--g:calc((100vw - 1240px)/2)}
 .riel,.deco{display:none;position:fixed;pointer-events:none}
 .riel{top:64px;bottom:0;width:var(--g);z-index:2;align-items:center;justify-content:center}
@@ -99,8 +94,8 @@ header.top{position:relative;z-index:3}
 @media(min-width:1600px){:root{--rf:84px;--dial:250px;--plom:300px}.riel-izq .lema-v{display:block}}
 @media(min-width:1800px){:root{--rf:112px;--dial:300px;--plom:380px}}
 @media(max-width:720px){.con-panel{grid-template-columns:1fr}.panel-marca{display:none}.pie .wrap{flex-direction:column;align-items:flex-start;gap:6px;padding-block:22px}.semaforo .s b{font-size:32px}.semaforo .s{padding:12px}}
-@media(prefers-reduced-motion:reduce){.deco *,.riel-izq .marca-v{animation:none!important}.dc-arc{stroke-dashoffset:0}.dc-aguja{transform:rotate(35deg)}.splash{display:none}}
-@media print{.riel,.deco,.pie,.splash{display:none!important}}
+@media(prefers-reduced-motion:reduce){.deco *,.riel-izq .marca-v{animation:none!important}.dc-arc{stroke-dashoffset:0}.dc-aguja{transform:rotate(35deg)}}
+@media print{.riel,.deco,.pie{display:none!important}}
 
 9. Verificación (obligatoria)
 - mvn test: todos los tests pasan (718 o más). Agrega tests para: el pie con "© 2026 APLOMO", que Inicio no tenga Atrás, el semáforo con conteos reales y que no quede "Proyecto Nuclear" en ninguna página.
