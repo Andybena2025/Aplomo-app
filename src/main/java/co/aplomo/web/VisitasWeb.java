@@ -57,12 +57,12 @@ public final class VisitasWeb {
         Ficha ficha = visitas.consultar(sesion.cuenta(), id);
         List<Evaluacion> evaluaciones = visitas.evaluaciones(sesion.cuenta(), id);
         if (!finalizar && !post) {
-            Router.enviar(x, 200, PaginasVisitas.detalle(sesion, ficha, evaluaciones, Router.consulta(x).get("aviso"), true));
+            Router.enviar(x, 200, PaginasVisitas.detalle(sesion, ficha, evaluaciones, sesion.cuenta().rol()==co.aplomo.modelo.Cuenta.Rol.ADMINISTRADOR && ficha.visita().estado().equals("EN_CURSO") ? visitas.puestos(sesion.cuenta(), id) : List.of(), Router.consulta(x).get("aviso"), true));
             return;
         }
         if (!finalizar) { noDisponible(x, sesion); return; }
         if (!ficha.visita().estado().equals("EN_CURSO")) {
-            Router.enviar(x, 400, PaginasVisitas.detalle(sesion, ficha, evaluaciones, "La visita ya está finalizada.", false));
+            Router.enviar(x, 400, PaginasVisitas.detalle(sesion, ficha, evaluaciones, List.of(), "La visita ya está finalizada.", false));
             return;
         }
         if (!post) {

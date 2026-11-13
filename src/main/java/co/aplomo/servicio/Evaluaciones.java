@@ -70,11 +70,11 @@ public final class Evaluaciones {
                 if (!jerarquia) throw new IllegalArgumentException("La empresa, sede o salón está desactivado. Revisa su estado antes de evaluar.");
                 List<Fotos.Imagen> imagenes;
                 if (d.sinFotos()) {
-                    if (d.aceptaFotos() || fotos != null && !fotos.isEmpty())
-                        throw new IllegalArgumentException("Sin registro fotográfico no se aceptan fotos ni la casilla de aceptación.");
+                    if (fotos != null && !fotos.isEmpty())
+                        throw new IllegalArgumentException("Sin registro fotográfico no se aceptan fotos.");
                     imagenes = List.of();
                 } else {
-                    if (!d.aceptaFotos()) throw new IllegalArgumentException("Marca la aceptación de las fotos o elige Sin registro fotográfico.");
+
                     imagenes = archivos.validar(fotos);
                 }
                 int id = dao.crear(con, visita, d, d.motivo(), LocalDate.now(reloj));
@@ -160,7 +160,9 @@ public final class Evaluaciones {
         if (d == null) throw new IllegalArgumentException("Completa los datos de la evaluación.");
         String postura = Validacion.texto(d.postura(), "postura o tarea", 150);
         String criterio = Validacion.opcion(d.criterio(), "criterio de elección", "MAS_INADECUADA", "MAYOR_EXPOSICION");
-        String motivo = Validacion.texto(d.motivo(), "motivo de elección de la postura", 255);
+        if (!d.aceptaFotos()) throw new IllegalArgumentException("Confirma que la persona firmó el consentimiento físico y queda archivado.");
+        String momento=criterio.equals("MAS_INADECUADA")?"La postura más exigente":"La que más tiempo dura";
+        String motivo="Momento: "+momento+". Postura: "+postura+".";
         Validacion.entero(Integer.toString(d.minutos()), "minutos por jornada", 1, 720);
         String obs = Validacion.notas(d.observaciones());
         if (obs.codePointCount(0, obs.length()) > 255) throw new IllegalArgumentException("Otras observaciones permite hasta 255 caracteres.");

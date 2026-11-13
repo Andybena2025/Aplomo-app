@@ -201,6 +201,8 @@ Los valores marcados como "(propuesta)" son del equipo y están pendientes de va
 
 **Regla de negocio.** Se evalúa la postura más riesgosa o la que más tiempo se mantiene, no todas. El criterio, el motivo y el tiempo son obligatorios. El tiempo es un número entero de 1 a 720 minutos por jornada (propuesta). La evaluación solo se crea dentro de una visita En curso. Se guarda la metodología usada (RULA) para poder agregar otras después. Fuente: lista acordada en clase (5-nov-2026), n.º 14.
 
+**Actualización aprobada por Andy, Paso 13E-A (13 nov 2026).** El nuevo recorrido elige el puesto desde la lista de activos del salón de la visita (o pregunta por él si falta en la dirección). ESCRITORIO usa modo Oficina y otros tipos modo Planta. Postura se elige entre ocho mosaicos con descripción editable de hasta 150 caracteres; momento se elige entre «La postura más exigente» y «La que más tiempo dura». El tiempo se captura como 30/90/180/300 minutos. El servidor genera motivo «Momento: … Postura: …»; la nota no se copia allí. El rango histórico 1–720 se conserva en el servicio para compatibilidad; el nuevo formulario valida sus cuatro opciones.
+
 ### RF-015 · Anotar las condiciones del puesto
 
 - **Módulo:** Evaluación de postura · **Rol:** Administrador · **Prioridad:** Media
@@ -209,13 +211,15 @@ Los valores marcados como "(propuesta)" son del equipo y están pendientes de va
 
 **Regla de negocio.** Son observaciones del puesto y alimentan las sugerencias del sistema (RF-023a). Definiciones: escritorio muy alto = la superficie queda por encima del codo con los hombros relajados; pantalla muy alta = el borde superior queda por encima de la línea de los ojos; pies colgando = los pies no apoyan completos en el piso. Fuente: lista acordada en clase (5-nov-2026), n.º 15.
 
+**Actualización aprobada por Andy, Paso 13E-A (13 nov 2026).** Las mismas seis condiciones se presentan en mosaicos múltiples y una opción Ninguna excluyente. Se exige respuesta explícita. Otras observaciones es opcional, hasta 255 caracteres completos, sin copiar al motivo.
+
 ### RF-016 · Subir varias fotos del puesto
 
 - **Módulo:** Registro fotográfico · **Rol:** Administrador · **Prioridad:** Alta
 
-**Descripción.** El sistema deberá permitir al Administrador subir una o varias fotografías de la postura en una evaluación, cada una con una descripción de máximo 200 caracteres y la vista en que se tomó (frente, perfil u otra), después de marcar que la persona fue informada y aceptó.
+**Descripción.** Antes de evaluar se exige la casilla «La persona firmó el consentimiento físico y queda archivado». Se guarda en `evaluacion.persona_acepto`. Después se elige Con fotos o Sin fotos (la persona no aceptó fotos), por separado. Esta actualización fue aprobada por Andy para el Paso 13E-A el 13 nov 2026 y sustituye la regla anterior del consentimiento fotográfico para registros nuevos; no modifica datos históricos ni esquema.
 
-**Regla de negocio.** Antes de la primera foto se marca la casilla “A la persona se le explicó el estudio y aceptó las fotos” (el acuerdo se hace por fuera del sistema; propuesta). Se exige al menos una foto donde se vean completos los segmentos a medir (brazo, antebrazo, muñeca, cuello y tronco). Máximo 10 fotos por evaluación (propuesta). Solo JPG o PNG de hasta 5 MB (propuesta). La foto se guarda en una carpeta del servidor con un nombre único; en la base de datos se guardan nombre, ruta, tamaño, vista y descripción. Solo la ven los roles con permiso. Si la persona no acepta, no se suben fotos y la evaluación queda como “Sin registro fotográfico” (propuesta del equipo). Fuente: lista acordada en clase (5-nov-2026), n.º 16. Caso “Sin registro fotográfico”: propuesta del equipo (Matriz v4, RF-007).
+**Regla de negocio.** Con fotos: de 1 a 10 JPG/PNG de hasta 5 MB, vista y descripción de máximo 200 caracteres, nombre aleatorio fuera de MySQL y ruta protegida solo para Administrador. Por foto se elige Para medir o De apoyo; las de apoyo se conservan sin cálculo, y se requiere al menos una Para medir para continuar al análisis. Sin fotos: consentimiento físico sigue siendo obligatorio, `registro_fotografico=SIN_REGISTRO_FOTOGRAFICO`, sin archivos ni análisis; el servidor rechaza cualquier foto recibida. Los límites y la validación del tipo real se conservan. La casilla física es obligatoria en el servidor, incluso si se omite la interfaz.
 
 ### RF-017 · Medir los ángulos de cada foto
 

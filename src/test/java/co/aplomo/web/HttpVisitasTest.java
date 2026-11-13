@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** RF-013a, RF-013b: ciclo HTTP, tokens, campos manipulados y vistas de solo lectura. */
 class HttpVisitasTest extends co.aplomo.soporte.HttpPrueba {
     private int reserva(Salon salon) throws Exception {
+        new Empresas(tx).guardar(cuenta(admin),new co.aplomo.modelo.Puesto(0,salon.id(),null,null,1,"Puesto disponible","ESCRITORIO","Centro",null,true));
         var servicio = new Reservas(tx, reloj);
         int id = servicio.guardar(cuenta(admin), 0, solicitud(salon)); servicio.aceptar(cuenta(admin), id); return id;
     }

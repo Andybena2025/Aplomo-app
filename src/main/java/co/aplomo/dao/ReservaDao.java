@@ -8,13 +8,13 @@ import java.util.*;
 /** RF-009b a RF-012: reservas con contexto de empresa y consultas filtradas en SQL. */
 public final class ReservaDao {
     private static final String CONTEXTO = "SELECT r.*, s.id_empresa, l.id_sede, e.nombre AS empresa_nombre, "
-            + "s.nombre AS sede_nombre, l.nombre AS salon_nombre, v.id_visita, v.estado AS visita_estado "
+            + "s.nombre AS sede_nombre, l.nombre AS salon_nombre, v.id_visita, v.estado AS visita_estado, EXISTS(SELECT 1 FROM puesto_trabajo p WHERE p.id_salon=r.id_salon AND p.activo=TRUE) AS puestos_activos "
             + "FROM reserva r JOIN salon l ON l.id_salon = r.id_salon JOIN sede s ON s.id_sede = l.id_sede "
             + "JOIN empresa e ON e.id_empresa = s.id_empresa LEFT JOIN visita v ON v.id_reserva = r.id_reserva";
 
     /** Reserva y etiquetas necesarias para mostrar su contexto sin consultas por cada fila. */
     public record Ficha(Reserva reserva, int empresa, int sede, String empresaNombre, String sedeNombre,
-                        String salonNombre, Integer visita, String estadoVisita) {}
+                        String salonNombre, Integer visita, String estadoVisita, boolean puestosActivos) {}
 
     /** Crea el acceso JDBC a las reservas. */
     public ReservaDao() {}
@@ -63,7 +63,7 @@ public final class ReservaDao {
     private static Ficha leer(ResultSet fila) throws SQLException {
         return new Ficha(reserva(fila), fila.getInt("id_empresa"), fila.getInt("id_sede"),
                 fila.getString("empresa_nombre"), fila.getString("sede_nombre"), fila.getString("salon_nombre"),
-                Sql.enteroOpcional(fila, "id_visita"), fila.getString("visita_estado"));
+                Sql.enteroOpcional(fila, "id_visita"), fila.getString("visita_estado"), fila.getBoolean("puestos_activos"));
     }
 
     private static Reserva reserva(ResultSet fila) throws SQLException {

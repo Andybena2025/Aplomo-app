@@ -65,7 +65,9 @@ public final class PaginasReservas {
             }
             if (r.estado().equals("EN_COLA") && ficha.visita() == null) {
                 html.append("<form method=\"post\" action=\"/reservas/").append(r.id()).append("/iniciar-visita\">")
-                        .append(Html.csrf(sesion)).append("<button class=\"btn p\">Iniciar visita</button></form>");
+                        .append(Html.csrf(sesion)).append("<button class=\"btn p\"" + (ficha.puestosActivos() ? "" : " disabled aria-describedby=\"sin-puestos\"") + ">Iniciar visita</button></form>");
+                if (!ficha.puestosActivos()) html.append("<p id=\"sin-puestos\" class=\"banner\">Este salón no tiene puestos activos</p>")
+                        .append(enlace("/salones/" + r.salon() + "/puestos/nuevo", "Registrar un puesto", false));
             }
             if (ficha.visita() == null) html.append(enlace("/reservas/" + r.id() + "/cancelar", "Cancelar reserva", false));
             else html.append("<p class=\"hint\">La visita ya se inició; su reserva se conserva hasta finalizarla.</p>");

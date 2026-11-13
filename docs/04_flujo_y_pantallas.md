@@ -23,14 +23,21 @@ El Usuario **nunca** ve fotos (RNF-006) ni botones de crear o editar. Las listas
 
 ## Asistente de evaluación (RNF-002: paso a paso, barra de pasos, botón Atrás sin perder lo escrito)
 
-Se abre desde una visita **En curso**.
+Actualización del Paso 13E-A aprobada por Andy el 13 nov 2026. Se abre desde una visita **En curso**, tocando un puesto activo en su lista (Evaluado/Pendiente en esa visita). No se inicia una visita de un salón sin puestos activos; se valida en pantalla y servidor. Finalizar conserva su regla anterior.
 
-1. **Puesto y postura** (RF-014): elegir el puesto del salón de la reserva; postura elegida; criterio (más inadecuada o mayor tiempo de exposición); motivo; minutos por jornada (1 a 720).
-2. **Condiciones** (RF-015): 6 casillas Sí/No (escritorio muy alto, pantalla muy alta, pies colgando, apoyapiés, silla con apoyabrazos, silla regulable) y otras observaciones.
-3. **Fotos** (RF-016): casilla "A la persona se le explicó el estudio y aceptó las fotos". De 1 a 10 fotos JPG/PNG de hasta 5 MB, cada una con vista (frente, perfil u otra) y descripción (máximo 200 caracteres). Si no acepta, la evaluación queda "Sin registro fotográfico".
-4. **Ángulos** (RF-017): por cada foto, la foto ampliada en un `<canvas>`; el Administrador marca los puntos (cadera, hombro, codo, muñeca, nudillos y coronilla), los puede arrastrar con el mouse o con el dedo, o escribir el ángulo a mano. Se elige el lado (derecho o izquierdo). Copia del mock la lógica de marcar y arrastrar (`montarLienzo`, `dibujar`, `medirAngulos`), incluido el arreglo para pantallas táctiles.
-5. **Ajustes y carga** (RF-018, RF-019): casillas de ajustes (hombro elevado, brazo separado, brazo apoyado, antebrazo cruza, muñeca desviada, giro de muñeca medio o extremo, cuello girado o inclinado, tronco girado o inclinado, piernas apoyadas), actividad (estática o repetitiva) y carga (las 6 opciones del enum).
-6. **Resultado** (RF-020, RF-021): el puntaje final grande con el color y el nivel oficial; desglose del Grupo A y del Grupo B; sugerencias del sistema (RF-023a). El cálculo se muestra **antes de guardar**. Al guardar se crea un análisis por foto; si el resultado es Rojo, se crea el pendiente (RF-022).
+Una pregunta de contexto visible por pantalla, progreso y Atrás sin perder respuestas. Sin imágenes disponibles en `static/img/tour/`, el mosaico conserva su etiqueta y borde. ESCRITORIO → Oficina; otro tipo → Planta, con orden y consejo contextual. Si falta puesto en la dirección, se pregunta primero sin preseleccionar uno.
+
+1. **Consentimiento físico** obligatorio; se guarda en persona_acepto y no se confunde con permiso para fotos.
+2. **Postura**: ocho mosaicos y descripción editable (150).
+3. **Momento**: postura más exigente / la que más tiempo dura.
+4. **Tiempo**: menos de 1 h / 1–2 / 2–4 / más de 4, guardando 30/90/180/300 minutos.
+5. **Condiciones**: las seis originales y Ninguna excluyente; observación opcional de 255 caracteres. Motivo lo arma el servidor con momento y postura; la nota solo queda en observaciones.
+6. **Fotos**: Con fotos / Sin fotos. Con fotos mantiene 1–10 JPG/PNG de 5 MB, vista y descripción; cada una Para medir / De apoyo. Sin fotos pasa a Guardar, sin puntaje.
+7. **Ángulos (puente provisional)**: lienzo actual, puntos/detección/arrastre o ángulos manuales y selector de lado actual.
+8. **Ajustes y carga (puente provisional)**: preguntas existentes, sin valores preseleccionados; ajustes requiere alguno o Ninguno. Giro, piernas, actividad y carga requieren respuesta explícita.
+9. **Resultado (puente provisional)**: cálculo del servidor, revisión y guardado como antes; un análisis por foto elegida para medir, pendientes rojos y sugerencias existentes.
+
+Andy indicó conservar este puente para seguir calculando entre fases. **Pendientes de OK para B:** pantalla Derecho/Izquierdo/Ambos, recorrido corporal, mosaicos de rango y hoja inferior. **Pendientes de C:** esfuerzo por pantalla, resultado reorganizado, siguiente puesto, respuestas recordadas y recorrido corporal compartido al añadir análisis. No se presentan como funciones ya implementadas.
 
 Al terminar las evaluaciones, **Finalizar visita** (RF-013b): requiere al menos una evaluación guardada; pide notas; calcula la calificación (promedio) y pasa la reserva a Finalizada.
 

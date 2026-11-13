@@ -3,6 +3,7 @@ package co.aplomo.servicio;
 import co.aplomo.dao.*;
 import co.aplomo.dao.VisitaDao.*;
 import co.aplomo.db.Transacciones;
+import co.aplomo.db.Sql;
 import co.aplomo.modelo.Cuenta;
 import co.aplomo.modelo.Cuenta.Rol;
 import co.aplomo.seguridad.*;
@@ -51,6 +52,15 @@ public final class Visitas {
         });
     }
 
+    /** Puestos activos del salón; solo el Administrador puede preparar una evaluación. */
+    public List<co.aplomo.modelo.Puesto> puestos(Cuenta actor, int visita) throws SQLException {
+        return tx.ejecutar(con -> {
+            administrador(con, actor);
+            var ficha = visible(con, actor, visita);
+            return new EvaluacionDao().puestos(con, ficha.salon());
+        });
+    }
+
     /** Inicia una sola visita desde En cola y registra la hora real y el responsable. */
     public int iniciar(Cuenta actor, int reserva) throws SQLException {
         return tx.ejecutar(con -> {
@@ -61,6 +71,8 @@ public final class Visitas {
                 throw new IllegalArgumentException("Primero acepta la reserva para iniciar la visita desde En cola.");
             }
             if (ficha.visita() != null) throw new IllegalArgumentException("Esta reserva ya tiene una visita. Abre la existente.");
+            if (Sql.listar(con, "SELECT id_puesto FROM puesto_trabajo WHERE id_salon=? AND activo=TRUE FOR UPDATE", r -> r.getInt(1), ficha.reserva().salon()).isEmpty())
+                throw new IllegalArgumentException("Este salón no tiene puestos activos");
             LocalDateTime ahora = LocalDateTime.now(reloj);
             int id;
             try { id = visitas.iniciar(con, reserva, ahora); }

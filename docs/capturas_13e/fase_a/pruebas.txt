@@ -1,0 +1,7 @@
+TZ=America/Bogota ./mvnw -Daplomo.evidencia.rendimiento=docs/capturas_13e/fase_a/rendimiento.json test
+[INFO] Tests run: 745, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  01:10 min
+[INFO] Finished at: 2026-11-13T13:56:10-05:00
+Ensayo 1: QA13E: ROLLBACK completado
+Ensayo 2: QA13E: ROLLBACK completado

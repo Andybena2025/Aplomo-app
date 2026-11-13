@@ -43,7 +43,7 @@ class EvaluacionesTest extends BasePrueba {
         int id=servicio.guardar(cuenta(admin),visita,datos(true,false),List.of(foto()));
         try(var p=con.prepareStatement("SELECT e.*,c.* FROM evaluacion e JOIN condiciones_puesto c USING(id_evaluacion) WHERE id_evaluacion=?")) {
             p.setInt(1,id);try(var r=p.executeQuery()) {assertTrue(r.next());assertEquals(puesto,r.getInt("id_puesto"));assertEquals("CON_FOTOS",r.getString("registro_fotografico"));assertTrue(r.getBoolean("persona_acepto"));
-                assertEquals("Se mantiene durante la tarea",r.getString("motivo"));assertEquals(120,r.getInt("minutos_jornada"));assertTrue(r.getBoolean("escritorio_muy_alto"));assertFalse(r.getBoolean("pantalla_muy_alta"));
+                assertEquals("Momento: La postura más exigente. Postura: Ensamblar <script>inerte</script>.",r.getString("motivo"));assertEquals(120,r.getInt("minutos_jornada"));assertTrue(r.getBoolean("escritorio_muy_alto"));assertFalse(r.getBoolean("pantalla_muy_alta"));
                 assertTrue(r.getBoolean("pies_colgando"));assertTrue(r.getBoolean("tiene_apoyapies"));assertFalse(r.getBoolean("silla_con_apoyabrazos"));assertTrue(r.getBoolean("silla_regulable"));assertTrue(r.getString("otras_observaciones").contains("\n"));}
         }
         String nombre=Sql.uno(con,"SELECT ruta FROM fotografia WHERE id_evaluacion=?",r->r.getString(1),id);
@@ -52,13 +52,13 @@ class EvaluacionesTest extends BasePrueba {
         assertEquals(admin,Sql.<Integer>uno(con,"SELECT id_cuenta FROM bitacora WHERE tabla='evaluacion' AND id_registro=?",r->r.getInt(1),id));
         assertTrue(Sql.<Boolean>uno(con,"SELECT ultimo_puntaje IS NULL FROM puesto_trabajo WHERE id_puesto=?",r->r.getBoolean(1),puesto));
     }
-    @Test void sinFotosGuardaAceptacionFalsaYMotivoSoloDeLaPostura() throws Exception {
-        int id=servicio.guardar(cuenta(admin),visita,datos(false,true),List.of());
+    @Test void sinFotosGuardaConsentimientoFisicoYMotivoAutomatico() throws Exception {
+        int id=servicio.guardar(cuenta(admin),visita,datos(true,true),List.of());
         assertEquals("SIN_REGISTRO_FOTOGRAFICO",Sql.uno(con,"SELECT registro_fotografico FROM evaluacion WHERE id_evaluacion=?",r->r.getString(1),id));
-        assertFalse(Sql.<Boolean>uno(con,"SELECT persona_acepto FROM evaluacion WHERE id_evaluacion=?",r->r.getBoolean(1),id));
-        assertEquals("Se mantiene durante la tarea",Sql.uno(con,"SELECT motivo FROM evaluacion WHERE id_evaluacion=?",r->r.getString(1),id));assertEquals(0,archivos());
+        assertTrue(Sql.<Boolean>uno(con,"SELECT persona_acepto FROM evaluacion WHERE id_evaluacion=?",r->r.getBoolean(1),id));
+        assertEquals("Momento: La postura más exigente. Postura: Ensamblar <script>inerte</script>.",Sql.uno(con,"SELECT motivo FROM evaluacion WHERE id_evaluacion=?",r->r.getString(1),id));assertEquals(0,archivos());
     }
-    @ParameterizedTest @ValueSource(strings={"once","pdf","pdfRenombrado","seisMB","vacia","sinAceptar","sinRegistroConFoto","sinRegistroAceptada","sinNinguna","gif","pngFalso","vista","descripcion"})
+    @ParameterizedTest @ValueSource(strings={"once","pdf","pdfRenombrado","seisMB","vacia","sinAceptar","sinRegistroConFoto","sinConsentimientoSinRegistro","sinNinguna","gif","pngFalso","vista","descripcion"})
     void rechazaFotosInvalidasSinEscribirEvaluacionNiArchivos(String caso) throws Exception {
         var f=foto();var d=datos(true,false);List<Fotos.Entrada> fotos=List.of(f);
         switch(caso) {
@@ -67,8 +67,8 @@ class EvaluacionesTest extends BasePrueba {
             case "seisMB" -> fotos=List.of(new Fotos.Entrada(new byte[6*1024*1024],"PERFIL","Foto"));
             case "vacia" -> fotos=List.of(new Fotos.Entrada(new byte[0],"PERFIL","Foto"));
             case "sinAceptar" -> d=datos(false,false);
-            case "sinRegistroConFoto" -> d=datos(false,true);
-            case "sinRegistroAceptada" -> {d=datos(true,true);fotos=List.of();}
+            case "sinRegistroConFoto" -> d=datos(true,true);
+            case "sinConsentimientoSinRegistro" -> {d=datos(false,true);fotos=List.of();}
             case "sinNinguna" -> fotos=List.of();
             case "gif" -> fotos=List.of(new Fotos.Entrada(imagen("gif"),"PERFIL","Foto"));
             case "pngFalso" -> fotos=List.of(new Fotos.Entrada(new byte[]{(byte)137,80,78,71,13,10,26,10,1,2,3},"PERFIL","Foto"));
@@ -85,26 +85,26 @@ class EvaluacionesTest extends BasePrueba {
         assertEquals(10,archivos());assertEquals(10,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM fotografia WHERE id_evaluacion=?",r->r.getInt(1),id));
     }
     @Test void observacionesDe255SeConservanY256SeRechazan() throws Exception {
-        var d=datos(false,true);
-        var limite=new Evaluaciones.Datos(d.puesto(),d.postura(),d.criterio(),d.motivo(),d.minutos(),false,false,false,false,false,false,"á".repeat(255),false,true);
+        var d=datos(true,true);
+        var limite=new Evaluaciones.Datos(d.puesto(),d.postura(),d.criterio(),d.motivo(),d.minutos(),false,false,false,false,false,false,"á".repeat(255),true,true);
         int id=servicio.guardar(cuenta(admin),visita,limite,List.of());assertEquals("á".repeat(255),Sql.uno(con,"SELECT otras_observaciones FROM condiciones_puesto WHERE id_evaluacion=?",r->r.getString(1),id));
-        var excesiva=new Evaluaciones.Datos(d.puesto(),d.postura(),d.criterio(),d.motivo(),d.minutos(),false,false,false,false,false,false,"á".repeat(256),false,true);
+        var excesiva=new Evaluaciones.Datos(d.puesto(),d.postura(),d.criterio(),d.motivo(),d.minutos(),false,false,false,false,false,false,"á".repeat(256),true,true);
         assertThrows(IllegalArgumentException.class,()->servicio.guardar(cuenta(admin),visita,excesiva,List.of()));
     }
     @Test void noEvaluaPuestoInactivoAjenoNiVisitaFinalizadaYUsuarioNoAccede() throws Exception {
         Sql.actualizar(con,"UPDATE puesto_trabajo SET activo=FALSE WHERE id_puesto=?",puesto);
         assertTrue(servicio.contexto(cuenta(admin),visita).puestos().isEmpty());
-        assertThrows(IllegalArgumentException.class,()->servicio.guardar(cuenta(admin),visita,datos(false,true),List.of()));
+        assertThrows(IllegalArgumentException.class,()->servicio.guardar(cuenta(admin),visita,datos(true,true),List.of()));
         Sql.actualizar(con,"UPDATE puesto_trabajo SET activo=TRUE WHERE id_puesto=?",puesto);
         dao.contrasena(con,usuario,cuenta(usuario).hash(),false);
         assertThrows(SecurityException.class,()->servicio.contexto(cuenta(usuario),visita));
-        assertThrows(SecurityException.class,()->servicio.guardar(cuenta(usuario),visita,datos(false,true),List.of()));
+        assertThrows(SecurityException.class,()->servicio.guardar(cuenta(usuario),visita,datos(true,true),List.of()));
         int id=servicio.guardar(cuenta(admin),visita,datos(true,false),List.of(foto()));
         int foto=Sql.uno(con,"SELECT id_foto FROM fotografia WHERE id_evaluacion=?",r->r.getInt(1),id);
         assertThrows(SecurityException.class,()->servicio.foto(cuenta(usuario),foto));
         assertArrayEquals(imagen("png"),servicio.foto(cuenta(admin),foto).bytes());
         new Visitas(tx,reloj).finalizar(cuenta(admin),visita,"");
-        assertThrows(IllegalArgumentException.class,()->servicio.guardar(cuenta(admin),visita,datos(false,true),List.of()));
+        assertThrows(IllegalArgumentException.class,()->servicio.guardar(cuenta(admin),visita,datos(true,true),List.of()));
     }
     @Test void falloDeAuditoriaRevierteDatosYRetiraSoloArchivosNuevos() throws Exception {
         var fallo=new BitacoraDao(){@Override public void registrar(Connection c,int actor,LocalDateTime fecha,String tabla,int id,String accion,String a,String n,String detalle)throws SQLException{throw new SQLException("Fallo simulado");}};
@@ -123,14 +123,14 @@ class EvaluacionesTest extends BasePrueba {
         assertEquals(5120,Sql.<Integer>uno(con,"SELECT tamano_kb FROM fotografia WHERE id_evaluacion=?",r->r.getInt(1),id));
         assertEquals("á".repeat(200),servicio.consultar(cuenta(admin),id).fotos().get(0).descripcion());
     }
-    @ParameterizedTest @ValueSource(strings={"puestoAjeno","sinPostura","sinMotivo","criterio","minutos0","minutos721"})
+    @ParameterizedTest @ValueSource(strings={"puestoAjeno","sinPostura","criterio","minutos0","minutos721"})
     void validaContextoYTodosLosCamposObligatorios(String caso) throws Exception {
-        var base=datos(false,true);int elegido=puesto;
+        var base=datos(true,true);int elegido=puesto;
         if(caso.equals("puestoAjeno")) {
             int otroSalon=Sql.insertar(con,"INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) VALUES (?,?,?,1,10)",salon.sede(),"Otro salón","Prueba");
             elegido=Sql.insertar(con,"INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) VALUES (?,1,?,'ESCRITORIO',?)",otroSalon,"Ajeno","Centro");
         }
-        var d=new Evaluaciones.Datos(elegido,caso.equals("sinPostura")?"":base.postura(),caso.equals("criterio")?"OTRO":base.criterio(),caso.equals("sinMotivo")?"":base.motivo(),caso.equals("minutos0")?0:caso.equals("minutos721")?721:120,false,false,false,false,false,false,"",false,true);
+        var d=new Evaluaciones.Datos(elegido,caso.equals("sinPostura")?"":base.postura(),caso.equals("criterio")?"OTRO":base.criterio(),caso.equals("sinMotivo")?"":base.motivo(),caso.equals("minutos0")?0:caso.equals("minutos721")?721:120,false,false,false,false,false,false,"",true,true);
         assertThrows(IllegalArgumentException.class,()->servicio.guardar(cuenta(admin),visita,d,List.of()));assertEquals(0,evaluaciones());assertEquals(0,archivos());
     }
 }

@@ -1,0 +1,1206 @@
+[
+  {
+    "pagina": "visita",
+    "ancho": 1351,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "Ver R-34040"
+      },
+      {
+        "alto": 48,
+        "texto": "Consultar evaluaciones"
+      },
+      {
+        "alto": 48,
+        "texto": "Finalizar visita"
+      }
+    ],
+    "mosaicos": [],
+    "pasosVisibles": [],
+    "url": "/visitas/30069",
+    "viewport": 1366
+  },
+  {
+    "pagina": "visita",
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "Ver R-34040"
+      },
+      {
+        "alto": 48,
+        "texto": "Consultar evaluaciones"
+      },
+      {
+        "alto": 48,
+        "texto": "Finalizar visita"
+      }
+    ],
+    "mosaicos": [],
+    "pasosVisibles": [],
+    "url": "/visitas/30069",
+    "viewport": 1024
+  },
+  {
+    "pagina": "visita",
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "Ver R-34040"
+      },
+      {
+        "alto": 48,
+        "texto": "Consultar evaluaciones"
+      },
+      {
+        "alto": 48,
+        "texto": "Finalizar visita"
+      }
+    ],
+    "mosaicos": [],
+    "pasosVisibles": [],
+    "url": "/visitas/30069",
+    "viewport": 390
+  },
+  {
+    "pagina": "postura",
+    "ancho": 1351,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      }
+    ],
+    "paso": "Paso 2 de 9",
+    "pasosVisibles": [
+      "2"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1366
+  },
+  {
+    "pagina": "postura",
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      }
+    ],
+    "paso": "Paso 2 de 9",
+    "pasosVisibles": [
+      "2"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1024
+  },
+  {
+    "pagina": "postura",
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      }
+    ],
+    "paso": "Paso 2 de 9",
+    "pasosVisibles": [
+      "2"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 390
+  },
+  {
+    "pagina": "postura",
+    "ancho": 795,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 229.671875
+      },
+      {
+        "alto": 160,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 229.671875
+      },
+      {
+        "alto": 160,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 229.6640625
+      }
+    ],
+    "paso": "Paso 2 de 9",
+    "pasosVisibles": [
+      "2"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 810
+  },
+  {
+    "pagina": "postura",
+    "ancho": 1065,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      }
+    ],
+    "paso": "Paso 2 de 9",
+    "pasosVisibles": [
+      "2"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1080
+  },
+  {
+    "pagina": "condiciones",
+    "ancho": 1351,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      }
+    ],
+    "paso": "Paso 5 de 9",
+    "pasosVisibles": [
+      "5"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1366
+  },
+  {
+    "pagina": "condiciones",
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      }
+    ],
+    "paso": "Paso 5 de 9",
+    "pasosVisibles": [
+      "5"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1024
+  },
+  {
+    "pagina": "condiciones",
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      }
+    ],
+    "paso": "Paso 5 de 9",
+    "pasosVisibles": [
+      "5"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 390
+  },
+  {
+    "pagina": "condiciones",
+    "ancho": 795,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 229.671875
+      },
+      {
+        "alto": 160,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 229.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 229.671875
+      },
+      {
+        "alto": 160,
+        "ancho": 229.6640625
+      }
+    ],
+    "paso": "Paso 5 de 9",
+    "pasosVisibles": [
+      "5"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 810
+  },
+  {
+    "pagina": "condiciones",
+    "ancho": 1065,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      },
+      {
+        "alto": 160,
+        "ancho": 319.6640625
+      }
+    ],
+    "paso": "Paso 5 de 9",
+    "pasosVisibles": [
+      "5"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1080
+  },
+  {
+    "pagina": "fotos",
+    "ancho": 1351,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Tomar foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Subir foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Tomar foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Subir foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Tomar foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Subir foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Quitar foto 1"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 160,
+        "ancho": 280.5
+      },
+      {
+        "alto": 96,
+        "ancho": 485
+      },
+      {
+        "alto": 96,
+        "ancho": 485
+      }
+    ],
+    "paso": "Paso 6 de 9",
+    "pasosVisibles": [
+      "6"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1366
+  },
+  {
+    "pagina": "fotos",
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Tomar foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Subir foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Tomar foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Subir foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Tomar foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Subir foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Quitar foto 1"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 160,
+        "ancho": 301
+      },
+      {
+        "alto": 96,
+        "ancho": 369.5
+      },
+      {
+        "alto": 96,
+        "ancho": 369.5
+      }
+    ],
+    "paso": "Paso 6 de 9",
+    "pasosVisibles": [
+      "6"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1024
+  },
+  {
+    "pagina": "fotos",
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Tomar foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Subir foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Tomar foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Subir foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Tomar foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Subir foto"
+      },
+      {
+        "alto": 48,
+        "texto": "Quitar foto 1"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 160,
+        "ancho": 144.5
+      },
+      {
+        "alto": 96,
+        "ancho": 129.5
+      },
+      {
+        "alto": 96,
+        "ancho": 129.5
+      }
+    ],
+    "paso": "Paso 6 de 9",
+    "pasosVisibles": [
+      "6"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 390
+  },
+  {
+    "pagina": "ajustes-provisionales-sin-respuesta",
+    "ancho": 1351,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 8 de 9",
+    "pasosVisibles": [
+      "8"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1366
+  },
+  {
+    "pagina": "ajustes-provisionales-sin-respuesta",
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 8 de 9",
+    "pasosVisibles": [
+      "8"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1024
+  },
+  {
+    "pagina": "ajustes-provisionales-sin-respuesta",
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Continuar →"
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 8 de 9",
+    "pasosVisibles": [
+      "8"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 390
+  },
+  {
+    "pagina": "resultado-provisional",
+    "ancho": 1351,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 9 de 9",
+    "pasosVisibles": [
+      "9"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1366
+  },
+  {
+    "pagina": "resultado-provisional",
+    "ancho": 1009,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 9 de 9",
+    "pasosVisibles": [
+      "9"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1024
+  },
+  {
+    "pagina": "resultado-provisional",
+    "ancho": 375,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 9 de 9",
+    "pasosVisibles": [
+      "9"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 390
+  },
+  {
+    "pagina": "resultado-provisional",
+    "ancho": 795,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 9 de 9",
+    "pasosVisibles": [
+      "9"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 810
+  },
+  {
+    "pagina": "resultado-provisional",
+    "ancho": 1065,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 48,
+        "texto": "Guardar evaluación"
+      }
+    ],
+    "mosaicos": [],
+    "paso": "Paso 9 de 9",
+    "pasosVisibles": [
+      "9"
+    ],
+    "url": "/evaluaciones/nueva",
+    "viewport": 1080
+  },
+  {
+    "pagina": "visita",
+    "ancho": 795,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "Ver R-34040"
+      },
+      {
+        "alto": 48,
+        "texto": "Consultar evaluaciones"
+      },
+      {
+        "alto": 48,
+        "texto": "Finalizar visita"
+      }
+    ],
+    "mosaicos": [],
+    "pasosVisibles": [],
+    "url": "/visitas/30069",
+    "viewport": 810
+  },
+  {
+    "pagina": "visita",
+    "ancho": 1065,
+    "botones": [
+      {
+        "alto": 44,
+        "texto": "← Atrás"
+      },
+      {
+        "alto": 44,
+        "texto": "Salir"
+      },
+      {
+        "alto": 48,
+        "texto": "Ver R-34040"
+      },
+      {
+        "alto": 48,
+        "texto": "Consultar evaluaciones"
+      },
+      {
+        "alto": 48,
+        "texto": "Finalizar visita"
+      }
+    ],
+    "mosaicos": [],
+    "pasosVisibles": [],
+    "url": "/visitas/30069",
+    "viewport": 1080
+  }
+]

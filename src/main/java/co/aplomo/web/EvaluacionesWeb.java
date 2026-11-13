@@ -69,7 +69,9 @@ public final class EvaluacionesWeb {
         }
         if (ruta.equals("/evaluaciones/nueva") && !post) {
             int visita=entero(Router.consulta(x).get("visita"),"visita");
-            Router.enviar(x,200,PaginasEvaluacion.nueva(s,servicio.contexto(s.cuenta(),visita))); return;
+            var consulta=Router.consulta(x);
+            int puesto=consulta.containsKey("puesto")?entero(consulta.get("puesto"),"puesto"):0;
+            Router.enviar(x,200,PaginasEvaluacion.nueva(s,servicio.contexto(s.cuenta(),visita),puesto)); return;
         }
         if (!post && ruta.matches("/evaluaciones/[1-9][0-9]*")) {
             int id=entero(ruta.substring(14),"evaluación");var analisis=servicio.analisis().listar(s.cuenta(),id);String pagina=PaginasEvaluacion.detalle(s,servicio.consultar(s.cuenta(),id),analisis,Router.consulta(x).get("aviso"));
@@ -83,6 +85,12 @@ public final class EvaluacionesWeb {
             if (!Sesiones.csrfValido(s,f.get("csrf"))) { responder(x,403,"El formulario venció. Abre otra pestaña, inicia sesión y vuelve aquí para reintentar sin perder lo escrito.");return; }
             int visita=entero(f.get("visita"),"visita");
             String registro=Validacion.opcion(f.get("registro"),"registro fotográfico","CON_FOTOS","SIN_REGISTRO_FOTOGRAFICO");
+            if("guiado".equals(f.get("recorrido"))) {
+                Validacion.opcion(f.get("minutos"),"el tiempo de la jornada","30","90","180","300");
+                Validacion.opcion(f.get("condiciones_respondidas"),"las condiciones del puesto","NINGUNA","SELECCION");
+                boolean alguna=List.of("escritorio","pantalla","pies","apoyapies","apoyabrazos","regulable").stream().anyMatch(k->si(f,k));
+                if(alguna != "SELECCION".equals(f.get("condiciones_respondidas"))) throw new IllegalArgumentException("Revisa las condiciones del puesto o elige Ninguna.");
+            }
             var datos=new Evaluaciones.Datos(entero(f.get("puesto"),"puesto"),f.get("postura"),f.get("criterio"),f.get("motivo"),
                     Validacion.entero(f.get("minutos"),"minutos por jornada",1,720),si(f,"escritorio"),si(f,"pantalla"),si(f,"pies"),si(f,"apoyapies"),si(f,"apoyabrazos"),si(f,"regulable"),f.get("observaciones"),si(f,"acepta"),registro.equals("SIN_REGISTRO_FOTOGRAFICO"));
             List<Fotos.Entrada> fotos=new ArrayList<>();

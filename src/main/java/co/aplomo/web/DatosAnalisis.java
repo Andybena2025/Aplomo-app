@@ -49,7 +49,7 @@ public final class DatosAnalisis {
         }
         return f;
     }
-    private static boolean si(Map<String,String> f,String k){String v=f.getOrDefault(k,"no");if(!v.equals("si")&&!v.equals("no"))throw new IllegalArgumentException("Revisa las casillas del análisis.");return v.equals("si");}
+    private static boolean si(Map<String,String> f,String k){String v=f.get(k);if(!"si".equals(v)&&!"no".equals(v))throw new IllegalArgumentException("Revisa las casillas del análisis.");return v.equals("si");}
     private static String opcion(String v,String campo,String... opciones){return co.aplomo.servicio.Validacion.opcion(v,campo,opciones);}
     private static int entero(String v){return co.aplomo.servicio.Validacion.entero(v,"dimensiones de la foto",1,Integer.MAX_VALUE);}
     private static double numero(String v){try{double n=Double.parseDouble(v);if(!Double.isFinite(n))throw new NumberFormatException();return n;}catch(RuntimeException x){throw new IllegalArgumentException("Escribe un ángulo o una coordenada válidos.");}}

@@ -530,3 +530,34 @@ header.top{position:relative;z-index:3}
 @media(min-width:1400px){.top .logo-cabecera{display:none}}
 .panel-formulario{min-width:0}.panel-formulario>form{width:100%;max-width:680px}.panel-formulario>.cuenta-form{margin-inline:0}
 .empty.marca[hidden]{display:none!important}
+
+/* Paso 13E · Fase A: una pregunta visible, opciones grandes y navegación accesible. */
+.tour-puestos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.tour-puesto{display:flex;flex-direction:column;align-items:flex-start;gap:12px;color:var(--ivory);text-decoration:none;min-width:0}
+.tour-puesto:hover,.tour-puesto:focus-visible{border-color:var(--ivory)}
+[data-tour]{min-width:0}
+[data-tour] [hidden]{display:none!important}
+.tour-progreso{position:sticky;top:0;z-index:2;display:grid;gap:16px;margin-bottom:24px;padding-block:12px;background:var(--bg)}
+.tour-progreso progress{appearance:none;width:100%;height:4px;border:0;border-radius:4px;overflow:hidden;background:var(--line)}
+.tour-progreso progress::-webkit-progress-bar{background:var(--line)}
+.tour-progreso progress::-webkit-progress-value{background:var(--ivory)}
+.tour-progreso progress::-moz-progress-bar{background:var(--ivory)}
+.tour-opciones{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tour-opcion{position:relative;display:flex;min-width:0;min-height:160px;border:1px solid var(--line2);border-radius:14px;background:var(--card);cursor:pointer;align-items:stretch}
+.tour-opcion>input{position:absolute;top:12px;left:12px;width:22px;height:22px;margin:0;accent-color:var(--ivory)}
+.tour-opcion>span{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:42px 16px 20px;text-align:center;overflow-wrap:anywhere}
+.tour-opcion img{display:block;width:100%;height:110px;object-fit:contain;border-radius:6px}
+.tour-opcion:has(input:checked){border-color:var(--ivory);box-shadow:inset 0 0 0 1px var(--ivory);background:#252528}
+.tour-opcion:focus-within{outline:2px solid var(--ivory);outline-offset:4px}
+.tour-consentimiento{max-width:680px;min-height:120px}
+.tour-consentimiento>span{text-align:left;align-items:flex-start;justify-content:center;padding-left:52px;padding-top:24px}
+.tour-consentimiento>input{top:calc(50% - 11px)}
+.tour-pregunta{transition:border-color .2s;min-width:0}
+.tour-sin-respuesta{border-color:var(--amarillo)}
+.tour-pendiente{color:var(--amarillo);font-size:14px;margin-top:16px}
+.tour-entra{animation:tourEntra .22s ease-out}
+.tour-uso{grid-template-columns:repeat(2,minmax(0,1fr))}
+@keyframes tourEntra{from{opacity:.3;transform:translateX(14px)}to{opacity:1;transform:none}}
+@media(max-width:1100px){.tour-opciones{grid-template-columns:repeat(3,minmax(0,1fr))}.tour-uso{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.tour-opciones{grid-template-columns:repeat(2,minmax(0,1fr))}.tour-puestos{grid-template-columns:1fr}.tour-opcion>span{padding-inline:12px}.tour-progreso .row{flex-wrap:nowrap}.tour-progreso #pasoActual{font-size:13px}.tour-pregunta{padding:20px}}
+@media(prefers-reduced-motion:reduce){.tour-entra{animation:none}.tour-pregunta{transition:none}}

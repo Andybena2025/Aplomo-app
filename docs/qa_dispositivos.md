@@ -104,3 +104,12 @@ Navegador integrado: Inicio 1920/1440/390 y Nueva empresa/login 1920 capturados;
 724 pruebas aprobadas. Ensayo solo en `rula_ergonomia_pruebas`, ROLLBACK confirmado y carpeta propia de fotos retirada antes de la suite final. No se cargó el demo en la base real. Evidencia: `capturas_13d2/`; detalle: [informe_paso13d2.md](informe_paso13d2.md).
 
 **Pendientes por decisión expresa de Andy:** sin descargas; Chrome/Edge/Firefox de esta versión no probados. Claude hará QA en Chromium. Tampoco se certifica dedo en dispositivo físico, dos versiones estables, cambio real de movimiento reducido ni nueva impresión; las reglas CSS respectivas están presentes. Safari y el navegador integrado se identifican por separado y no se presentan como cobertura de los tres navegadores.
+
+
+## Paso 13E-A · 13 nov 2026
+
+Safari instalado: recorrido Planta sin fotos con consentimiento físico, nota y guardado sin puntaje; luego revisión de Oficina y Atrás único en la versión final. Navegador integrado: recorrido con foto, uso Para medir, ángulos manuales, respuestas explícitas y resultado 7 Rojo Nivel 4 guardado. Ninguna excluyente, descripción editable y selección con Espacio comprobados. Usuario por dirección directa recibe Acceso denegado.
+
+28 medidas finales de visita, postura, condiciones, fotos, ajustes provisionales y resultado a 1366/1024/390; visita/postura/condiciones/fotos/resultado también 810/1080. Sin desbordamiento, botones 48/44 y mosaicos ≥160. Navegación fija: Atrás a 12 px con scroll de 2755 px. Capturas en `capturas_13e/fase_a/`; medidas iniciales y finales separadas. 745 pruebas aprobadas; tres avisos MediaPipe/WebGL, sin errores JS.
+
+Dos ensayos reversibles en rula_ergonomia_pruebas cerrados con ROLLBACK; fotos temporales retiradas. Sin QA en base real, sin descargar navegadores ni guardar contraseñas. Imágenes tour pendientes de Claude, con fallback de texto/borde. Dedo físico y cambio real de movimiento reducido no probados. B/C y nuevo paso de lado/Ambos esperan OK de Andy. [Informe completo](informe_paso13e.md).

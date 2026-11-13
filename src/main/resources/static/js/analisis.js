@@ -5,7 +5,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   const cv=form.querySelector('#lienzo'), ctx=cv.getContext('2d');
   let activa=0, imagen=null, arrastre=null, temporizador=null, numeroPeticion=0;
   const foto=()=>obtenerFotos()[activa];
-  const estado=f=>f.analisis||(f.analisis={habilitada:f.vista==='PERFIL',lado:'DERECHO',puntos:{},manual:{},ajustes:{},giro:'MEDIO',piernas:true,actividad:false,carga:'MENOS_2KG_INTERMITENTE',html:null,revision:0});
+  const estado=f=>f.analisis||(f.analisis={habilitada:form.dataset.tour?f.uso==='MEDIR':f.vista==='PERFIL',lado:'DERECHO',puntos:{},manual:{},ajustes:{},ajustesConfirmados:false,giro:'',piernas:null,actividad:null,carga:'',html:null,revision:0});
   const detectarBoton=form.querySelector('[data-detectar-puntos]');
   const estadoDeteccion=form.querySelector('[data-estado-deteccion]');
   const falloDeteccion='No se encontró una persona en la foto. Marca los puntos a mano.';
@@ -35,7 +35,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
         if(f===foto()){sincronizar();dibujar();await medir(f).catch(e=>aviso(e.message));}
       }
     }catch(_){s.ia='error';s.mensajeIA=falloDeteccion;}
-    finally{if(f===foto())mostrarDeteccion();}
+    finally{if(f===foto())mostrarDeteccion();form.dispatchEvent(new Event('aplomo:analisis'));}
   }
   function grupos(f){
     const p=estado(f).puntos;
@@ -44,7 +44,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   }
   function completo(f){const s=estado(f),g=grupos(f);return segmentos.every(k=>s.manual[k]!==undefined?s.manual[k]!==''&&Number.isFinite(Number(s.manual[k])):g[k].length===3);}
   function parametros(f,indice){
-    const s=estado(f),g=grupos(f),p=new URLSearchParams({foto:String(f.id||indice),lado:s.lado,ancho:String(f.ancho||1),alto:String(f.alto||1),giro:s.giro,piernasApoyadas:s.piernas?'si':'no',actividad:s.actividad?'si':'no',carga:s.carga});
+    const s=estado(f),g=grupos(f),p=new URLSearchParams({foto:String(f.id||indice),lado:s.lado,ancho:String(f.ancho||1),alto:String(f.alto||1),giro:s.giro,piernasApoyadas:s.piernas===null?'':s.piernas?'si':'no',actividad:s.actividad===null?'':s.actividad?'si':'no',carga:s.carga});
     for(const k of segmentos){p.set(k+'_modo',s.manual[k]!==undefined?'MANUAL':'PUNTOS');p.set(k+'_puntos',g[k].map(q=>q.x.toFixed(6)+','+q.y.toFixed(6)).join(';'));if(s.manual[k]!==undefined)p.set(k+'_grados',s.manual[k]);}
     for(const el of form.querySelectorAll('[data-ajuste]'))p.set(el.dataset.ajuste,s.ajustes[el.dataset.ajuste]?'si':'no');
     return p;
@@ -86,7 +86,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
       fila.querySelector('[data-grados]').textContent=m?Number(m.dataset.grados).toFixed(2)+'°':'—';fila.querySelector('[data-puntos]').textContent=m?m.dataset.puntos+' pts':'—';
     }
     const parcial=form.querySelector('[data-vista-parcial]');parcial.replaceChildren();
-    if(pagina){const pill=pagina.querySelector('.pill');parcial.append('Vista previa: ',pill.cloneNode(true));}else parcial.textContent='Completa los ángulos para ver la vista previa.';
+    if(pagina){const pill=pagina.querySelector('.pill');parcial.append('Vista previa: ',pill.cloneNode(true));}else parcial.textContent=completo(f)?'Responde los ajustes, el giro, las piernas, la actividad y la carga para ver la vista previa.':'Completa los ángulos para ver la vista previa.';
     dibujar();
   }
   function sincronizar(){
@@ -95,7 +95,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     form.querySelector('[data-lado]').value=s.lado;
     for(const fila of form.querySelectorAll('[data-segmento]')){const k=fila.dataset.segmento,manual=s.manual[k]!==undefined;fila.querySelector('[data-manual]').checked=manual;fila.querySelector('[data-angulo-manual]').hidden=!manual;fila.querySelector('[data-angulo-manual]').value=manual?s.manual[k]:'';}
     for(const el of form.querySelectorAll('[data-ajuste]')){el.checked=!!s.ajustes[el.dataset.ajuste];el.closest('.opt').classList.toggle('on',el.checked);}
-    form.querySelector('[data-giro]').value=s.giro;form.querySelector('[data-piernas]').checked=s.piernas;form.querySelector('[data-actividad]').checked=s.actividad;form.querySelector('[data-carga]').value=s.carga;
+    form.querySelector('[data-giro]').value=s.giro;form.querySelector('[data-piernas]').value=s.piernas===null?'':s.piernas?'si':'no';form.querySelector('[data-actividad]').value=s.actividad===null?'':s.actividad?'si':'no';form.querySelector('[data-ningun-ajuste]').checked=s.ajustesConfirmados&&!Object.values(s.ajustes).some(Boolean);form.querySelector('[data-carga]').value=s.carga;
     siguientePunto();pintarMedidas(f);mostrarDeteccion();
   }
   function cargarFoto(){
@@ -111,6 +111,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   }
   async function medir(f,exigir=false){
     const s=estado(f);if(!s.habilitada||!completo(f)){if(exigir)throw new Error('Completa los ángulos de la foto '+(obtenerFotos().indexOf(f)+1)+': marca sus puntos o escribe los cinco ángulos.');return;}
+    if(!respondido(f))return;
     const revision=s.revision,peticion=++numeroPeticion,p=parametros(f,obtenerFotos().indexOf(f));p.set('csrf',form.elements.csrf.value);p.set('visita',form.elements.visita.value);for(const k of ['escritorio','pantalla','pies','apoyapies','apoyabrazos','regulable']){const e=form.elements[k];p.set(k,e?.type==='checkbox'?(e.checked?'si':'no'):(e?.value||'no'));}
     const terminarProgreso=window.AplomoProgreso?.iniciar('Calculando el resultado…');
     try{
@@ -124,7 +125,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     }finally{terminarProgreso?.();}
   }
   function cambiado(){
-    const f=foto();if(!f)return;const s=estado(f);s.revision++;s.html=null;pintarMedidas(f);siguientePunto();dibujar();clearTimeout(temporizador);
+    const f=foto();if(!f)return;const s=estado(f);s.revision++;s.html=null;pintarMedidas(f);siguientePunto();dibujar();clearTimeout(temporizador);form.dispatchEvent(new Event('aplomo:analisis'));
     temporizador=setTimeout(()=>medir(f).catch(e=>aviso(e.message)),180);
   }
   const posicion=e=>{const r=cv.getBoundingClientRect();return{x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))};};
@@ -148,12 +149,16 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     const k=fila.dataset.segmento;fila.querySelector('[data-manual]').addEventListener('change',e=>{const s=estado(foto());if(e.target.checked)s.manual[k]='';else delete s.manual[k];sincronizar();cambiado();});
     fila.querySelector('[data-angulo-manual]').addEventListener('input',e=>{estado(foto()).manual[k]=e.target.value;cambiado();});
   }
-  for(const el of form.querySelectorAll('[data-ajuste]'))el.addEventListener('change',()=>{estado(foto()).ajustes[el.dataset.ajuste]=el.checked;el.closest('.opt').classList.toggle('on',el.checked);cambiado();});
-  for(const[selector,k]of[['[data-giro]','giro'],['[data-piernas]','piernas'],['[data-actividad]','actividad'],['[data-carga]','carga']])form.querySelector(selector).addEventListener('change',e=>{estado(foto())[k]=e.target.type==='checkbox'?e.target.checked:e.target.value;cambiado();});
+  for(const el of form.querySelectorAll('[data-ajuste]'))el.addEventListener('change',()=>{const s=estado(foto());s.ajustes[el.dataset.ajuste]=el.checked;s.ajustesConfirmados=Object.values(s.ajustes).some(Boolean);sincronizar();cambiado();});
+  form.querySelector('[data-ningun-ajuste]').addEventListener('change',e=>{const s=estado(foto());s.ajustes={};s.ajustesConfirmados=e.target.checked;sincronizar();cambiado();});
+  for(const[selector,k]of[['[data-giro]','giro'],['[data-piernas]','piernas'],['[data-actividad]','actividad'],['[data-carga]','carga']])form.querySelector(selector).addEventListener('change',e=>{estado(foto())[k]=['piernas','actividad'].includes(k)?(e.target.value===''?null:e.target.value==='si'):e.target.value;cambiado();});
+  function respondido(f){const s=estado(f);return s.ajustesConfirmados&&!!s.giro&&s.piernas!==null&&s.actividad!==null&&!!s.carga;}
   return {
-    iniciar(){const fs=obtenerFotos();fs.forEach(estado);if(fs.length&&!fs.some(f=>estado(f).habilitada))estado(fs[0]).habilitada=true;activa=Math.min(activa,Math.max(0,fs.length-1));tabs();sincronizar();cargarFoto();},
+    medicionesCompletas(){const fs=obtenerFotos().filter(f=>estado(f).habilitada);return !!fs.length&&fs.every(completo);},
+    respuestasCompletas(){return obtenerFotos().filter(f=>estado(f).habilitada).every(respondido);},
+    iniciar(){const fs=obtenerFotos();fs.forEach(estado);if(!form.dataset.tour&&fs.length&&!fs.some(f=>estado(f).habilitada))estado(fs[0]).habilitada=true;activa=Math.min(activa,Math.max(0,fs.length-1));tabs();sincronizar();cargarFoto();},
     async paso5(){const fs=obtenerFotos().filter(f=>estado(f).habilitada);if(!fs.length)throw new Error('Selecciona al menos una foto para analizar.');for(const f of fs)await medir(f,true);if(!estado(foto()).habilitada)activa=obtenerFotos().indexOf(fs[0]);tabs();sincronizar();},
-    async paso6(){await this.paso5();const destino=form.querySelector('[data-resultados]');destino.replaceChildren();for(const[f,i]of obtenerFotos().map((f,i)=>[f,i]).filter(([f])=>estado(f).habilitada)){const bloque=document.createElement('div');bloque.className='stack resultado-por-foto';const titulo=document.createElement('h3');titulo.textContent='Foto '+(i+1)+' · '+(estado(f).lado==='DERECHO'?'Lado derecho':'Lado izquierdo');bloque.append(titulo);const contenido=new DOMParser().parseFromString(estado(f).html,'text/html').querySelector('[data-calculo]');bloque.append(contenido);destino.append(bloque);}},
+    async paso6(){for(const f of obtenerFotos().filter(f=>estado(f).habilitada))if(!respondido(f))throw new Error('Responde los ajustes (o Ninguno), el giro de muñeca, las piernas, la actividad y la carga de cada foto.');await this.paso5();const destino=form.querySelector('[data-resultados]');destino.replaceChildren();for(const[f,i]of obtenerFotos().map((f,i)=>[f,i]).filter(([f])=>estado(f).habilitada)){const bloque=document.createElement('div');bloque.className='stack resultado-por-foto';const titulo=document.createElement('h3');titulo.textContent='Foto '+(i+1)+' · '+(estado(f).lado==='DERECHO'?'Lado derecho':'Lado izquierdo');bloque.append(titulo);const contenido=new DOMParser().parseFromString(estado(f).html,'text/html').querySelector('[data-calculo]');bloque.append(contenido);destino.append(bloque);}},
     solicitudes(){return obtenerFotos().flatMap((f,i)=>estado(f).habilitada?[parametros(f,i).toString()]:[]);}
   };
 };

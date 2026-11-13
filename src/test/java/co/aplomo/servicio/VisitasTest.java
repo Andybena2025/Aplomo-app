@@ -22,6 +22,7 @@ class VisitasTest extends BasePrueba {
 
     @BeforeEach void prepararVisita() throws Exception {
         reservas = new Reservas(tx, reloj); visitas = new Visitas(tx, reloj); salon = crearSalon();
+        new Empresas(tx).guardar(cuenta(admin), new Puesto(0,salon.id(),null,null,1,"Puesto disponible","ESCRITORIO","Centro",null,true));
         reserva = reservas.guardar(cuenta(admin), 0, solicitud(salon));
     }
 

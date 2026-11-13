@@ -61,10 +61,10 @@ class HttpEvaluacionesTest extends co.aplomo.soporte.HttpPrueba {
         var r=enviar(f,fotos,nombre);assertEquals(400,r.statusCode(),r.body());assertTrue(r.headers().firstValue("Content-Type").orElseThrow().startsWith("text/plain"));assertFalse(r.body().contains("SQLException"));
         assertEquals(0,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM evaluacion WHERE id_visita=?",rs->rs.getInt(1),visita));
     }
-    @Test void sinFotosEsExplicitoYNoRequiereAceptarLasFotosQueNoExisten() throws Exception {
-        entrar(admin);var f=campos(csrf(get("/evaluaciones/nueva?visita="+visita)));f.put("registro","SIN_REGISTRO_FOTOGRAFICO");f.remove("acepta");
+    @Test void sinFotosConservaConsentimientoFisicoSinAceptarFotografias() throws Exception {
+        entrar(admin);var f=campos(csrf(get("/evaluaciones/nueva?visita="+visita)));f.put("registro","SIN_REGISTRO_FOTOGRAFICO");
         assertEquals(201,enviar(f,List.of(),"foto.jpg").statusCode());
-        assertFalse(Sql.<Boolean>uno(con,"SELECT persona_acepto FROM evaluacion WHERE id_visita=?",r->r.getBoolean(1),visita));
+        assertTrue(Sql.<Boolean>uno(con,"SELECT persona_acepto FROM evaluacion WHERE id_visita=?",r->r.getBoolean(1),visita));
     }
     @Test void sinTokenNoGuardaNadaYLaPaginaTieneElJavaScriptDeConservacion() throws Exception {
         entrar(admin);var f=campos("incorrecto");assertEquals(403,enviar(f,List.of(png()),"foto.jpg").statusCode());
