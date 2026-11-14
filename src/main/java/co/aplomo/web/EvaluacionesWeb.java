@@ -44,7 +44,7 @@ public final class EvaluacionesWeb {
                 }
                 var calculo=servicio.analisis().previsualizar(s.cuenta(),entero(f.get("visita"),"visita"),DatosAnalisis.leer(f));
                 Map<String,Boolean> condiciones=Map.of("escritorio_muy_alto",si(f,"escritorio"),"pantalla_muy_alta",si(f,"pantalla"),"pies_colgando",si(f,"pies"),"tiene_apoyapies",si(f,"apoyapies"),"silla_con_apoyabrazos",si(f,"apoyabrazos"),"silla_regulable",si(f,"regulable"));
-                var propuestas=servicio.sugerencias().previsualizar(s.cuenta(),calculo,condiciones);String resultado=PaginasAnalisis.resultado(calculo);StringBuilder html=new StringBuilder(resultado.substring(0,resultado.length()-6)).append("<div class=\"stack\"><span class=\"eyebrow\">Sugerencias del sistema</span>");
+                var propuestas=servicio.sugerencias().previsualizar(s.cuenta(),calculo,condiciones);String resultado=PaginasAnalisis.resultado(calculo);StringBuilder html=new StringBuilder(resultado.substring(0,resultado.length()-6)).append("<div class=\"stack\"><h3>Sugerencias · aparte del puntaje</h3>");
                 for(var regla:propuestas)html.append("<div class=\"sug\">").append(Html.escapar(regla.texto())).append("</div>");
                 if(propuestas.isEmpty())html.append("<p class=\"hint\">No hay reglas que apliquen. El análisis se puede guardar; si es Amarillo o Rojo, agrega después al menos una sugerencia.</p>");
                 Router.enviar(x,200,html.append("</div></div>").toString());
@@ -65,8 +65,8 @@ public final class EvaluacionesWeb {
         if(ruta.matches("/evaluaciones/[1-9][0-9]*/analisis")&&post) {
             try {
                 var f=Router.formulario(x);if(!Sesiones.csrfValido(s,f.get("csrf"))){responder(x,403,"El formulario venció. Inicia sesión en otra pestaña y vuelve a intentarlo aquí.");return;}
-                int id=entero(ruta.split("/")[2],"evaluación");servicio.analisis().guardar(s.cuenta(),id,DatosAnalisis.solicitudes(f));
-                x.getResponseHeaders().set("Location","/evaluaciones/"+id+"?aviso=An%C3%A1lisis+guardado.");responder(x,201,"Análisis guardado.");
+                int id=entero(ruta.split("/")[2],"evaluación");validarDestino(f);var consulta=servicio.consultar(s.cuenta(),id);servicio.analisis().guardar(s.cuenta(),id,DatosAnalisis.solicitudes(f));
+                x.getResponseHeaders().set("Location",destino(s,consulta.ficha().visita(),id,f,"Análisis guardado."));responder(x,201,"Análisis guardado.");
             }catch(IllegalArgumentException e){responder(x,400,e.getMessage());}
             catch(SQLException|IOException e){responder(x,503,"No pudimos guardar. Tus ángulos y ajustes se conservan; inténtalo de nuevo.");}
             return;
@@ -100,11 +100,18 @@ public final class EvaluacionesWeb {
             List<Fotos.Entrada> fotos=new ArrayList<>();
             for(var p:partes) if(p.archivo()!=null && !(p.archivo().isEmpty() && p.bytes().length==0))
                 fotos.add(new Fotos.Entrada(p.bytes(),f.get(p.nombre()+"_vista"),f.get(p.nombre()+"_descripcion")));
+            validarDestino(f);
             int id=servicio.guardar(s.cuenta(),visita,datos,fotos,"si".equals(f.get("asistente_completo"))?DatosAnalisis.solicitudes(f):null);
-            x.getResponseHeaders().set("Location","/evaluaciones/"+id+"?aviso=Evaluaci%C3%B3n+guardada.");
+            x.getResponseHeaders().set("Location",destino(s,visita,id,f,"Evaluación guardada."));
             responder(x,201,"Evaluación guardada.");
         } catch(IllegalArgumentException e) { responder(x,400,e.getMessage()); }
         catch(SQLException | IOException e) { responder(x,503,"No pudimos guardar la evaluación. Tus campos y fotos siguen seleccionados; inténtalo de nuevo."); }
+    }
+    private static void validarDestino(Map<String,String> f){if(f.containsKey("destino_guardado"))Validacion.opcion(f.get("destino_guardado"),"el destino al guardar","SIGUIENTE","VOLVER");}
+    private String destino(Sesion s,int visita,int evaluacion,Map<String,String> f,String aviso)throws SQLException {
+        if(!f.containsKey("destino_guardado"))return "/evaluaciones/"+evaluacion+"?aviso="+java.net.URLEncoder.encode(aviso,StandardCharsets.UTF_8);
+        if("SIGUIENTE".equals(f.get("destino_guardado"))){try{int puesto=servicio.siguientePendiente(s.cuenta(),visita);if(puesto!=0)return "/evaluaciones/nueva?visita="+visita+"&puesto="+puesto;aviso="Todos los puestos están evaluados";}catch(SQLException|IllegalArgumentException fallo){/* Ya se guardó: volver a la visita evita invitar a duplicar el envío. */}}
+        return "/visitas/"+visita+"?aviso="+java.net.URLEncoder.encode(aviso,StandardCharsets.UTF_8);
     }
     private static boolean si(Map<String,String> f,String n) { return "si".equals(f.get(n)); }
     private static int entero(String v,String n) { return Validacion.entero(v,n,1,Integer.MAX_VALUE); }

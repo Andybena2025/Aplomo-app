@@ -15,10 +15,6 @@ window.crearRecorridoCorporal=(form,analizador,aviso,renovar,alCambiar,alTermina
   panel.querySelector('[data-analizar-foto]').closest('label').hidden=true;
   editor.querySelector('[data-lado]').closest('.field').hidden=true;
   medida.lastElementChild.hidden=true;rangos.hidden=false;medida.append(rangos);
-  const esfuerzo=form.querySelector('[data-paso="9"]');esfuerzo.querySelector('h2').textContent='Actividad y carga';
-  esfuerzo.querySelector(':scope > p').textContent='Completa la actividad y la carga para cada foto y lado. El esfuerzo se aplica a los grupos A y B.';
-  esfuerzo.querySelector('.card').hidden=true;esfuerzo.querySelector('[data-vista-parcial]').hidden=true;
-  const finalEsfuerzo=document.createElement('p');finalEsfuerzo.className='hint';finalEsfuerzo.textContent='Puntaje final: Pendiente';esfuerzo.append(finalEsfuerzo);
   const actual=()=>{const d=analizador.datos();if(!d)return null;d.estado.recorrido||={confirmados:{},ajustes:{},elecciones:{},noFoto:{},manualEscrito:{},sugerencias:{}};return {...d,r:d.estado.recorrido,k:orden[segmento]};};
   const radios=k=>[...rangos.querySelectorAll(`[data-rangos="${k}"] input[type="radio"]`)];
   const igual=(k,a,b)=>angulares.includes(k)?Number(a)===Number(b):a===b;
@@ -27,7 +23,7 @@ window.crearRecorridoCorporal=(form,analizador,aviso,renovar,alCambiar,alTermina
     const d=actual();if(!d)return;
     titulo.textContent=d.k==='GIRO'?'¿Cómo está el giro de la muñeca?':d.k==='PIERNAS'?'¿Cómo están las piernas y los pies?':`¿Cómo está ${d.k==='MUNECA'?'la':'el'} ${nombres[d.k].toLowerCase()}?`;
     // Las sugerencias se muestran para confirmar; nunca cuentan como una respuesta confirmada.
-    if(d.k==='PIERNAS'&&d.r.elecciones.PIERNAS===undefined&&form.elements.pies?.checked){d.r.elecciones.PIERNAS='no';d.r.piernasSugeridas=true;}
+    if(d.k==='PIERNAS'&&d.r.elecciones.PIERNAS===undefined&&(form.elements.pies?.checked||form.elements.pies?.value==='si')){d.r.elecciones.PIERNAS='no';d.r.piernasSugeridas=true;}
     form.querySelectorAll('[data-pildora]').forEach(p=>{const k=p.dataset.pildora;p.textContent=(d.r.confirmados[k]?'✓ ':'')+nombres[k];if(k===d.k)p.setAttribute('aria-current','step');else p.removeAttribute('aria-current');});
     form.querySelector('[data-tarea-cuerpo]').textContent=`Foto ${(d.foto.indiceFoto??indice)+1} · Lado ${d.estado.lado==='DERECHO'?'derecho':'izquierdo'} · ${indice+1} de ${tareas.length}`;
     form.querySelector('[data-puntaje-parcial]').textContent=d.r.ultimo?`Puntaje parcial · ${d.r.ultimo}`:'Puntaje parcial · Pendiente';
@@ -69,7 +65,7 @@ window.crearRecorridoCorporal=(form,analizador,aviso,renovar,alCambiar,alTermina
       const sug={grados:Number(nodo.dataset.grados),rango:Number(nodo.dataset.rango),manual:nodo.dataset.manual==='true'};
       d.r.sugerencias[k]=sug;
       d.estado.medidas||={};d.estado.medidas[k]={grados:sug.grados,manual:sug.manual};
-      if(d.r.elecciones[k]===undefined||!d.r.confirmados[k]&&!d.r.manualEscrito[k]&&d.estado.manual[k]===undefined)d.r.elecciones[k]=String(sug.rango);
+      if(d.r.elecciones[k]===undefined||!d.r.confirmados[k]&&!d.r.eleccionExplicita?.[k]&&!d.r.manualEscrito[k]&&d.estado.manual[k]===undefined)d.r.elecciones[k]=String(sug.rango);
     }
     if(nodo.dataset.puntos!==''&&d.r.confirmados[k])d.r.ultimo=`${nombres[k]}: ${nodo.dataset.puntos} ${nodo.dataset.puntos==='1'?'punto':'puntos'}`;
     refrescar();analizador.repintar();return nodo;
@@ -131,7 +127,7 @@ window.crearRecorridoCorporal=(form,analizador,aviso,renovar,alCambiar,alTermina
     finally{ocupado=false;listo.disabled=false;listo.textContent='Listo';actualizarHoja();alCambiar();}
   });
   function seleccionarRango(e){
-    if(!e.target.matches('[data-rango-segmento]'))return;clearTimeout(autoavance);const d=actual();d.r.elecciones[d.k]=e.target.value;d.r.confirmados[d.k]=false;
+    if(!e.target.matches('[data-rango-segmento]'))return;clearTimeout(autoavance);const d=actual();d.r.elecciones[d.k]=e.target.value;d.r.eleccionExplicita||={};d.r.eleccionExplicita[d.k]=true;d.r.confirmados[d.k]=false;
     if(d.k==='PIERNAS')d.r.piernasSugeridas=false;
     refrescar();if(!reducir())autoavance=setTimeout(()=>continuar().catch(e=>aviso(e.message)),250);
   }
@@ -144,7 +140,7 @@ window.crearRecorridoCorporal=(form,analizador,aviso,renovar,alCambiar,alTermina
     finally{ocupado=false;alCambiar();}return false;
   }
   rangos.querySelector('[data-corregir-cuerpo]').addEventListener('click',()=>{const d=actual();d.r.manualAbierto=!d.r.manualAbierto;refrescar();if(d.r.manualAbierto)angulo.focus();});
-  rangos.querySelector('[data-restaurar-foto]').addEventListener('click',()=>{const d=actual();delete d.estado.manual[d.k];delete d.r.elecciones[d.k];d.r.manualEscrito[d.k]=false;d.r.noFoto[d.k]=false;analizador.actualizar(d.k);programar();});
+  rangos.querySelector('[data-restaurar-foto]').addEventListener('click',()=>{const d=actual();delete d.estado.manual[d.k];delete d.r.elecciones[d.k];if(d.r.eleccionExplicita)delete d.r.eleccionExplicita[d.k];d.r.manualEscrito[d.k]=false;d.r.noFoto[d.k]=false;analizador.actualizar(d.k);programar();});
   angulo.addEventListener('input',()=>{const d=actual();d.estado.manual[d.k]=angulo.value;d.r.manualEscrito[d.k]=true;delete d.r.elecciones[d.k];analizador.actualizar(d.k);programar();});
   rangos.querySelector('[data-no-foto]').addEventListener('click',()=>{const d=actual();d.r.noFoto[d.k]=!d.r.noFoto[d.k];d.r.confirmados[d.k]=false;analizador.actualizar('OBSERVACION');refrescar();});
   form.addEventListener('aplomo:analisis',()=>{if(!panel.hidden){refrescar();programar();}});
@@ -154,7 +150,7 @@ window.crearRecorridoCorporal=(form,analizador,aviso,renovar,alCambiar,alTermina
       const lados=lado==='AMBOS'?['DERECHO','IZQUIERDO']:[lado];
       tareas=lados.flatMap(l=>fotos.flatMap((f,i)=>{
         if(f.uso!=='MEDIR')return [];f.tareas||={};
-        const tarea=f.tareas[l]||={ladoFijo:l};Object.assign(tarea,{indiceFoto:i,vista:f.vista,descripcion:f.descripcion,preview:f.preview,uso:'MEDIR'});return [tarea];
+        const tarea=f.tareas[l]||={ladoFijo:l};Object.assign(tarea,{id:f.id,indiceFoto:i,vista:f.vista,descripcion:f.descripcion,preview:f.preview,src:f.src,uso:'MEDIR'});return [tarea];
       }));indice=0;segmento=0;return tareas;
     },
     mostrar(){if(tareas.length)entrar();},

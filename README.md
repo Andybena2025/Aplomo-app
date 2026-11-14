@@ -42,7 +42,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 10 | Sugerencias del sistema y seguimiento de mejoras | ✅ Hecho |
 | 11 | Consultas: buscar, filtrar y ordenar en las 11 secciones | ✅ Hecho |
 | 12 | Calificación de sedes y empresa + informe general en PDF | ✅ Hecho |
-| 13 | Pulido final, prueba en Chrome, Edge y Firefox, datos de demostración | 🟡 13E-A aprobado y B implementado ([informe](docs/informe_paso13e.md)); C espera OK; QA físico / compatibilidad completa pendientes |
+| 13 | Pulido final, prueba en Chrome, Edge y Firefox, datos de demostración | 🟡 13E-A/B aprobados y C implementado ([informe](docs/informe_paso13e.md)); revisión de C y QA físico / compatibilidad completa pendientes |
 | 14 | (Opcional) Detección automática de puntos con IA | ✅ Implementado · pendiente de revisión |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
@@ -98,7 +98,7 @@ Sin frameworks, como lo pide la guía del proyecto.
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**783 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**799 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 

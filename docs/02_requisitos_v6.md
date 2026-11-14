@@ -249,6 +249,8 @@ Los valores marcados como "(propuesta)" son del equipo y están pendientes de va
 
 **Regla de negocio.** Carga menor de 2 kg intermitente = 0; de 2 a 10 kg intermitente = +1; de 2 a 10 kg estática o repetitiva = +2; más de 10 kg intermitente = +2; más de 10 kg estática o repetitiva = +3; golpes o fuerzas bruscas = +3. Fuente: lista acordada en clase (5-nov-2026), n.º 19.
 
+**Recorrido de esfuerzo y cierre, Paso 13E-C autorizado por Andy (13 nov 2026).** Dos pantallas por foto/lado: estática/repetitiva/Ninguna (las dos primeras = actividad muscular Sí) y seis cargas con correspondencia fija al enum existente. Sin selecciones iniciales; recuerdos visibles requieren confirmación y no se convierten en respuestas del análisis hasta continuar. Resultado primero, desglose cerrado y sugerencias aparte. Añadir análisis usa este mismo recorrido, sin reemplazar los guardados. Guardar permite pasar al siguiente puesto activo sin evaluación de esa visita o volver a la visita. Solo contexto y esfuerzo se recuerdan en esa cuenta/visita; ángulos y ajustes siempre se contestan de nuevo.
+
 ### RF-020 · Mostrar el nivel de riesgo (semáforo)
 
 - **Módulo:** Resultados · **Rol:** Administrador · **Prioridad:** Alta

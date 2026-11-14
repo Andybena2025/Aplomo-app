@@ -590,3 +590,13 @@ header.top{position:relative;z-index:3}
 @media(max-width:900px){[data-cuerpo] [data-paso="8"] .measure{grid-template-columns:1fr}.hoja-cuerpo .tour-opciones{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.tour-postura>span{padding-inline:0}.tour-postura img{height:180px}.tour-postura>span>span{padding:16px 10px}.hoja-cuerpo{padding:20px;inset:auto 8px 8px;width:calc(100% - 16px)}.cuerpo-rangos .tour-opcion img,.hoja-cuerpo .tour-opcion img{height:110px}}
 @media(prefers-reduced-motion:reduce){.hoja-cuerpo[open]{animation:none}}
+
+/* Paso 13E-C · Ayuda breve, esfuerzo y resultado guiados. */
+.ayuda-lado{color:var(--muted);font-size:13px;line-height:1.4;max-width:700px}
+.ayuda-lado p{margin:0}.ayuda-lado ul{margin:6px 0;padding-left:19px}.ayuda-lado li+li{margin-top:3px}
+[data-paso="7"] .ayuda-lado{margin-block:0 4px}
+[data-paso="9"] .tour-opcion img,[data-paso="10"] .tour-opcion img{object-fit:contain;height:130px}
+.desglose-rula>summary{font-family:Inter,sans-serif;font-size:15px}
+[data-controles-anteriores]{display:none!important}
+[data-fotos-guardadas] .foto-guardada{min-width:0;padding:16px;border:1px solid var(--line2);border-radius:16px}
+@media(max-width:720px){[data-paso="7"].tour-pregunta{gap:16px}.ayuda-lado{line-height:1.35}.ayuda-lado ul{margin-block:4px}.ayuda-lado li+li{margin-top:2px}[data-paso="7"] .tour-opcion>span{padding-block:12px}[data-paso="7"] .tour-opcion img{height:92px}[data-paso="9"] .tour-opcion img,[data-paso="10"] .tour-opcion img{height:110px}.wizfoot>[data-guardar-evaluacion],.wizfoot>[data-guardar-volver]{white-space:normal;height:auto;min-height:48px;padding-block:12px}}

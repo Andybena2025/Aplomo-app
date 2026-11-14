@@ -5,19 +5,22 @@
   const continuar = Number(form.dataset.continuar || 0);
   const tour=!!form.dataset.tour, inicio=tour?Number(form.dataset.inicio):1;
   const corporal=!!form.dataset.cuerpo;
-  const FOTOS=tour?6:3, LADO=7, ANGULOS=corporal?8:tour?7:4, AJUSTES=corporal?9:tour?8:5, RESULTADO=corporal?10:tour?9:6;
-  let paso = continuar ? ANGULOS : inicio, enviando = false, avanceAutomatico=null, intentado=false, clavePregunta=null;
+  const FOTOS=tour?6:3, LADO=7, ANGULOS=corporal?8:tour?7:4, AJUSTES=corporal?9:tour?8:5, RESULTADO=corporal?11:tour?9:6;
+  let paso = continuar ? FOTOS : inicio, enviando = false, avanceAutomatico=null, intentado=false, clavePregunta=null;
   const reducirMovimiento=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
   const error = form.querySelector('[data-error-evaluacion]');
   const atras = form.querySelector('[data-atras-evaluacion]');
   const siguiente = form.querySelector('[data-siguiente]');
   const guardar = form.querySelector('[data-guardar-evaluacion]');
+  const volver = form.querySelector('[data-guardar-volver]');
+  const memoria=window.crearMemoriaEvaluacion(form);
   form.querySelectorAll('.slotImg img').forEach(img=>img.dataset.muestra=img.src);
   const elegidas = form.querySelector('[data-fotos-elegidas]');
-  let fotos = continuar ? [...form.querySelectorAll('[data-foto-id]')].map(el=>({id:Number(el.dataset.fotoId),vista:el.dataset.vista,descripcion:el.dataset.descripcion,src:el.dataset.src})) : [], urls = [];
+  let fotos = continuar ? [...form.querySelectorAll('[data-foto-id]')].map(el=>({id:Number(el.dataset.fotoId),vista:el.dataset.vista,descripcion:el.dataset.descripcion,src:el.dataset.src,preview:el.dataset.src})) : [], urls = [];
   let tareas=[];
   const analizador = window.crearAnalizadorAplomo(form,()=>corporal?tareas:fotos,aviso,actualizarFormulario);
   const cuerpo=corporal?window.crearRecorridoCorporal(form,analizador,aviso,actualizarFormulario,actualizarGuia,()=>mostrar(AJUSTES)):null;
+  const esfuerzo=corporal?window.crearEsfuerzoGuiado(form,analizador,memoria,actualizarGuia):null;
   function aviso(texto) {
     error.hidden = !texto;
     error.querySelector('span').textContent = texto;
@@ -35,7 +38,7 @@
   }
   function mostrar(n) {
     clearTimeout(avanceAutomatico);intentado=false; paso = n;
-    if(corporal&&paso!==ANGULOS)cuerpo.cancelar();
+    if(corporal&&paso!==ANGULOS)cuerpo.cancelar();esfuerzo?.cancelar();
     form.querySelectorAll('[data-paso]').forEach(s => s.hidden = Number(s.dataset.paso) !== paso);
     document.querySelectorAll('[data-indicador]').forEach(s => {
       const p = Number(s.dataset.indicador);
@@ -45,15 +48,17 @@
     const sinFotos=tour&&form.querySelector('[name="registro"]:checked')?.value==='SIN_REGISTRO_FOTOGRAFICO';
     actualizarProgreso();
     atras.textContent = tour ? '← Atrás' : paso === 1 ? 'Cancelar' : continuar && paso === ANGULOS ? 'Volver a la evaluación' : '← Atrás';
-    siguiente.hidden = paso === RESULTADO || (sinFotos&&paso===FOTOS); guardar.hidden = !siguiente.hidden;
+    siguiente.hidden = paso === RESULTADO || (sinFotos&&paso===FOTOS); guardar.hidden = !siguiente.hidden;if(volver)volver.hidden=guardar.hidden;
     aviso('');
     if(corporal&&paso===ANGULOS)cuerpo.mostrar();
+    if(corporal&&(paso===9||paso===10))esfuerzo.mostrar(paso);memoria.aviso(paso);
     if(tour){const panel=form.querySelector(`[data-paso="${paso}"]`);panel.classList.remove('tour-entra');void panel.offsetWidth;panel.classList.add('tour-entra');actualizarGuia();}
     form.querySelector(`[data-paso="${paso}"] h2`).setAttribute('tabindex','-1');
     form.querySelector(`[data-paso="${paso}"] h2`).focus({preventScroll:true});
     window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   }
   function validarFotos() {
+    if(continuar){if(!fotos.length||fotos.some(f=>!f.uso)||!fotos.some(f=>f.uso==='MEDIR'))throw new Error('Elige Para medir o De apoyo en cada foto; al menos una debe servir Para medir.');return true;}
     const registro=form.querySelector('[name="registro"]:checked');
     if (!registro) throw new Error('Elige Con registro fotográfico o Sin registro fotográfico.');
     const conFotos=registro.value==='CON_FOTOS';
@@ -68,7 +73,7 @@
     if(enviando||cuerpo?.ocupado())return;
     if(tour&&!respuestaCompleta()){intentado=true;actualizarGuia();return;}
     try {
-      if(tour&&paso<FOTOS){
+      if(tour&&!continuar&&paso<FOTOS){
         if(!respuestaCompleta())return;
         if(paso===0)actualizarModo();
         armarMotivo();mostrar(paso+1);return;
@@ -84,9 +89,10 @@
           mostrar(RESULTADO);form.querySelector('[data-resultados]').textContent='Sin registro fotográfico. Se conservarán los datos de la evaluación sin fotos ni puntaje RULA.';
         }else if(corporal){mostrar(LADO);}else{mostrar(ANGULOS);analizador.iniciar();}
       }else if(corporal&&paso===LADO){
-        tareas=cuerpo.preparar(fotos,form.querySelector('[name="lado_recorrido"]:checked').value);analizador.iniciar();mostrar(ANGULOS);
+        tareas=cuerpo.preparar(fotos,form.querySelector('[name="lado_recorrido"]:checked').value);esfuerzo.preparar(tareas);analizador.iniciar();mostrar(ANGULOS);
       }else if(corporal&&paso===ANGULOS){await cuerpo.continuar();}
       else if(paso===ANGULOS){await analizador.paso5();mostrar(AJUSTES);}
+      else if(corporal&&(paso===9||paso===10)){const destino=esfuerzo.continuar();if(destino===RESULTADO)await analizador.paso6();if(destino)mostrar(destino);}
       else if(paso===AJUSTES){await analizador.paso6();mostrar(RESULTADO);}
     }catch(e){aviso(e instanceof TypeError?'No se pudo conectar. Tus campos y fotos se conservan; revisa la conexión e inténtalo de nuevo.':e.message);}
     finally{siguiente.disabled=false;atras.disabled=false;siguiente.textContent=tour?'Continuar →':'Siguiente →';if(tour)actualizarGuia();}
@@ -94,12 +100,13 @@
   atras.addEventListener('click', () => {
     if(enviando)return;
     if(corporal&&paso===ANGULOS){if(!cuerpo.atras())mostrar(LADO);return;}
-    if(corporal&&paso===AJUSTES){cuerpo.ultimo();mostrar(ANGULOS);return;}
+    if(corporal&&(paso===9||paso===10)){const n=esfuerzo.atras();if(n===ANGULOS)cuerpo.ultimo();mostrar(n);return;}
+    if(corporal&&paso===RESULTADO){esfuerzo.ultimo();mostrar(10);return;}
     if(continuar&&paso===ANGULOS) {
       if(confirm('¿Volver a la evaluación? Los análisis que todavía no guardaste se perderán.'))location.assign('/evaluaciones/'+continuar);
     }else if(paso===RESULTADO&&!continuar&&form.querySelector('[name="registro"]:checked')?.value==='SIN_REGISTRO_FOTOGRAFICO')mostrar(FOTOS);
     else if(paso>inicio){mostrar(paso-1);if(paso===ANGULOS)analizador.iniciar();}
-    else if(confirm('¿Salir del asistente? Los datos que todavía no guardaste se perderán.'))location.assign('/visitas/'+form.elements.visita.value);
+    else if(confirm('¿Salir del asistente? Los datos que todavía no guardaste se perderán.'))location.assign(continuar?'/evaluaciones/'+continuar:'/visitas/'+form.elements.visita.value);
   });
   form.querySelectorAll('.opt input').forEach(c => c.addEventListener('change', () => c.closest('.opt').classList.toggle('on', c.checked)));
   form.querySelectorAll('[name="registro"]').forEach(r => r.addEventListener('change', () => {
@@ -170,30 +177,34 @@
   form.addEventListener('submit',async e=>{
     e.preventDefault();if (enviando) return;
     if(paso!==RESULTADO&&!(tour&&paso===FOTOS&&form.querySelector('[name="registro"]:checked')?.value==='SIN_REGISTRO_FOTOGRAFICO')){siguiente.click();return;}
-    if(tour){for(let n=inicio;n<FOTOS;n++)if(!respuestaCompleta(n)){mostrar(n);intentado=true;actualizarGuia();return;}armarMotivo();}
-    enviando=true;guardar.disabled=true;atras.disabled=true;
+    if(tour&&!continuar){for(let n=inicio;n<FOTOS;n++)if(!respuestaCompleta(n)){mostrar(n);intentado=true;actualizarGuia();return;}armarMotivo();}
+    enviando=true;guardar.disabled=true;if(volver)volver.disabled=true;atras.disabled=true;
+    const boton=e.submitter||guardar,destinoGuardar=boton.value||'SIGUIENTE';
     let conFotos=true;
-    try{if(!continuar)conFotos=validarFotos();if(conFotos)await analizador.paso6();}catch(x){enviando=false;guardar.disabled=false;atras.disabled=false;aviso(x instanceof TypeError?'No se pudo conectar. Tus campos y fotos se conservan; revisa la conexión e inténtalo de nuevo.':x.message);return;}
+    try{if(!continuar)conFotos=validarFotos();if(conFotos)await analizador.paso6();}catch(x){enviando=false;guardar.disabled=false;if(volver)volver.disabled=false;atras.disabled=false;aviso(x instanceof TypeError?'No se pudo conectar. Tus campos y fotos se conservan; revisa la conexión e inténtalo de nuevo.':x.message);return;}
     const data=continuar?new URLSearchParams({csrf:form.elements.csrf.value}):new FormData(form);
+    data.set('destino_guardado',destinoGuardar);
     if(!continuar){
-      for(const clave of [...data.keys()])if(/^(uso_foto_|rango_|ajuste_|ninguno_)/.test(clave)||['postura_opcion','lado_recorrido','ninguna'].includes(clave))data.delete(clave);
+      for(const clave of [...data.keys()])if(/^(uso_foto_|rango_|ajuste_|ninguno_|esfuerzo_|carga_)/.test(clave)||['postura_opcion','lado_recorrido','ninguna','cuenta_recuerdo'].includes(clave))data.delete(clave);
       data.set('asistente_completo','si');
       if(!conFotos&&!tour)data.delete('acepta');
       if(conFotos)fotos.forEach((foto,i)=>{data.append(`foto_${i}`,foto.file);data.append(`foto_${i}_vista`,foto.vista);data.append(`foto_${i}_descripcion`,foto.descripcion);});
     }
     if(conFotos)analizador.solicitudes().forEach((datos,i)=>data.append(`analisis_${i}`,datos));
-    enviando=true;guardar.disabled=true;atras.disabled=true;guardar.textContent='Guardando…';aviso('');const terminarProgreso=window.AplomoProgreso?.iniciar('Guardando la evaluación…');
+    enviando=true;guardar.disabled=true;atras.disabled=true;boton.textContent='Guardando…';aviso('');const terminarProgreso=window.AplomoProgreso?.iniciar('Guardando la evaluación…');
     try {
       const respuesta=await fetch(form.action,{method:'POST',body:data,credentials:'same-origin',redirect:'manual'});
-      if (respuesta.status===201) {location.assign(respuesta.headers.get('Location'));return;}
+      if (respuesta.status===201) {if(!continuar)memoria.guardar(conFotos?tareas:[]);location.assign(respuesta.headers.get('Location'));return;}
       if (respuesta.status===0 || respuesta.type==='opaqueredirect') aviso('Tu sesión venció. Inicia sesión en otra pestaña y vuelve aquí: tus datos siguen escritos.');
       else if (respuesta.status===403 && await actualizarFormulario()) aviso('El formulario se actualizó. Tus campos y fotos se conservan; vuelve a pulsar Guardar evaluación.');
       else if ((respuesta.headers.get('Content-Type')||'').startsWith('text/plain')) aviso(await respuesta.text());
       else aviso('No pudimos guardar. Comprueba tu sesión en otra pestaña y vuelve a intentarlo aquí; tus datos se conservan.');
     } catch (_) {aviso('No se pudo conectar. Tus campos y fotos se conservan; revisa la conexión e inténtalo de nuevo.');}
-    finally {terminarProgreso?.();enviando=false;guardar.disabled=false;atras.disabled=false;guardar.textContent=continuar?'Guardar análisis':'Guardar evaluación';}
+    finally {terminarProgreso?.();enviando=false;guardar.disabled=false;if(volver)volver.disabled=false;atras.disabled=false;guardar.textContent='Guardar y evaluar siguiente puesto';if(volver)volver.textContent='Guardar y volver a la visita';}
   });
   function respuestaCompleta(n=paso){
+    if(corporal&&(n===9||n===10))return esfuerzo.respondido();
+    if(continuar&&n===FOTOS){try{return validarFotos();}catch(_){return false;}}
     if(n===0)return !!form.elements.puesto.value;
     if(n===1)return form.elements.acepta.checked;
     if(n===2)return !!form.querySelector('[name="postura_opcion"]:checked')&&!!form.elements.postura.value.trim()&&form.elements.postura.value.length<=150;
@@ -209,30 +220,35 @@
   }
   function actualizarGuia(){
     if(!tour)return;
-    const clave=paso===ANGULOS&&corporal?paso+':'+cuerpo.progreso().actual:paso;
+    const clave=corporal?(paso===ANGULOS?paso+':'+cuerpo.progreso().actual:(paso===9||paso===10)?paso+':'+esfuerzo.progreso().actual:paso):paso;
     if(clave!==clavePregunta){intentado=false;clavePregunta=clave;}
-    const completa=respuestaCompleta();siguiente.disabled=enviando||!!cuerpo?.ocupado();guardar.disabled=enviando;
+    const completa=respuestaCompleta();siguiente.disabled=enviando||!!cuerpo?.ocupado();guardar.disabled=enviando;if(volver)volver.disabled=enviando;
     siguiente.setAttribute('aria-disabled',String(enviando||!completa));guardar.setAttribute('aria-disabled',String(enviando||!completa));
     actualizarProgreso();
     const pendiente=form.querySelector('[data-pregunta-pendiente]');pendiente.hidden=completa||!intentado;
-    pendiente.textContent=paso===AJUSTES?'Responde los ajustes (o Ninguno), el giro, las piernas, la actividad y la carga de cada foto.':paso===FOTOS&&form.querySelector('[name="registro"]:checked')?.value==='CON_FOTOS'?'Agrega de 1 a 10 fotos, completa sus descripciones y elige Para medir o De apoyo (al menos una Para medir).':'Responde para continuar.';
+    pendiente.textContent=paso===FOTOS&&form.querySelector('[name="registro"]:checked')?.value==='CON_FOTOS'?'Agrega de 1 a 10 fotos, completa sus descripciones y elige Para medir o De apoyo (al menos una Para medir).':'Responde para continuar.';
     form.querySelectorAll('[data-paso]').forEach(p=>p.classList.toggle('tour-sin-respuesta',Number(p.dataset.paso)===paso&&!completa&&intentado));
   }
   function actualizarProgreso(){
     const sinFotos=tour&&form.querySelector('[name="registro"]:checked')?.value==='SIN_REGISTRO_FOTOGRAFICO';
     const recorrido=cuerpo?.progreso(),extra=tour&&inicio===0?1:0;
     let total=tour?(sinFotos?FOTOS:RESULTADO)+extra:6,numero=paso+extra;
-    if(corporal&&!sinFotos){total=9+recorrido.total+extra;if(paso===ANGULOS)numero=8+recorrido.actual+extra;else if(paso===AJUSTES)numero=8+recorrido.total+extra;else if(paso===RESULTADO)numero=9+recorrido.total+extra;}
+    if(corporal&&!sinFotos){const base=continuar?2:7,esf=esfuerzo.progreso();total=base+recorrido.total+esf.total+1+extra;
+      if(continuar)numero=paso===FOTOS?1:2;
+      if(paso===ANGULOS)numero=base+1+recorrido.actual+extra;
+      else if(paso===9||paso===10)numero=base+1+recorrido.total+esf.actual+extra;
+      else if(paso===RESULTADO)numero=total;
+    }
     document.querySelector('#pasoActual').textContent=`Paso ${numero} de ${total}`;
     if(tour){const progreso=form.querySelector('progress');progreso.max=total;progreso.value=numero;}
   }
   function armarMotivo(){
-    if(!tour)return;
+    if(!tour||continuar)return;
     const criterio=form.querySelector('[name="criterio"]:checked');
     form.elements.motivo.value=`Momento: ${criterio?.value==='MAS_INADECUADA'?'La postura más exigente':'La que más tiempo dura'}. Postura: ${form.elements.postura.value.trim()}.`;
   }
   function actualizarModo(){
-    if(!tour)return;const puesto=form.elements.puesto;
+    if(!tour||continuar)return;const puesto=form.elements.puesto;
     const tipo=puesto.tagName==='SELECT'?puesto.selectedOptions[0]?.dataset.tipo:puesto.dataset.tipo;
     const oficina=tipo==='ESCRITORIO';
     const chip=document.querySelector('[data-modo]');chip.textContent=oficina?'Oficina':'Planta';chip.hidden=!tipo;
@@ -243,12 +259,13 @@
   }
   if(tour){
     form.querySelector('[data-analizar-foto]').closest('label').hidden=true;
-    actualizarModo();
+    actualizarModo();memoria.restaurar();
     form.addEventListener('aplomo:analisis',actualizarGuia);
-    form.querySelector('[data-editar-postura]').addEventListener('click',e=>{clearTimeout(avanceAutomatico);const campo=form.querySelector('[data-descripcion-postura]');campo.hidden=!campo.hidden;e.currentTarget.setAttribute('aria-expanded',String(!campo.hidden));if(!campo.hidden)form.elements.postura.focus();});
+    form.querySelector('[data-editar-postura]')?.addEventListener('click',e=>{clearTimeout(avanceAutomatico);const campo=form.querySelector('[data-descripcion-postura]');campo.hidden=!campo.hidden;e.currentTarget.setAttribute('aria-expanded',String(!campo.hidden));if(!campo.hidden)form.elements.postura.focus();});
     form.addEventListener('input',()=>{armarMotivo();actualizarGuia();});
     form.addEventListener('change',e=>{
       clearTimeout(avanceAutomatico);const el=e.target;
+      if(continuar){actualizarGuia();if(el.name==='lado_recorrido'&&respuestaCompleta()&&!reducirMovimiento())avanceAutomatico=setTimeout(()=>siguiente.click(),250);return;}
       if(el.name==='postura_opcion')form.elements.postura.value=el.value;
       if(el.name==='puesto')actualizarModo();
       const condiciones=['escritorio','pantalla','pies','apoyapies','apoyabrazos','regulable'];
@@ -261,5 +278,6 @@
       }
     });
   }
-  renderFotos();mostrar(paso);if(continuar)analizador.iniciar();
+  form.querySelectorAll('[data-uso-guardada]').forEach(r=>r.addEventListener('change',()=>{const id=Number(r.closest('[data-foto-id]').dataset.fotoId);fotos.find(f=>f.id===id).uso=r.value;actualizarGuia();}));
+  renderFotos();mostrar(paso);
 })();

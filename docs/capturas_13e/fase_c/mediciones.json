@@ -1,0 +1,504 @@
+[
+  {
+    "pagina": "lado-ayuda",
+    "solicitado": 1366,
+    "ancho": 1351,
+    "ayuda": {
+      "alto": 130.171875,
+      "color": "rgb(158, 153, 143)"
+    },
+    "client": 1351,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 210,
+        "top": 581.0703125
+      },
+      {
+        "alto": 210,
+        "top": 581.0703125
+      },
+      {
+        "alto": 210,
+        "top": 581.0703125
+      }
+    ],
+    "viewport": 1366
+  },
+  {
+    "pagina": "lado-ayuda",
+    "solicitado": 390,
+    "ancho": 375,
+    "ayuda": {
+      "alto": 171.921875,
+      "color": "rgb(158, 153, 143)"
+    },
+    "client": 375,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 160,
+        "top": 676.1171875
+      },
+      {
+        "alto": 160,
+        "top": 676.1171875
+      },
+      {
+        "alto": 160,
+        "top": 848.1171875
+      }
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "lado-ayuda",
+    "solicitado": 810,
+    "ancho": 795,
+    "ayuda": {
+      "alto": 130.171875,
+      "color": "rgb(158, 153, 143)"
+    },
+    "client": 795,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 210,
+        "top": 581.0703125
+      },
+      {
+        "alto": 210,
+        "top": 581.0703125
+      },
+      {
+        "alto": 210,
+        "top": 581.0703125
+      }
+    ],
+    "viewport": 810
+  },
+  {
+    "pagina": "lado-ayuda",
+    "solicitado": 1080,
+    "ancho": 1065,
+    "ayuda": {
+      "alto": 130.171875,
+      "color": "rgb(158, 153, 143)"
+    },
+    "client": 1065,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 210,
+        "top": 581.0703125
+      },
+      {
+        "alto": 210,
+        "top": 581.0703125
+      },
+      {
+        "alto": 210,
+        "top": 581.0703125
+      }
+    ],
+    "viewport": 1080
+  },
+  {
+    "pagina": "esfuerzo-sin-respuesta",
+    "solicitado": 1366,
+    "ancho": 1351,
+    "ayuda": null,
+    "client": 1351,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 254,
+        "top": 466.3984375
+      },
+      {
+        "alto": 254,
+        "top": 466.3984375
+      },
+      {
+        "alto": 254,
+        "top": 466.3984375
+      }
+    ],
+    "viewport": 1366
+  },
+  {
+    "pagina": "esfuerzo-sin-respuesta",
+    "solicitado": 1024,
+    "ancho": 1009,
+    "ayuda": null,
+    "client": 1009,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 254,
+        "top": 466.3984375
+      },
+      {
+        "alto": 254,
+        "top": 466.3984375
+      },
+      {
+        "alto": 254,
+        "top": 466.3984375
+      }
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "esfuerzo-sin-respuesta",
+    "solicitado": 390,
+    "ancho": 375,
+    "ayuda": null,
+    "client": 375,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 258,
+        "top": 585.6953125
+      },
+      {
+        "alto": 258,
+        "top": 585.6953125
+      },
+      {
+        "alto": 234,
+        "top": 855.6953125
+      }
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "esfuerzo-sin-respuesta",
+    "solicitado": 810,
+    "ancho": 795,
+    "ayuda": null,
+    "client": 795,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 254,
+        "top": 499.3984375
+      },
+      {
+        "alto": 254,
+        "top": 499.3984375
+      },
+      {
+        "alto": 254,
+        "top": 499.3984375
+      }
+    ],
+    "viewport": 810
+  },
+  {
+    "pagina": "esfuerzo-sin-respuesta",
+    "solicitado": 1080,
+    "ancho": 1065,
+    "ayuda": null,
+    "client": 1065,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 230,
+        "top": 466.3984375
+      }
+    ],
+    "viewport": 1080
+  },
+  {
+    "pagina": "carga-sin-respuesta",
+    "solicitado": 1366,
+    "ancho": 1351,
+    "ayuda": null,
+    "client": 1351,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 254,
+        "top": 708.3984375
+      },
+      {
+        "alto": 254,
+        "top": 708.3984375
+      }
+    ],
+    "viewport": 1366
+  },
+  {
+    "pagina": "carga-sin-respuesta",
+    "solicitado": 1024,
+    "ancho": 1009,
+    "ayuda": null,
+    "client": 1009,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 230,
+        "top": 708.3984375
+      },
+      {
+        "alto": 230,
+        "top": 708.3984375
+      },
+      {
+        "alto": 230,
+        "top": 708.3984375
+      }
+    ],
+    "viewport": 1024
+  },
+  {
+    "pagina": "carga-sin-respuesta",
+    "solicitado": 390,
+    "ancho": 375,
+    "ayuda": null,
+    "client": 375,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 234,
+        "top": 519.6953125
+      },
+      {
+        "alto": 234,
+        "top": 519.6953125
+      },
+      {
+        "alto": 258,
+        "top": 765.6953125
+      },
+      {
+        "alto": 258,
+        "top": 765.6953125
+      },
+      {
+        "alto": 258,
+        "top": 1035.6953125
+      },
+      {
+        "alto": 258,
+        "top": 1035.6953125
+      }
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "carga-sin-respuesta",
+    "solicitado": 810,
+    "ancho": 795,
+    "ayuda": null,
+    "client": 795,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 254,
+        "top": 466.3984375
+      },
+      {
+        "alto": 254,
+        "top": 466.3984375
+      },
+      {
+        "alto": 254,
+        "top": 466.3984375
+      },
+      {
+        "alto": 254,
+        "top": 732.3984375
+      },
+      {
+        "alto": 254,
+        "top": 732.3984375
+      },
+      {
+        "alto": 254,
+        "top": 732.3984375
+      }
+    ],
+    "viewport": 810
+  },
+  {
+    "pagina": "carga-sin-respuesta",
+    "solicitado": 1080,
+    "ancho": 1065,
+    "ayuda": null,
+    "client": 1065,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 230,
+        "top": 466.3984375
+      },
+      {
+        "alto": 230,
+        "top": 708.3984375
+      },
+      {
+        "alto": 230,
+        "top": 708.3984375
+      },
+      {
+        "alto": 230,
+        "top": 708.3984375
+      }
+    ],
+    "viewport": 1080
+  },
+  {
+    "pagina": "resultado-plegado",
+    "solicitado": 1366,
+    "ancho": 1351,
+    "ayuda": null,
+    "client": 1351,
+    "finales": 1,
+    "mosaicos": [],
+    "viewport": 1366
+  },
+  {
+    "pagina": "resultado-plegado",
+    "solicitado": 1024,
+    "ancho": 1009,
+    "ayuda": null,
+    "client": 1009,
+    "finales": 1,
+    "mosaicos": [],
+    "viewport": 1024
+  },
+  {
+    "pagina": "resultado-plegado",
+    "solicitado": 390,
+    "ancho": 375,
+    "ayuda": null,
+    "client": 375,
+    "finales": 1,
+    "mosaicos": [],
+    "viewport": 390
+  },
+  {
+    "pagina": "resultado-plegado",
+    "solicitado": 810,
+    "ancho": 795,
+    "ayuda": null,
+    "client": 795,
+    "finales": 1,
+    "mosaicos": [],
+    "viewport": 810
+  },
+  {
+    "pagina": "resultado-plegado",
+    "solicitado": 1080,
+    "ancho": 1065,
+    "ayuda": null,
+    "client": 1065,
+    "finales": 1,
+    "mosaicos": [],
+    "viewport": 1080
+  },
+  {
+    "pagina": "anadir-fotos",
+    "solicitado": 1366,
+    "ancho": 1351,
+    "ayuda": null,
+    "client": 1351,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 160,
+        "top": 1031.8984375
+      },
+      {
+        "alto": 160,
+        "top": 1031.8984375
+      }
+    ],
+    "viewport": 1366
+  },
+  {
+    "pagina": "anadir-fotos",
+    "solicitado": 390,
+    "ancho": 375,
+    "ayuda": null,
+    "client": 375,
+    "finales": 0,
+    "mosaicos": [
+      {
+        "alto": 160,
+        "top": 917.875
+      },
+      {
+        "alto": 160,
+        "top": 917.875
+      }
+    ],
+    "viewport": 390
+  },
+  {
+    "pagina": "anadir-resultado-ambos",
+    "solicitado": 1366,
+    "ancho": 1351,
+    "ayuda": null,
+    "client": 1351,
+    "finales": 2,
+    "mosaicos": [],
+    "viewport": 1366
+  },
+  {
+    "pagina": "anadir-resultado-ambos",
+    "solicitado": 390,
+    "ancho": 375,
+    "ayuda": null,
+    "client": 375,
+    "finales": 2,
+    "mosaicos": [],
+    "viewport": 390
+  }
+]

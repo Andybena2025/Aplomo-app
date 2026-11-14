@@ -65,9 +65,10 @@ public final class RecorridoCuerpo {
 
     /** Reutiliza el editor y el esfuerzo actuales; la secuencia y sus respuestas las dirige recorrido.js. */
     public static String pasos(){
-        StringBuilder h=new StringBuilder("<section class=\"card stack tour-pregunta\" data-paso=\"7\" hidden><h2>¿Qué lado tiene más carga?</h2><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Lado que vas a evaluar\">");
+        StringBuilder h=new StringBuilder("<section class=\"card stack tour-pregunta\" data-paso=\"7\" hidden><h2>¿Qué lado tiene más carga?</h2><div class=\"ayuda-lado\" data-ayuda-lado><p>¿Cómo saber qué lado tiene más carga? Observa varios ciclos de la tarea:</p><ul><li>¿Con qué mano sostiene la herramienta, la pieza o la carga?</li><li>¿Qué brazo se levanta más o se aleja más del cuerpo?</li><li>¿Qué brazo repite más el movimiento?</li><li>¿Qué muñeca se dobla o gira más?</li></ul><p>Si no está claro, elige «Ambos».</p></div><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Lado que vas a evaluar\">");
         for(var lado:new String[][]{{"DERECHO","Derecho","lado_derecho.png"},{"IZQUIERDO","Izquierdo","lado_izquierdo.png"},{"AMBOS","Ambos","lado_ambos.png"}})h.append(opcion("lado_recorrido",lado[0],lado[1],lado[2],false,""));
-        h.append("</div></section>").append(PaginasAnalisis.pasos().replace("data-paso=\"4\"","data-paso=\"8\"").replace("data-paso=\"5\"","data-paso=\"9\"").replace("data-paso=\"6\"","data-paso=\"10\""));
+        h.append("</div></section>").append(PaginasAnalisis.pasos().replace("data-paso=\"4\"","data-paso=\"8\"").replace("data-paso=\"5\"","data-controles-anteriores").replace("data-paso=\"6\"","data-paso=\"11\""));
+        h.append(esfuerzo());
         h.append("<div data-cuerpo-cabecera hidden><div class=\"cuerpo-pildoras\" aria-label=\"Segmentos del cuerpo\">");
         for(var seg:ORDEN)h.append("<span class=\"tag\" data-pildora=\"").append(seg[0]).append("\">").append(seg[1]).append("</span>");
         h.append("</div><p class=\"hint\" data-tarea-cuerpo></p><div class=\"row\"><span class=\"tag\" role=\"status\" data-puntaje-parcial>Puntaje parcial · Pendiente</span><span class=\"hint\" data-final-pendiente>Puntaje final: Pendiente</span></div></div><div data-cuerpo-rangos hidden class=\"stack cuerpo-rangos\"><p role=\"status\" class=\"hint\" data-sugerencia-foto></p>");
@@ -85,6 +86,15 @@ public final class RecorridoCuerpo {
             h.append(opcion("ninguno_"+seg[0],"NINGUNO","Ninguno",img,true,"data-cuerpo-ninguno")).append("</div>");
         }
         return h.append("<p class=\"tour-pendiente\" role=\"status\" data-aviso-hoja hidden>Responde para continuar.</p><button type=\"button\" class=\"btn p\" data-listo-hoja aria-disabled=\"true\">Listo</button></div></dialog>").toString();
+    }
+    /** RF-019: correspondencia fija uno a uno con el enum del motor existente. */
+    public static final String[][] CARGAS={{"MENOS_2KG_INTERMITENTE","Menos de 2 kg, a ratos","carga_1.png"},{"DE_2_A_10KG_INTERMITENTE","2 a 10 kg, a ratos","carga_2.png"},{"DE_2_A_10KG_ESTATICA_O_REPETITIVA","2 a 10 kg, sostenido o repetido","carga_3.png"},{"MAS_10KG_INTERMITENTE","Más de 10 kg, a ratos","carga_3.png"},{"MAS_10KG_ESTATICA_O_REPETITIVA","Más de 10 kg, sostenido o repetido","carga_4.png"},{"GOLPES_O_FUERZAS_BRUSCAS","Golpes o fuerzas bruscas","carga_4.png"}};
+    private static String esfuerzo(){
+        StringBuilder h=new StringBuilder("<section class=\"card stack tour-pregunta\" data-paso=\"9\" hidden><p class=\"hint\" data-tarea-esfuerzo></p><h2>¿La postura se mantiene más de 1 minuto o se repite más de 4 veces por minuto?</h2><p class=\"hint\" data-recuerdo-esfuerzo hidden>Respuesta del puesto anterior: revísala y pulsa Continuar para confirmarla.</p><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Actividad muscular\">");
+        for(var a:new String[][]{{"ESTATICA","Se mantiene más de 1 minuto","esfuerzo_estatica.png"},{"REPETITIVA","Se repite más de 4 veces por minuto","esfuerzo_repetitiva.png"},{"NINGUNA","Ninguna de las dos","esfuerzo_ninguno.png"}})h.append(opcion("esfuerzo_opcion",a[0],a[1],a[2],false,"data-esfuerzo-opcion"));
+        h.append("</div><p class=\"hint\">Puntaje final: Pendiente</p></section><section class=\"card stack tour-pregunta\" data-paso=\"10\" hidden><p class=\"hint\" data-tarea-esfuerzo></p><h2>¿Cuánto pesa lo que maneja?</h2><p class=\"hint\" data-recuerdo-esfuerzo hidden>Respuesta del puesto anterior: revísala y pulsa Continuar para confirmarla.</p><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Carga o fuerza\">");
+        for(var c:CARGAS)h.append(opcion("carga_opcion",c[0],c[1],c[2],false,"data-carga-opcion"));
+        return h.append("</div><p class=\"hint\">Una resma de papel ≈ 2,5 kg · un galón de agua ≈ 4 kg</p><p class=\"hint\">Puntaje final: Pendiente</p></section>").toString();
     }
     private static Segmento segmento(String s){try{return Segmento.valueOf(s);}catch(IllegalArgumentException e){return null;}}
     private static String opcion(String nombre,String valor,String etiqueta,String imagen,boolean multiple,String extra){

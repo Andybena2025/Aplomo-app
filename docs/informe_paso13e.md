@@ -177,3 +177,84 @@ Los dos servidores QA de B usaron exclusivamente `rula_ergonomia_pruebas`, cuent
 ### Git y parada
 
 Commit de esta entrega: `Paso 13E-B: recorrido corporal guiado y ajustes`; el resumen final comunica el hash real y confirma el resultado del push. Padres incorporados: `9a2a5f2` (A), `f8b45c6` y `3fdc88a` (imágenes de Claude). Se verifica origin exacto `https://github.com/Andybena2025/Aplomo-app.git` y rama main antes del push normal, sin forzar. README actualiza únicamente fila 13 y cantidad de pruebas; INSTALAR solo cantidad. **B queda para revisión de Andy; se detiene antes de C.**
+
+
+## Fase C · Esfuerzo, resultado y cierre · 13 nov 2026
+
+Andy aprobó B y autorizó C en este chat, incluyendo el bloque de ayuda de lado. Se verificaron origin exacto `https://github.com/Andybena2025/Aplomo-app.git` y rama main, con árbol limpio; `git pull --rebase origin main` indicó actualizado en `ac94c46`. No se releían ni imprimían todos los documentos del proyecto: se usó el estado y el encargo ya leído de 13E.
+
+### Qué se hizo
+
+Actividad y carga ahora son **dos preguntas por foto y lado**, en mosaicos con los pictogramas existentes. Actividad: esfuerzo_estatica / esfuerzo_repetitiva / esfuerzo_ninguno; las dos primeras se traducen a actividad muscular Sí y Ninguna a No. Carga usa las seis opciones exactas del enum, con carga_1/2/3/3/4/4 y la referencia de resma y galón. No hay respuesta inicial en un recorrido nuevo. Elegir avanza tras 250 ms; con movimiento reducido se conserva Continuar. Atrás vuelve sin perder respuestas entre ambas preguntas, análisis y cuerpo.
+
+El resultado presenta primero puntaje grande, etiqueta «puntaje · color · Nivel», acción y clasificación oficiales existentes. Después viene **Ver desglose del cálculo**, cerrado, y **Sugerencias · aparte del puntaje**, separado. No se cambió el semáforo, la acción guardada en MySQL ni cómo se calculan sugerencias. Los resultados ya guardados también presentan el desglose plegado. El cálculo completo sigue exclusivamente en el servidor, con NEUTRO=5° y tablas de MySQL; nunca aparece un final mientras otro segmento o esfuerzo esté pendiente.
+
+**Guardar y evaluar siguiente puesto** guarda y pregunta al servidor por el primer puesto activo sin evaluación de esa visita, en el orden existente de número/id. Una evaluación sin fotos cuenta como evaluada, como en la lista de visita. Si no quedan pendientes vuelve a la visita con «Todos los puestos están evaluados». **Guardar y volver a la visita** guarda y vuelve directamente. Ambos destinos sirven para nuevas evaluaciones con/sin fotos y para Añadir análisis. Destinos ajenos se rechazan antes de guardar; clientes anteriores sin el campo conservan la respuesta anterior. Si se guardó correctamente pero falla la lectura posterior del siguiente puesto, se vuelve a la visita con la confirmación de guardado, evitando sugerir un reenvío que duplicaría registros.
+
+En el siguiente puesto de la misma visita, **postura, descripción editada, momento, tiempo y esfuerzo** se recuerdan con aviso visible para revisarlos y continuar. El almacenamiento es solo de esta pestaña/sesión, por cuenta y visita, mediante sessionStorage dentro de try/catch. Para esfuerzo se empareja el índice de foto y lado. Si no hay coincidencia, o el navegador impide guardar, se contesta de nuevo. Se conserva una lista cerrada de campos: **no se copian consentimiento, condiciones ni la elección del paso Lado, y no se almacenan fotos, puntos, ángulos, ajustes ni puntajes**. Cada recuerdo de esfuerzo lleva únicamente su índice de foto y lado como claves para emparejarlo. Las selecciones recordadas de esfuerzo no se convierten en respuestas confirmadas hasta pulsar Continuar; el final sigue Pendiente.
+
+**Añadir análisis** utiliza las fotos existentes: se elige Para medir / De apoyo, lado, mismo recorrido corporal, dos preguntas de esfuerzo por análisis y mismo resultado. No sube otra foto ni modifica el contexto ya guardado; añade análisis y conserva el historial. Puede elegir Ambos y crear dos análisis nuevos de una misma foto. No usa recuerdos del puesto anterior.
+
+La pregunta **¿Qué lado tiene más carga?** se mantiene intacta. Debajo aparece exactamente el texto pedido, sus cuatro preguntas y «Si no está claro, elige «Ambos».», con 13 px y var(--muted). A 390, la primera fila de mosaicos queda visible después de la ayuda; todos mantienen al menos 160 px. No se añadió inferencia de lado ni regla RULA a ese bloque.
+
+Se corrigió una carrera observada durante QA: una sugerencia de foto recibida después del toque podía reemplazar la elección del mosaico antes de abrir la hoja. Ahora la elección explícita se conserva; restaurar puntos o modificar puntos vuelve a permitir sugerencias. Se comprobó de nuevo el brazo 110° = 4 puntos en el siguiente puesto y en Safari. Los controles anteriores permanecen ocultos solo como adaptadores del lienzo existente; no hay una pantalla de esfuerzo duplicada.
+
+### Trazabilidad
+
+| Requisito / encargo | Archivo y método | Prueba o evidencia |
+|---|---|---|
+| RF-014 · contexto y navegación entre puestos | `Evaluaciones.siguientePendiente`; `EvaluacionesWeb.destino` / `validarDestino`; `evaluacion.js`, envío | `HttpCierreTest.siguienteEsActivoYPendienteDeEstaVisitaInclusoSinPuntaje`, `guardarAnalisisYSiguienteAbreElPuestoPendienteEnLaMismaVisita`, `ultimoPuestoVuelveConTodosEvaluados`; navegador pasó de Puesto 1 a 2 y luego a Todos evaluados. |
+| RF-014 · recuerdos confirmables | `memoria-evaluacion.js`, `restaurar` / `aviso` / `guardar`; `esfuerzo.js`, `mostrar` / `confirmar` | UI del siguiente puesto: postura/momento/90 min elegidos con aviso; esfuerzo repetitivo y carga anterior visibles para confirmar. Antes de medir: cinco manuales vacíos, cero ajustes y ningún segmento confirmado. Fotos/postura/esfuerzo recordados en capturas. |
+| RF-015 · condiciones preservadas | Contexto existente; `recorrido.js`, `refrescar`; campos ocultos de `PaginasAnalisis.continuar` | `HttpRecorridoTest` conserva 22 casos; condiciones no se recuerdan entre puestos; Añadir análisis usa las condiciones guardadas sin modificarlas, incluidas ayudas de piernas. |
+| RF-016 / RNF-006 · fotos y sin fotos | `PaginasAnalisis.continuar`; `evaluacion.js`, `validarFotos` / envío; `Evaluaciones.guardar` existente | Nueva selección explícita en fotos existentes; `nuevaEvaluacionSinFotosGuardaYRespetaElDestino` (2 casos); suite previa de tipo real, tamaño, máximo 10, consentimiento y acceso a fotos conservada. |
+| RF-017 · recorrido compartido | `RecorridoCuerpo.pasos`; `PaginasAnalisis.continuar`; `recorrido.js`, `preparar`; `analisis.js`, lienzo/detección | `anadirAnalisisComparteCuerpoEsfuerzoYResultadoSinValoresIniciales`; recorrido Ambos completo y guardado; Safari con detección y ajuste de rango conservado. Los 18 casos de `RangosRecorridoTest` siguen en verde. |
+| RF-018 · sin final incompleto / motor existente | `analisis.js`, `respondido` / `todoListo` / `elegirEsfuerzo`; endpoint existente | 9 casos de final incompleto de B; navegador mostró cero marcadores finales al completar solo Derecho mientras Izquierdo aún no tenía esfuerzo. Diez casos de puntaje en HTML y pruebas de motor/MySQL sin cambios. |
+| RF-019 · actividad y seis cargas | `RecorridoCuerpo.esfuerzo` / `CARGAS`; `esfuerzo.js`, `confirmar`; `analisis.js`, `elegirEsfuerzo` | `lasSeisCargasTienenSuMosaicoExactoYSuPuntajeActual` (6); en UI se probaron las tres actividades: repetitiva en nueva, Ninguna y estática en Ambos. Esfuerzo y carga sin elección inicial observados en integrado y Safari. |
+| RF-020 · resultado ordenado / sugerencias separadas | `PaginasAnalisis.resultado`; `EvaluacionesWeb.atender` | Seis casos verifican desglose cerrado y nuevo título; pruebas previas de sugerencias siguen comprobando regla aplicable y ausencia de inserciones en vista previa. Capturas resultado plegado/desplegado. |
+| RF-021 · historial y Ambos | Servicios existentes; `DatosAnalisis.solicitudes`; `evaluacion.js`, envío | Integrado: una foto con análisis anterior Rojo 7, más Derecho Verde 1 e Izquierdo Rojo 7; los tres presentes al consultar. Safari añadió después un Amarillo 3 y volvió a la visita. B mantiene sus casos de 1/10 fotos y 2/20 análisis atómicos. |
+| RNF-002 / RNF-007 · ayuda de lado, pasos y mensajes | `RecorridoCuerpo.pasos`; `.ayuda-lado` en CSS; `evaluacion.js`, `mostrar` / progreso | `ayudaDeLadoApareceEnLaPantallaDeLadoSinCambiarLaPregunta` comprueba título, bloque y los seis textos exactos, sin checked inicial. Capturas y medidas 1366/390/810/1080. Avisos solo después del intento incompleto. |
+| RNF-004 / RNF-006 · permisos, CSRF y destino | Router/servicios existentes; `EvaluacionesWeb.validarDestino` | `usuarioNoPuedeAbrirNiGuardarElNuevoRecorrido`; `destinoManipuladoSeRechazaAntesDeGuardar`; Usuario por dirección directa recibe Acceso denegado en QA visual. Sin nuevas rutas ni ampliación de permisos. |
+| RNF-003 / RNF-008 · carga y adaptación | `evaluacion.js`, envío; CSS; código de avance reducido existente | Botones bloqueados durante guardado; 23 medidas exactas sin desbordamiento; guardado en Safari instalado; suite de rendimiento incluida. No se presenta como certificación completa entre navegadores/dispositivos. |
+
+### Pruebas y evidencia
+
+`TZ=America/Bogota ./mvnw -Daplomo.evidencia.rendimiento=docs/capturas_13e/fase_c/rendimiento.json test`: **799 aprobadas; 0 fallos, 0 errores, 0 omitidas; BUILD SUCCESS**, compilación incluida. Resumen real en `fase_c/pruebas.txt`. Son 783 anteriores + **16 casos nuevos** de `HttpCierreTest`. También se comprobaron los cinco JavaScript con `node --check` y el diff con `git diff --check`.
+
+La primera ejecución dirigida encontró que el fixture intentaba crear un puesto inactivo pasando false, pero el servicio crea nuevos puestos activos por diseño; se corrigió el fixture usando la operación real de desactivar. La primera suite completa falló en una expectativa del texto anterior «Sugerencias del sistema»; se actualizó solo ese título al pedido por C, conservando la comprobación de la regla, ausencia de escrituras y permisos. Se repitió la suite completa. No se rebajaron pruebas ni se cambió el motor para ajustarlo a los resultados.
+
+**23 medidas con anchos reales iguales a los solicitados**, sin scroll horizontal: lado 1366/390/810/1080; esfuerzo, carga y resultado 1366/1024/390/810/1080; fotos de Añadir y resultado Ambos 1366/390. Mosaico mínimo observado 160 px. Evidencia en `docs/capturas_13e/fase_c/mediciones.json` y PNG de esas pantallas, recuerdos, Todos evaluados, historial, permisos y Safari. Se inspeccionaron visualmente las capturas de ayuda y resultado móvil; en escritorio y Safari se observaron las pantallas reales. Las capturas A/B ya hechas siguen en sus carpetas, sin repetir QA ni presentarlas como nuevas de C.
+
+**Safari instalado:** selección de foto existente, ayuda de lado, recorrido corporal, detección y mosaicos de esfuerzo/carga sin respuesta inicial; resultado 3 · Amarillo · Nivel 2, desglose cerrado y guardado con vuelta a la visita. No se guardó la contraseña ficticia. Los anchos exactos son del navegador integrado, no se atribuyen a Safari físico de esas medidas. `consola.json` registra **9 avisos MediaPipe/WebGL y 0 errores JS** en integrado. No se afirma consola vacía ni se ocultan esos avisos.
+
+La instancia QA usó exclusivamente `rula_ergonomia_pruebas`, cuentas ficticias, fotos temporales propias y transacción revertida al cerrar: **QA13E: ROLLBACK completado**. Se cerraron la ventana privada y pestaña propias y se retiró el viewport forzado. No se cargaron pruebas ni se borraron datos de `rula_ergonomia`, ni se modificó su esquema. No se descargaron navegadores.
+
+### Checklist y lo que NO se hizo
+
+- ✅ 799 pruebas, compilación y comprobaciones de sintaxis/diff en verde.
+- ✅ Fase C según diseño textual aprobado: dos preguntas de esfuerzo, pictogramas exactos, resultado ordenado, guardar/siguiente, recuerdos y Añadir análisis; capturas conservadas.
+- ✅ 390 / 810 / 1080 / 1366 y 1024 sin desbordamiento en los pasos registrados; opciones ≥160 px.
+- ✅ Confirmaciones explícitas; recuerdos visibles; cero ángulos/ajustes heredados; final Pendiente mientras falte una respuesta.
+- ✅ Usuario denegado por dirección directa y por POST; CSRF y fotos protegidas se mantienen.
+- ✅ Mensajes con tildes, ayuda exacta y pregunta de lado intacta.
+- ✅ Cero errores JS registrados; nueve avisos de MediaPipe/WebGL documentados.
+- ✅ Sin cambios de motor, esquema, dependencias, rutas ni credenciales/fotos privadas en Git.
+- ❌ Dedo físico en celular/iPad: pendiente. No se certifica WCAG completa ni dos versiones estables de Chrome/Edge/Firefox; no se descargaron copias.
+- ❌ Preferencia física de movimiento reducido / almacenamiento bloqueado: no se cambió la configuración real para ensayarlas; ambas salidas están implementadas sin bloquear el flujo.
+- ❌ Diagramas y especificación de casos de uso: a cargo de Claude según C5; se actualizaron aquí requisitos y flujo de pantalla, README/INSTALAR y estado.
+
+No quedó funcionalidad de C a medias en el alcance implementado; los pendientes anteriores corresponden a validación física/compatibilidad y documentación asignada a Claude. El Paso 13 general conserva esos límites de QA, sin declararlo certificado por completo.
+
+### Cómo lo prueba Andy
+
+1. Entra como Administrador, visita En curso y puesto pendiente. Completa el contexto y agrega una foto Para medir. En lado comprueba la pregunta original y las cuatro referencias; elige un lado o Ambos.
+2. Confirma los siete segmentos y sus ajustes/Ninguno. Si cambias el rango, debe conservarse aunque la detección termine después. El chip parcial muestra el segmento; el final permanece Pendiente.
+3. Responde actividad con sus tres mosaicos y carga con sus seis. Vuelve con Atrás: no debe perder lo escrito. En Ambos, actividad/carga se responden por lado; no debe aparecer un puntaje mientras falte el otro.
+4. Resultado: revisa puntaje, color, nivel y acción; abre Ver desglose del cálculo y vuelve a cerrarlo. Sugerencias aparece aparte.
+5. Pulsa Guardar y evaluar siguiente puesto: debe guardar y abrir un pendiente activo de la misma visita. Postura, momento, tiempo y esfuerzo aparecen recordados con aviso para confirmar. Consentimiento, condiciones, lado y mediciones vuelven a contestarse; nunca se copian ángulos ni ajustes.
+6. Guarda el último pendiente con el mismo botón: vuelve a la visita con Todos los puestos están evaluados. El segundo botón siempre guarda y vuelve directamente. Sin fotos, se conserva el guardado sin puntaje.
+7. Abre una evaluación con fotos → Analizar fotos / añadir análisis. Elige fotos Para medir/De apoyo y repite lado, cuerpo, esfuerzo y resultado. Guarda y consulta la evaluación: los análisis anteriores deben seguir presentes junto a los nuevos.
+8. Como Usuario, escribe la dirección de Añadir análisis: Acceso denegado. Repite suite con `TZ=America/Bogota ./mvnw test`: 799 aprobadas. Prueba también a 390 y con el dedo en tu dispositivo físico, que queda pendiente de esa comprobación real.
+
+### Git y cierre
+
+Commit de C: `Paso 13E-C: esfuerzo guiado, resultado y siguiente puesto`. El resumen final comunica el hash real y el resultado del push normal a origin/main, verificado contra `Andybena2025/Aplomo-app`. Base `ac94c46` (B aprobado por Andy); no se reescriben commits anteriores. README cambia solo fila 13 y cantidad de pruebas; INSTALAR solo cantidad; AGENTS registra la aprobación de B y el estado de C. **Se detiene para revisión de Andy, sin adelantar otro paso.**

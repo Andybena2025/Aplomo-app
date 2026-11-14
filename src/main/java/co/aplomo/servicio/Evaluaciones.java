@@ -46,6 +46,14 @@ public final class Evaluaciones {
         });
     }
 
+    /** Siguiente pendiente real de esta visita, en el orden de puestos activos del salón. */
+    public int siguientePendiente(Cuenta actor,int visita) throws SQLException {
+        return tx.ejecutar(con->{admin(con,actor);var ficha=abierta(con,visita,false);
+            var evaluados=new HashSet<Integer>();for(var e:new VisitaDao().evaluaciones(con,visita,false))evaluados.add(e.puesto());
+            return dao.puestos(con,ficha.salon()).stream().filter(p->!evaluados.contains(p.id())).mapToInt(Puesto::id).findFirst().orElse(0);
+        });
+    }
+
     /** Valida todo, guarda evaluación, condiciones, fotos y auditoría; revierte archivos nuevos ante fallos. */
     public int guardar(Cuenta actor, int visita, Datos entrada, List<Fotos.Entrada> fotos) throws SQLException, IOException {
         return guardar(actor,visita,entrada,fotos,null);
