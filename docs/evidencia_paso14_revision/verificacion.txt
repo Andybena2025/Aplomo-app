@@ -1,0 +1,7 @@
+TZ=America/Bogota ./mvnw test
+Tests run: 842, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+Finished at: 2026-11-14T09:42:15-05:00
+node --test scripts/qa_revision_eventos.cjs
+tests 10; pass 10; fail 0; skipped 0
+QA13G: ROLLBACK completado

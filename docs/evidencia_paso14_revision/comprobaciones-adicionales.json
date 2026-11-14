@@ -1,0 +1,27 @@
+{
+  "segundoLado": {
+    "guardado": true,
+    "fotos": 2,
+    "analisis": 2,
+    "respaldoManual": true,
+    "medicionesNoHeredadas": true,
+    "nota": "Misma foto repetida deliberadamente para activar perfil opuesto; prueba de funcionamiento, no evaluación ergonómica válida de ambos lados."
+  },
+  "anadirAnalisis": {
+    "guardado": true,
+    "aviso": "Análisis guardado."
+  },
+  "apoyo": {
+    "frente": true,
+    "detalle": true,
+    "ajusteEnLinea": true,
+    "desbordeVertical": 0,
+    "desbordeLateral": 0
+  },
+  "consola": {
+    "planta": 0,
+    "oficina": 0
+  },
+  "hasTouch": "No disponible: no ejecutado",
+  "reducedMotionEmulado": "No disponible: no ejecutado"
+}

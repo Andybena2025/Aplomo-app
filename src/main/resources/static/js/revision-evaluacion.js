@@ -3,12 +3,11 @@
  const form=document.querySelector('form[data-revision]');if(!form)return;
  const $=s=>form.querySelector(s),$$=s=>[...form.querySelectorAll(s)];
  const orden=['BRAZO','ANTEBRAZO','MUNECA','GIRO','CUELLO','TRONCO','PIERNAS'],angulares=orden.filter(k=>!['GIRO','PIERNAS'].includes(k));
- // Límites solo para avisar de proximidad; no calculan ningún punto RULA.
- const bordes={BRAZO:[-20,20,45,90],ANTEBRAZO:[60,100],MUNECA:[-15,-5,5,15],CUELLO:[-5,10,20],TRONCO:[-5,5,20,60]};
  let paso=1,maximo=1,ocupado=false,fotos=[],tareas=[],lado=null,otros=false,extras=0,medicionPendiente=null,temporizador,archivoTipo='FRENTE',fotoVisible=null;
  const esfuerzoPorLado=new Map(),confirmados=new Set(),fuentes=new Map();
  const continuar=Number(form.dataset.continuar||0);
- let evidenciaActiva=null;
+ let evidenciaActiva=null,lecturas=0;
+ function anotarFuente(f,k){f.referencias||=new Set();f.referencias.add(fila(k).querySelector('strong').textContent);f.descripcionBase||=f.descripcion;f.descripcion=f.descripcionBase+' · referencia para '+[...f.referencias].join(', ');}
  if(continuar)fotos=$$('[data-foto-id]').map((el,i)=>({id:Number(el.dataset.fotoId),vista:el.dataset.vista,descripcion:el.dataset.descripcion,src:el.dataset.src,preview:el.dataset.src,uso:i===0?'MEDIR':'APOYO'}));
  const memoria=window.crearMemoriaEvaluacion(form);
  function aviso(t){$('[data-error-evaluacion]').hidden=!t;$('[data-error-evaluacion] span').textContent=t;}
@@ -16,10 +15,10 @@
  const analizador=window.crearAnalizadorAplomo(form,()=>tareas,aviso,renovar);
  // Reutiliza los controles y el lienzo existentes, conservando escala/coordenadas.
  $('[data-foto-revision]').append($('[data-editor-foto] .measure').firstElementChild);
- const fotoCont=$('[data-foto-revision]');
+ const fotoCont=$('[data-foto-revision]');$('.wizfoot').append($('[data-confirmar-mediciones]'));
  function actual(){const d=analizador.datos();return d?.foto.ladoFijo===lado?d:null;}
  function delLado(){return tareas.filter(f=>f.ladoFijo===lado);}
- function conFotos(){return $('[name="registro"]:checked')?.value==='CON_FOTOS';}
+ function conFotos(){return !!continuar||$('[name="registro"]:checked')?.value==='CON_FOTOS';}
  function estado(f){return f.analisis;}
  function nombreLado(){return lado==='DERECHO'?'Lado derecho':'Lado izquierdo';}
  function limpiarConfirmacion(){confirmados.delete(lado);actual()?.estado&&(actual().estado.ajustesConfirmados=false);}
@@ -38,7 +37,7 @@
   b.textContent=ocupado?'Cargando…':'Continuar →';
   $('[data-atras-evaluacion]').disabled=ocupado;
   for(const g of $$('[data-guardar-evaluacion],[data-guardar-volver]')){g.hidden=paso!==7;g.disabled=ocupado;}
-  $('[data-confirmar-mediciones]').disabled=ocupado||!delLado().length;
+  $('[data-confirmar-mediciones]').disabled=ocupado||lecturas>0||!delLado().length;$('[data-confirmar-mediciones]').hidden=paso!==5;
   $('[data-evaluar-otro]').hidden=!conFotos()||otros||!!continuar;
  }
  function mostrar(n){
@@ -58,7 +57,7 @@
   const h=$('[data-paso="'+n+'"] h2');h.tabIndex=-1;h.focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});
   form.dispatchEvent(new CustomEvent('aplomo:pantalla',{detail:{paso:n,lado}}));
  }
- function motivo(){form.elements.motivo.value='Momento: '+($('[name="criterio"]:checked')?.value==='MAS_INADECUADA'?'La postura más exigente':'La que más tiempo dura')+'. Postura: '+form.elements.postura.value.trim()+'.';$('[data-momento-revision]').textContent=$('[name="criterio"]:checked')?.value==='MAS_INADECUADA'?'Mide el momento más exigente.':'Mide la postura habitual.';}
+ function motivo(){form.elements.motivo.value='Momento: '+($('[name="criterio"]:checked')?.value==='MAS_INADECUADA'?'La postura más exigente':'La que más tiempo dura')+'. Postura: '+form.elements.postura.value.trim()+'.';$('[data-momento-revision]').textContent=(continuar?form.dataset.criterio:$('[name="criterio"]:checked')?.value)==='MAS_INADECUADA'?'Mide el momento más exigente.':'Mide la postura habitual.';}
  const puerta=window.crearAccionEvaluacion({
   alCambiar(valor){ocupado=valor;form.dataset.ocupado=String(valor);botones();},
   alError(e){aviso(e instanceof TypeError?'No se pudo conectar. Tus respuestas y fotos se conservan; inténtalo de nuevo.':e.message);}
@@ -101,9 +100,9 @@
    const d=actual(),k=el.dataset.rango;if(!d)return;
    if(angulares.includes(k)){d.estado.manual[k]=el.value;d.estado.medidas||={};d.estado.medidas[k]={grados:Number(el.value),manual:true};}
    else if(k==='GIRO')d.estado.giro=el.value;else d.estado.piernas=el.value==='si';
-   d.estado.resueltos||={};d.estado.resueltos[k]=false;limpiarConfirmacion();if(evidenciaActiva){fuentes.set(d.foto.indiceFoto+':'+lado+':'+k,evidenciaActiva.vista==='FRENTE'?'Frente':'Detalle');}analizador.actualizar(k);refrescar();
+   d.estado.resueltos||={};d.estado.resueltos[k]=!['error','nada','otroPerfil'].includes(d.estado.ia);limpiarConfirmacion();if(evidenciaActiva){fuentes.set(d.foto.indiceFoto+':'+lado+':'+k,evidenciaActiva.vista==='FRENTE'?'Frente':'Detalle');anotarFuente(evidenciaActiva,k);}analizador.actualizar(k);refrescar();
   }
-  if(el.matches('[data-ajuste-revision]')){const d=actual();if(d){if(evidenciaActiva){const k=el.closest('[data-revision-segmento]').dataset.revisionSegmento;fuentes.set(d.foto.indiceFoto+':'+lado+':'+k,evidenciaActiva.vista==='FRENTE'?'Frente':'Detalle');}d.estado.ajustes[el.dataset.ajusteRevision]=el.checked;limpiarConfirmacion();analizador.actualizar('AJUSTES');}}
+  if(el.matches('[data-ajuste-revision]')){const d=actual();if(d){if(evidenciaActiva){const k=el.closest('[data-revision-segmento]').dataset.revisionSegmento;fuentes.set(d.foto.indiceFoto+':'+lado+':'+k,evidenciaActiva.vista==='FRENTE'?'Frente':'Detalle');anotarFuente(evidenciaActiva,k);}d.estado.ajustes[el.dataset.ajusteRevision]=el.checked;limpiarConfirmacion();analizador.actualizar('AJUSTES');}}
   motivo();botones();
  });
  function prepararTareas(){
@@ -113,7 +112,7 @@
  }
  function evidencias(){
   const cont=$('[data-evidencias]');cont.replaceChildren();cont.setAttribute('role','tablist');cont.setAttribute('aria-label','Fotos de la postura');
-  fotos.forEach((f,i)=>{const b=document.createElement('button');b.type='button';b.className='btn';b.setAttribute('role','tab');b.setAttribute('aria-selected',String(i===fotoVisible?.indiceFoto));b.textContent=f.vista==='PERFIL'?'Perfil':f.vista==='FRENTE'?'Frente':f.descripcion;b.onclick=()=>{
+  fotos.forEach((f,i)=>{if(f.ladoOrigen&&f.ladoOrigen!==lado)return;const b=document.createElement('button');b.type='button';b.className='btn';b.setAttribute('role','tab');b.setAttribute('aria-selected',String(i===fotoVisible?.indiceFoto));b.textContent=f.vista==='PERFIL'?'Perfil':f.vista==='FRENTE'?'Frente':f.descripcion;b.onclick=()=>{
    for(const tab of cont.children)tab.setAttribute('aria-selected',String(tab===b));const t=tareas.findIndex(t=>t.indiceFoto===i&&t.ladoFijo===lado);
    if(t>=0){fotoVisible=tareas[t];analizador.seleccionar(t);fotoPrincipal();$('[data-estado-evidencia]').textContent='';}
    else {$('[data-estado-evidencia]').textContent=f.vista==='FRENTE'?'Frente: úsalo para revisar los ajustes de brazo, cuello y tronco.':'Detalle: úsalo para revisar el rango y el giro de la muñeca.';verApoyo(f);}
@@ -134,34 +133,51 @@
   if(fotos.length>=10)throw new Error('Solo puedes agregar hasta 10 fotos.');
   if(!['image/jpeg','image/png'].includes(file.type)||!file.size||file.size>5*1024*1024)throw new Error('Elige una foto JPG o PNG de hasta 5 MB.');
   const perfil=tipo==='PERFIL',f={ladoOrigen:lado,file,preview:URL.createObjectURL(file),vista:perfil?'PERFIL':tipo==='FRENTE'?'FRENTE':'OTRA',descripcion:perfil?(fotos.some(x=>x.vista==='PERFIL')?'Perfil · otro lado':'Perfil'):tipo==='FRENTE'?'Frente':tipo==='OTRA'?'Detalle de mano y muñeca':'Foto adicional '+(++extras),uso:perfil?'MEDIR':'APOYO'};
-  fotos.push(f);confirmados.delete(lado);prepararTareas();$('[data-subir-perfil]').hidden=!!delLado().length;fotoPrincipal();refrescar();
+  fotos.push(f);$('[data-agregar-foto]').open=false;confirmados.delete(lado);prepararTareas();$('[data-subir-perfil]').hidden=!!delLado().length;fotoPrincipal();refrescar();
   if(!perfil){
+   lecturas++;botones();
    $('[data-estado-evidencia]').textContent='Revisando '+f.descripcion.toLowerCase()+'…';
    try{
     const r=await window.AplomoDeteccion.conTiempo(window.AplomoDeteccion.detectarPuntos(f.preview),60000,'La detección tardó demasiado.');
-    f.deteccion=r;
-    $('[data-estado-evidencia]').textContent=r?'Foto agregada. Revisa sus ajustes en las filas; ninguna casilla se marca sola.':'No se encontró una persona en la foto. Usa esta evidencia para elegir el rango por observación directa.';
+    f.deteccion=r;if(r&&tipo==='OTRA')await medirDetalle(f,r);
+    $('[data-estado-evidencia]').textContent=r?'Foto agregada. Revisa sus ajustes; nada se marca solo.':'No se encontró una persona en la foto. Elige el rango a mano.';
     // No se convierten ángulos frontales en flexiones laterales. Evidencia complementaria, no otra evaluación.
     refrescar();
-   }catch(_){$('[data-estado-evidencia]').textContent='No se pudo medir esta foto. Se conserva como apoyo; puedes elegir los rangos a mano.';}
+   }catch(_){$('[data-estado-evidencia]').textContent='Foto de apoyo conservada. Elige los rangos a mano.';}finally{lecturas--;botones();}
   }
  }
  $('[data-archivo-perfil]').onchange=e=>recibir(e.target,'PERFIL').catch(e=>aviso(e.message));
  $('[data-archivo-extra]').onchange=e=>recibir(e.target,archivoTipo).catch(e=>aviso(e.message));
+ async function medirDetalle(f,r){
+  const der=(r.raw[14].v+r.raw[16].v+r.raw[20].v)>=(r.raw[13].v+r.raw[15].v+r.raw[19].v),indices=der?[14,16,20,18]:[13,15,19,17];
+  if(indices.some(i=>r.raw[i].v<.5))return;
+  const imagen=new Image();imagen.src=f.preview;await imagen.decode();
+  const p=new URLSearchParams({csrf:form.elements.csrf.value,visita:form.elements.visita.value,segmento:'MUNECA',lado,ancho:String(imagen.naturalWidth),alto:String(imagen.naturalHeight),MUNECA_modo:'PUNTOS',MUNECA_puntos:[r.L.codo,r.L.muneca,r.L.nudillos].map(q=>q.x.toFixed(6)+','+q.y.toFixed(6)).join(';'),ajustes_confirmados:'no'});
+  const respuesta=await fetch('/evaluaciones/calcular',{method:'POST',body:p,credentials:'same-origin'});if(!respuesta.ok)return;
+  const n=new DOMParser().parseFromString(await respuesta.text(),'text/html').querySelector('[data-parcial]');if(!n)return;
+  f.medicionMuneca={grados:Number(n.dataset.grados),rango:Number(n.dataset.rango)};
+  const d=actual();if(!d)return;d.estado.alternativaMuneca=f;d.estado.conflictoApoyo||={};
+  d.estado.conflictoApoyo.MUNECA=!!d.estado.propuestas?.MUNECA&&d.estado.propuestas.MUNECA.rango!==f.medicionMuneca.rango;
+  if(d.estado.conflictoApoyo.MUNECA&&d.estado.resueltos)delete d.estado.resueltos.MUNECA;
+ }
  function fila(k){return $('[data-revision-segmento="'+k+'"]');}
  function propuesta(d,k){return d.estado.propuestas?.[k];}
  function revisar(d,k){
   if(d.estado.resueltos?.[k])return false;
   if(k==='GIRO')return !d.estado.giro;
   if(k==='PIERNAS')return d.estado.piernas===null;
-  const p=propuesta(d,k);return !p||bordes[k].some(b=>Math.abs(p.grados-b)<3)||tareas.some(t=>t!==d.foto&&t.ladoFijo===lado&&t.analisis?.propuestas?.[k]&&t.analisis.propuestas[k].rango!==p.rango);
+  const p=propuesta(d,k);return window.AplomoRevisionReglas.requiereRevision({segmento:k,grados:p?.grados,encontrado:!!p,discrepa:!!d.estado.conflictoApoyo?.[k]||!!p&&tareas.some(t=>t!==d.foto&&t.ladoFijo===lado&&t.analisis?.propuestas?.[k]&&t.analisis.propuestas[k].rango!==p.rango)});
  }
  function refrescar(){
   const d=actual();$('[data-foto-revision]').hidden=!d;$('[data-agregar-foto]').hidden=!d||!!continuar;
-  if(!d){botones();return;}
+  if(!d){
+   evidenciaActiva=null;fotoVisible=null;$('[data-respaldo]').hidden=true;$('[data-estado-evidencia]').textContent='';
+   for(const k of orden){const f=fila(k);f.hidden=false;f.open=false;delete f.dataset.pulsado;f.classList.remove('revision-pulso');f.dataset.pendiente='true';f.querySelector('[data-resumen-segmento]').textContent='Sin medición';f.querySelector('[data-revisar]').hidden=false;f.querySelector('[data-fuente]').textContent='Perfil';for(const x of f.querySelectorAll('input'))x.checked=false;}
+   botones();return;
+  }
   if(fotoVisible===d.foto&&$('[data-imagen-apoyo]')?.hidden!==false)fotoPrincipal();
   const falla=['error','nada','otroPerfil'].includes(d.estado.ia);
-  $('[data-respaldo]').hidden=!falla;
+  $('[data-respaldo]').hidden=!falla;$('[data-respaldo]').textContent=d.estado.ia==='otroPerfil'?'Esta foto muestra el otro perfil. Usa otra foto o elige los rangos por observación directa.':'No se encontró una persona en la foto. Marca los puntos a mano o elige un rango. Revisa un segmento a la vez.';
   let primeraPendiente=false;
   for(const k of orden){
    const f=fila(k),p=propuesta(d,k),manual=d.estado.manual[k],valor=k==='GIRO'?d.estado.giro:k==='PIERNAS'?(d.estado.piernas===null?'':d.estado.piernas?'si':'no'):manual??p?.rango;
@@ -169,11 +185,17 @@
    const texto=r?.closest('label').querySelector('.tour-franja>span').textContent||'Elige por observación';
    f.querySelector('[data-resumen-segmento]').textContent=angulares.includes(k)?(manual!==undefined?Number(manual).toLocaleString('es-CO'):p?p.grados.toLocaleString('es-CO',{maximumFractionDigits:2}):'—')+'° · '+texto+(manual===undefined&&p?' · Según la foto':''):texto;
    const pendiente=revisar(d,k);f.dataset.pendiente=String(pendiente);f.querySelector('[data-revisar]').hidden=!pendiente;
-   f.querySelector('[data-fuente]').textContent=fuentes.get(d.foto.indiceFoto+':'+lado+':'+k)||'Perfil';
+   const fuente=fuentes.get(d.foto.indiceFoto+':'+lado+':'+k);f.querySelector('[data-fuente]').textContent=fuente?(angulares.includes(k)&&manual===undefined?'Perfil · ajuste: '+fuente:fuente):'Perfil';
    if(pendiente&&!f.dataset.pulsado){f.dataset.pulsado='si';f.classList.add('revision-pulso');}
    for(const x of f.querySelectorAll('[data-ajuste-revision]'))x.checked=!!d.estado.ajustes[x.dataset.ajusteRevision];
    if(falla){f.hidden=primeraPendiente;if(!d.estado.resueltos?.[k]){primeraPendiente=true;f.open=true;}}else f.hidden=false;
   }
+  let alternativa=$('[data-candidata-muneca]');const apoyo=d.estado.alternativaMuneca;
+  if(apoyo){
+   if(!alternativa){alternativa=document.createElement('button');alternativa.type='button';alternativa.className='btn';alternativa.dataset.candidataMuneca='';fila('MUNECA').querySelector('.revision-opciones').append(alternativa);}
+   alternativa.textContent='Usar detalle · '+apoyo.medicionMuneca.grados.toLocaleString('es-CO',{maximumFractionDigits:2})+'°';
+   alternativa.onclick=()=>{const actualAhora=actual();if(!actualAhora)return;const s=actualAhora.estado;s.manual.MUNECA=apoyo.medicionMuneca.grados;s.resueltos||={};s.resueltos.MUNECA=true;fuentes.set(actualAhora.foto.indiceFoto+':'+lado+':MUNECA','Detalle');apoyo.descripcion='Detalle de mano y muñeca · referencia de la muñeca';limpiarConfirmacion();analizador.actualizar('MUNECA');refrescar();};
+  }else alternativa?.remove();
   botones();
  }
  async function medirPropuestas(){
@@ -198,14 +220,14 @@
  });
  $$('[data-revision-segmento]').forEach(f=>f.addEventListener('toggle',()=>{if(f.open){analizador.destacar(f.dataset.revisionSegmento);}}));
  $$('[data-volver-foto]').forEach(b=>b.onclick=()=>{const d=actual(),k=b.dataset.volverFoto;if(!d)return;delete d.estado.manual[k];delete d.estado.resueltos?.[k];delete d.estado.firmaRevision;fuentes.delete(d.foto.indiceFoto+':'+lado+':'+k);limpiarConfirmacion();analizador.actualizar(k);});
- $$('[data-no-visible]').forEach(b=>b.onclick=()=>{fila(b.dataset.noVisible).querySelector('[data-ayuda-no-visible]').hidden=false;});
+ $$('[data-no-visible]').forEach(b=>b.onclick=()=>{const k=b.dataset.noVisible;fila(k).querySelector('[data-ayuda-no-visible]').hidden=false;const d=actual();if(d)fuentes.set(d.foto.indiceFoto+':'+lado+':'+k,'Observación directa');$('[data-agregar-foto]').open=true;refrescar();});
  $$('[data-resolver]').forEach(b=>b.onclick=()=>{
   const d=actual(),k=b.dataset.resolver;if(!d)return;
   const r=fila(k).querySelector('[data-rango]:checked');if(!r){aviso('Elige un rango para '+fila(k).querySelector('strong').textContent+'.');return;}
   d.estado.resueltos||={};d.estado.resueltos[k]=true;fila(k).open=false;limpiarConfirmacion();refrescar();
  });
  $('[data-confirmar-mediciones]').onclick=()=>accion(async()=>{
-  if(medicionPendiente)await medicionPendiente;
+  if(lecturas)throw new Error('Espera a que termine la revisión de la foto agregada.');if(medicionPendiente)await medicionPendiente;
   const indice=actual()?.indice;
   for(const f of delLado()){
    analizador.seleccionar(tareas.indexOf(f));await medirPropuestas();const d=actual(),pendientes=orden.filter(k=>revisar(d,k));

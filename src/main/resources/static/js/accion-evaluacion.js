@@ -6,8 +6,8 @@
    get ocupada(){return ocupada;},
    async ejecutar(fn){
     if(ocupada)return false;
-    ocupada=true;alCambiar(true);
-    try{await fn();return true;}
+    ocupada=true;
+    try{alCambiar(true);await fn();return true;}
     catch(error){alError(error);return false;}
     finally{ocupada=false;alCambiar(false);}
    }

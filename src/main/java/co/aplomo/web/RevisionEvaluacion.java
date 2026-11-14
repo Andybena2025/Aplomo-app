@@ -76,7 +76,7 @@ final class RevisionEvaluacion {
         var f=c.ficha();var d=f.datos();
         var p=new co.aplomo.modelo.Puesto(f.puesto(),0,null,null,f.numero(),d.postura(),"","",null,true);
         String html=construir(s,List.of(p),p.id(),f.visita(),"Evaluación existente","Puesto "+f.numero());
-        html=html.replace("action=\"/evaluaciones\"","data-continuar=\""+f.id()+"\" action=\"/evaluaciones/"+f.id()+"/analisis\"");
+        html=html.replace("action=\"/evaluaciones\"","data-criterio=\""+escapar(d.criterio())+"\" data-continuar=\""+f.id()+"\" action=\"/evaluaciones/"+f.id()+"/analisis\"");
         StringBuilder fotos=new StringBuilder("<div data-fotos-existentes hidden>");
         for(var foto:c.fotos())fotos.append("<span data-foto-id=\"").append(foto.id()).append("\" data-vista=\"").append(foto.vista()).append("\" data-descripcion=\"").append(escapar(foto.descripcion())).append("\" data-src=\"/fotos/").append(foto.id()).append("\"></span>");
         html=html.replace("</form>",fotos.append("</div></form>").toString());
