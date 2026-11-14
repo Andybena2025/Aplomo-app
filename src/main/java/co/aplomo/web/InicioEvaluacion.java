@@ -6,6 +6,12 @@ import java.util.List;
 /** Atajo del Administrador: el servicio filtra visitas en curso y puestos pendientes. */
 final class InicioEvaluacion {
     private InicioEvaluacion() {}
+    static String practica() {
+        return GaleriaDemo.habilitada()?"<section class=\"card stack\" aria-labelledby=\"practicar-evaluacion\"><div><span class=\"eyebrow\">Demostración</span><h2 id=\"practicar-evaluacion\">Probar evaluación</h2></div><p>Practica el recorrido con un puesto de Oficina o Planta y fotos de ejemplo. Puedes repetirlo aunque ya hayas terminado una evaluación.</p><div><a class=\"btn p\" href=\"/demo/evaluacion\">Abrir evaluación de prueba</a></div></section>":"";
+    }
+    static String paginaPractica(co.aplomo.seguridad.Sesiones.Sesion s) {
+        return Html.pagina("Probar evaluación","<div class=\"pagehead\"><div><span class=\"eyebrow\">Demostración · Evaluación</span><h1>Probar evaluación</h1></div></div><section class=\"card stack\"><p>Elige un puesto para practicar el mismo recorrido de la app.</p><p>Se prepara una visita En curso en APLOMO · Práctica de evaluación. Los resultados se guardan como demostración en la base actual; puedes repetir la prueba sin borrar intentos.</p><form method=\"post\" action=\"/demo/evaluacion\" class=\"row\">"+Html.csrf(s)+"<button class=\"btn p\" name=\"tipo\" value=\"PLANTA\">Probar Planta</button><button class=\"btn\" name=\"tipo\" value=\"OFICINA\">Probar Oficina</button></form></section>",s);
+    }
     static String tarjeta(List<ParaEvaluar> filas) {
         StringBuilder h=new StringBuilder("<section class=\"card stack evaluar-ahora\" aria-labelledby=\"evaluar-ahora\"><h2 id=\"evaluar-ahora\">Evaluar ahora</h2>");
         if(filas.isEmpty())return h.append("<p>No hay una visita en curso</p><div><a class=\"btn p\" href=\"/reservas\">Ir a Reservas</a></div></section>").toString();

@@ -145,6 +145,13 @@ public final class Router implements HttpHandler {
             sesiones.invalidarCuenta(cambiada.id()); s=sesiones.crear(cambiada); ponerCookie(x,s.id());
             redirigir(x,"/?contrasena=1"); return;
         }
+        if(ruta.equals("/demo/evaluacion")) {
+            Permisos.administrador(s.cuenta());
+            if(!GaleriaDemo.habilitada()){enviar(x,404,Html.pagina("Demostración no disponible","",s));return;}
+            if(metodo.equals("GET")){enviar(x,200,InicioEvaluacion.paginaPractica(s));return;}
+            var destino=visitas.servicio().practica().abrir(s.cuenta(),f.get("tipo"));
+            redirigir(x,"/evaluaciones/nueva?visita="+destino.visita()+"&puesto="+destino.puesto());return;
+        }
         if(calificaciones.atender(x,s))return;
         if(ruta.equals("/sugerencias")||ruta.startsWith("/sugerencias/")){sugerencias.atender(x,s,f);return;}
         if(ruta.equals("/pendientes")||ruta.startsWith("/pendientes/")){pendientes.atender(x,s,f);return;}
@@ -181,7 +188,7 @@ public final class Router implements HttpHandler {
             inicio.append("<div class=\"pagehead\"><div><span class=\"eyebrow\">")
                     .append(Html.fecha(Html.hoy()).toUpperCase(java.util.Locale.ROOT)).append("</span><h1>Hola, ")
                     .append(Html.escapar(nombre)).append("</h1></div></div>");
-            if(c.rol()==Cuenta.Rol.ADMINISTRADOR)inicio.append(InicioEvaluacion.tarjeta(visitas.servicio().paraEvaluar(c)));
+            if(c.rol()==Cuenta.Rol.ADMINISTRADOR)inicio.append(InicioEvaluacion.practica()).append(InicioEvaluacion.tarjeta(visitas.servicio().paraEvaluar(c)));
             // 4 tarjetas KPI como en el mock
             inicio.append("<div class=\"grid4\" style=\"margin-bottom:24px\">")
                     .append(kpi("Visitas en curso", String.valueOf(enCurso), null))

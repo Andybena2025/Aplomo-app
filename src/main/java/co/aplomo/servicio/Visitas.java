@@ -44,6 +44,9 @@ public final class Visitas {
         return tx.ejecutar(con->{administrador(con,actor);return visitas.paraEvaluar(con);});
     }
 
+    /** Práctica comparte las transacciones y el reloj, sin usar privilegios de MySQL adicionales. */
+    public PracticaEvaluacion practica(){return new PracticaEvaluacion(tx,reloj);}
+
     /** Consulta una visita; el Usuario solo puede abrir las finalizadas de su propia empresa. */
     public Ficha consultar(Cuenta actor, int id) throws SQLException {
         return tx.ejecutar(con -> visible(con, actor, id));

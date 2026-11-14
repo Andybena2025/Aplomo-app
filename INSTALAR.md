@@ -76,6 +76,10 @@ Con la app corriendo, conecta el celular al **mismo Wi-Fi** que el computador y 
 
 ---
 
+## Práctica rápida desde la app
+
+Como Administrador, abre **Inicio → Probar evaluación → Abrir evaluación de prueba** y elige **Probar Planta** u **Oficina**. También puedes abrir `/demo/evaluacion`. No necesitas cargar el SQL demo ni usar root de MySQL: se prepara una empresa ficticia `DEMO-APLOMO-PRACTICA` en la base configurada, con una visita En curso reutilizable. Los intentos se guardan allí; si finalizas esa visita, el acceso abre otra sin borrar la anterior. Con `-Daplomo.modoDemo=false` se oculta y bloquea el acceso. El reinicio de las tres empresas demo anteriores no borra esta empresa de práctica.
+
 ## Datos de demostración (opcional y manual)
 
 `docs/base_de_datos/datos_demo.sql` **no se carga al iniciar ni instalar la app**. Requiere una cuenta de Administrador activa. No crea usuarios ni contraseñas; vincula los registros a un Administrador existente. Solo inserta lo que falta: repetirlo no duplica filas ni cambia los estados ya editados.
@@ -132,7 +136,7 @@ bash scripts/crear_base_pruebas.sh   # Mac; en Windows usa "Git Bash" con el mis
 ./mvnw test                           # Windows: mvnw.cmd test
 ```
 
-Deben aprobar **892 pruebas**.
+Deben aprobar **900 pruebas**.
 
 ---
 

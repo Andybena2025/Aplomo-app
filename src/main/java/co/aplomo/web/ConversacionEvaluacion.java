@@ -8,7 +8,7 @@ import static co.aplomo.web.Html.escapar;
 /** RF-014 a RF-020: una foto y una conversación, con los campos y motor actuales. */
 final class ConversacionEvaluacion {
  private ConversacionEvaluacion(){}
- static String nueva(Sesion s,Evaluaciones.Contexto c,int id){return pagina(s,c.puestos(),id,c.visita().visita().id(),c.visita().empresaNombre()+" · "+c.visita().salonNombre());}
+ static String nueva(Sesion s,Evaluaciones.Contexto c,int id){String aviso=c.visita().empresaNombre().equals(co.aplomo.servicio.PracticaEvaluacion.NOMBRE)?"<div class=\"banner\" role=\"status\">Evaluación de práctica · Los resultados se guardan en la empresa de demostración. Puedes usar las fotos de ejemplo.</div>":"";return pagina(s,c.puestos(),id,c.visita().visita().id(),c.visita().empresaNombre()+" · "+c.visita().salonNombre()).replace("<form data-evaluacion",aviso+"<form data-evaluacion");}
  private static String pagina(Sesion s,List<Puesto> puestos,int id,int visita,String lugar){
   var p=puestos.stream().filter(x->x.id()==id).findFirst().orElse(null);if(id!=0&&p==null)throw new IllegalArgumentException("Elige un puesto activo del salón de esta visita.");
   StringBuilder h=new StringBuilder("<div class=\"pagehead\"><div><span class=\"eyebrow\">Evaluaciones · Nueva</span><h1>Nueva evaluación</h1><p class=\"hint\">").append(escapar(lugar)).append("</p></div><span class=\"tag\" data-modo>").append(p==null?"":p.tipo().equals("ESCRITORIO")?"Oficina":"Planta").append("</span></div><form data-evaluacion data-revision=\"si\" data-conversacion=\"si\" data-tour=\"campo\" data-fases=\"7\" action=\"/evaluaciones\" method=\"post\" enctype=\"multipart/form-data\" novalidate>").append(Html.csrf(s));
