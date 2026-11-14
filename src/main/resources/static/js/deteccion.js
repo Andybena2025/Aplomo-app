@@ -73,5 +73,6 @@
     cola=trabajo.catch(()=>{});return trabajo;
   }
   function preparar(){if(fallida||window.navigator?.onLine===false)return Promise.resolve(false);return conTiempo(poseLista(),LIMITE_MS,'Marca los puntos en la foto.').then(()=>true).catch(()=>{cancelar();return false;});}
+  window.addEventListener?.('pagehide',()=>{generacion++;if(MP)cerrar(MP);cargando=null;etapa('pagina-cerrada');});
   window.AplomoDeteccion={detectarPuntos,conTiempo,preparar,cancelar,get disponible(){return !fallida&&typeof WebAssembly!=='undefined';},diagnostico,LIMITE_MS,MAX_LADO};
 })();

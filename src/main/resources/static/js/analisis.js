@@ -8,7 +8,9 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   let zoom=0,paneo=null;
   function ajustarZoom(){
     if(!imagen)return;
-    const escala=Math.min((visor.clientWidth-2)/imagen.naturalWidth,(visor.clientHeight-(form.dataset.revision?48:2))/imagen.naturalHeight),w=imagen.naturalWidth*escala,h=imagen.naturalHeight*escala,z=niveles[zoom];
+    const vertical=!!form.dataset.conversacion&&window.innerWidth<=900;
+    const escala=vertical?(visor.clientWidth-2)/imagen.naturalWidth:Math.min((visor.clientWidth-2)/imagen.naturalWidth,(visor.clientHeight-(form.dataset.revision?48:2))/imagen.naturalHeight),w=imagen.naturalWidth*escala,h=imagen.naturalHeight*escala,z=niveles[zoom];
+    if(form.dataset.conversacion)visor.style.height=vertical?Math.max(1,h+48)+'px':'';
     caja.dataset.acercada=String(zoom>0);caja.style.width=(w+2)+'px';caja.style.height=(h+2)+'px';lamina.style.width=(w*z)+'px';lamina.style.height=(h*z)+'px';cv.style.width=w+'px';cv.style.height=h+'px';cv.style.transform='scale('+z+')';
     visor.querySelector('[data-zoom-nivel]').textContent=String(z)+'×';visor.querySelector('[data-zoom-menos]').disabled=zoom===0;visor.querySelector('[data-zoom-mas]').disabled=zoom===niveles.length-1;
     const control=visor.querySelector('.zoom-control');control.style.left=Math.max(0,caja.offsetLeft+caja.clientWidth-control.offsetWidth-6)+'px';control.style.top=(caja.offsetTop+6)+'px';

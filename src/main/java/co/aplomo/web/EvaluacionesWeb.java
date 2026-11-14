@@ -89,8 +89,9 @@ public final class EvaluacionesWeb {
             if (!Sesiones.csrfValido(s,f.get("csrf"))) { responder(x,403,"El formulario venció. Abre otra pestaña, inicia sesión y vuelve aquí para reintentar sin perder lo escrito.");return; }
             int visita=entero(f.get("visita"),"visita");
             String registro=Validacion.opcion(f.get("registro"),"registro fotográfico","CON_FOTOS","SIN_REGISTRO_FOTOGRAFICO");
-            if("guiado".equals(f.get("recorrido"))) {
-                Validacion.opcion(f.get("minutos"),"el tiempo de la jornada","30","90","180","300");
+            if(Set.of("guiado","campo").contains(f.getOrDefault("recorrido",""))) {
+                if("campo".equals(f.get("recorrido")))Validacion.opcion(f.get("minutos"),"el tiempo de la jornada","60","180","300","420","540");
+                else Validacion.opcion(f.get("minutos"),"el tiempo de la jornada","30","90","180","300");
                 Validacion.opcion(f.get("condiciones_respondidas"),"las condiciones del puesto","NINGUNA","SELECCION");
                 boolean alguna=List.of("escritorio","pantalla","pies","apoyapies","apoyabrazos","regulable").stream().anyMatch(k->si(f,k));
                 if(alguna != "SELECCION".equals(f.get("condiciones_respondidas"))) throw new IllegalArgumentException("Revisa las condiciones del puesto o elige Ninguna.");
@@ -100,7 +101,7 @@ public final class EvaluacionesWeb {
             List<Fotos.Entrada> fotos=new ArrayList<>();
             for(var p:partes) if(p.archivo()!=null && !(p.archivo().isEmpty() && p.bytes().length==0))
                 fotos.add(new Fotos.Entrada(p.bytes(),f.get(p.nombre()+"_vista"),f.get(p.nombre()+"_descripcion")));
-            if("guiado".equals(f.get("recorrido"))&&registro.equals("CON_FOTOS")&&si(f,"acepta")&&fotos.stream().noneMatch(foto->"PERFIL".equals(foto.vista())))throw new IllegalArgumentException("Sube una foto de perfil para continuar.");
+            if(Set.of("guiado","campo").contains(f.getOrDefault("recorrido",""))&&registro.equals("CON_FOTOS")&&si(f,"acepta")&&fotos.stream().noneMatch(foto->"PERFIL".equals(foto.vista())))throw new IllegalArgumentException("Sube una foto de perfil para continuar.");
             validarDestino(f);
             int id=servicio.guardar(s.cuenta(),visita,datos,fotos,"si".equals(f.get("asistente_completo"))?DatosAnalisis.solicitudes(f):null);
             x.getResponseHeaders().set("Location",destino(s,visita,id,f,"Evaluación guardada."));

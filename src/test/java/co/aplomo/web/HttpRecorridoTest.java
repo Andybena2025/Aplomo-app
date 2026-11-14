@@ -60,8 +60,8 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
     void contextoDelPuestoDeterminaModoYNoMarcaRespuestas(int numero,String modo)throws Exception {
         int id=numero==1?puesto:planta;String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+id).body();
         assertTrue(h.contains("data-modo>"+modo));assertTrue(h.contains("name=\"puesto\" value=\""+id+"\""));assertTrue(h.contains("La persona firmó en papel el consentimiento para ser evaluada y quedó archivado."));
-        assertTrue(h.contains("role=\"radiogroup\""));assertTrue(h.contains("Cambiar"));assertTrue(h.contains("name=\"ninguna\""));assertTrue(h.contains("data-paso=\"7\""));
-        assertFalse(h.contains(" checked"));assertTrue(h.contains("data-giro><option value=\"\""));assertTrue(h.contains("data-carga><option value=\"\""));assertFalse(h.contains("postura_computador.jpg"));assertFalse(h.contains("postura_de_pie.jpg"));assertTrue(h.contains("value=\""+(numero==1?"Computador":"Ensamble")+"\""));
+        assertTrue(h.contains("class=\"campo-respuesta\""));assertFalse(h.contains("data-cambiar-tarea"));assertTrue(h.contains("name=\"ninguna\""));assertTrue(h.contains("data-paso=\"7\""));
+        assertFalse(h.contains(" checked"));assertTrue(h.contains("data-giro><option value=\"\""));assertTrue(h.contains("data-carga><option value=\"\""));assertTrue(h.contains("muestra_perfil.jpg"));assertTrue(h.contains("data-tarea=\""+(numero==1?"Computador":"Ensamble")+"\""));
 
     }
     @Test void puestoAjenoOInactivoNoPuedeEntrarPorDireccionManual()throws Exception {
@@ -106,8 +106,8 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
     void oficinaYPlantaTienenAtajosDeTareaSinGaleriaNiSelecciones(int numero)throws Exception{
         String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+(numero==1?puesto:planta)).body();
         var m=java.util.regex.Pattern.compile("data-tarea=\"([^\"]+)\"").matcher(h);List<String> claves=new ArrayList<>();while(m.find())claves.add(m.group(1));
-        assertEquals(List.of("Levantar una caja","Trabajar inclinado","Brazos arriba","Con herramienta","Agachado","Otra"),claves);
-        assertTrue(h.contains("data-cambiar-tarea"));assertTrue(h.contains("maxlength=\"150\""));assertFalse(h.contains(" checked"));assertFalse(h.contains("class=\"tour-opcion tour-postura\""));
+        assertEquals(List.of(numero==1?"Computador":"Ensamble"),claves);
+        assertFalse(h.contains("data-cambiar-tarea"));assertTrue(h.contains("name=\"postura\""));assertFalse(h.contains(" checked"));assertFalse(h.contains("class=\"tour-opcion tour-postura\""));
     }
     @Test void otraPosturaExigeTextoYConservaSus150Caracteres()throws Exception{
         var f=campos();f.put("postura","");assertEquals(400,enviar(f,null).statusCode());assertEquals(0,cantidad());
@@ -116,13 +116,13 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
     }
     @ParameterizedTest @CsvSource({"MAS_INADECUADA,Es el momento de mayor esfuerzo postural","MAYOR_EXPOSICION,Es la postura que mantiene durante más tiempo"})
     void momentoCambiaEtiquetaYConservaValorGuardado(String criterio,String etiqueta)throws Exception{
-        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();assertTrue(h.contains("Contexto de la evaluación"));assertTrue(h.contains(etiqueta));assertTrue(h.contains("Cómo elegir"));assertFalse(h.contains("¿Qué vas a fotografiar?"));
+        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();assertTrue(h.contains("Conversación inicial"));assertTrue(h.contains(etiqueta));assertTrue(h.contains("No sabe, evalúo la postura que más repite"));assertFalse(h.contains("¿Qué vas a fotografiar?"));
         var f=campos();f.put("criterio",criterio);f.put("minutos","180");var r=enviar(f,null);assertEquals(201,r.statusCode(),r.body());assertEquals(criterio,Sql.<String>uno(con,"SELECT criterio FROM evaluacion WHERE id_visita=?",rs->rs.getString(1),visita));assertEquals(180,Sql.<Integer>uno(con,"SELECT minutos_jornada FROM evaluacion WHERE id_visita=?",rs->rs.getInt(1),visita));
     }
     @Test void fotosUsanUnSoloRecorridoSinDescripcionNiClasificacionManuales()throws Exception{
         String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();
-        assertEquals(7,h.split("data-revision-segmento=", -1).length-1);
-        assertTrue(h.contains("Agregar foto"));assertTrue(h.contains("data-perfil"));assertTrue(h.contains("data-evaluar-otro"));assertFalse(h.contains("data-foto-pantalla"));assertFalse(h.contains("<dialog"));assertTrue(h.contains("Confirmar mediciones"));
+        assertEquals(4,h.split("data-medida=", -1).length-1);
+        assertTrue(h.contains("Agregar foto"));assertTrue(h.contains("data-perfil"));assertTrue(h.contains("data-evaluar-otro"));assertFalse(h.contains("data-foto-pantalla"));assertFalse(h.contains("<dialog"));assertTrue(h.contains("data-medidas-compactas hidden"));
 
     }
     @ParameterizedTest @ValueSource(strings={"FRENTE","OTRA"})

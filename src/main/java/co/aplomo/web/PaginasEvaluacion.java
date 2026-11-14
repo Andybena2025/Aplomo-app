@@ -32,8 +32,8 @@ public final class PaginasEvaluacion {
         return "<label class=\"tour-opcion"+(imagen.startsWith("postura_")?" tour-postura":"")+"\"><input type=\""+(multiple?"checkbox":"radio")+"\" name=\""+nombre+"\" value=\""+escapar(valor)+"\" "+atributos+" aria-labelledby=\""+id+"-texto\""+(ayuda.isEmpty()?"":" aria-describedby=\""+id+"-ayuda\"")+"><span>"+img+"<span class=\"tour-franja\"><span id=\""+id+"-texto\">"+escapar(etiqueta)+"</span>"+pista+"</span></span></label>";
     }
 
-    /** Siete fases estables; las filas y fotos no crean fases adicionales. */
-    static int fase(int paso){return Math.max(1,Math.min(7,paso));}
+    /** Nueve fases estables; las filas y fotos no crean fases adicionales. */
+    static int fase(int paso){return Math.max(1,Math.min(9,paso));}
     static String fases(String html){return java.util.regex.Pattern.compile("data-paso=\"(\\d+)\"").matcher(html).replaceAll(m->m.group()+" data-fase=\""+fase(Integer.parseInt(m.group(1)))+"\"");}
 
     static List<String> posturasDelModo(String modo) {

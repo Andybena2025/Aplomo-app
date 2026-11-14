@@ -39,25 +39,22 @@ class HttpRevisionEvaluacionTest extends HttpPrueba {
  @Test void contextoContieneTresBloquesYLosValoresExactosEnUnaSolaFase()throws Exception{
   String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();
   String contexto=h.substring(h.indexOf("data-paso=\"2\""),h.indexOf("data-paso=\"3\""));
-  for(String t:List.of("<h3>Tarea</h3>","<h3>Momento</h3>","<h3>Tiempo por jornada</h3>","value=\"Trabajo de prueba\"","MAS_INADECUADA","MAYOR_EXPOSICION","value=\"30\"","value=\"90\"","value=\"180\"","value=\"300\"","Cómo elegir","Aunque dure poco: por ejemplo, al alcanzar, inclinarse o sostener una carga."))assertTrue(contexto.contains(t),t);
-  assertFalse(contexto.contains("<img"));assertFalse(contexto.contains(" checked"));
-  assertEquals(7,h.split(" data-paso=",-1).length-1);
+  for(String t:List.of("¿Cuántas horas al día trabaja en este puesto?","¿En qué momento del trabajo se siente más incómodo o más cansado?","data-valor=\"60\"","data-valor=\"180\"","data-valor=\"300\"","data-valor=\"420\"","data-valor=\"540\"","No sabe, evalúo la postura que más repite"))assertTrue(contexto.contains(t),t);
+  assertFalse(contexto.contains("data-tarea=\"Levantar"));assertFalse(contexto.contains(" checked"));assertEquals(9,h.split(" data-paso=",-1).length-1);
  }
  @Test void revisionTieneSieteFilasYLosAjustesSonOpcionalesSinVentanas()throws Exception{
   String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();
-  assertEquals(7,h.split("data-revision-segmento=",-1).length-1);
-  for(String[] seg:RecorridoCuerpo.ORDEN)assertTrue(h.contains("data-revision-segmento=\""+seg[0]+"\""));
-  assertEquals(9,h.split("data-ajuste-revision=",-1).length-1);
-  assertFalse(h.contains("<dialog"));assertFalse(h.contains("role=\"dialog\""));assertFalse(h.contains("data-cuerpo-ninguno"));assertFalse(h.contains(" checked"));
-  assertTrue(h.contains("Confirmar mediciones"));assertTrue(h.contains("Opcional"));assertTrue(h.contains("data-revisar"));assertTrue(h.contains("No se ve en la foto"));
+  assertEquals(4,h.split("data-medida=",-1).length-1);
+  for(String n:List.of("hombroElevado","brazoSeparado","brazoApoyado","antebrazoCruza","muneca_campo","munecaDesviada","giro_campo","cuello_campo","tronco_campo","piernas_campo"))assertTrue(h.contains("data-pregunta=\""+n+"\""));
+  assertFalse(h.contains("<dialog"));assertFalse(h.contains("role=\"dialog\""));assertFalse(h.contains(" checked"));assertTrue(h.contains("data-falta"));assertTrue(h.contains("aria-expanded=\"false\""));assertTrue(h.contains("data-medidas-compactas hidden"));
  }
  @Test void ladoTieneCuatroVinetasSiemprePresentesYEsfuerzoSePreguntaUnaVez()throws Exception{
   String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();
   String lado=h.substring(h.indexOf("data-paso=\"4\""),h.indexOf("data-paso=\"5\""));
   assertEquals(4,lado.split("<li>",-1).length-1);assertFalse(lado.contains("<details"));assertFalse(lado.contains("Ver cómo decidir"));assertTrue(lado.contains("Si no está claro, elige Ambos."));
-  String esfuerzo=h.substring(h.indexOf("data-paso=\"6\""),h.indexOf("data-paso=\"7\""));
-  assertEquals(3,esfuerzo.split("name=\"esfuerzo_opcion\"",-1).length-1);assertEquals(6,esfuerzo.split("name=\"carga_opcion\"",-1).length-1);
-  assertTrue(esfuerzo.contains("Observa 1 minuto con el reloj"));assertTrue(esfuerzo.contains("Pregunta al trabajador o pesa la pieza"));
+  String esfuerzo=h.substring(h.indexOf("data-paso=\"8\""),h.indexOf("data-paso=\"9\""));
+  assertEquals(1,esfuerzo.split("name=\"esfuerzo_opcion\"",-1).length-1);assertEquals(1,esfuerzo.split("name=\"peso_campo\"",-1).length-1);
+  assertTrue(esfuerzo.contains("Puedes observar un minuto con el reloj."));assertTrue(esfuerzo.contains("Piensa en lo más pesado de esta tarea."));
  }
  @ParameterizedTest @ValueSource(strings={"postura","criterio","minutos","condiciones_respondidas"})
  void contextoObligatorioSeValidaTambienSiSeSaltaLaPantalla(String campo)throws Exception{
@@ -83,4 +80,11 @@ class HttpRevisionEvaluacionTest extends HttpPrueba {
   var resultados=Sql.listar(con,"SELECT a.lado,a.carga,a.postura_estatica_o_repetitiva,a.puntaje_final FROM analisis_rula a JOIN fotografia f USING(id_foto) JOIN evaluacion e USING(id_evaluacion) WHERE e.id_visita=? ORDER BY a.id_analisis",x->List.of(x.getString(1),x.getString(2),x.getString(3),x.getString(4)),visita);
   assertEquals(2,resultados.size());assertEquals(resultados.get(0),resultados.get(1));assertEquals("7",resultados.get(0).get(3));
  }
+ @ParameterizedTest @ValueSource(ints={60,180,300,420,540})
+ void campoGuardaNuevosTiemposPosturaConLadoYMotivoCorto(int minutos)throws Exception{
+  var f=campos();f.put("recorrido","campo");f.put("minutos",""+minutos);f.put("postura","Trabajo de prueba · lado derecho");f.put("motivo","El momento que señala el trabajador.");f.put("registro","SIN_REGISTRO_FOTOGRAFICO");
+  var r=guardar(f,0);assertEquals(201,r.statusCode(),r.body());var datos=Sql.uno(con,"SELECT postura,minutos_jornada,motivo,criterio FROM evaluacion WHERE id_visita=?",x->List.of(x.getString(1),x.getString(2),x.getString(3),x.getString(4)),visita);assertEquals(List.of("Trabajo de prueba · lado derecho",""+minutos,"El momento que señala el trabajador.","MAS_INADECUADA"),datos);
+ }
+ @Test void tiempoAntiguoNoEntraPorElNuevoRecorridoYNoSeGuardaNada()throws Exception{var f=campos();f.put("recorrido","campo");f.put("minutos","30");f.put("registro","SIN_REGISTRO_FOTOGRAFICO");assertEquals(400,guardar(f,0).statusCode());assertEquals(0,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM evaluacion WHERE id_visita=?",x->x.getInt(1),visita));}
+
 }

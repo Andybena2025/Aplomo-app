@@ -32,10 +32,10 @@ class HttpCuerpoTest extends HttpPrueba {
     }
     @Test void paginaUsaRevisionInlineArchivosExactosYNingunAvisoInicial()throws Exception{
         String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();
-        assertTrue(h.contains("data-revision=\"si\""));assertFalse(h.contains("tour-opcion tour-postura"));assertFalse(h.contains("postura_de_pie.jpg"));assertFalse(h.contains("postura_computador.jpg"));
-        assertTrue(h.contains("/static/img/tour/muneca_desviada.png"));assertFalse(h.contains("<dialog"));assertFalse(h.contains("role=\"dialog\""));
-        assertTrue(h.contains("data-error-evaluacion hidden"));assertTrue(h.contains("name=\"lado_recorrido\" value=\"AMBOS\""));assertFalse(h.contains("tour-sin-respuesta"));
-        assertEquals(7,h.split("data-revision-segmento=",-1).length-1);assertEquals(200,get("/static/js/revision-evaluacion.js").statusCode());
+        assertTrue(h.contains("data-revision=\"si\""));assertFalse(h.contains("tour-opcion tour-postura"));assertTrue(h.contains("muestra_perfil.jpg"));assertTrue(h.contains("muestra_frente.jpg"));
+        assertTrue(h.contains("¿Se la tuerce hacia un lado, hacia el pulgar o hacia el meñique?"));assertFalse(h.contains("<dialog"));assertFalse(h.contains("role=\"dialog\""));
+        assertTrue(h.contains("data-error-evaluacion hidden"));assertTrue(h.contains("data-respuesta=\"lado_recorrido\" data-valor=\"AMBOS\""));assertFalse(h.contains("tour-sin-respuesta"));
+        assertEquals(4,h.split("data-medida=",-1).length-1);assertEquals(200,get("/static/js/revision-evaluacion.js").statusCode());
     }
     private byte[] png()throws Exception{var b=new ByteArrayOutputStream();ImageIO.write(new java.awt.image.BufferedImage(30,60,1),"png",b);return b.toByteArray();}
     private HttpResponse<String> enviarAmbos(int fotos,boolean duplicado)throws Exception{

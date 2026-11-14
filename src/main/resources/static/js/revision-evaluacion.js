@@ -1,6 +1,6 @@
 /* Paso 14: revisión por excepción. El servidor sigue midiendo y puntuando. */
 (() => {
- const form=document.querySelector('form[data-revision]');if(!form)return;
+ const form=document.querySelector('form[data-revision]');if(!form||form.dataset.conversacion)return;
  const $=s=>form.querySelector(s),$$=s=>[...form.querySelectorAll(s)];
  const orden=['BRAZO','ANTEBRAZO','MUNECA','GIRO','CUELLO','TRONCO','PIERNAS'],angulares=orden.filter(k=>!['GIRO','PIERNAS'].includes(k));
  let paso=1,maximo=1,ocupado=false,fotos=[],tareas=[],lado=null,otros=false,extras=0,medicionPendiente=null,temporizador,archivoTipo='FRENTE',fotoVisible=null;

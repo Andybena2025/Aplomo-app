@@ -1023,3 +1023,84 @@ form[data-revision] .revision-pulso{animation:revisionPulso .8s ease-out 1}
  form[data-revision] .esfuerzo-revision .tour-opciones{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(prefers-reduced-motion:reduce){form[data-revision] .revision-pulso{animation:none}}
+
+/* Paso 15 · Conversación de campo, desplegables propios dentro de la página. */
+form[data-conversacion]{max-width:1040px;margin-inline:auto;min-width:0}
+form[data-conversacion] .campo-cabecera{position:sticky;top:0;z-index:12;background:var(--bg);padding:12px 0;display:grid;gap:10px}
+form[data-conversacion] .campo-cabecera .btn{min-height:44px;height:44px}
+form[data-conversacion] .campo-progreso{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px;list-style:none;padding:0;margin:0;font:12px/1.3 Inter,sans-serif;color:var(--muted)}
+form[data-conversacion] .campo-progreso li{border-bottom:2px solid var(--line2);padding-bottom:6px;overflow-wrap:anywhere}
+form[data-conversacion] .campo-progreso [aria-current]{color:var(--ivory);border-color:var(--ivory)}
+form[data-conversacion] .campo-cabecera progress{width:100%;height:3px}
+form[data-conversacion] .conversacion-pantalla{gap:20px;min-width:0;padding:24px}
+form[data-conversacion] .campo-titulo{display:flex;gap:16px;align-items:center;justify-content:space-between}
+form[data-conversacion] .campo-titulo h2{font-size:34px;line-height:1.12;margin:0}
+form[data-conversacion] .campo-silueta{width:88px;height:100px;object-fit:contain;background:var(--bg);border-radius:12px;flex-shrink:0}
+form[data-conversacion] .campo-foto{width:100%;height:260px;object-fit:contain;object-position:center;background:var(--card);border-radius:12px}
+form[data-conversacion] .campo-pregunta{display:grid;gap:8px;min-width:0}
+form[data-conversacion] .campo-pregunta>p{font-size:17px;line-height:1.5;margin:0}
+form[data-conversacion] .campo-pregunta .eyebrow{font-size:12px;color:var(--muted)}
+form[data-conversacion] .campo-respuesta{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:52px;padding:12px 16px;text-align:left;white-space:normal;border:1px solid var(--line2);border-radius:12px;background:var(--bg);color:var(--ivory);font:16px/1.4 Inter,sans-serif;cursor:pointer}
+form[data-conversacion] .campo-respuesta[aria-expanded=true]{border-color:var(--ivory)}
+form[data-conversacion] .campo-lista{display:grid;gap:0;border:1px solid var(--line2);border-radius:12px;overflow:hidden}
+form[data-conversacion] .campo-opcion{display:flex;gap:12px;align-items:center;min-height:52px;width:100%;padding:12px 16px;background:var(--card);color:var(--ivory);border:0;border-bottom:1px solid var(--line);text-align:left;font:15px/1.4 Inter,sans-serif;cursor:pointer;white-space:normal}
+form[data-conversacion] .campo-opcion:last-child{border-bottom:0}
+form[data-conversacion] .campo-opcion[aria-pressed=true]{background:var(--ivory);color:var(--bg)}
+form[data-conversacion] .campo-opcion img{width:60px;height:72px;object-fit:contain;background:var(--bg);border-radius:8px}
+form[data-conversacion] :is(button,a,input,textarea,summary):focus-visible{outline:2px solid var(--ivory);outline-offset:4px}
+form[data-conversacion] .campo-condiciones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+form[data-conversacion] .campo-condiciones .tour-opcion{min-width:0;min-height:64px}
+form[data-conversacion] .campo-condiciones .tour-franja{padding:12px;font-size:14px}
+form[data-conversacion] .campo-lado{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.75fr);gap:32px}
+form[data-conversacion] .campo-lado aside{justify-self:end;max-width:300px}
+form[data-conversacion] .campo-lado ul{padding-left:18px}
+form[data-conversacion] .campo-muestra{margin:0;display:grid;gap:8px;max-width:460px}
+form[data-conversacion] .campo-muestra img{width:100%;max-height:320px;object-fit:contain;border-radius:12px}
+form[data-conversacion] [data-subir-perfil]{display:grid;gap:16px;justify-items:start}
+form[data-conversacion] [data-foto-revision] .foto-zoom{height:560px;min-height:0}
+form[data-conversacion] [data-foto-revision] .row{flex-wrap:wrap;gap:8px}
+form[data-conversacion] .foto-zoom .canvasbox{margin-top:48px}
+form[data-conversacion] .foto-zoom .zoom-control{top:0!important;right:0!important;left:auto!important}
+form[data-conversacion] #lienzo{touch-action:none}
+form[data-conversacion] .campo-compacta{display:grid;gap:16px}
+form[data-conversacion] .campo-medida{padding-bottom:16px;border-bottom:1px solid var(--line)}
+form[data-conversacion] .campo-medida>p{margin:0 0 8px}
+form[data-conversacion] .campo-medida .campo-pregunta>p{font-size:15px}
+form[data-conversacion] .campo-apoyo{padding:12px 0;border-top:1px solid var(--line)}
+form[data-conversacion] .campo-apoyo[open]{display:grid;gap:12px}
+form[data-conversacion] summary{min-height:48px;display:flex;align-items:center;cursor:pointer;list-style:none}
+form[data-conversacion] summary::-webkit-details-marker{display:none}
+form[data-conversacion] .wizfoot{display:flex;gap:12px;flex-wrap:wrap;align-items:center;position:sticky;bottom:0;padding:12px 0;background:var(--bg);z-index:10}
+form[data-conversacion] .wizfoot>[data-falta]{flex-basis:100%;margin:0}
+form[data-conversacion] [hidden]{display:none!important}
+@media(max-width:900px){form[data-conversacion] .campo-foto{height:auto;max-height:440px;object-fit:contain}form[data-conversacion] [data-foto-revision] .foto-zoom{height:620px;width:100%}}
+@media(max-width:720px){
+ form[data-conversacion] .campo-progreso{grid-template-columns:repeat(3,minmax(0,1fr));font-size:11px}
+ form[data-conversacion] .campo-cabecera{gap:6px}
+ form[data-conversacion] .campo-cabecera .row{gap:6px;font-size:12px}
+ form[data-conversacion] .campo-titulo h2{font-size:28px}
+ form[data-conversacion] .campo-silueta{width:58px;height:72px}
+ form[data-conversacion] .conversacion-pantalla{padding:16px;gap:18px}
+ form[data-conversacion] .campo-condiciones,form[data-conversacion] .campo-lado{grid-template-columns:1fr}
+ form[data-conversacion] .campo-lado aside{justify-self:end}
+ form[data-conversacion] .campo-pregunta>p{font-size:16px}
+ form[data-conversacion] .campo-respuesta,form[data-conversacion] .campo-opcion{padding:12px;font-size:15px}
+ form[data-conversacion] [data-foto-revision] .foto-zoom{height:430px}
+ form[data-conversacion] [data-foto-revision] .btn{padding-inline:14px;font-size:14px}
+ form[data-conversacion] .wizfoot .btn{width:100%}
+}
+form[data-conversacion] [data-titulo-fijo]{font-family:var(--serif);font-size:30px;line-height:1.15;margin:0}
+form[data-conversacion] .campo-titulo>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+form[data-conversacion] .campo-titulo{justify-content:flex-end}
+form[data-conversacion] .campo-silueta{height:72px;width:64px}
+@media(max-width:720px){form[data-conversacion] [data-titulo-fijo]{font-size:25px}form[data-conversacion] .campo-silueta{height:56px;width:48px}}
+/* El recorrido anterior ponía pasos en columnas: la conversación siempre es una lista. */
+form[data-conversacion] [data-paso].conversacion-pantalla{display:flex;flex-direction:column;align-items:stretch;grid-template-columns:none}
+form[data-conversacion] .campo-pregunta,form[data-conversacion] .campo-titulo{width:100%;min-width:0}
+/* Seguir va después de las respuestas; no tapa campos en una conversación larga. */
+form[data-conversacion] .wizfoot{position:static}
+/* Safari dibuja progress en azul por defecto: el avance también usa marfil. */
+form[data-conversacion] .campo-cabecera progress{appearance:none;-webkit-appearance:none;border:0;background:var(--line);color:var(--ivory);accent-color:var(--ivory)}
+form[data-conversacion] .campo-cabecera progress::-webkit-progress-bar{background:var(--line)}
+form[data-conversacion] .campo-cabecera progress::-webkit-progress-value{background:var(--ivory)}
+form[data-conversacion] .campo-cabecera progress::-moz-progress-bar{background:var(--ivory)}
