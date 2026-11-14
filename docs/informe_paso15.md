@@ -1,5 +1,13 @@
 # Paso 15 · Evaluación como conversación guiada
 
+## Actualización 15-B · 14 nov 2026
+
+Esta actualización reemplaza los límites y el apagado de IA descritos en el informe histórico de abajo: script 20 s, modelo 60 s, inferencia 20 s y detección total 60 s. La preparación no bloquea nuevos intentos; Detectar puntos queda visible y el fallo muestra su etapa temporal en gris. Se mantienen 1280 px, modelo ligero y cierre al salir.
+
+Pantallas 1–4 sin imágenes. Las cinco posturas de ejemplo, en perfil/frente/detalle, entran por el mismo File, validación, detección y guardado que una subida. Una sola bandera, activa por defecto: `-Daplomo.modoDemo=false` oculta los enlaces. 888 pruebas Maven y 28 JS aprobadas. Por encargo no se tomaron capturas ni se generó evidencia nueva; tampoco se comprobó visualmente ni en iPad físico.
+
+El contenido restante conserva el historial del Paso 15 anterior.
+
 Encargo final de Andy del 14 de noviembre de 2026. Reemplaza el intento de grupos interrumpido: se descartaron únicamente sus dos archivos sin commit y se sincronizó main limpio antes de empezar.
 
 ## Qué cambió

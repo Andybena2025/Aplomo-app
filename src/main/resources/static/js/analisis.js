@@ -22,25 +22,27 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   const estado=f=>f.analisis||(f.analisis={habilitada:form.dataset.tour?f.uso==='MEDIR':f.vista==='PERFIL',lado:f.ladoFijo||'DERECHO',puntos:{},manual:{},ajustes:{},ajustesConfirmados:false,giro:'',piernas:null,actividad:null,carga:'',html:null,revision:0});
   const detectarBoton=form.querySelector('[data-detectar-puntos]');
   const estadoDeteccion=form.querySelector('[data-estado-deteccion]');
+  const etapaDeteccion=document.createElement('small');etapaDeteccion.className='hint';etapaDeteccion.dataset.etapaDeteccion='';etapaDeteccion.hidden=true;estadoDeteccion.after(etapaDeteccion);
   const falloDeteccion=form.dataset.conversacion?'Marca los puntos en la foto para seguir. Puedes moverlos con el dedo.':'No se encontró una persona en la foto. Marca los puntos a mano.';
   function mostrarDeteccion(){
     const f=foto();if(!f)return;const s=estado(f);
-    detectarBoton.hidden=!!form.dataset.conversacion&&(s.ia==='error'||!window.AplomoDeteccion.disponible);
+    detectarBoton.hidden=false;
     detectarBoton.disabled=s.ia==='cargando'||f.vista==='OTRA';
-    detectarBoton.textContent=s.ia==='cargando'?'Detectando puntos…':'Detectar puntos';
+    detectarBoton.textContent=s.ia==='cargando'?'Detectando puntos… la primera vez tarda unos segundos':'Detectar puntos';
     estadoDeteccion.hidden=!s.mensajeIA;estadoDeteccion.textContent=s.mensajeIA||'';
+    etapaDeteccion.hidden=!s.etapaIA;etapaDeteccion.textContent=s.etapaIA?'Detección: '+s.etapaIA:'';
   }
   async function autoDetectar(f,forzar=false){
     if(!f||f.vista==='OTRA')return;
     const s=estado(f);
     if(s.ia==='cargando'||(!forzar&&(f.vista!=='PERFIL'||!s.habilitada||s.ia||Object.keys(s.puntos).length||Object.keys(s.manual).length)))return;
-    const revision=s.revision;s.ia='cargando';s.mensajeIA='Detectando puntos…';
+    const revision=s.revision;s.ia='cargando';s.etapaIA='';s.mensajeIA='Detectando puntos… la primera vez tarda unos segundos';
     if(f===foto())mostrarDeteccion();
     try{
-      const r=await window.AplomoDeteccion.conTiempo(window.AplomoDeteccion.detectarPuntos(f.src||f.preview),form.dataset.conversacion?8000:60000,'La detección tardó demasiado.');
+      const r=await window.AplomoDeteccion.conTiempo(window.AplomoDeteccion.detectarPuntos(f.src||f.preview),60000,'La detección tardó demasiado.');
       if(!obtenerFotos().includes(f))return;
       if(s.revision!==revision||(f===foto()&&arrastre)){s.ia='manual';s.mensajeIA='Se conservaron tus correcciones manuales.';return;}
-      if(!r){s.ia='nada';s.mensajeIA=falloDeteccion;return;}
+      if(!r){s.ia='nada';s.mensajeIA=falloDeteccion;s.etapaIA=window.AplomoDeteccion.diagnostico.etapa;return;}
       const perfil=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';
       if(f.ladoFijo&&perfil!==f.ladoFijo){s.ia='otroPerfil';s.mensajeIA='Esta foto muestra el otro perfil. Usa otra foto o elige los rangos por observación directa.';return;}
       s.raw=r.raw;s.ia='ok';s.mensajeIA='Puntos detectados automáticamente: revísalos';
@@ -51,7 +53,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
         s.revision++;s.html=null;
         if(f===foto()){sincronizar();dibujar();await medir(f).catch(e=>aviso(e.message));}
       }
-    }catch(_){s.ia='error';s.mensajeIA=falloDeteccion;if(form.dataset.conversacion)window.AplomoDeteccion.cancelar();}
+    }catch(_){window.AplomoDeteccion.cancelar();s.ia='error';s.mensajeIA=falloDeteccion;s.etapaIA=window.AplomoDeteccion.diagnostico.etapa;}
     finally{if(f===foto())mostrarDeteccion();form.dispatchEvent(new Event('aplomo:analisis'));}
   }
   function grupos(f){

@@ -87,4 +87,14 @@ class HttpRevisionEvaluacionTest extends HttpPrueba {
  }
  @Test void tiempoAntiguoNoEntraPorElNuevoRecorridoYNoSeGuardaNada()throws Exception{var f=campos();f.put("recorrido","campo");f.put("minutos","30");f.put("registro","SIN_REGISTRO_FOTOGRAFICO");assertEquals(400,guardar(f,0).statusCode());assertEquals(0,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM evaluacion WHERE id_visita=?",x->x.getInt(1),visita));}
 
+ @ParameterizedTest @ValueSource(ints={1,2,3,4})
+ void primerasCuatroPantallasNoTienenFotosNiSiluetas(int paso)throws Exception{
+  String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();String seccion=h.substring(h.indexOf("data-paso=\""+paso+"\""),h.indexOf("data-paso=\""+(paso+1)+"\""));assertFalse(seccion.contains("<img"));assertFalse(seccion.contains("campo-silueta"));assertFalse(seccion.contains("campo-foto"));
+  if(paso==3)for(var c:PaginasEvaluacion.CONDICIONES){assertTrue(seccion.contains(c[1]));assertTrue(seccion.contains(c[2]));}
+ }
+ @Test void cadaSubidaTieneCincoEjemplosDeSuVistaYSeSirvenComoJpg()throws Exception{
+  String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();assertEquals(15,h.split("data-usar-ejemplo=",-1).length-1);assertEquals(3,h.split("Usar foto de ejemplo",-1).length-1);
+  for(var par:new String[][]{{"PERFIL","perfil"},{"FRENTE","frente"},{"OTRA","detalle"}}){assertEquals(5,h.split("data-vista-ejemplo=\""+par[0]+"\"",-1).length-1);var r=get("/static/img/galeria/S6_levantando_pieza_pesada_"+par[1]+".jpg");assertEquals(200,r.statusCode());assertTrue(r.headers().firstValue("Content-Type").orElse("").startsWith("image/jpeg"));}
+ }
+
 }
