@@ -4,6 +4,16 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   const segmentos=['BRAZO','ANTEBRAZO','MUNECA','CUELLO','TRONCO'];
   const cv=form.querySelector('#lienzo'), ctx=cv.getContext('2d');
   let activa=0, imagen=null, arrastre=null, temporizador=null, numeroPeticion=0, destacado=null;
+  const visor=cv.closest('.foto-zoom'),caja=cv.closest('.canvasbox'),lamina=cv.parentElement,niveles=[1,1.5,2,3];
+  let zoom=0,paneo=null;
+  function ajustarZoom(){
+    if(!imagen)return;
+    const escala=Math.min((visor.clientWidth-2)/imagen.naturalWidth,(visor.clientHeight-2)/imagen.naturalHeight),w=imagen.naturalWidth*escala,h=imagen.naturalHeight*escala,z=niveles[zoom];
+    caja.dataset.acercada=String(zoom>0);caja.style.width=(w+2)+'px';caja.style.height=(h+2)+'px';lamina.style.width=(w*z)+'px';lamina.style.height=(h*z)+'px';cv.style.width=w+'px';cv.style.height=h+'px';cv.style.transform='scale('+z+')';
+    visor.querySelector('[data-zoom-nivel]').textContent=String(z)+'×';visor.querySelector('[data-zoom-menos]').disabled=zoom===0;visor.querySelector('[data-zoom-mas]').disabled=zoom===niveles.length-1;
+    const control=visor.querySelector('.zoom-control');control.style.left=Math.max(0,caja.offsetLeft+caja.clientWidth-control.offsetWidth-6)+'px';control.style.top=(caja.offsetTop+6)+'px';
+  }
+  for(const [selector,delta] of [['[data-zoom-menos]',-1],['[data-zoom-mas]',1]])visor.querySelector(selector).addEventListener('click',()=>{zoom=Math.max(0,Math.min(niveles.length-1,zoom+delta));caja.scrollTop=0;caja.scrollLeft=0;dibujar();});
   const gruposMarcas={BRAZO:['cadera','hombro','codo'],ANTEBRAZO:['hombro','codo','muneca'],MUNECA:['codo','muneca','nudillos'],CUELLO:['cadera','hombro','coronilla'],TRONCO:['cadera','hombro']};
   const marcasActuales=()=>destacado?(gruposMarcas[destacado]||[]).map(k=>marcas.find(m=>m[0]===k)):marcas;
   const foto=()=>obtenerFotos()[activa];
@@ -59,6 +69,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   }
   function dibujar(){
     if(!imagen||!foto())return;
+    ajustarZoom();
     const f=foto(),s=estado(f),w=cv.clientWidth,h=w*imagen.naturalHeight/imagen.naturalWidth,dpr=window.devicePixelRatio||1;
     cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);cv.style.aspectRatio=imagen.naturalWidth+'/'+imagen.naturalHeight;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);ctx.drawImage(imagen,0,0,w,h);
     if(w<=0)return;
@@ -107,7 +118,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     siguientePunto();pintarMedidas(f);mostrarDeteccion();
   }
   function cargarFoto(){
-    const f=foto();if(!f)return;imagen=null;const img=new Image();
+    const f=foto();if(!f)return;imagen=null;zoom=0;paneo=null;caja.scrollLeft=0;caja.scrollTop=0;const img=new Image();
     img.onload=()=>{if(f!==foto())return;imagen=img;f.ancho=img.naturalWidth;f.alto=img.naturalHeight;dibujar();autoDetectar(f);};
     img.onerror=()=>aviso('No pudimos abrir la foto. Comprueba tu sesión y vuelve a seleccionarla sin cerrar este formulario.');img.src=f.src||f.preview;
   }
@@ -142,12 +153,13 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     for(const[k]of marcas)if(s.puntos[k]){const q=s.puntos[k],d=Math.hypot((q.x-p.x)*r.width,(q.y-p.y)*r.height);if(d<distancia){distancia=d;cercano=k;}}
     const sig=marcasActuales().find(([k])=>!s.puntos[k]);
     if(cercano&&(distancia<(dedo?44:22)||(!sig&&distancia<(dedo?90:40)))){arrastre=cercano;try{cv.setPointerCapture(e.pointerId);}catch(_){}dibujar();return;}
+    if(zoom>0){paneo={x:e.clientX,y:e.clientY,left:caja.scrollLeft,top:caja.scrollTop,p,sig,movido:false};try{cv.setPointerCapture(e.pointerId);}catch(_){}return;}
     if(!sig)return;s.puntos[sig[0]]=p;cambiado('PUNTOS');
   });
-  cv.addEventListener('pointermove',e=>{if(!arrastre)return;e.preventDefault();estado(foto()).puntos[arrastre]=posicion(e);dibujar();});
-  function terminar(){if(!arrastre)return;arrastre=null;cambiado('PUNTOS');}
+  cv.addEventListener('pointermove',e=>{if(paneo){e.preventDefault();const dx=e.clientX-paneo.x,dy=e.clientY-paneo.y;if(Math.hypot(dx,dy)>6)paneo.movido=true;if(paneo.movido){caja.scrollLeft=paneo.left-dx;caja.scrollTop=paneo.top-dy;}return;}if(!arrastre)return;e.preventDefault();estado(foto()).puntos[arrastre]=posicion(e);dibujar();});
+  function terminar(e){if(paneo){const p=paneo;paneo=null;if(e.type==='pointerup'&&!p.movido&&p.sig){estado(foto()).puntos[p.sig[0]]=p.p;cambiado('PUNTOS');}return;}if(!arrastre)return;arrastre=null;cambiado('PUNTOS');}
   cv.addEventListener('pointerup',terminar);cv.addEventListener('pointercancel',terminar);cv.addEventListener('lostpointercapture',terminar);cv.addEventListener('contextmenu',e=>e.preventDefault());
-  cv.addEventListener('touchmove',e=>{if(arrastre)e.preventDefault();},{passive:false});new ResizeObserver(()=>dibujar()).observe(cv.parentElement);
+  cv.addEventListener('touchmove',e=>{if(arrastre||paneo)e.preventDefault();},{passive:false});new ResizeObserver(()=>dibujar()).observe(visor);
   form.querySelector('[data-puntos-deshacer]').addEventListener('click',()=>{const s=estado(foto()),k=[...marcas].reverse().find(([k])=>s.puntos[k]);if(k){delete s.puntos[k[0]];cambiado('PUNTOS');}});
   form.querySelector('[data-puntos-borrar]').addEventListener('click',()=>{estado(foto()).puntos={};cambiado('PUNTOS');});
   detectarBoton.addEventListener('click',()=>autoDetectar(foto(),true));
@@ -174,7 +186,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     respuestasCompletas(){return obtenerFotos().filter(f=>estado(f).habilitada).every(respondido);},
     iniciar(){const fs=obtenerFotos();fs.forEach(estado);if(!form.dataset.tour&&fs.length&&!fs.some(f=>estado(f).habilitada))estado(fs[0]).habilitada=true;activa=Math.min(activa,Math.max(0,fs.length-1));tabs();sincronizar();cargarFoto();},
     async paso5(){const fs=obtenerFotos().filter(f=>estado(f).habilitada);if(!fs.length)throw new Error('Selecciona al menos una foto para analizar.');for(const f of fs)await medir(f,true);if(!estado(foto()).habilitada)activa=obtenerFotos().indexOf(fs[0]);tabs();sincronizar();},
-    async paso6(){for(const f of obtenerFotos().filter(f=>estado(f).habilitada))if(!respondido(f))throw new Error('Responde los ajustes (o Ninguno), el giro de muñeca, las piernas, la actividad y la carga de cada foto.');await this.paso5();const destino=form.querySelector('[data-resultados]');destino.replaceChildren();for(const[f,i]of obtenerFotos().map((f,i)=>[f,i]).filter(([f])=>estado(f).habilitada)){const bloque=document.createElement('div');bloque.className='stack resultado-por-foto';const titulo=document.createElement('h3');titulo.textContent='Foto '+((f.indiceFoto??i)+1)+' · '+(estado(f).lado==='DERECHO'?'Lado derecho':'Lado izquierdo');bloque.append(titulo);const contenido=new DOMParser().parseFromString(estado(f).html,'text/html').querySelector('[data-calculo]');bloque.append(contenido);destino.append(bloque);}},
+    async paso6(){for(const f of obtenerFotos().filter(f=>estado(f).habilitada))if(!respondido(f))throw new Error('Responde los ajustes (o Ninguno), el giro de muñeca, las piernas, la actividad y la carga de cada foto.');await this.paso5();const destino=form.querySelector('[data-resultados]');destino.replaceChildren();const criterio=form.querySelector('[name="criterio"]:checked')?.value||form.dataset.criterio;if(criterio){const contexto=document.createElement('p');contexto.className='hint';contexto.dataset.resumenMomento='';contexto.textContent=criterio==='MAS_INADECUADA'?'Lo más difícil del puesto':'Lo que más dura';destino.append(contexto);}for(const[f,i]of obtenerFotos().map((f,i)=>[f,i]).filter(([f])=>estado(f).habilitada)){const bloque=document.createElement('div');bloque.className='stack resultado-por-foto';const titulo=document.createElement('h3');titulo.textContent='Foto '+((f.indiceFoto??i)+1)+' · '+(estado(f).lado==='DERECHO'?'Lado derecho':'Lado izquierdo');bloque.append(titulo);const contenido=new DOMParser().parseFromString(estado(f).html,'text/html').querySelector('[data-calculo]');bloque.append(contenido);destino.append(bloque);}},
     solicitudes(){return obtenerFotos().flatMap((f,i)=>estado(f).habilitada?[parametros(f,i).toString()]:[]);}
   };
 };

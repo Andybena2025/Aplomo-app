@@ -1,0 +1,3665 @@
+{
+  "zona": "America/Bogota",
+  "base": "rula_ergonomia_pruebas",
+  "navegador": "Chromium integrado, controles Playwright y puntero CUA",
+  "dispositivoFisico": false,
+  "mediciones": [
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 698.1036643981934,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 196.68325805664065,
+          "loaded": true,
+          "src": "/static/img/tour/postura_de_pie.jpg",
+          "w": 157.35086059570312
+        },
+        {
+          "h": 196.6832275390625,
+          "loaded": true,
+          "src": "/static/img/tour/postura_cargando.jpg",
+          "w": 157.35081481933594
+        },
+        {
+          "h": 196.6974334716797,
+          "loaded": true,
+          "src": "/static/img/tour/postura_inclinado.jpg",
+          "w": 157.35797119140625
+        },
+        {
+          "h": 196.6832275390625,
+          "loaded": true,
+          "src": "/static/img/tour/postura_brazos_arriba.jpg",
+          "w": 157.35084533691406
+        },
+        {
+          "h": 196.6974334716797,
+          "loaded": true,
+          "src": "/static/img/tour/postura_herramienta.jpg",
+          "w": 157.35800170898438
+        },
+        {
+          "h": 196.6832275390625,
+          "loaded": true,
+          "src": "/static/img/tour/postura_agachado.jpg",
+          "w": 157.35073852539062
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 604.2130737304688,
+          "recorte": 0
+        },
+        {
+          "abajo": 605.2130432128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 605.2130432128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 605.2130432128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 605.2130432128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 605.2130432128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 605.2130432128906,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Postura",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 511.65481185913086,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 417.9118041992187,
+          "recorte": 0
+        },
+        {
+          "abajo": 418.7641906738281,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Momento",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 506.01562118530273,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 412.2001037597656,
+          "recorte": 0
+        },
+        {
+          "abajo": 413.125,
+          "recorte": 0
+        },
+        {
+          "abajo": 413.125,
+          "recorte": 0
+        },
+        {
+          "abajo": 413.125,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tiempo",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6775169372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9871826171875,
+          "loaded": true,
+          "src": "/static/img/muestra_perfil.jpg",
+          "w": 452.98297119140625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9943237304688,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/0eb23570-8370-42c4-b0c0-b1453abf70b6",
+          "w": 484.9715881347656
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9943237304688,
+          "loaded": true,
+          "src": "/static/img/muestra_frente.jpg",
+          "w": 403.9985656738281
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9943237304688,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/39ea89f2-bf6f-4238-aec8-5d767d23be90",
+          "w": 484.9715881347656
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6775169372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9871826171875,
+          "loaded": true,
+          "src": "/static/img/muestra_detalle.jpg",
+          "w": 484.79400634765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9943237304688,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/c9b1a064-b583-488c-aeed-9d79e4dad733",
+          "w": 484.9715881347656
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 711.9886131286621,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Fotos-final",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 877.8266868591309,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_extension.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_neutro.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_20_45.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_45_90.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_mas_90.png",
+          "w": 117.8053970336914
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 603.2457275390625,
+          "recorte": 0
+        },
+        {
+          "abajo": 603.2457275390625,
+          "recorte": 0
+        },
+        {
+          "abajo": 603.2457275390625,
+          "recorte": 0
+        },
+        {
+          "abajo": 603.2457275390625,
+          "recorte": 0
+        },
+        {
+          "abajo": 603.2457275390625,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Brazo",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 877.8266868591309,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_erguido.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_0_20.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_20_60.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_mas_60.png",
+          "w": 117.8053970336914
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 621.4417419433594,
+          "recorte": 0
+        },
+        {
+          "abajo": 621.4417419433594,
+          "recorte": 0
+        },
+        {
+          "abajo": 621.4417419433594,
+          "recorte": 0
+        },
+        {
+          "abajo": 621.4417419433594,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tronco",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 733.3380393981934,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 231.9318389892578,
+          "loaded": true,
+          "src": "/static/img/tour/postura_computador.jpg",
+          "w": 185.54685974121097
+        },
+        {
+          "h": 231.9318084716797,
+          "loaded": true,
+          "src": "/static/img/tour/postura_sentado.jpg",
+          "w": 185.546875
+        },
+        {
+          "h": 231.9389190673828,
+          "loaded": true,
+          "src": "/static/img/tour/postura_inclinado.jpg",
+          "w": 185.5539703369141
+        },
+        {
+          "h": 231.9318084716797,
+          "loaded": true,
+          "src": "/static/img/tour/postura_brazos_arriba.jpg",
+          "w": 185.546875
+        },
+        {
+          "h": 231.9318084716797,
+          "loaded": true,
+          "src": "/static/img/tour/postura_herramienta.jpg",
+          "w": 185.546875
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 639.4474487304688,
+          "recorte": 0
+        },
+        {
+          "abajo": 640.4474182128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 640.4474182128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 640.4474182128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 640.4474182128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 640.4474182128906,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Postura",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 511.65481185913086,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 417.8363342285156,
+          "recorte": 0
+        },
+        {
+          "abajo": 418.7641906738281,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Momento",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 506.01562118530273,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 413.125,
+          "recorte": 0
+        },
+        {
+          "abajo": 412.3919067382813,
+          "recorte": 0
+        },
+        {
+          "abajo": 413.125,
+          "recorte": 0
+        },
+        {
+          "abajo": 413.125,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tiempo",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6775169372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9871826171875,
+          "loaded": true,
+          "src": "/static/img/muestra_perfil.jpg",
+          "w": 452.98297119140625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9943237304688,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/e30023bf-45fe-4f93-8c1c-8599f7b8b68d",
+          "w": 484.9715881347656
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9943237304688,
+          "loaded": true,
+          "src": "/static/img/muestra_frente.jpg",
+          "w": 403.9985656738281
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9943237304688,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/9e00eb53-cd61-42e2-992f-22de4032c7e0",
+          "w": 484.9715881347656
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6775169372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9871826171875,
+          "loaded": true,
+          "src": "/static/img/muestra_detalle.jpg",
+          "w": 484.79400634765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 872.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 605.9943237304688,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/1e590f90-9f87-43af-9cd8-d96ee05aeedd",
+          "w": 484.9715881347656
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 711.9886131286621,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Fotos-final",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 877.8266868591309,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_extension.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_neutro.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_20_45.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_45_90.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_mas_90.png",
+          "w": 117.8053970336914
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 603.2457275390625,
+          "recorte": 0
+        },
+        {
+          "abajo": 603.2457275390625,
+          "recorte": 0
+        },
+        {
+          "abajo": 603.2457275390625,
+          "recorte": 0
+        },
+        {
+          "abajo": 603.2457275390625,
+          "recorte": 0
+        },
+        {
+          "abajo": 603.2457275390625,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Brazo",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 950,
+      "ancho": 1366,
+      "botones": [
+        {
+          "abajo": 877.8266868591309,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_erguido.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_0_20.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_20_60.png",
+          "w": 117.8053970336914
+        },
+        {
+          "h": 157.0738525390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_mas_60.png",
+          "w": 117.8053970336914
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 621.4417419433594,
+          "recorte": 0
+        },
+        {
+          "abajo": 621.4417419433594,
+          "recorte": 0
+        },
+        {
+          "abajo": 621.4417419433594,
+          "recorte": 0
+        },
+        {
+          "abajo": 621.4417419433594,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tronco",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 1146.285488128662,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 287.961669921875,
+          "loaded": true,
+          "src": "/static/img/tour/postura_de_pie.jpg",
+          "w": 230.36932373046875
+        },
+        {
+          "h": 287.9616394042969,
+          "loaded": true,
+          "src": "/static/img/tour/postura_cargando.jpg",
+          "w": 230.36927795410156
+        },
+        {
+          "h": 287.9616394042969,
+          "loaded": true,
+          "src": "/static/img/tour/postura_inclinado.jpg",
+          "w": 230.3693084716797
+        },
+        {
+          "h": 287.9616394042969,
+          "loaded": true,
+          "src": "/static/img/tour/postura_brazos_arriba.jpg",
+          "w": 230.3693695068359
+        },
+        {
+          "h": 287.9616394042969,
+          "loaded": true,
+          "src": "/static/img/tour/postura_herramienta.jpg",
+          "w": 230.36932373046875
+        },
+        {
+          "h": 287.9616394042969,
+          "loaded": true,
+          "src": "/static/img/tour/postura_agachado.jpg",
+          "w": 230.36927795410156
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 678.4318237304688,
+          "recorte": 0
+        },
+        {
+          "abajo": 679.4317932128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 679.4317932128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 679.4317932128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 1053.3948669433594,
+          "recorte": 0
+        },
+        {
+          "abajo": 1053.3948669433594,
+          "recorte": 0
+        },
+        {
+          "abajo": 1053.3948669433594,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Postura",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 535.1633262634277,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 441.34771728515625,
+          "recorte": 0
+        },
+        {
+          "abajo": 442.272705078125,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Momento",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 705.1633567810059,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 441.4203796386719,
+          "recorte": 0
+        },
+        {
+          "abajo": 442.272705078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 442.272705078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 612.272705078125,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tiempo",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 892.4218406677246,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 625.234375,
+          "loaded": true,
+          "src": "/static/img/muestra_perfil.jpg",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 851.1931419372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 584.0056762695312,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/3220832a-6031-4bd0-b5d8-6fd63b1b1d20",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 968.2456932067872,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 701.0582275390625,
+          "loaded": true,
+          "src": "/static/img/muestra_frente.jpg",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 851.1931419372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 584.0056762695312,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/9dea81fe-4f49-463b-8d41-6ecacc051ddc",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 851.3991355895996,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 584.2116088867188,
+          "loaded": true,
+          "src": "/static/img/muestra_detalle.jpg",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 851.1931419372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 584.0056762695312,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/e111fab9-fda7-4170-b8fc-f6d74f9374a5",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 714.1335105895996,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Fotos-final",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 1221.1149559020996,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_extension.png",
+          "w": 164.7158966064453
+        },
+        {
+          "h": 219.63067626953125,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_neutro.png",
+          "w": 164.72300720214844
+        },
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_20_45.png",
+          "w": 164.7158966064453
+        },
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_45_90.png",
+          "w": 164.7158966064453
+        },
+        {
+          "h": 219.63067626953125,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_mas_90.png",
+          "w": 164.72300720214844
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 1001.356475830078,
+          "recorte": 0
+        },
+        {
+          "abajo": 1001.356475830078,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Brazo",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 1221.1149559020996,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_erguido.png",
+          "w": 164.7158966064453
+        },
+        {
+          "h": 219.63067626953125,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_0_20.png",
+          "w": 164.72300720214844
+        },
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_20_60.png",
+          "w": 164.7158966064453
+        },
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_mas_60.png",
+          "w": 164.7158966064453
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 983.8138732910156,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tronco",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 1146.285488128662,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 287.961669921875,
+          "loaded": true,
+          "src": "/static/img/tour/postura_computador.jpg",
+          "w": 230.3693084716797
+        },
+        {
+          "h": 287.9616394042969,
+          "loaded": true,
+          "src": "/static/img/tour/postura_sentado.jpg",
+          "w": 230.36927795410156
+        },
+        {
+          "h": 287.9616394042969,
+          "loaded": true,
+          "src": "/static/img/tour/postura_inclinado.jpg",
+          "w": 230.3693084716797
+        },
+        {
+          "h": 287.9616394042969,
+          "loaded": true,
+          "src": "/static/img/tour/postura_brazos_arriba.jpg",
+          "w": 230.3693084716797
+        },
+        {
+          "h": 287.9616394042969,
+          "loaded": true,
+          "src": "/static/img/tour/postura_herramienta.jpg",
+          "w": 230.3693084716797
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 678.4318237304688,
+          "recorte": 0
+        },
+        {
+          "abajo": 679.4317932128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 679.4317932128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 679.4317932128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 1053.3948669433594,
+          "recorte": 0
+        },
+        {
+          "abajo": 1053.3948669433594,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Postura",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 535.1633262634277,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 442.272705078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 442.272705078125,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Momento",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 705.1633567810059,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 442.272705078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 442.272705078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 442.272705078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 611.2727203369141,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tiempo",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 892.4218406677246,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 625.234375,
+          "loaded": true,
+          "src": "/static/img/muestra_perfil.jpg",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 851.1931419372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 584.0056762695312,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/474e7cd9-8265-4ae9-9da3-b16c75b99150",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 968.2456932067872,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 701.0582275390625,
+          "loaded": true,
+          "src": "/static/img/muestra_frente.jpg",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 851.1931419372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 584.0056762695312,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/b8dda81d-c2ff-4fe2-a8fd-51cb94b85468",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 851.3991355895996,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 584.2116088867188,
+          "loaded": true,
+          "src": "/static/img/muestra_detalle.jpg",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 851.1931419372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 584.0056762695312,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/34866acd-5b14-4f70-b4bc-a62df529307a",
+          "w": 467.37213134765625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 714.1335105895996,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Fotos-final",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 1221.1149559020996,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_extension.png",
+          "w": 164.7158966064453
+        },
+        {
+          "h": 219.63067626953125,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_neutro.png",
+          "w": 164.72300720214844
+        },
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_20_45.png",
+          "w": 164.7158966064453
+        },
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_45_90.png",
+          "w": 164.7158966064453
+        },
+        {
+          "h": 219.63067626953125,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_mas_90.png",
+          "w": 164.72300720214844
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 1001.356475830078,
+          "recorte": 0
+        },
+        {
+          "abajo": 1001.356475830078,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Brazo",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1290,
+      "ancho": 1024,
+      "botones": [
+        {
+          "abajo": 1221.1149559020996,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_erguido.png",
+          "w": 164.7158966064453
+        },
+        {
+          "h": 219.63067626953125,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_0_20.png",
+          "w": 164.72300720214844
+        },
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_20_60.png",
+          "w": 164.7158966064453
+        },
+        {
+          "h": 219.6164703369141,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_mas_60.png",
+          "w": 164.7158966064453
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 682.2016906738281,
+          "recorte": 0
+        },
+        {
+          "abajo": 983.8138732910156,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tronco",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 601.3706932067871,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 189.54544067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_de_pie.jpg",
+          "w": 151.640625
+        },
+        {
+          "h": 189.54544067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_cargando.jpg",
+          "w": 151.64064025878906
+        },
+        {
+          "h": 189.54544067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_inclinado.jpg",
+          "w": 151.640625
+        },
+        {
+          "h": 189.54544067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_brazos_arriba.jpg",
+          "w": 151.640625
+        },
+        {
+          "h": 189.54544067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_herramienta.jpg",
+          "w": 151.640625
+        },
+        {
+          "h": 189.54544067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_agachado.jpg",
+          "w": 151.640625
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 527.4730072021484,
+          "recorte": 0
+        },
+        {
+          "abajo": 528.4729766845703,
+          "recorte": 0
+        },
+        {
+          "abajo": 528.4729766845703,
+          "recorte": 0
+        },
+        {
+          "abajo": 528.4729766845703,
+          "recorte": 0
+        },
+        {
+          "abajo": 528.4729766845703,
+          "recorte": 0
+        },
+        {
+          "abajo": 528.4729766845703,
+          "recorte": 0
+        },
+        {
+          "abajo": 528.4729766845703,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Postura",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 440.724422454834,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 362.9029922485352,
+          "recorte": 0
+        },
+        {
+          "abajo": 363.82810974121094,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Momento",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 417.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 339.8636016845703,
+          "recorte": 0
+        },
+        {
+          "abajo": 340.78834533691406,
+          "recorte": 0
+        },
+        {
+          "abajo": 340.78834533691406,
+          "recorte": 0
+        },
+        {
+          "abajo": 340.78834533691406,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tiempo",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6775169372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9872131347656,
+          "loaded": true,
+          "src": "/static/img/muestra_perfil.jpg",
+          "w": 296.0085144042969
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9942932128906,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/3d1ab43c-5314-41e8-b19e-2af3e579943e",
+          "w": 316.9104919433594
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9942932128906,
+          "loaded": true,
+          "src": "/static/img/muestra_frente.jpg",
+          "w": 263.9985656738281
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9942932128906,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/d9ee28ec-4aee-45d9-981b-3f443cca607d",
+          "w": 316.9104919433594
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9942932128906,
+          "loaded": true,
+          "src": "/static/img/muestra_detalle.jpg",
+          "w": 316.796875
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9942932128906,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/3b847387-b7f5-4bdc-9f0e-d53ade246c32",
+          "w": 316.9104919433594
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 665.0567893981934,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Fotos-final",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 692.9048118591309,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_extension.png",
+          "w": 116.88209533691406
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_neutro.png",
+          "w": 116.88919830322266
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_20_45.png",
+          "w": 116.88209533691406
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_45_90.png",
+          "w": 116.88919830322266
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_mas_90.png",
+          "w": 116.88209533691406
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 461.24998474121094,
+          "recorte": 0
+        },
+        {
+          "abajo": 461.24998474121094,
+          "recorte": 0
+        },
+        {
+          "abajo": 461.24998474121094,
+          "recorte": 0
+        },
+        {
+          "abajo": 461.24998474121094,
+          "recorte": 0
+        },
+        {
+          "abajo": 461.24998474121094,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Brazo",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 692.9048118591309,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_erguido.png",
+          "w": 116.88209533691406
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_0_20.png",
+          "w": 116.88919830322266
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_20_60.png",
+          "w": 116.88209533691406
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_mas_60.png",
+          "w": 116.88919830322266
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 479.4460144042969,
+          "recorte": 0
+        },
+        {
+          "abajo": 479.4460144042969,
+          "recorte": 0
+        },
+        {
+          "abajo": 479.4460144042969,
+          "recorte": 0
+        },
+        {
+          "abajo": 479.4460144042969,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tronco",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 635.0141868591309,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 223.1889190673828,
+          "loaded": true,
+          "src": "/static/img/tour/postura_computador.jpg",
+          "w": 178.55113220214844
+        },
+        {
+          "h": 223.1889190673828,
+          "loaded": true,
+          "src": "/static/img/tour/postura_sentado.jpg",
+          "w": 178.55113220214844
+        },
+        {
+          "h": 223.1889190673828,
+          "loaded": true,
+          "src": "/static/img/tour/postura_inclinado.jpg",
+          "w": 178.55113220214844
+        },
+        {
+          "h": 223.1889190673828,
+          "loaded": true,
+          "src": "/static/img/tour/postura_brazos_arriba.jpg",
+          "w": 178.55113220214844
+        },
+        {
+          "h": 223.1889190673828,
+          "loaded": true,
+          "src": "/static/img/tour/postura_herramienta.jpg",
+          "w": 178.5510711669922
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 561.1164703369141,
+          "recorte": 0
+        },
+        {
+          "abajo": 562.1164398193359,
+          "recorte": 0
+        },
+        {
+          "abajo": 562.1164398193359,
+          "recorte": 0
+        },
+        {
+          "abajo": 562.1164398193359,
+          "recorte": 0
+        },
+        {
+          "abajo": 562.1164398193359,
+          "recorte": 0
+        },
+        {
+          "abajo": 562.1164398193359,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Postura",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 440.724422454834,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 363.82810974121094,
+          "recorte": 0
+        },
+        {
+          "abajo": 363.82810974121094,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Momento",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 417.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 340.78834533691406,
+          "recorte": 0
+        },
+        {
+          "abajo": 340.78834533691406,
+          "recorte": 0
+        },
+        {
+          "abajo": 340.78834533691406,
+          "recorte": 0
+        },
+        {
+          "abajo": 340.78834533691406,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tiempo",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6775169372559,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9872131347656,
+          "loaded": true,
+          "src": "/static/img/muestra_perfil.jpg",
+          "w": 296.0085144042969
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9942932128906,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/691a5045-9b3a-479d-9ee5-563c2df10462",
+          "w": 316.9104919433594
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9942932128906,
+          "loaded": true,
+          "src": "/static/img/muestra_frente.jpg",
+          "w": 263.9985656738281
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9942932128906,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/ea8ea1f1-bead-45f4-b178-f9b0ce2091de",
+          "w": 316.9104919433594
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9942932128906,
+          "loaded": true,
+          "src": "/static/img/muestra_detalle.jpg",
+          "w": 316.796875
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 622.6846580505371,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 395.9942932128906,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/5aacf3ba-7163-48a1-8cc3-aa0449ddcad7",
+          "w": 316.9104919433594
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 665.0567893981934,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Fotos-final",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 692.9048118591309,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_extension.png",
+          "w": 116.88209533691406
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_neutro.png",
+          "w": 116.88919830322266
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_20_45.png",
+          "w": 116.88209533691406
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_45_90.png",
+          "w": 116.88919830322266
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_mas_90.png",
+          "w": 116.88209533691406
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 461.24998474121094,
+          "recorte": 0
+        },
+        {
+          "abajo": 461.24998474121094,
+          "recorte": 0
+        },
+        {
+          "abajo": 461.24998474121094,
+          "recorte": 0
+        },
+        {
+          "abajo": 461.24998474121094,
+          "recorte": 0
+        },
+        {
+          "abajo": 461.24998474121094,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Brazo",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 740,
+      "ancho": 1180,
+      "botones": [
+        {
+          "abajo": 692.9048118591309,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_erguido.png",
+          "w": 116.88209533691406
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_0_20.png",
+          "w": 116.88919830322266
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_20_60.png",
+          "w": 116.88209533691406
+        },
+        {
+          "h": 63.99857711791992,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_mas_60.png",
+          "w": 116.88919830322266
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 479.4460144042969,
+          "recorte": 0
+        },
+        {
+          "abajo": 479.4460144042969,
+          "recorte": 0
+        },
+        {
+          "abajo": 479.4460144042969,
+          "recorte": 0
+        },
+        {
+          "abajo": 479.4460144042969,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tronco",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 975.1988182067872,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 179.23297119140625,
+          "loaded": true,
+          "src": "/static/img/tour/postura_de_pie.jpg",
+          "w": 179.23294067382812
+        },
+        {
+          "h": 179.23294067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_cargando.jpg",
+          "w": 179.23294067382812
+        },
+        {
+          "h": 179.23294067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_inclinado.jpg",
+          "w": 179.23297119140625
+        },
+        {
+          "h": 179.23294067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_brazos_arriba.jpg",
+          "w": 179.23294067382812
+        },
+        {
+          "h": 179.23294067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_herramienta.jpg",
+          "w": 179.23294067382812
+        },
+        {
+          "h": 179.23294067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_agachado.jpg",
+          "w": 179.23294067382812
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 580.3352355957031,
+          "recorte": 0
+        },
+        {
+          "abajo": 581.335205078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 581.335205078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 581.335205078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 882.3081970214844,
+          "recorte": 0
+        },
+        {
+          "abajo": 882.3081970214844,
+          "recorte": 0
+        },
+        {
+          "abajo": 882.3081970214844,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Postura",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 539.794002532959,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 445.9786529541016,
+          "recorte": 0
+        },
+        {
+          "abajo": 446.9033966064453,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Momento",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 703.7925682067871,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 445.9785919189453,
+          "recorte": 0
+        },
+        {
+          "abajo": 446.9033966064453,
+          "recorte": 0
+        },
+        {
+          "abajo": 446.9033966064453,
+          "recorte": 0
+        },
+        {
+          "abajo": 610.9019622802734,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tiempo",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 766.2357444763184,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 488.4161682128906,
+          "loaded": true,
+          "src": "/static/img/muestra_perfil.jpg",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 734.0269432067871,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 456.2073669433594,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/e4141253-55e2-4cbc-8fc4-79a0ca767a76",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 825.4687156677246,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 547.6491088867188,
+          "loaded": true,
+          "src": "/static/img/muestra_frente.jpg",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 734.0269432067871,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 456.2073669433594,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/349cfc50-63f1-4895-932e-3f1bc3ba16ed",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 734.1903343200684,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 456.3707275390625,
+          "loaded": true,
+          "src": "/static/img/muestra_detalle.jpg",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-antes",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 734.0269432067871,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 456.2073669433594,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/a64159cb-5830-45bb-a630-ada5d01bb0e7",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-después",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 724.7655906677246,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Fotos-final",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 1026.519863128662,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 130.73863220214844,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_extension.png",
+          "w": 98.05397033691406
+        },
+        {
+          "h": 130.7457275390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_neutro.png",
+          "w": 98.06107330322266
+        },
+        {
+          "h": 130.7457275390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_20_45.png",
+          "w": 98.06107330322266
+        },
+        {
+          "h": 130.73863220214844,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_45_90.png",
+          "w": 98.05397033691406
+        },
+        {
+          "h": 130.7457275390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_mas_90.png",
+          "w": 98.06107330322266
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 617.5638885498047,
+          "recorte": 0
+        },
+        {
+          "abajo": 617.5638885498047,
+          "recorte": 0
+        },
+        {
+          "abajo": 617.5638885498047,
+          "recorte": 0
+        },
+        {
+          "abajo": 879.6377563476562,
+          "recorte": 0
+        },
+        {
+          "abajo": 879.6377563476562,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Brazo",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 1025.2201194763184,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 130.73863220214844,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_erguido.png",
+          "w": 98.05397033691406
+        },
+        {
+          "h": 130.7457275390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_0_20.png",
+          "w": 98.06107330322266
+        },
+        {
+          "h": 130.7457275390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_20_60.png",
+          "w": 98.06107330322266
+        },
+        {
+          "h": 130.73863220214844,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_mas_60.png",
+          "w": 98.05397033691406
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 651.3493957519531,
+          "recorte": 0
+        },
+        {
+          "abajo": 651.3493957519531,
+          "recorte": 0
+        },
+        {
+          "abajo": 651.3493957519531,
+          "recorte": 0
+        },
+        {
+          "abajo": 878.3380584716797,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tronco",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 975.1988182067872,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 179.23297119140625,
+          "loaded": true,
+          "src": "/static/img/tour/postura_computador.jpg",
+          "w": 179.23294067382812
+        },
+        {
+          "h": 179.23294067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_sentado.jpg",
+          "w": 179.2329559326172
+        },
+        {
+          "h": 179.23294067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_inclinado.jpg",
+          "w": 179.23294067382812
+        },
+        {
+          "h": 179.23294067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_brazos_arriba.jpg",
+          "w": 179.23294067382812
+        },
+        {
+          "h": 179.23294067382812,
+          "loaded": true,
+          "src": "/static/img/tour/postura_herramienta.jpg",
+          "w": 179.23294067382812
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 580.3352355957031,
+          "recorte": 0
+        },
+        {
+          "abajo": 581.335205078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 581.335205078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 581.335205078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 882.3081970214844,
+          "recorte": 0
+        },
+        {
+          "abajo": 882.3081970214844,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Postura",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 539.794002532959,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 446.9033966064453,
+          "recorte": 0
+        },
+        {
+          "abajo": 446.9033966064453,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Momento",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 703.7925682067871,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 446.9033966064453,
+          "recorte": 0
+        },
+        {
+          "abajo": 446.9033966064453,
+          "recorte": 0
+        },
+        {
+          "abajo": 446.9033966064453,
+          "recorte": 0
+        },
+        {
+          "abajo": 609.9019775390625,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tiempo",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 766.2357444763184,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 488.4161682128906,
+          "loaded": true,
+          "src": "/static/img/muestra_perfil.jpg",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 734.0269432067871,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 456.2073669433594,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/dfa497b9-7572-491b-9602-fde2f75f5f33",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Perfil-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 825.4687156677246,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 547.6491088867188,
+          "loaded": true,
+          "src": "/static/img/muestra_frente.jpg",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 734.0269432067871,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 456.2073669433594,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/9c2d8e92-ee2b-42bb-95e4-ff9f9e4c2f2b",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Frente-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 734.1903343200684,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 456.3707275390625,
+          "loaded": true,
+          "src": "/static/img/muestra_detalle.jpg",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-antes",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 734.0269432067871,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 456.2073669433594,
+          "loaded": true,
+          "src": "blob:http://localhost:8087/8f1a7f39-deb6-4c01-9a15-84797f5d3712",
+          "w": 365.0994262695313
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Detalle-después",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 724.7655906677246,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [],
+      "lateral": 0,
+      "tarjetas": [],
+      "vertical": 0,
+      "paso": "Fotos-final",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 1026.519863128662,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 130.73863220214844,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_extension.png",
+          "w": 98.05397033691406
+        },
+        {
+          "h": 130.7457275390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_neutro.png",
+          "w": 98.06107330322266
+        },
+        {
+          "h": 130.7457275390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_20_45.png",
+          "w": 98.06107330322266
+        },
+        {
+          "h": 130.73863220214844,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_45_90.png",
+          "w": 98.05397033691406
+        },
+        {
+          "h": 130.7457275390625,
+          "loaded": true,
+          "src": "/static/img/tour/brazo_mas_90.png",
+          "w": 98.06107330322266
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 617.5638885498047,
+          "recorte": 0
+        },
+        {
+          "abajo": 617.5638885498047,
+          "recorte": 0
+        },
+        {
+          "abajo": 617.5638885498047,
+          "recorte": 0
+        },
+        {
+          "abajo": 879.6377563476562,
+          "recorte": 0
+        },
+        {
+          "abajo": 879.6377563476562,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Brazo",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    },
+    {
+      "alto": 1100,
+      "ancho": 820,
+      "botones": [
+        {
+          "abajo": 1025.2201194763184,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 130.73863220214844,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_erguido.png",
+          "w": 98.05397033691406
+        },
+        {
+          "h": 130.7457275390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_0_20.png",
+          "w": 98.06107330322266
+        },
+        {
+          "h": 130.7457275390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_20_60.png",
+          "w": 98.06107330322266
+        },
+        {
+          "h": 130.73863220214844,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_mas_60.png",
+          "w": 98.05397033691406
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 651.3493957519531,
+          "recorte": 0
+        },
+        {
+          "abajo": 651.3493957519531,
+          "recorte": 0
+        },
+        {
+          "abajo": 651.3493957519531,
+          "recorte": 0
+        },
+        {
+          "abajo": 878.3380584716797,
+          "recorte": 0
+        }
+      ],
+      "vertical": 0,
+      "paso": "Tronco",
+      "modo": "Oficina",
+      "criterio": "MAYOR_EXPOSICION"
+    }
+  ],
+  "controlesAdicionales": [
+    {
+      "alto": 847,
+      "ancho": 390,
+      "botones": [
+        {
+          "abajo": 835.2769432067871,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 191.5695953369141,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_erguido.png",
+          "w": 143.67897033691406
+        },
+        {
+          "h": 191.57669067382812,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_0_20.png",
+          "w": 143.6860809326172
+        },
+        {
+          "h": 191.5695953369141,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_20_60.png",
+          "w": 143.67897033691406
+        },
+        {
+          "h": 191.57669067382812,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_mas_60.png",
+          "w": 143.6860809326172
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 2183.4871520996094,
+          "recorte": 0
+        },
+        {
+          "abajo": 2183.4871520996094,
+          "recorte": 0
+        },
+        {
+          "abajo": 2476.8607482910156,
+          "recorte": 0
+        },
+        {
+          "abajo": 2476.8607482910156,
+          "recorte": 0
+        }
+      ],
+      "vertical": 2127,
+      "paso": "Control-390",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 1080,
+      "ancho": 810,
+      "botones": [
+        {
+          "abajo": 1033.6860618591309,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 126.20027923583984,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_erguido.png",
+          "w": 94.65198516845705
+        },
+        {
+          "h": 126.20738220214844,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_0_20.png",
+          "w": 94.65908813476562
+        },
+        {
+          "h": 126.20738220214844,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_20_60.png",
+          "w": 94.65908813476562
+        },
+        {
+          "h": 126.20027923583984,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_mas_60.png",
+          "w": 94.65198516845705
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 664.3536682128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 664.3536682128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 664.3536682128906,
+          "recorte": 0
+        },
+        {
+          "abajo": 886.8039703369141,
+          "recorte": 0
+        }
+      ],
+      "vertical": 12,
+      "paso": "Control-810",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    },
+    {
+      "alto": 863,
+      "ancho": 1080,
+      "botones": [
+        {
+          "abajo": 851.6405906677246,
+          "texto": "Continuar →"
+        }
+      ],
+      "imagenes": [
+        {
+          "h": 131.59800720214844,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_erguido.png",
+          "w": 98.70027923583984
+        },
+        {
+          "h": 131.6051025390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_0_20.png",
+          "w": 98.70738220214844
+        },
+        {
+          "h": 131.59800720214844,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_20_60.png",
+          "w": 98.70027923583984
+        },
+        {
+          "h": 131.6051025390625,
+          "loaded": true,
+          "src": "/static/img/tour/tronco_mas_60.png",
+          "w": 98.70738220214844
+        }
+      ],
+      "lateral": 0,
+      "tarjetas": [
+        {
+          "abajo": 660.007080078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 660.007080078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 660.007080078125,
+          "recorte": 0
+        },
+        {
+          "abajo": 660.007080078125,
+          "recorte": 0
+        }
+      ],
+      "vertical": 124,
+      "paso": "Control-1080",
+      "modo": "Planta",
+      "criterio": "MAS_INADECUADA"
+    }
+  ],
+  "comprobaciones": [
+    "Otra postura: campo obligatorio, sin autoavance; Continuar solo con texto",
+    {
+      "recorrido": "Planta",
+      "momento": "Lo más difícil del puesto",
+      "resultados": [
+        "7 · Rojo · Nivel 4",
+        "7 · Rojo · Nivel 4"
+      ]
+    },
+    {
+      "recorrido": "Oficina",
+      "momento": "Lo que más dura",
+      "resultados": [
+        "7 · Rojo · Nivel 4",
+        "7 · Rojo · Nivel 4"
+      ]
+    },
+    {
+      "tipo": "Tres puntos de ensayo marcados desde la interfaz; coordenadas de imagen equivalentes",
+      "normalizadas": [
+        [
+          0.17969955185712394,
+          0.4298953917358196
+        ],
+        [
+          0.17969955185712394,
+          0.1721739566701201
+        ],
+        [
+          0.38308938236559853,
+          0.321381103287104
+        ]
+      ],
+      "resultado1x": "Sugerido por la foto: 47,5° · revísalo y confirma.",
+      "resultado2x": "Sugerido por la foto: 47,5° · revísalo y confirma."
+    },
+    "Desplazamiento local de 60 px horizontal/vertical a 2× sin modificar el ángulo",
+    {
+      "fotosAutomaticas": [
+        "Perfil",
+        "Frente",
+        "Detalle de mano y muñeca",
+        "Perfil · otro lado",
+        "Frente · otro lado",
+        "Foto adicional 1"
+      ]
+    },
+    {
+      "soloParaMedir": [
+        "Foto 1 · Derecho · Perfil",
+        "Foto 2 · Derecho · Frente",
+        "Foto 4 · Derecho · Perfil",
+        "Foto 5 · Derecho · Frente"
+      ]
+    },
+    "Perfil obligatorio; Frente y Detalle omitidos explícitamente; resumen con una foto y Continuar activo",
+    "No permite fotos: evaluación guardada sin archivos ni análisis desde el nuevo formulario",
+    "S6: acercar a 2× conserva exactamente las cinco medidas recibidas del servidor",
+    "Usuario: la dirección directa del nuevo asistente muestra Acceso denegado"
+  ],
+  "erroresConsola": []
+}

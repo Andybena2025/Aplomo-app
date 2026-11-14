@@ -42,29 +42,21 @@ public final class PaginasEvaluacion {
         h.append("<section class=\"card stack tour-pregunta\" data-paso=\"1\"").append(elegido==null?" hidden":"").append("><h2>Consentimiento para la evaluación</h2>").append(opcion("acepta","si","La persona firmó en papel el consentimiento para ser evaluada y quedó archivado.","",true,"required","Este permiso es para observar y evaluar su puesto. Las fotos son un permiso aparte: lo eliges en el paso Fotos.").replace("class=\"tour-opcion\"","class=\"tour-opcion tour-consentimiento\"")).append("</section>")
             .append("<section class=\"card stack tour-pregunta\" data-paso=\"2\" hidden><h2>¿Qué postura vas a evaluar?</h2><p class=\"muted\" data-consejo-modo></p><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Postura que vas a evaluar\" data-posturas>");
         String[][] posturas={{"de_pie","De pie en mesa o línea","Trabaja de pie frente a una mesa, banco o línea."},{"computador","Sentado en computador","Usa pantalla, teclado o mouse casi todo el tiempo."},{"sentado","Sentado sin computador","Trabaja sentado con las manos: ensamble, costura, revisión."},{"inclinado","Inclinado hacia adelante","Dobla la espalda para alcanzar o mirar la tarea."},{"brazos_arriba","Brazos por encima de los hombros","Las manos trabajan más arriba que los hombros."},{"cargando","Levantando o cargando","Levanta, lleva o empuja cajas, piezas o material."},{"herramienta","Con herramienta en mano","Sostiene un taladro, pistola, pinza u otra herramienta."},{"agachado","Agachado o arrodillado","Trabaja cerca del piso, en cuclillas o de rodillas."}};
-        for(var p:posturas)h.append(opcion("postura_opcion",p[1],p[1],"postura_"+p[0]+".jpg",false,"data-postura=\""+p[0]+"\"",p[2]));
-        h.append("</div><button type=\"button\" class=\"link\" data-editar-postura aria-expanded=\"false\">Editar descripción</button><div class=\"field\" data-descripcion-postura hidden><label for=\"postura\">Descripción de la postura</label><input id=\"postura\" class=\"input\" name=\"postura\" maxlength=\"150\" required></div></section>")
-            .append("<section class=\"card stack tour-pregunta\" data-paso=\"3\" hidden><h2>¿Qué momento vas a evaluar?</h2><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Momento de la tarea\">")
-            .append(opcion("criterio","MAS_INADECUADA","La postura más exigente","",false,"","Elige el momento con brazos más altos, espalda más doblada o más fuerza, aunque dure poco."))
-            .append(opcion("criterio","MAYOR_EXPOSICION","La que más tiempo dura","",false,"","Elige la postura en la que pasa la mayor parte del turno."))
-            .append("</div></section><section class=\"card stack tour-pregunta\" data-paso=\"4\" hidden><h2>¿Cuánto tiempo de la jornada?</h2><p class=\"hint\">Suma todos los ratos del turno en que la persona está en esta postura.</p><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Tiempo por jornada\">");
+        if(elegido!=null)Arrays.sort(posturas,Comparator.comparingInt(p->posturasDelModo(modo).indexOf(p[0])));
+        for(var p:posturas)if(elegido==null||posturasDelModo(modo).contains(p[0]))h.append(opcion("postura_opcion",p[1],p[1],"postura_"+p[0]+".jpg",false,"data-postura=\""+p[0]+"\"",p[2]));
+        h.append(opcion("postura_opcion","OTRA","Otra postura","",false,"data-postura=\"otra\"","Descríbela con tus palabras"));
+        h.append("</div><button type=\"button\" class=\"link\" data-editar-postura aria-expanded=\"false\">Editar descripción</button><div class=\"field\" data-descripcion-postura hidden><label for=\"postura\">Descripción de la postura</label><input id=\"postura\" class=\"input\" name=\"postura\" maxlength=\"150\" required><p class=\"hint\" data-ayuda-otra hidden>Descríbela con tus palabras</p></div></section>")
+            .append("<section class=\"card stack tour-pregunta\" data-paso=\"3\" hidden><h2>¿Qué vas a fotografiar?</h2><p class=\"hint\">Solo se evalúa una postura por foto. Elige una.</p><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Momento de la tarea\">")
+            .append(opcion("criterio","MAS_INADECUADA","Lo más difícil del puesto","",false,"","El instante con los brazos más altos, la espalda más doblada o más fuerza, aunque dure poco."))
+            .append(opcion("criterio","MAYOR_EXPOSICION","Lo que más dura","",false,"","La postura en la que pasa la mayor parte del turno."))
+            .append("</div></section><section class=\"card stack tour-pregunta\" data-paso=\"4\" hidden><h2 data-titulo-tiempo>¿Cuánto del turno pasa en esta postura?</h2><p class=\"hint\">Suma todos los ratos del turno en que la persona está en esta postura.</p><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Tiempo por jornada\">");
         String[][] tiempos={{"30","Menos de 1 h"},{"90","1–2 h"},{"180","2–4 h"},{"300","Más de 4 h"}};
         for(var t:tiempos)h.append(opcion("minutos",t[0],t[1],"",false,"",""));
         h.append("</div></section><section class=\"card stack tour-pregunta\" data-paso=\"5\" hidden><h2>¿Qué ves en el puesto?</h2><div class=\"tour-opciones\" role=\"group\" aria-label=\"Condiciones del puesto\">");
         for(var c:CONDICIONES)h.append(opcion(c[0],"si",c[1],"",true,"",c[2]));
         h.append(opcion("ninguna","si","Ninguna","",true,"data-ninguna-condicion","No ves ninguna de estas condiciones."))
             .append("</div>").append(Formularios.texto(Map.of(),"observaciones","Otras observaciones (opcional)",255,false)).append("<p class=\"hint\">Máximo 255 caracteres. La nota se guarda completa y no se añade al motivo.</p></section>")
-            .append("<section class=\"card stack tour-pregunta\" data-paso=\"6\" hidden><h2>¿La persona permite que le tomes fotos?</h2><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Registro fotográfico\">")
-            .append(opcion("registro","CON_FOTOS","Sí, permite fotos","",false,"","Tomas de 1 a 10 fotos. Con ellas se miden los ángulos y se calcula el puntaje."))
-            .append(opcion("registro","SIN_REGISTRO_FOTOGRAFICO","No permite fotos","",false,"","Se guarda la evaluación sin fotos y sin puntaje RULA."))
-            .append("</div><div data-con-fotos hidden class=\"stack\"><p class=\"hint\">De 1 a 10 fotos JPG o PNG de hasta 5 MB. Elige para cada una si sirve para medir o de apoyo.</p><div data-lado-principal><h3>Perfil, frente y detalle</h3></div><div class=\"slots\" data-lado-principal>")
-            .append(slot("perfil","Perfil","PERFIL","Cámara a 90° del costado, a la altura de la cadera y a 2–3 metros. Que se vean la cabeza y los pies.","perfil"))
-            .append(slot("frente","Frente","FRENTE","Cámara de frente, a la altura de la cadera y a 2–3 metros. Mismo momento de la tarea.","frente"))
-            .append(slot("detalle","Detalle de mano y muñeca","OTRA","Cámara encima de la mano, a unos 50 cm. Que se vean mano, muñeca e inicio del antebrazo.","detalle"))
-            .append("</div><button type=\"button\" class=\"otroLado\" data-otro-lado aria-expanded=\"false\"><b>+ Otro lado del cuerpo</b><br><span class=\"hint\">Puedes registrar también el otro lado.</span></button><div data-lado-extra class=\"slots\" hidden>")
-            .append(slot("perfil_otro","Perfil · otro lado","PERFIL","Toma el perfil del otro lado del cuerpo.","perfil"))
-            .append(slot("detalle_otro","Detalle · otro lado","OTRA","Si hace falta, registra también la mano y la muñeca del otro lado.","detalle"))
-            .append("</div><div class=\"stack\" data-fotos-elegidas></div><p class=\"hint\">Las imágenes de muestra son de demostración, generadas con IA. No se guardan como fotos de la evaluación.</p></div></section>")
+            .append(FotosGuiadas.pantallas())
             .append(RecorridoCuerpo.pasos())
             .append("<p class=\"tour-pendiente\" data-pregunta-pendiente role=\"status\" hidden>Responde para continuar.</p><div class=\"aviso\" role=\"alert\" data-error-evaluacion hidden><span></span><button type=\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerrar aviso\">Cerrar</button></div><div class=\"wizfoot\"><button type=\"button\" class=\"btn p\" data-siguiente aria-disabled=\"true\">Continuar →</button>").append(PaginasAnalisis.botonesGuardar()).append("</div></form>").append(PaginasAnalisis.scripts()).append("");
         return Html.pagina("Nueva evaluación",h.toString(),sesion,false,false);
@@ -78,12 +70,8 @@ public final class PaginasEvaluacion {
         return "<label class=\"tour-opcion"+(imagen.startsWith("postura_")?" tour-postura":"")+"\"><input type=\""+(multiple?"checkbox":"radio")+"\" name=\""+nombre+"\" value=\""+escapar(valor)+"\" "+atributos+" aria-labelledby=\""+id+"-texto\""+(ayuda.isEmpty()?"":" aria-describedby=\""+id+"-ayuda\"")+"><span>"+img+"<span class=\"tour-franja\"><span id=\""+id+"-texto\">"+escapar(etiqueta)+"</span>"+pista+"</span></span></label>";
     }
 
-    private static String slot(String id, String titulo, String vista, String ayuda, String muestra) {
-        return "<section class=\"slot\" data-slot-id=\""+id+"\"><div class=\"slotTop\"><span class=\"eyebrow\">"+titulo+"</span><span class=\"tag\">Muestra</span></div>"
-                +"<div class=\"slotImg\"><img src=\"/static/img/muestra_"+muestra+".jpg\" alt=\"Muestra de "+titulo.toLowerCase(Locale.ROOT)+"\"><span class=\"slotLbl\">Muestra</span></div>"
-                +"<p class=\"small\">"+ayuda+"</p><div class=\"row\"><button class=\"btn\" type=\"button\" data-elegir-foto=\"cam_"+id+"\">Tomar foto</button><button class=\"btn p\" type=\"button\" data-elegir-foto=\"foto_"+id+"\">Subir foto</button></div>"
-                +"<input id=\"cam_"+id+"\" type=\"file\" accept=\"image/jpeg,image/png\" capture=\"environment\" data-fotos data-vista=\""+vista+"\" data-titulo=\""+titulo+"\" hidden>"
-                +"<input id=\"foto_"+id+"\" type=\"file\" accept=\"image/jpeg,image/png\" multiple data-fotos data-vista=\""+vista+"\" data-titulo=\""+titulo+"\" hidden><span class=\"hint\">JPG o PNG · máximo 5 MB por foto</span></section>";
+    static List<String> posturasDelModo(String modo) {
+        return modo.equals("Oficina")?List.of("computador","sentado","inclinado","brazos_arriba","herramienta","otra"):List.of("de_pie","cargando","inclinado","brazos_arriba","herramienta","agachado","otra");
     }
 
     /** Muestra los campos guardados y abre las fotos exclusivamente por su ruta protegida. */

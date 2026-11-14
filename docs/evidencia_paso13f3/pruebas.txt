@@ -1,0 +1,9 @@
+TZ=America/Bogota ./mvnw -Daplomo.evidencia.rendimiento=docs/evidencia_paso13f3/rendimiento.json test
+[INFO] Tests run: 811, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  01:11 min
+[INFO] Finished at: 2026-11-14T06:08:20-05:00
+70 pruebas dirigidas aprobadas
+96 medidas finales: vertical=0, lateral=0
+Zoom, tres puntos equivalentes: 47,5° a 1× y a 2×
+QA13E: ROLLBACK completado (servidor comparativo, servidor nuevo y revisión final de captura)

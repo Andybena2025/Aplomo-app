@@ -812,3 +812,78 @@ form[data-tour]>.wizfoot{position:sticky;bottom:0;z-index:3;padding:12px 0 calc(
 }
 .tour-opcion>.tour-pastilla,form[data-tour] .tour-opcion>.tour-pastilla{display:block;min-height:0;height:auto;width:auto;padding:3px 7px;font-size:11px;line-height:1.25;justify-content:initial}
 @media(min-width:721px) and (max-height:800px){form[data-tour] .cuerpo-rangos .tour-opcion>.tour-pastilla{padding:2px 6px;font-size:10px;line-height:1.1}}
+
+/* Paso 13F-3 · preguntas y fotografías una por una; imágenes a todo el ancho. */
+.tour-opcion:has(img)>span:not(.tour-pastilla),form[data-tour] .tour-opcion:has(img)>span:not(.tour-pastilla){padding:0;gap:0}
+.tour-opcion img,form[data-tour] .tour-opcion img,form[data-tour] .tour-opcion:not(.tour-postura) img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;object-position:center;padding:0;border-radius:0;background:none}
+.tour-opcion.tour-postura img,form[data-tour] .tour-postura img{aspect-ratio:4/5;object-fit:cover;object-position:60% 50%}
+.tour-postura img[src$="postura_computador.jpg"],.tour-postura img[src$="postura_sentado.jpg"],.tour-postura img[src$="postura_brazos_arriba.jpg"]{object-position:65% 50%}
+.tour-postura img[src$="postura_agachado.jpg"]{object-position:70% 50%}
+form[data-tour] .tour-opcion img[src*="/brazo_"],form[data-tour] .tour-opcion img[src*="/tronco_"],form[data-tour] .tour-opcion img[src*="/piernas_"],form[data-tour] .tour-opcion img[src*="/lado_"],form[data-tour] .tour-opcion img[src$="esfuerzo_estatica.png"],form[data-tour] .tour-opcion img[src$="esfuerzo_ninguno.png"]{aspect-ratio:3/4;object-position:60% 50%}
+form[data-tour] .tour-opcion img[src$="brazo_45_90.png"],form[data-tour] .tour-opcion img[src$="tronco_mas_60.png"]{object-position:70% 50%}
+.fotos-guiadas .foto-pregunta{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 24px;align-items:start}
+.fotos-guiadas .foto-muestra{grid-column:1;grid-row:1/6;position:relative;margin:0;max-height:calc(100dvh - 344px);width:min(100%,calc((100dvh - 344px)*var(--foto-proporcion,1)));justify-self:center;overflow:hidden;border-radius:12px}
+.fotos-guiadas .foto-muestra img{width:100%;height:auto;display:block;object-fit:cover;object-position:center}
+.fotos-guiadas .foto-muestra figcaption{position:absolute;right:10px;bottom:10px;border:1px solid var(--perla-media);border-radius:999px;padding:3px 9px;font-size:12px;color:var(--ivory);background:rgba(14,14,16,.9)}
+.fotos-guiadas .foto-pregunta>h2,.fotos-guiadas .foto-pregunta>p,.fotos-guiadas .foto-acciones{grid-column:2}
+.fotos-guiadas .foto-acciones{align-self:start;gap:8px}
+.fotos-miniaturas{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,160px));gap:12px}
+.foto-miniatura{margin:0;display:flex;flex-direction:column;gap:8px;min-width:0}
+.foto-miniatura img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
+.foto-miniatura figcaption{font-size:13px;overflow-wrap:anywhere}.foto-miniatura .btn{align-self:flex-start}
+.foto-zoom{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:400px;min-width:0}
+.foto-zoom .canvasbox,form[data-tour] [data-paso="8"] .foto-zoom .canvasbox{display:block;flex:none;overflow:auto;max-width:100%;max-height:100%;border-radius:10px;background:var(--bg);overscroll-behavior:contain}
+.zoom-lamina{flex:none;position:relative;margin:auto}
+.foto-zoom canvas,form[data-tour] [data-paso="8"] .foto-zoom canvas{display:block;max-width:none;max-height:none;transform-origin:0 0;object-fit:fill}
+.zoom-control{position:absolute;display:flex;align-items:center;z-index:2;border:1px solid var(--ivory);border-radius:999px;overflow:hidden;background:var(--bg);color:var(--ivory)}
+.zoom-control button{border:0;background:transparent;color:inherit;min-width:36px;height:36px;padding:0;font-size:20px;cursor:pointer}.zoom-control button:disabled{opacity:.4;cursor:default}.zoom-control output{min-width:32px;text-align:center;font-size:13px}.zoom-control button:focus-visible{outline-offset:-4px}
+@media(min-width:721px){
+ form[data-tour] [data-paso="6"].fotos-guiadas{display:block;padding:16px}
+ form[data-tour] [data-paso="8"] .foto-zoom{height:clamp(300px,37dvh,440px)}
+ form[data-tour] .tour-postura .tour-franja{padding:8px}
+}
+@media(min-width:1024px) and (orientation:landscape){
+ form[data-tour] [data-posturas]{grid-template-columns:repeat(var(--posturas-columnas,7),minmax(0,1fr))}
+ form[data-tour] .cuerpo-rangos .tour-opciones{grid-template-columns:repeat(5,minmax(0,1fr))}
+ form[data-tour] [data-editor-foto] .measure{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:14px}
+ form[data-tour] [data-editor-foto] .measure>div:first-child{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;align-content:start;align-items:start}
+ form[data-tour] [data-editor-foto] .measure>div:first-child>.foto-zoom{grid-column:1;grid-row:2/5;height:clamp(300px,44dvh,440px)}
+ form[data-tour] [data-editor-foto] .measure>div:first-child>.row{grid-column:1/-1;grid-row:1}
+ form[data-tour] [data-estado-deteccion]{grid-column:2;grid-row:2}
+ form[data-tour] [data-editor-foto] .measure>div:first-child>.hint{grid-column:2;grid-row:3}
+ form[data-tour] .resumen-ia{grid-column:2;grid-row:4}
+}
+@media(min-width:721px) and (max-height:800px){
+ form[data-tour] [data-paso="6"].fotos-guiadas{padding:12px}
+ form[data-tour] [data-editor-foto] .measure>div:first-child>.foto-zoom{height:294px}
+ form[data-tour] .cuerpo-rangos .tour-franja{padding:4px}
+ form[data-tour] [data-paso="8"]{padding-bottom:10px}
+}
+@media(max-width:720px){
+ .fotos-guiadas .foto-pregunta{display:flex;gap:12px}.fotos-guiadas .foto-muestra{width:100%;max-height:none}.foto-zoom{height:420px}
+ .zoom-control button{min-width:44px;height:44px}
+}
+@media(pointer:coarse){.zoom-control button{min-width:44px;height:44px}}
+
+.foto-zoom .canvasbox[data-acercada="false"],form[data-tour] [data-paso="8"] .foto-zoom .canvasbox[data-acercada="false"]{overflow:hidden}
+.tour-opcion:has([data-postura="otra"]) .tour-franja{margin-block:auto}
+@media(min-width:1024px) and (orientation:landscape){form[data-tour] [data-editor-foto] .measure>div:first-child{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}}
+@media(min-width:721px) and (orientation:portrait){form[data-tour] .cuerpo-rangos .tour-opciones{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:721px) and (max-width:1000px) and (orientation:portrait){
+ form[data-tour] .tour-postura img{aspect-ratio:1}
+ form[data-tour] [data-editor-foto] .measure{grid-template-columns:minmax(0,1.25fr) minmax(0,.95fr)}
+ form[data-tour] [data-editor-foto] .measure>div:first-child{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:6px;align-content:start;align-items:start}
+ form[data-tour] [data-editor-foto] .measure>div:first-child>.foto-zoom{grid-column:1;grid-row:2/5;height:330px}
+ form[data-tour] [data-editor-foto] .measure>div:first-child>.row{grid-column:1/-1;grid-row:1}
+ form[data-tour] [data-estado-deteccion]{grid-column:2;grid-row:2}
+ form[data-tour] [data-editor-foto] .measure>div:first-child>.hint{grid-column:2;grid-row:3}
+ form[data-tour] .resumen-ia{grid-column:2;grid-row:4}
+}
+form[data-tour] .cuerpo-rangos{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+form[data-tour] .cuerpo-rangos>.link{white-space:normal;min-width:0;text-align:left}
+form[data-tour] .cuerpo-rangos .tour-opcion>.tour-pastilla{padding:3px 7px;font-size:11px;line-height:1.25}
+@media(min-width:721px) and (max-height:800px){form[data-tour] .cuerpo-rangos .tour-opcion>.tour-pastilla{padding:2px 6px;font-size:10px;line-height:1.1}}
+@media(min-width:721px) and (max-width:1000px) and (orientation:portrait){
+ form[data-tour] [data-editor-foto] .measure>div:first-child>.foto-zoom{height:324px}
+ form[data-tour] .cuerpo-rangos .tour-franja{padding:5px}
+}

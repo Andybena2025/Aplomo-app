@@ -21,6 +21,7 @@
   const analizador = window.crearAnalizadorAplomo(form,()=>corporal?tareas:fotos,aviso,actualizarFormulario);
   const cuerpo=corporal?window.crearRecorridoCorporal(form,analizador,aviso,actualizarFormulario,actualizarGuia,()=>mostrar(AJUSTES)):null;
   const esfuerzo=corporal?window.crearEsfuerzoGuiado(form,analizador,memoria,actualizarGuia):null;
+  const fotosGuiadas=window.crearFotosGuiadas(form,()=>fotos,aviso,actualizarGuia);
   function aviso(texto) {
     error.hidden = !texto;
     error.querySelector('span').textContent = texto;
@@ -46,6 +47,8 @@
       if (p === paso) s.setAttribute('aria-current','step'); else s.removeAttribute('aria-current');
     });
     const sinFotos=tour&&form.querySelector('[name="registro"]:checked')?.value==='SIN_REGISTRO_FOTOGRAFICO';
+    adaptarMomento();
+    if(paso===FOTOS)fotosGuiadas?.mostrar();
     actualizarProgreso();
     atras.textContent = tour ? '← Atrás' : paso === 1 ? 'Cancelar' : continuar && paso === ANGULOS ? 'Volver a la evaluación' : '← Atrás';
     siguiente.hidden = paso === RESULTADO || (sinFotos&&paso===FOTOS); guardar.hidden = !siguiente.hidden;if(volver)volver.hidden=guardar.hidden;
@@ -53,8 +56,9 @@
     if(corporal&&paso===ANGULOS)cuerpo.mostrar();
     if(corporal&&(paso===9||paso===10))esfuerzo.mostrar(paso);memoria.aviso(paso);
     if(tour){const panel=form.querySelector(`[data-paso="${paso}"]`);panel.classList.remove('tour-entra');void panel.offsetWidth;panel.classList.add('tour-entra');actualizarGuia();}
-    form.querySelector(`[data-paso="${paso}"] h2`).setAttribute('tabindex','-1');
-    form.querySelector(`[data-paso="${paso}"] h2`).focus({preventScroll:true});
+    const tituloActual=paso===FOTOS&&fotosGuiadas?form.querySelector(`[data-foto-pantalla]:not([hidden]) h2`):form.querySelector(`[data-paso="${paso}"] h2`);
+    tituloActual.setAttribute('tabindex','-1');
+    tituloActual.focus({preventScroll:true});
     window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   }
   function validarFotos() {
@@ -65,12 +69,14 @@
     if (!form.elements.acepta.checked) throw new Error('Confirma que la persona firmó en papel el consentimiento para ser evaluada.');
     if (conFotos && (fotos.length<1 || fotos.length>10)) throw new Error('Agrega de 1 a 10 fotos antes de continuar.');
     if (conFotos && fotos.some(f=>!f.descripcion.trim() || f.descripcion.length>200)) throw new Error('Cada foto necesita una descripción de hasta 200 caracteres.');
+    if(fotosGuiadas&&conFotos&&!fotosGuiadas.tienePerfil())throw new Error('Sube una foto de perfil para continuar.');
     if(tour&&conFotos&&fotos.some(f=>!f.uso))throw new Error('Elige Para medir o De apoyo en cada foto.');
     if(tour&&conFotos&&!fotos.some(f=>f.uso==='MEDIR'))throw new Error('Elige al menos una foto Para medir.');
     return conFotos;
   }
   siguiente.addEventListener('click', async () => {
     if(enviando||cuerpo?.ocupado())return;
+    if(paso===FOTOS&&fotosGuiadas&&form.querySelector('[name="registro"]:checked')?.value==='CON_FOTOS'&&fotosGuiadas.completa()&&fotosGuiadas.avanzar())return;
     if(tour&&!respuestaCompleta()){intentado=true;actualizarGuia();return;}
     try {
       if(tour&&!continuar&&paso<FOTOS){
@@ -99,6 +105,7 @@
   });
   atras.addEventListener('click', () => {
     if(enviando)return;
+    if(paso===FOTOS&&fotosGuiadas?.atras())return;
     if(corporal&&paso===ANGULOS){if(!cuerpo.atras())mostrar(LADO);return;}
     if(corporal&&(paso===9||paso===10)){const n=esfuerzo.atras();if(n===ANGULOS)cuerpo.ultimo();mostrar(n);return;}
     if(corporal&&paso===RESULTADO){esfuerzo.ultimo();mostrar(10);return;}
@@ -111,6 +118,7 @@
   form.querySelectorAll('.opt input').forEach(c => c.addEventListener('change', () => c.closest('.opt').classList.toggle('on', c.checked)));
   form.querySelectorAll('[name="registro"]').forEach(r => r.addEventListener('change', () => {
     const conFotos = r.value === 'CON_FOTOS';
+    if(fotosGuiadas){fotosGuiadas.registro();mostrar(paso);return;}
     form.querySelector('[data-con-fotos]').hidden = !conFotos;
     if(tour){mostrar(paso);}else if (!conFotos) form.elements.acepta.checked = false;
     aviso('');
@@ -125,6 +133,7 @@
   });
   function renderFotos() {
     if(continuar)return;
+    if(fotosGuiadas){fotosGuiadas.render();return;}
     form.dataset.fotos=String(fotos.length);
     urls.forEach(URL.revokeObjectURL); urls = [];
     elegidas.replaceChildren();
@@ -215,6 +224,7 @@
     if(n===3)return !!form.querySelector('[name="criterio"]:checked');
     if(n===4)return !!form.querySelector('[name="minutos"]:checked');
     if(n===5)return !!form.elements.condiciones_respondidas.value&&form.elements.observaciones.value.length<=255;
+    if(n===FOTOS&&fotosGuiadas&&form.querySelector('[name="registro"]:checked')?.value==='CON_FOTOS')return fotosGuiadas.completa();
     if(n===FOTOS){try{validarFotos();return true;}catch(_){return false;}}
     if(corporal&&n===LADO)return !!form.querySelector('[name="lado_recorrido"]:checked');
     if(corporal&&n===ANGULOS)return cuerpo.respondido();
@@ -224,13 +234,13 @@
   }
   function actualizarGuia(){
     if(!tour)return;
-    const clave=corporal?(paso===ANGULOS?paso+':'+cuerpo.progreso().actual:(paso===9||paso===10)?paso+':'+esfuerzo.progreso().actual:paso):paso;
+    const clave=paso===FOTOS&&fotosGuiadas?paso+':'+fotosGuiadas.etapa():corporal?(paso===ANGULOS?paso+':'+cuerpo.progreso().actual:(paso===9||paso===10)?paso+':'+esfuerzo.progreso().actual:paso):paso;
     if(clave!==clavePregunta){intentado=false;clavePregunta=clave;}
     const completa=respuestaCompleta();siguiente.disabled=enviando||!!cuerpo?.ocupado();guardar.disabled=enviando;if(volver)volver.disabled=enviando;
     siguiente.setAttribute('aria-disabled',String(enviando||!completa));guardar.setAttribute('aria-disabled',String(enviando||!completa));
     actualizarProgreso();
     const pendiente=form.querySelector('[data-pregunta-pendiente]');pendiente.hidden=completa||!intentado;
-    pendiente.textContent=paso===FOTOS&&form.querySelector('[name="registro"]:checked')?.value==='CON_FOTOS'?'Agrega de 1 a 10 fotos, completa sus descripciones y elige Para medir o De apoyo (al menos una Para medir).':'Responde para continuar.';
+    pendiente.textContent=paso===FOTOS&&form.querySelector('[name="registro"]:checked')?.value==='CON_FOTOS'?(fotosGuiadas?'Sube la foto o elige Omitir esta foto para continuar.':'Agrega de 1 a 10 fotos, completa sus descripciones y elige Para medir o De apoyo (al menos una Para medir).'):'Responde para continuar.';
     form.querySelectorAll('[data-paso]').forEach(p=>p.classList.toggle('tour-sin-respuesta',Number(p.dataset.paso)===paso&&!completa&&intentado));
   }
   function actualizarProgreso(){
@@ -243,6 +253,7 @@
       else if(paso===9||paso===10)numero=base+1+recorrido.total+esf.actual+extra;
       else if(paso===RESULTADO)numero=total;
     }
+    if(fotosGuiadas&&!sinFotos&&form.querySelector('[name="registro"]:checked')){const f=fotosGuiadas.progreso();total+=f.total-1;if(paso===FOTOS)numero+=f.actual;else if(paso>FOTOS)numero+=f.total-1;}
     document.querySelector('#pasoActual').textContent=`Paso ${numero} de ${total}`;
     if(tour){const progreso=form.querySelector('progress');progreso.max=total;progreso.value=numero;}
   }
@@ -251,26 +262,41 @@
     const criterio=form.querySelector('[name="criterio"]:checked');
     form.elements.motivo.value=`Momento: ${criterio?.value==='MAS_INADECUADA'?'La postura más exigente':'La que más tiempo dura'}. Postura: ${form.elements.postura.value.trim()}.`;
   }
+  function mostrarDescripcion(cambio=false){
+    if(!tour||continuar)return;
+    const otra=form.querySelector('[name="postura_opcion"]:checked')?.value==='OTRA',campo=form.querySelector('[data-descripcion-postura]'),boton=form.querySelector('[data-editar-postura]');
+    boton.hidden=otra;form.querySelector('[data-ayuda-otra]').hidden=!otra;
+    if(otra||cambio)campo.hidden=!otra;boton.setAttribute('aria-expanded',String(!campo.hidden));
+    if(otra&&cambio)form.elements.postura.focus();
+  }
+  function adaptarMomento(){
+    const criterio=form.querySelector('[name="criterio"]:checked')?.value||form.dataset.criterio,dificil=criterio==='MAS_INADECUADA';
+    const tiempo=form.querySelector('[data-titulo-tiempo]');if(tiempo)tiempo.textContent=dificil?'¿Cuánto del turno está en esa postura difícil?':'¿Cuánto del turno pasa en esta postura?';
+    const ayuda=form.querySelector('[data-paso="8"] > p');if(ayuda&&criterio)ayuda.textContent=dificil?'Mide el momento más exigente.':'Mide la postura habitual.';
+  }
   function actualizarModo(){
     if(!tour||continuar)return;const puesto=form.elements.puesto;
     const tipo=puesto.tagName==='SELECT'?puesto.selectedOptions[0]?.dataset.tipo:puesto.dataset.tipo;
     const oficina=tipo==='ESCRITORIO';
     const chip=document.querySelector('[data-modo]');chip.textContent=oficina?'Oficina':'Planta';chip.hidden=!tipo;
     form.querySelector('[data-consejo-modo]').textContent=oficina?'Revisa la silla, la pantalla y el teclado':'Observa varios ciclos de la tarea antes de elegir';
-    const grupo=form.querySelector('[data-posturas]'),orden=oficina?['computador','sentado','de_pie','inclinado','brazos_arriba','cargando','herramienta','agachado']:['de_pie','computador','sentado','inclinado','brazos_arriba','cargando','herramienta','agachado'];
-    orden.forEach(k=>grupo.append(grupo.querySelector(`[data-postura="${k}"]`).closest('label')));
+    const grupo=form.querySelector('[data-posturas]'),orden=oficina?['computador','sentado','inclinado','brazos_arriba','herramienta','otra']:['de_pie','cargando','inclinado','brazos_arriba','herramienta','agachado','otra'];
+    for(const radio of grupo.querySelectorAll('input')){const visible=orden.includes(radio.dataset.postura);radio.closest('label').hidden=!visible;radio.disabled=!visible;if(!visible&&radio.checked){radio.checked=false;form.elements.postura.value='';}}
+    grupo.style.setProperty('--posturas-columnas',orden.length);
+    orden.forEach(k=>{const radio=grupo.querySelector(`[data-postura="${k}"]`);if(radio)grupo.append(radio.closest('label'));});
     if(puesto.tagName==='SELECT'&&puesto.value)document.querySelector('[data-contexto-puesto]').textContent=puesto.selectedOptions[0].textContent;
   }
   if(tour){
     form.querySelector('[data-analizar-foto]').closest('label').hidden=true;
-    actualizarModo();memoria.restaurar();
+    actualizarModo();memoria.restaurar();mostrarDescripcion();
     form.addEventListener('aplomo:analisis',actualizarGuia);
     form.querySelector('[data-editar-postura]')?.addEventListener('click',e=>{clearTimeout(avanceAutomatico);const campo=form.querySelector('[data-descripcion-postura]');campo.hidden=!campo.hidden;e.currentTarget.setAttribute('aria-expanded',String(!campo.hidden));if(!campo.hidden)form.elements.postura.focus();});
     form.addEventListener('input',()=>{armarMotivo();actualizarGuia();});
     form.addEventListener('change',e=>{
       clearTimeout(avanceAutomatico);const el=e.target;
       if(continuar){actualizarGuia();if(el.name==='lado_recorrido'&&respuestaCompleta()&&!reducirMovimiento())avanceAutomatico=setTimeout(()=>siguiente.click(),250);return;}
-      if(el.name==='postura_opcion')form.elements.postura.value=el.value;
+      if(el.name==='postura_opcion'){form.elements.postura.value=el.value==='OTRA'?'':el.value;mostrarDescripcion(true);}
+      if(el.name==='criterio')adaptarMomento();
       if(el.name==='puesto')actualizarModo();
       const condiciones=['escritorio','pantalla','pies','apoyapies','apoyabrazos','regulable'];
       if(el.name==='ninguna'&&el.checked)condiciones.forEach(k=>form.elements[k].checked=false);

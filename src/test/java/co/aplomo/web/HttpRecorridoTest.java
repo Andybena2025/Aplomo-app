@@ -31,10 +31,11 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
         var f=new LinkedHashMap<String,String>();f.put("csrf",csrf(get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto)));f.put("visita",""+visita);f.put("puesto",""+puesto);
         f.put("recorrido","guiado");f.put("acepta","si");f.put("postura","Sentado en computador");f.put("criterio","MAS_INADECUADA");f.put("minutos","30");f.put("motivo","No confiar en este texto enviado");f.put("condiciones_respondidas","NINGUNA");f.put("registro","SIN_REGISTRO_FOTOGRAFICO");f.put("asistente_completo","si");return f;
     }
-    private HttpResponse<String> enviar(Map<String,String> f,byte[] foto) throws Exception {
+    private HttpResponse<String> enviar(Map<String,String> f,byte[] foto) throws Exception {return enviarVarias(f,foto==null?List.of():List.of(foto));}
+    private HttpResponse<String> enviarVarias(Map<String,String> f,List<byte[]> fotos) throws Exception {
         String b="AplomoRecorridoGuiado123";var out=new ByteArrayOutputStream();
         for(var e:f.entrySet())out.write(("--"+b+"\r\nContent-Disposition: form-data; name=\""+e.getKey()+"\"\r\n\r\n"+e.getValue()+"\r\n").getBytes(StandardCharsets.UTF_8));
-        if(foto!=null){out.write(("--"+b+"\r\nContent-Disposition: form-data; name=\"foto_0\"; filename=\"foto.png\"\r\nContent-Type: image/png\r\n\r\n").getBytes(StandardCharsets.UTF_8));out.write(foto);out.write("\r\n".getBytes());}
+        for(int i=0;i<fotos.size();i++){out.write(("--"+b+"\r\nContent-Disposition: form-data; name=\"foto_"+i+"\"; filename=\"foto.png\"\r\nContent-Type: image/png\r\n\r\n").getBytes(StandardCharsets.UTF_8));out.write(fotos.get(i));out.write("\r\n".getBytes());}
         out.write(("--"+b+"--\r\n").getBytes());
         return cliente.send(HttpRequest.newBuilder(URI.create(raiz+"/evaluaciones")).header("Content-Type","multipart/form-data; boundary="+b).POST(HttpRequest.BodyPublishers.ofByteArray(out.toByteArray())).build(),HttpResponse.BodyHandlers.ofString());
     }
@@ -60,7 +61,7 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
         int id=numero==1?puesto:planta;String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+id).body();
         assertTrue(h.contains("data-modo>"+modo));assertTrue(h.contains("name=\"puesto\" value=\""+id+"\""));assertTrue(h.contains("La persona firmó en papel el consentimiento para ser evaluada y quedó archivado."));
         assertTrue(h.contains("role=\"radiogroup\""));assertTrue(h.contains("Editar descripción"));assertTrue(h.contains("data-ninguna-condicion"));assertTrue(h.contains("data-paso=\"9\""));
-        assertFalse(h.contains("data-piernas checked"));assertTrue(h.contains("data-giro><option value=\"\""));assertTrue(h.contains("data-carga><option value=\"\""));assertTrue(h.contains("postura_de_pie.jpg"));
+        assertFalse(h.contains("data-piernas checked"));assertTrue(h.contains("data-giro><option value=\"\""));assertTrue(h.contains("data-carga><option value=\"\""));assertTrue(h.contains(numero==1?"postura_computador.jpg":"postura_de_pie.jpg"));assertFalse(h.contains(numero==1?"postura_de_pie.jpg":"postura_computador.jpg"));
     }
     @Test void puestoAjenoOInactivoNoPuedeEntrarPorDireccionManual()throws Exception {
         var otro=new Empresas(tx).salon(cuenta(admin),new Empresas(tx).guardar(cuenta(admin),new Salon(0,salon.sede(),"Otro salón","Prueba",1,20,true)).id());int ajeno=new Empresas(tx).guardar(cuenta(admin),new Puesto(0,otro.id(),null,null,1,"Ajeno","MESA","Centro",null,true)).id();
@@ -100,4 +101,39 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
         assertEquals(403,get("/visitas/"+visita).statusCode());assertEquals(403,get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).statusCode());
         assertThrows(SecurityException.class,()->new Visitas(tx,reloj).puestos(cuenta(usuario),visita));assertEquals(0,cantidad());
     }
+    @ParameterizedTest @CsvSource({"1,computador;sentado;inclinado;brazos_arriba;herramienta;otra","2,de_pie;cargando;inclinado;brazos_arriba;herramienta;agachado;otra"})
+    void oficinaYPlantaMuestranListasExactasDistintas(int numero,String lista)throws Exception{
+        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+(numero==1?puesto:planta)).body();
+        var m=java.util.regex.Pattern.compile("data-postura=\"([^\"]+)\"").matcher(h);List<String> claves=new ArrayList<>();while(m.find())claves.add(m.group(1));assertEquals(List.of(lista.split(";")),claves);
+        String otra=h.substring(h.lastIndexOf("<label",h.indexOf("data-postura=\"otra\"")),h.indexOf("</label>",h.indexOf("data-postura=\"otra\"")));assertFalse(otra.contains("<img"));assertTrue(otra.contains("Otra postura"));assertTrue(h.contains("Descríbela con tus palabras"));assertFalse(h.contains(" checked"));
+    }
+    @Test void otraPosturaExigeTextoYConservaSus150Caracteres()throws Exception{
+        var f=campos();f.put("postura","");assertEquals(400,enviar(f,null).statusCode());assertEquals(0,cantidad());
+        f.put("postura","á".repeat(151));assertEquals(400,enviar(f,null).statusCode());assertEquals(0,cantidad());
+        String texto="Evaluación personalizada "+"á".repeat(125);assertEquals(150,texto.length());f.put("postura",texto);var r=enviar(f,null);assertEquals(201,r.statusCode(),r.body());assertEquals(texto,Sql.<String>uno(con,"SELECT postura FROM evaluacion WHERE id_visita=?",rs->rs.getString(1),visita));
+    }
+    @ParameterizedTest @CsvSource({"MAS_INADECUADA,Lo más difícil del puesto","MAYOR_EXPOSICION,Lo que más dura"})
+    void momentoCambiaEtiquetaYConservaValorGuardado(String criterio,String etiqueta)throws Exception{
+        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();assertTrue(h.contains("¿Qué vas a fotografiar?"));assertTrue(h.contains(etiqueta));assertTrue(h.contains("Solo se evalúa una postura por foto. Elige una."));assertFalse(h.contains("¿Qué momento vas a evaluar?"));
+        var f=campos();f.put("criterio",criterio);f.put("minutos","180");var r=enviar(f,null);assertEquals(201,r.statusCode(),r.body());assertEquals(criterio,Sql.<String>uno(con,"SELECT criterio FROM evaluacion WHERE id_visita=?",rs->rs.getString(1),visita));assertEquals(180,Sql.<Integer>uno(con,"SELECT minutos_jornada FROM evaluacion WHERE id_visita=?",rs->rs.getInt(1),visita));
+    }
+    @Test void fotosUsanUnSoloRecorridoSinDescripcionNiClasificacionManuales()throws Exception{
+        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();for(String pantalla:List.of("permiso","perfil","frente","detalle","resumen"))assertEquals(1,h.split("data-foto-pantalla=\""+pantalla+"\"",-1).length-1);
+        assertTrue(h.contains("Omitir esta foto"));assertTrue(h.contains("Agregar otra foto"));assertTrue(h.contains("data-foto-otro-lado"));assertFalse(h.contains("slotImg"));assertFalse(h.contains("Las imágenes de muestra son de demostración"));assertFalse(h.contains("data-uso-guardada"));String fotos=h.substring(h.indexOf("data-fotos-guiadas"),h.indexOf("data-paso=\"7\""));assertFalse(fotos.contains("<textarea"));assertFalse(fotos.contains("data-uso-guardada"));
+    }
+    @ParameterizedTest @ValueSource(strings={"FRENTE","OTRA"})
+    void perfilEsObligatorioAunqueLleguenOtrasTomas(String vista)throws Exception{
+        var f=campos();f.put("registro","CON_FOTOS");f.put("foto_0_vista",vista);f.put("foto_0_descripcion",vista);var out=new ByteArrayOutputStream();ImageIO.write(new java.awt.image.BufferedImage(40,80,1),"png",out);
+        var r=enviar(f,out.toByteArray());assertEquals(400,r.statusCode(),r.body());assertTrue(r.body().contains("foto de perfil"));assertEquals(0,cantidad());
+    }
+    @Test void metadatosAutomaticosYFotosDeApoyoSeGuardanSinAnalisis()throws Exception{
+        var f=campos();f.put("registro","CON_FOTOS");String[] vistas={"PERFIL","FRENTE","OTRA","PERFIL","FRENTE","OTRA"},descripciones={"Perfil","Frente","Detalle de mano y muñeca","Perfil · otro lado","Frente · otro lado","Foto adicional 1"};
+        var out=new ByteArrayOutputStream();ImageIO.write(new java.awt.image.BufferedImage(40,80,1),"png",out);List<byte[]> archivos=new ArrayList<>();int indice=0;
+        for(int i=0;i<vistas.length;i++){f.put("foto_"+i+"_vista",vistas[i]);f.put("foto_"+i+"_descripcion",descripciones[i]);archivos.add(out.toByteArray());if(!vistas[i].equals("OTRA")){var a=CasosRulaPrueba.campos(CasosRulaPrueba.todos().get(0).entrada());a.put("foto",""+i);f.put("analisis_"+(indice++),CasosRulaPrueba.codificar(a));}}
+        var r=enviarVarias(f,archivos);assertEquals(201,r.statusCode(),r.body());var filas=Sql.listar(con,"SELECT f.vista,f.descripcion,(SELECT COUNT(*) FROM analisis_rula a WHERE a.id_foto=f.id_foto) FROM fotografia f JOIN evaluacion e USING(id_evaluacion) WHERE e.id_visita=? ORDER BY f.id_foto",rs->List.of(rs.getString(1),rs.getString(2),rs.getString(3)),visita);assertEquals(6,filas.size());for(int i=0;i<6;i++)assertEquals(List.of(vistas[i],descripciones[i],vistas[i].equals("OTRA")?"0":"1"),filas.get(i));
+    }
+    @Test void zoomTieneControlesAccesiblesSinCamposDeCalculoNuevos()throws Exception{
+        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();for(String texto:List.of("data-zoom-menos","data-zoom-nivel","data-zoom-mas","aria-label=\"Alejar foto\"","aria-label=\"Acercar foto\""))assertTrue(h.contains(texto));assertFalse(h.contains("name=\"zoom\""));assertTrue(h.contains("class=\"zoom-lamina\""));
+    }
+
 }

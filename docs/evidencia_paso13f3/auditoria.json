@@ -1,0 +1,8 @@
+{
+  "endpoint_calcular_identico": true,
+  "sha256_endpoint": "639a8f7c91aaef913958a2231c43b4e617e32435ce53fabe0172ece7d4ce3152",
+  "cambios_motor": false,
+  "cambios_pruebas_motor": false,
+  "cambios_sql": false,
+  "cambios_dependencias": false
+}

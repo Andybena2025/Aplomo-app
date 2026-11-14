@@ -100,6 +100,7 @@ public final class EvaluacionesWeb {
             List<Fotos.Entrada> fotos=new ArrayList<>();
             for(var p:partes) if(p.archivo()!=null && !(p.archivo().isEmpty() && p.bytes().length==0))
                 fotos.add(new Fotos.Entrada(p.bytes(),f.get(p.nombre()+"_vista"),f.get(p.nombre()+"_descripcion")));
+            if("guiado".equals(f.get("recorrido"))&&registro.equals("CON_FOTOS")&&si(f,"acepta")&&fotos.stream().noneMatch(foto->"PERFIL".equals(foto.vista())))throw new IllegalArgumentException("Sube una foto de perfil para continuar.");
             validarDestino(f);
             int id=servicio.guardar(s.cuenta(),visita,datos,fotos,"si".equals(f.get("asistente_completo"))?DatosAnalisis.solicitudes(f):null);
             x.getResponseHeaders().set("Location",destino(s,visita,id,f,"Evaluación guardada."));
