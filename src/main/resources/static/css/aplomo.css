@@ -1170,3 +1170,12 @@ form[data-conversacion] [data-error-foto-acciones] .btn{height:auto;min-height:4
  .login .hero{min-height:300px}
 }
 @media(max-width:720px){form[data-conversacion] .campo-progreso{grid-template-columns:repeat(5,minmax(0,1fr));font-size:10px;gap:4px}form[data-conversacion] .campo-progreso li{overflow-wrap:anywhere}}
+
+/* Paso 15-E: acciones de foto y avance siempre presentes. */
+form[data-conversacion] .seguir-zona{display:inline-flex;max-width:100%;border-radius:12px;cursor:pointer}
+form[data-conversacion] .seguir-zona:focus-visible{outline:2px solid var(--ivory);outline-offset:4px}
+form[data-conversacion] [data-siguiente]:disabled{background:var(--line);color:var(--muted);border-color:var(--line2);opacity:1}
+form[data-conversacion] .campo-falta{outline:2px solid var(--ivory);outline-offset:5px;scroll-margin-block:170px}
+form[data-conversacion] .campo-apoyo>summary.agregar-foto{display:flex;justify-content:flex-start;gap:12px;border:1px solid var(--line2);padding:12px 20px;min-height:52px;box-sizing:border-box;width:100%;white-space:normal}
+form[data-conversacion] [data-foto-controles]{gap:8px;flex-wrap:wrap}
+@media(max-width:720px){form[data-conversacion] .seguir-zona{width:100%}}

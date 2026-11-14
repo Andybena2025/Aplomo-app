@@ -32,6 +32,7 @@ public final class Analisis {
     int guardarEnTransaccion(Connection c,Cuenta actor,int foto,MotorRula.Entrada entrada) throws SQLException,IOException {
         if(entrada==null)throw new IllegalArgumentException("Completa las mediciones de la foto.");
         var f=new EvaluacionDao().foto(c,foto);if(f==null)throw new SecurityException("La foto no está disponible.");
+        if(f.descripcion().startsWith(FotosEvaluacion.REEMPLAZADA))throw new IllegalArgumentException("Esta foto fue reemplazada. Selecciona una foto actual.");
         new SugerenciaDao().contexto(c,f.evaluacion(),0,false,true);
         int[] dimensiones=archivos.dimensiones(f.nombre());
         var real=new MotorRula.Entrada(entrada.lado(),dimensiones[0],dimensiones[1],entrada.mediciones(),entrada.ajustes(),entrada.actividad(),entrada.carga());

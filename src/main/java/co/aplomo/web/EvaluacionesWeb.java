@@ -23,6 +23,7 @@ public final class EvaluacionesWeb {
         Permisos.administrador(s.cuenta());
         String ruta=x.getRequestURI().getPath();
         boolean post=x.getRequestMethod().equals("POST");
+        if(post&&ruta.matches("/evaluaciones/[1-9][0-9]*/fotos")){FotosEvaluacionWeb.cambiar(x,s,servicio.fotosEvaluacion(),entero(ruta.split("/")[2],"evaluación"));return;}
         if (ruta.startsWith("/fotos/")) {
             if (post || !ruta.matches("/fotos/[1-9][0-9]*")) { Router.enviar(x,404,"Foto no disponible."); return; }
             try {

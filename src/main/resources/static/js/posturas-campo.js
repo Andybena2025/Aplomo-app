@@ -4,7 +4,10 @@
  function descripcion(puesto,momento,lado){const sufijo=' · '+momento+' · '+(lado==='DERECHO'?'lado derecho':lado==='IZQUIERDO'?'lado izquierdo':'sin fotos');return Array.from(puesto).slice(0,150-Array.from(sufijo).length).join('')+sufijo;}
  function aviso(i,total,p){return 'Postura '+(i+1)+' de '+total+' · '+p.titulo;}
  function ajustes(marcado){return Object.fromEntries(['hombroElevado','brazoSeparado','brazoApoyado','antebrazoCruza','munecaDesviada'].map(k=>[k,!!marcado(k)]));}
+ function retirarFoto(fotos,tareas,actual){const misma=f=>actual.id?f.id===actual.id:f.file===actual.file;const restantes=fotos.filter(f=>!misma(f)),pendientes=tareas.filter(f=>!misma(f));pendientes.forEach(f=>f.indiceFoto=restantes.findIndex(mismaFoto=>f.id?mismaFoto.id===f.id:mismaFoto.file===f.file));return {fotos:restantes,tareas:pendientes};}
+ function puntosBrazo(raw,lado){if(!raw||raw.length<33)return null;const ids=lado==='DERECHO'?[24,12,14,16,20,18]:[23,11,13,15,19,17];if(ids.some(i=>!Number.isFinite(raw[i]?.x)||!Number.isFinite(raw[i]?.y)))return null;const p=i=>({x:Math.max(0,Math.min(1,raw[i].x)),y:Math.max(0,Math.min(1,raw[i].y))});return {cadera:p(ids[0]),hombro:p(ids[1]),codo:p(ids[2]),muneca:p(ids[3]),nudillos:{x:(p(ids[4]).x+p(ids[5]).x)/2,y:(p(ids[4]).y+p(ids[5]).y)/2}};}
+ function estadoSeguir(falta,ocupada,paso){return {visible:true,desactivado:!!falta||ocupada,texto:ocupada?'Cargando…':paso===5?'Guardar y terminar':'Seguir →'};}
  function ordenGuardado(posturas){return [...posturas].sort((a,b)=>(a.puntaje||0)-(b.puntaje||0));}
  async function guardarPendientes(posturas,enviar){for(let i=0;i<posturas.length;i++){const p=posturas[i];if(p.guardada)continue;try{const ruta=await enviar(p,i);if(!/^\/evaluaciones\/\d+(?:\?|$)/.test(ruta||''))throw new Error('No pudimos confirmar el guardado.');p.guardada=ruta;}catch(e){const cantidad=posturas.filter(p=>p.guardada).length;throw new Error((cantidad?'Ya se guardaron '+cantidad+' de '+posturas.length+' posturas. ':'')+e.message);}}}
- return {plan,descripcion,aviso,ajustes,ordenGuardado,guardarPendientes};
+ return {plan,descripcion,aviso,ajustes,retirarFoto,puntosBrazo,estadoSeguir,ordenGuardado,guardarPendientes};
 });

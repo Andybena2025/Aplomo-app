@@ -37,6 +37,9 @@ public final class Evaluaciones {
     public Evaluaciones(Transacciones tx, Clock reloj, Fotos archivos, BitacoraDao bitacora) {
         this.tx = tx; this.reloj = reloj; this.archivos = archivos; this.bitacora = bitacora; this.analisis=new Analisis(tx,reloj,archivos,bitacora);
     }
+    /** Conserva el mismo almacenamiento y auditoría para cambios de fotos. */
+    public FotosEvaluacion fotosEvaluacion(){return new FotosEvaluacion(tx,reloj,archivos,bitacora);}
+
     /** Comprueba permisos y visita abierta antes de ofrecer puestos activos del salón reservado. */
     public Contexto contexto(Cuenta actor, int visita) throws SQLException {
         return tx.ejecutar(con -> {

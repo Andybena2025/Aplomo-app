@@ -81,6 +81,8 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);cv.style.aspectRatio=imagen.naturalWidth+'/'+imagen.naturalHeight;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);ctx.drawImage(imagen,0,0,w,h);
     if(w<=0)return;
     const P={};for(const [k]of marcas)if(s.puntos[k])P[k]={x:s.puntos[k].x*w,y:s.puntos[k].y*h};
+    // El otro brazo es solo referencia visual: nunca agrega puntos al cálculo.
+    if(form.dataset.conversacion&&s.raw&&P.hombro){const dh=i=>Math.hypot(s.raw[i].x-s.puntos.hombro.x,s.raw[i].y-s.puntos.hombro.y),otro=window.AplomoPosturasCampo.puntosBrazo(s.raw,dh(12)<=dh(11)?'IZQUIERDO':'DERECHO');if(otro){ctx.save();ctx.globalAlpha=.2;ctx.strokeStyle='#EDE6D8';ctx.fillStyle='#EDE6D8';ctx.lineWidth=2;for(const[a,b]of [['cadera','hombro'],['hombro','codo'],['codo','muneca'],['muneca','nudillos']]){ctx.beginPath();ctx.moveTo(otro[a].x*w,otro[a].y*h);ctx.lineTo(otro[b].x*w,otro[b].y*h);ctx.stroke();}for(const k of ['hombro','codo','muneca','nudillos']){ctx.beginPath();ctx.arc(otro[k].x*w,otro[k].y*h,5,0,Math.PI*2);ctx.fill();}ctx.restore();}}
     const iluminados=new Set(destacado?(gruposMarcas[destacado]||[]):marcas.map(m=>m[0]));
     const escala=w/600;ctx.lineWidth=Math.max(2,2.4*escala);ctx.strokeStyle='#EDE6D8';ctx.lineCap='round';
     for(const[a,b]of[['cadera','hombro'],['hombro','codo'],['codo','muneca'],['muneca','nudillos'],['hombro','coronilla']])if(P[a]&&P[b]){ctx.globalAlpha=iluminados.has(a)&&iluminados.has(b)?1:.14;ctx.beginPath();ctx.moveTo(P[a].x,P[a].y);ctx.lineTo(P[b].x,P[b].y);ctx.stroke();}
@@ -182,6 +184,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   function todoListo(){const fs=obtenerFotos().filter(f=>estado(f).habilitada);return fs.length>0&&fs.every(f=>completo(f)&&respondido(f));}
   function respondido(f){const s=estado(f);return (!form.dataset.cuerpo||s.recorrido&&['BRAZO','ANTEBRAZO','MUNECA','GIRO','CUELLO','TRONCO','PIERNAS'].every(k=>s.recorrido.confirmados[k]))&&(!form.dataset.cuerpo||s.actividadConfirmada&&s.cargaConfirmada)&&s.ajustesConfirmados&&!!s.giro&&s.piernas!==null&&s.actividad!==null&&!!s.carga;}
   return {
+    elegirBrazo(lado){const s=estado(foto());s.lado=lado;const p=window.AplomoPosturasCampo?.puntosBrazo(s.raw,lado);if(p)Object.assign(s.puntos,p);cambiado('PUNTOS');sincronizar();},
     elegirEsfuerzo(k,v){const s=estado(foto());if(k==='actividad'){s.actividadEleccion=v;s.actividad=v!=='NINGUNA';s.actividadConfirmada=true;}else{s.carga=v;s.cargaConfirmada=true;}cambiado('ESFUERZO');sincronizar();},
     datos(){const f=foto();return f?{foto:f,estado:estado(f),indice:activa,grupos:grupos(f)}:null;},
     seleccionar(i){const cambio=activa!==i;activa=i;tabs();sincronizar();if(cambio||!imagen)cargarFoto();},
