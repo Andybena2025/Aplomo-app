@@ -27,4 +27,18 @@ Fotos de demostración **generadas con IA** (no son personas reales) para probar
 
 El riesgo esperado es solo una guía para saber si el resultado tiene sentido. El puntaje real lo calcula la app según los puntos y las respuestas del evaluador.
 
-Pareja para probar perfil + frente del mismo momento: **04 + 05** y **09 + 10**. Pareja para "otro lado del cuerpo" no incluida.
+Pareja para probar perfil + frente del mismo momento: **04 + 05** y **09 + 10**.
+
+## Galería de 5 posturas (carpeta `galeria/`)
+
+Cada postura trae **3 fotos del mismo momento**: perfil, frente y detalle. Úsalas así: perfil y frente → **Para medir**; detalle → **De apoyo** (o Para medir si quieres probar la muñeca).
+
+| Postura | Archivos | Qué muestra | Qué debería notar el evaluador (orientativo) |
+|---|---|---|---|
+| S2 | `S2_mesa_alta_cabeza_inclinada_*` | De pie en una mesa alta, mirando una pieza pequeña | Cuello inclinado hacia abajo, brazos doblados |
+| S3 | `S3_alcance_lejano_una_pierna_*` | Se apoya en una mesa de rodillos y estira el brazo lejos con una pierna en el aire | Brazo muy adelante, tronco inclinado, piernas sin buen apoyo |
+| S4 | `S4_brazos_sobre_la_cabeza_*` | Atornilla algo por encima de la cabeza | Brazos por encima del hombro, cuello hacia atrás |
+| S5 | `S5_inclinada_hacia_el_carro_*` | Se inclina de lado a sacar piezas de un carro, con una mano apoyada en la mesa | Tronco inclinado, brazo estirado hacia abajo, apoyo en un brazo |
+| S6 | `S6_levantando_pieza_pesada_*` | Levanta una pieza metálica pesada de una caja | Tronco muy inclinado, carga pesada, riesgo más alto |
+
+Orden de menos a más exigente (solo como guía): S2 y S5 suelen salir más bajos; S3, S4 y S6 más altos. Si el resultado de la app no coincide, **no es un error**: revisa los puntos, que la app te deja mover o corregir.
