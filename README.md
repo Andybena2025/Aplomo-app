@@ -82,6 +82,19 @@ Al entrar, la app te pide cambiarla (mínimo 8 caracteres, con letras y números
 
 ---
 
+## Probar la app sin ir a una empresa: fotos de prueba
+
+Si vas a probar APLOMO. y no tienes un puesto de trabajo real a la mano, usa las **fotos de prueba** de la carpeta [`fotos_de_prueba/`](fotos_de_prueba/). Son imágenes **generadas con IA** (no son personas reales) de trabajadores en distintas posturas: de pie, inclinados, con los brazos arriba, levantando peso, etc. Sirven para recorrer la evaluación completa y ver cómo cambian los resultados según la postura.
+
+- **11 fotos sueltas** de ejemplo (estación de pie, ensamble, bodega, laboratorio).
+- **Galería de 5 posturas** en [`fotos_de_prueba/galeria/`](fotos_de_prueba/galeria/): cada una con **perfil, frente y detalle** del mismo momento.
+
+**Cómo usarlas:** abre la foto en GitHub, guárdala en tu celular o computador, y en el paso **Fotos** de la evaluación elige "Sí, permite fotos" y súbela. Perfil y frente → **Para medir**; detalle → **De apoyo**. Luego toca **Detectar puntos** y revisa lo que propone la app.
+
+La tabla de qué muestra cada foto y qué debería notar el evaluador está en [`fotos_de_prueba/LEEME.md`](fotos_de_prueba/LEEME.md). Es solo una guía: el puntaje real lo calcula la app según los puntos y las respuestas que tú confirmes.
+
+---
+
 ## Tecnologías
 
 Sin frameworks, como lo pide la guía del proyecto.
