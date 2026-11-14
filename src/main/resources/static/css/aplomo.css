@@ -1151,3 +1151,22 @@ form[data-conversacion] :is(.campo-respuesta,.campo-opcion){overflow-wrap:anywhe
  form[data-conversacion] .campo-medida .campo-silueta{width:40px;height:56px}
  form[data-conversacion] .campo-chip{font-size:14px;padding:10px}
 }
+
+/* Paso 15-D: cinco etapas y marca dentro del panel de ingreso. */
+form[data-conversacion] .campo-progreso{grid-template-columns:repeat(5,minmax(0,1fr))}
+form[data-conversacion] .campo-apoyo [data-apoyo-panel]{display:grid;gap:16px}
+form[data-conversacion] [data-error-evaluacion]{scroll-margin-block:100px;overflow-wrap:anywhere}
+form[data-conversacion] [data-error-evaluacion] h3{font-size:22px;margin:0 0 8px}
+form[data-conversacion] [data-error-foto-acciones]{margin-top:16px;flex-wrap:wrap;gap:8px}
+form[data-conversacion] [data-error-foto-acciones] .btn{height:auto;min-height:48px;white-space:normal}
+.login .form{position:relative;max-width:none;margin:0;box-sizing:border-box;padding:156px 48px 48px;min-height:100vh;align-items:flex-start}
+.login .login-marca{position:absolute;top:40px;left:48px;right:48px;display:grid;gap:12px;padding-bottom:24px;border-bottom:1px solid var(--line2)}
+.login .login-marca .lockup{display:flex;align-items:center;line-height:1}
+.login .login-marca .tagline{font-size:14px;color:var(--muted)}
+.login .login-cuerpo{width:100%;max-width:420px;gap:24px}
+@media(max-width:820px){
+ .login .form{min-height:0;padding:28px 24px 40px;gap:28px}
+ .login .login-marca{position:static;width:100%;box-sizing:border-box}
+ .login .hero{min-height:300px}
+}
+@media(max-width:720px){form[data-conversacion] .campo-progreso{grid-template-columns:repeat(5,minmax(0,1fr));font-size:10px;gap:4px}form[data-conversacion] .campo-progreso li{overflow-wrap:anywhere}}

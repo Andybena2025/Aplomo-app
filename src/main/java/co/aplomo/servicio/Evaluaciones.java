@@ -172,7 +172,7 @@ public final class Evaluaciones {
         if (!d.aceptaFotos()) throw new IllegalArgumentException("Confirma que la persona firmó en papel el consentimiento para ser evaluada.");
         String momento=criterio.equals("MAS_INADECUADA")?"La postura más exigente":"La que más tiempo dura";
         boolean campo=Set.of("El momento que señala el trabajador.","La postura que más repite.").contains(d.motivo()==null?"":d.motivo());
-        String motivo="También es la que más tiempo se mantiene".equals(d.motivo())&&criterio.equals("MAS_INADECUADA")?d.motivo():campo?(criterio.equals("MAS_INADECUADA")?"El momento que señala el trabajador.":"La postura que más repite."):"Momento: "+momento+". Postura: "+postura+".";
+        String motivo="La postura más incómoda.".equals(d.motivo())&&criterio.equals("MAS_INADECUADA")?d.motivo():"La postura que más tiempo mantiene.".equals(d.motivo())&&criterio.equals("MAYOR_EXPOSICION")?d.motivo():"También es la que más tiempo se mantiene".equals(d.motivo())&&criterio.equals("MAS_INADECUADA")?d.motivo():campo?(criterio.equals("MAS_INADECUADA")?"El momento que señala el trabajador.":"La postura que más repite."):"Momento: "+momento+". Postura: "+postura+".";
         Validacion.entero(Integer.toString(d.minutos()), "minutos por jornada", 1, 720);
         String obs = Validacion.notas(d.observaciones());
         if (obs.codePointCount(0, obs.length()) > 255) throw new IllegalArgumentException("Otras observaciones permite hasta 255 caracteres.");

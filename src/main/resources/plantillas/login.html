@@ -47,11 +47,14 @@
                     <circle class="jt" cx="1012" cy="770" r="5"/>
                 </svg>
             </div>
-            <!-- Logo y lema sobre la foto -->
-            <div class="in">
-                <span class="lockup" style="font-size:64px;color:#EDE6D8" aria-label="APLOMO.">
-                    <svg width="50" height="50" viewBox="0 0 100 100"
-                         style="margin-bottom:12px;margin-right:2px" aria-hidden="true">
+        </section>
+        <!-- Lado derecho: formulario de login -->
+        <section id="contenido" class="form" tabindex="-1">
+            <!-- Marca al inicio del panel del formulario -->
+            <div class="login-marca">
+                <span class="lockup" style="font-size:48px;color:#EDE6D8" aria-label="APLOMO.">
+                    <svg width="48" height="48" viewBox="0 0 100 100"
+                         style="margin-bottom:0;margin-right:2px" aria-hidden="true">
                         <line x1="50" y1="10" x2="16" y2="90" stroke="#EDE6D8" stroke-width="4" stroke-linecap="round"/>
                         <line x1="50" y1="10" x2="84" y2="90" stroke="#EDE6D8" stroke-width="4" stroke-linecap="round"/>
                         <path d="M31.2,54.2 A48,48 0 0 0 68.8,54.2" fill="none" stroke="#EDE6D8"
@@ -64,11 +67,8 @@
                     <span>PLOMO.</span>
                 </span>
                 <div class="tagline">Ergonomía con precisión</div>
-                <p class="muted" style="max-width:420px">Evaluación ergonómica de puestos de trabajo con el método RULA: fotos, ángulos, puntaje y resultados en un solo lugar.</p>
             </div>
-        </section>
-        <!-- Lado derecho: formulario de login -->
-        <section id="contenido" class="form" tabindex="-1">
+<div class="login-cuerpo stack">
             <div class="stack" style="gap:6px">
                 <span class="eyebrow">Bienvenido</span>
                 <h2>Iniciar sesión</h2>
@@ -84,6 +84,7 @@
                            autocomplete="current-password" required></div>
                 <button class="btn p" type="submit" style="width:100%">Entrar</button>
             </form>
+</div>
         </section>
     </div>
     <script>
@@ -103,7 +104,7 @@
             pz.style.height=ih+'px';
             // RNF-002: el dibujo móvil termina antes del bloque de marca y descripción.
             var texto=hero.querySelector('.in'), top=(H-ih)*.5;
-            var inferior=compacto?Math.max(0,ih+top-texto.offsetTop+12):0;
+            var inferior=compacto&&texto?Math.max(0,ih+top-texto.offsetTop+12):0;
             pz.style.clipPath='inset(0 0 '+inferior+'px 0)';
             pz.style.left=((W-iw)*POSX)+'px';
             pz.style.top=((H-ih)*0.5)+'px';

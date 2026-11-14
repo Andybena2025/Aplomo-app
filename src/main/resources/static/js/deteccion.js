@@ -51,7 +51,18 @@
       finally{if(cargando===trabajo)cargando=null;}
     })();cargando=trabajo;return trabajo.promesa;
   }
-  async function detectar(src,turno){
+  const PERFIL=Object.freeze({visibilidad:.5,frontal:.45,margen:.10});
+  function revisarPerfil(puntos,ancho=1,alto=1){
+    const aviso=(tipo,mensaje,bloquea=true)=>({tipo,mensaje,bloquea,permiteUsar:true});
+    if(!puntos||puntos.length<33)return aviso('SIN_PERSONA','No se ve una persona. Toma otra de lado, con el cuerpo completo.');
+    const visible=i=>{const p=puntos[i];return p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&(p.visibility??p.v??0)>=PERFIL.visibilidad&&p.x>=0&&p.x<=1&&p.y>=0&&p.y<=1;};
+    if(![0,11,12,23,24,25,26,27,28].every(visible))return aviso('CUERPO_INCOMPLETO','Se ve solo una parte del cuerpo. Necesito la foto de perfil con el cuerpo completo, de la cabeza a los pies.');
+    const h={x:(puntos[11].x+puntos[12].x)/2,y:(puntos[11].y+puntos[12].y)/2},c={x:(puntos[23].x+puntos[24].x)/2,y:(puntos[23].y+puntos[24].y)/2};
+    const torso=Math.hypot((h.x-c.x)*ancho,(h.y-c.y)*alto),razon=torso?Math.abs(puntos[11].x-puntos[12].x)*ancho/torso:Infinity;
+    if(razon>=PERFIL.frontal-PERFIL.margen)return aviso(razon>PERFIL.frontal+PERFIL.margen?'FRENTE':'ANGULO_DUDOSO','Parece una foto de frente. Necesito una de lado (de perfil).',razon>PERFIL.frontal+PERFIL.margen);
+    return null;
+  }
+  async function detectar(src,turno,opciones){
     vigente(turno);const instancia=await poseLista();vigente(turno);etapa('imagen');
     const im=new Image();im.src=src;await im.decode();vigente(turno);
     const escala=Math.min(1,MAX_LADO/Math.max(im.naturalWidth,im.naturalHeight));
@@ -59,8 +70,8 @@
     const ctx=lienzo.getContext('2d');if(!ctx)throw new Error('Marca los puntos en la foto.');ctx.drawImage(im,0,0,lienzo.width,lienzo.height);
     instancia.resultado=null;
     try{etapa('inferencia');await conTiempo(instancia.pose.send({image:lienzo}),LIMITES.inferencia,'La detección tardó demasiado.');vigente(turno);}finally{lienzo.width=1;lienzo.height=1;}
-    const L=instancia.resultado?.poseLandmarks;if(!L){etapa('no se encontró una persona');return null;}
-    if(L.length<33||L.some(q=>!Number.isFinite(q.x)||!Number.isFinite(q.y))){etapa('falló al encontrar los puntos');return null;}
+    const L=instancia.resultado?.poseLandmarks;if(!L){etapa('no se encontró una persona');return opciones.perfil?{L:null,revisionPerfil:revisarPerfil(null),raw:[]}:null;}
+    if(L.length<33||L.some(q=>!Number.isFinite(q.x)||!Number.isFinite(q.y))){etapa('falló al encontrar los puntos');return opciones.perfil?{L:null,raw:[],revisionPerfil:revisarPerfil(null)}:null;}
     etapa('lista');
     const v=i=>L[i].visibility||0;
     const der=(v(14)+v(16)+v(20))>=(v(13)+v(15)+v(19));
@@ -72,16 +83,16 @@
     const cab={x:clamp((oreja.x+(CORONILLA.arriba*px+CORONILLA.atras*ux)*n)/w,0,1),y:clamp((oreja.y+(CORONILLA.arriba*py+CORONILLA.atras*uy)*n)/h,0,1)};
     const nud={x:clamp((L[I.n].x+L[I.p].x)/2,0,1),y:clamp((L[I.n].y+L[I.p].y)/2,0,1)};
     const raw=L.map(q=>({x:+q.x.toFixed(4),y:+q.y.toFixed(4),v:+(q.visibility||0).toFixed(2)}));
-    return {L:{cadera:P(I.c),hombro:P(I.h),codo:P(I.co),muneca:P(I.m),nudillos:nud,cabeza:cab},mira:nariz.x>oreja.x?'Derecho':'Izquierdo',raw};
+    return {L:{cadera:P(I.c),hombro:P(I.h),codo:P(I.co),muneca:P(I.m),nudillos:nud,cabeza:cab},mira:nariz.x>oreja.x?'Derecho':'Izquierdo',raw,revisionPerfil:opciones.perfil?revisarPerfil(L,im.naturalWidth,im.naturalHeight):null};
   }
-  function detectarPuntos(src){
+  function detectarPuntos(src,opciones={}){
     if(window.navigator?.onLine===false){etapa('falló al cargar el script');return Promise.reject(new Error('Marca los puntos en la foto.'));}
     const turno=generacion;
-    const trabajo=cola.then(()=>conTiempo(detectar(src,turno),LIMITES.total,'La detección tardó demasiado.').catch(error=>{if(turno===generacion)cancelar();throw error;}));
+    const trabajo=cola.then(()=>conTiempo(detectar(src,turno,opciones),LIMITES.total,'La detección tardó demasiado.').catch(error=>{if(turno===generacion)cancelar();throw error;}));
     cola=trabajo.catch(()=>{});return trabajo;
   }
   // La preparación solo adelanta la descarga: un fallo no cancela ni bloquea futuros intentos.
   function preparar(){if(window.navigator?.onLine===false)return Promise.resolve(false);return poseLista().then(()=>true).catch(()=>false);}
   window.addEventListener?.('pagehide',()=>{liberar();etapa('pagina-cerrada');});
-  window.AplomoDeteccion={detectarPuntos,conTiempo,preparar,cancelar,get disponible(){return typeof WebAssembly!=='undefined';},diagnostico,LIMITES,LIMITE_MS:LIMITES.total,MAX_LADO};
+  window.AplomoDeteccion={revisarPerfil,PERFIL,detectarPuntos,conTiempo,preparar,cancelar,get disponible(){return typeof WebAssembly!=='undefined';},diagnostico,LIMITES,LIMITE_MS:LIMITES.total,MAX_LADO};
 })();

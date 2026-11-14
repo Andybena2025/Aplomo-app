@@ -35,11 +35,10 @@ class HttpCierreTest extends HttpPrueba {
     }
     @Test void lasPistasEscapanHtmlYLasFotosExistentesTambienLasIncluyen()throws Exception{
         String h=PaginasEvaluacion.opcion("prueba","valor","Etiqueta","",false,"","<script>texto & prueba</script>");assertFalse(h.contains("<script>"));assertTrue(h.contains("&lt;script&gt;texto &amp; prueba&lt;/script&gt;"));
-        h=get("/evaluaciones/"+evaluacion+"/analizar").body();assertTrue(h.contains("data-foto-id=\""+foto+"\""));assertTrue(h.contains("data-revision=\"si\""));assertTrue(h.contains("Agregar foto"));assertFalse(h.contains(" checked"));
+        h=get("/evaluaciones/"+evaluacion+"/analizar").body();assertTrue(h.contains("data-foto-id=\""+foto+"\""));assertTrue(h.contains("data-revision=\"si\""));assertTrue(h.contains("Agregar otra foto"));assertFalse(h.contains(" checked"));
     }
     @Test void ayudaDeLadoApareceEnLaPantallaDeLadoSinCambiarLaPregunta()throws Exception{
-        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+segundo).body();String lado=h.substring(h.indexOf("data-paso=\"4\""),h.indexOf("data-paso=\"5\""));
-        assertTrue(lado.contains("<h2>¿Qué lado del cuerpo trabaja más?</h2>"));assertFalse(lado.contains("AMBOS"));assertTrue(lado.contains("Derecho"));assertTrue(lado.contains("Izquierdo"));assertFalse(lado.contains(" checked"));
+        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+segundo).body();assertFalse(h.contains("name=\"lado_recorrido\""));assertTrue(h.contains("data-lado-campo=\"DERECHO\""));assertTrue(h.contains("data-lado-campo=\"IZQUIERDO\""));assertTrue(h.contains("data-lado-campo=\"AMBOS\""));
 
     }
     @ParameterizedTest @EnumSource(MotorRula.Carga.class)
@@ -50,7 +49,7 @@ class HttpCierreTest extends HttpPrueba {
     }
     @Test void anadirAnalisisComparteCuerpoEsfuerzoYResultadoSinValoresIniciales()throws Exception{
         var r=get("/evaluaciones/"+evaluacion+"/analizar");assertEquals(200,r.statusCode());String h=r.body();
-        for(String texto:List.of("data-tour=\"campo\"","data-conversacion=\"si\"","data-foto-id","campo-dos-columnas","data-pregunta=\"peso_campo\"","data-pregunta=\"golpe_campo\"","data-paso=\"7\"","Guardar y terminar","Agregar otra postura"))assertTrue(h.contains(texto),texto);
+        for(String texto:List.of("data-tour=\"campo\"","data-conversacion=\"si\"","data-foto-id","campo-dos-columnas","data-pregunta=\"carga_campo\"","data-pregunta=\"tirones_campo\"","data-paso=\"5\"","Guardar y terminar","Agregar otra postura"))assertTrue(h.contains(texto),texto);
         assertFalse(h.contains(" checked"));assertFalse(h.contains("data-puntaje-final"));
     }
     @Test void siguienteEsActivoYPendienteDeEstaVisitaInclusoSinPuntaje()throws Exception{

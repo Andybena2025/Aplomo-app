@@ -1,138 +1,56 @@
-/* Paso 15-C: dos posturas independientes; mediciones y resultados siempre del servidor. */
+/* Paso 15-D: permiso, puesto, dos posturas completas y un único resultado. */
 (() => {
  const form=document.querySelector('form[data-conversacion]');if(!form)return;
  const $=s=>form.querySelector(s),$$=s=>[...form.querySelectorAll(s)],valor=n=>form.elements[n]?.value||'';
- const reglas=window.AplomoPosturasCampo,angulos=['BRAZO','ANTEBRAZO','CUELLO','TRONCO'];
- const respuestas=new Map();let fotos=[],tareas=[],lado=null,paso=1,maximo=1,ocupada=false,abierta=null,peticion=0,leyendo=null;
- let posturas=[],indice=0,retornoLado=false;
- const existente=Number(form.dataset.continuar||0),clave='aplomo:campo:'+valor('cuenta_recuerdo')+':'+valor('visita');let anterior=null;
- try{anterior=JSON.parse(sessionStorage.getItem(clave));}catch(_){}
- function aviso(t){$('[data-error-evaluacion]').hidden=!t;$('[data-error-evaluacion] span').textContent=t;}
+ const reglas=window.AplomoPosturasCampo,angulos=['BRAZO','ANTEBRAZO','CUELLO','TRONCO'],cargas={carga_campo:'CELULAR',actividad_campo:'NINGUNA',tirones_campo:'no'};
+ const existente=Number(form.dataset.continuar||0),respuestas=new Map();let posturas=existente?[{...reglas.plan()[0],criterio:form.dataset.criterio,titulo:'Análisis adicional'}]:reglas.plan();
+ let fotos=[],tareas=[],lado='DERECHO',modoLado='AUTO',indice=0,paso=1,maximo=1,ocupada=false,abierta=null,peticion=0,leyendo=null,esperandoPerfil=false,perfilOtro=false,errorFoto=false;
+ function aviso(t){if(!t&&errorFoto)return;errorFoto=false;$('[data-error-evaluacion]').hidden=!t;$('[data-error-texto]').textContent=t;$('[data-error-titulo]').textContent='Revisa los datos';$('[data-error-foto-acciones]').hidden=true;}
+ function problemaFoto(revision){errorFoto=true;const box=$('[data-error-evaluacion]');box.hidden=false;$('[data-error-titulo]').textContent='Revisa la foto de perfil';$('[data-error-texto]').textContent=revision.mensaje;$('[data-error-foto-acciones]').hidden=false;$('[data-foto-manual]').disabled=!actual()?.foto.ancho||!revision.permiteUsar;$('[data-foto-usar]').hidden=!revision.permiteUsar;requestAnimationFrame(()=>box.scrollIntoView({block:'nearest',behavior:'instant'}));}
  async function renovar(){const r=await fetch(location.href,{cache:'no-store',credentials:'same-origin'});if(!r.ok)return false;const t=new DOMParser().parseFromString(await r.text(),'text/html').querySelector('[name="csrf"]')?.value;if(!t||t===valor('csrf'))return false;form.elements.csrf.value=t;return true;}
- const analizador=window.crearAnalizadorAplomo(form,()=>tareas,aviso,renovar);
+ const analizador=window.crearAnalizadorAplomo(form,()=>tareas,aviso,renovar),actual=()=>esperandoPerfil?null:analizador.datos(),conFotos=()=>!!existente||valor('registro')==='CON_FOTOS';
  $('[data-foto-revision]').append($('[data-editor-foto] .measure').firstElementChild);
- const actual=()=>analizador.datos(),conFotos=()=>!!existente||valor('registro')==='CON_FOTOS',ultima=()=>indice===posturas.length-1;
- function nombreMomento(v){return $('[data-respuesta="momento_campo"][data-valor="'+v+'"] span')?.textContent||v;}
- function contexto(){
-  const puesto=form.elements.puesto,op=puesto.selectedOptions?.[0]||puesto,nombre=op?.dataset.tarea||'Puesto de trabajo';
-  const plan=posturas[indice]||{momento:valor('momento_campo'),criterio:'MAS_INADECUADA'};
-  form.elements.postura.value=reglas.descripcion(nombre,nombreMomento(plan.momento),lado);
-  form.elements.minutos.value=valor('tiempo_campo');form.elements.criterio.value=existente?form.dataset.criterio:plan.criterio;
-  form.elements.motivo.value=plan.misma?'También es la que más tiempo se mantiene':plan.criterio==='MAYOR_EXPOSICION'?'La postura que más repite.':'El momento que señala el trabajador.';
-  $$('[data-postura-aviso]').forEach(el=>el.textContent=reglas.aviso(indice,posturas.length||1,plan,nombreMomento(plan.momento)));
-  $('[data-misma]').hidden=valor('duracion_campo')!=='MISMA';
+ function contexto(){const puesto=form.elements.puesto,op=puesto.selectedOptions?.[0]||puesto,p=posturas[indice];form.elements.postura.value=reglas.descripcion(op?.dataset.tarea||'Puesto de trabajo',p.descripcion,conFotos()?lado:null);form.elements.minutos.value=valor('tiempo_campo');form.elements.criterio.value=p.criterio;form.elements.motivo.value=p.motivo;
+  $$('[data-postura-aviso]').forEach(e=>e.textContent=reglas.aviso(indice,posturas.length,p));$('[data-instruccion-postura]').textContent=indice===0?'Pídele al trabajador que se ponga en la postura en la que se siente más incómodo y tómale la foto.':'Pídele al trabajador que se ponga en la postura en la que más tiempo se mantiene y tómale la foto.';
+  $$('[data-lado-campo]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.ladoCampo===(modoLado==='AMBOS'?'AMBOS':lado))));
  }
- function preguntas(panel=$('[data-paso="'+paso+'"]')){return [...panel.querySelectorAll('[data-pregunta]')].filter(q=>!q.dataset.cuando||$('[data-chip="'+q.dataset.cuando+'"]')?.checked);}
- function poner(n,v,origen='elección'){
-  form.elements[n].value=String(v);respuestas.set(n,{valor:String(v),origen});
-  const q=$('[data-pregunta="'+n+'"]');if(!q)return;
-  const opcion=[...q.querySelectorAll('[data-respuesta]')].find(b=>(Number.isFinite(Number(v))&&Number.isFinite(Number(b.dataset.valor))?Number(b.dataset.valor)===Number(v):b.dataset.valor===String(v)));
-  q.querySelector('.campo-respuesta span').textContent=(opcion?.querySelector('span')?.textContent||String(v))+' ✓';
-  q.querySelectorAll('[data-respuesta]').forEach(b=>b.setAttribute('aria-pressed',String(b===opcion)));
-  q.querySelector('[data-origen]')?.remove();if(origen==='foto'||origen==='anterior'){const tag=document.createElement('small');tag.className='tag';tag.dataset.origen='';tag.textContent=origen==='foto'?'Según la foto · confirma al seguir':'Del puesto anterior · revísala';q.querySelector('.campo-respuesta').after(tag);}
- }
+ function preguntas(panel=$('[data-paso="'+paso+'"]')){return [...panel.querySelectorAll('[data-pregunta]')];}
+ function poner(n,v,origen='elección'){form.elements[n].value=String(v);respuestas.set(n,{valor:String(v),origen});const q=$('[data-pregunta="'+n+'"]');if(!q)return;const opcion=[...q.querySelectorAll('[data-respuesta]')].find(b=>Number.isFinite(Number(v))&&Number.isFinite(Number(b.dataset.valor))?Number(b.dataset.valor)===Number(v):b.dataset.valor===String(v));q.querySelector('.campo-respuesta span').textContent=(opcion?.querySelector('span')?.textContent||String(v))+' ✓';q.querySelectorAll('[data-respuesta]').forEach(b=>b.setAttribute('aria-pressed',String(b===opcion)));q.querySelector('[data-origen]')?.remove();}
+
  function desplegar(n){abierta=n;$$('[data-pregunta]').forEach(q=>{const si=q.dataset.pregunta===n;q.querySelector('.campo-lista').hidden=!si;q.querySelector('[data-abrir]').setAttribute('aria-expanded',String(si));});}
- function faltante(){
-  if(paso===1){if(!valor('puesto'))return 'puesto de trabajo';if(!form.elements.acepta.checked)return 'consentimiento informado por escrito';}
-  if(paso===3){if(!valor('condiciones_respondidas'))return 'condiciones del puesto';if(valor('observaciones').length>255)return 'observaciones: máximo 255 caracteres';return '';}
-  if(paso===5){if(!actual()?.foto.ancho)return 'foto de perfil';if(!valor('muneca_campo'))return 'posición de la muñeca';}
-  const q=preguntas().find(q=>!valor(q.dataset.pregunta));return q?q.querySelector('em').textContent.replace(/[“”]/g,''):'';
- }
- function dibujarPreguntas(abrirSiguiente=false){
-  const panel=$('[data-paso="'+paso+'"]'),qs=preguntas(panel);let falta=false;
-  for(const q of panel.querySelectorAll('[data-pregunta]')){if(!qs.includes(q)){q.hidden=true;continue;}q.hidden=paso===5?false:falta;if(!valor(q.dataset.pregunta))falta=true;}
-  if(abrirSiguiente){const siguiente=qs.find(q=>!q.hidden&&!valor(q.dataset.pregunta));desplegar(siguiente?.dataset.pregunta||null);}
-  const faltaTexto=faltante(),seguir=$('[data-siguiente]');seguir.hidden=paso===7||!!faltaTexto;seguir.disabled=ocupada;seguir.textContent=ocupada?'Cargando…':paso===5?'Confirmar y seguir':'Seguir →';
-  $('[data-falta]').textContent=ocupada?'Un momento…':faltaTexto?'Falta responder: '+faltaTexto:'';
-  $('[data-atras-evaluacion]').disabled=ocupada||posturas.some(p=>p.guardada);
-  for(const b of $$('[data-guardar-volver],[data-agregar-postura]')){b.hidden=paso!==7||!ultima()||(b.hasAttribute('data-agregar-postura')&&!conFotos());b.disabled=ocupada;}
-  $('[data-postura-siguiente]').hidden=paso!==7||ultima();$('[data-postura-siguiente]').disabled=ocupada;
- }
- function mostrar(n){
-  paso=n;maximo=Math.max(maximo,n);$$('[data-paso]').forEach(s=>s.hidden=Number(s.dataset.paso)!==n);
-  $('[data-titulo-fijo]').textContent=$('[data-paso="'+n+'"] h2').textContent;
-  $('#pasoActual').textContent=indice>0&&n===4?'Cambiar lado':'Paso '+(indice>0?n-4:n)+' de '+(indice>0?3:7);$('progress').max=indice>0?3:7;$('progress').value=indice>0?Math.max(1,maximo-4):maximo;
-  $$('[data-etapa]').forEach(e=>{e.hidden=indice>0&&Number(e.dataset.etapa)<5;if(Number(e.dataset.etapa)===n)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});
-  $('[data-lado-titulo]').textContent=!conFotos()&&n===7?'Sin fotos':lado==='DERECHO'?'Lado derecho':lado==='IZQUIERDO'?'Lado izquierdo':'';
-  $$('[data-cambiar-lado]').forEach(b=>b.hidden=indice===0||n!==5);
-  if(n===5){const principal=actual()?.foto;$('[data-foto-revision]').hidden=!principal;$('[data-medidas-compactas]').hidden=!principal?.ancho;$('[data-subir-perfil]').hidden=!!principal;$('[data-muestra-perfil]').hidden=!!principal;}
-  contexto();aviso('');dibujarPreguntas(n!==5);const h=$('[data-paso="'+n+'"] h2');h.tabIndex=-1;h.focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});requestAnimationFrame(()=>analizador.repintar());
+ function faltante(){if(paso===1){if(!valor('puesto'))return 'puesto de trabajo';if(!form.elements.acepta.checked)return 'consentimiento informado por escrito';}if(paso===2){if(!valor('condiciones_respondidas'))return 'condiciones del puesto';if(valor('observaciones').length>255)return 'observaciones: máximo 255 caracteres';}if(paso===3){const d=actual();if(!d?.foto.ancho)return 'foto de perfil';if(d.estado.revisionFoto?.bloquea&&!d.estado.fotoAceptada)return 'revisar la foto de perfil';if(!valor('muneca_campo'))return 'posición de la muñeca';}const q=preguntas().find(q=>!valor(q.dataset.pregunta));return q?q.querySelector('em').textContent.replace(/[“”]/g,''):'';}
+ function dibujarPreguntas(abrirSiguiente=false){const qs=preguntas();qs.forEach(q=>q.hidden=false);if(abrirSiguiente){const q=qs.find(q=>!valor(q.dataset.pregunta));desplegar(q?.dataset.pregunta||null);}const falta=faltante(),seguir=$('[data-siguiente]');seguir.hidden=paso===5||!!falta;seguir.disabled=ocupada;seguir.textContent=ocupada?'Cargando…':paso===3?(modoLado==='AMBOS'&&tareas.length<2?'Continuar con el otro lado':indice===0&&!existente?'Continuar con postura 2':'Ver resultado'):'Seguir →';$('[data-falta]').textContent=ocupada?'Un momento…':falta?'Falta responder: '+falta:'';$('[data-atras-evaluacion]').disabled=ocupada||posturas.some(p=>p.guardada);for(const b of $$('[data-guardar-volver],[data-agregar-postura]')){b.hidden=paso!==5||(b.hasAttribute('data-agregar-postura')&&!conFotos());b.disabled=ocupada;}}
+ function mostrar(n){paso=n;const fase=n===3?indice+3:n;maximo=Math.max(maximo,fase);$$('[data-paso]').forEach(s=>s.hidden=Number(s.dataset.paso)!==n);$('[data-titulo-fijo]').textContent=n===3?posturas[indice].titulo:$('[data-paso="'+n+'"] h2').textContent;$('#pasoActual').textContent='Paso '+fase+' de 5';$('progress').value=maximo;$$('[data-etapa]').forEach(e=>{if(Number(e.dataset.etapa)===fase)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});$('[data-lado-titulo]').textContent=n===3?'Lado '+(lado==='DERECHO'?'derecho':'izquierdo'):'';
+  if(n===3){const principal=actual()?.foto;$('[data-foto-revision]').hidden=!principal;$('[data-medidas-compactas]').hidden=!principal?.ancho;$('[data-subir-perfil]').hidden=!!principal;$('[data-muestra-perfil]').hidden=!!principal;$('[data-perfil-otro]').hidden=!perfilOtro;}
+  contexto();errorFoto=false;aviso('');if(n===3&&actual()?.estado.revisionFoto&&!actual().estado.fotoAceptada)problemaFoto(actual().estado.revisionFoto);dibujarPreguntas(n!==3);const h=$('[data-paso="'+n+'"] h2');h.tabIndex=-1;h.focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});requestAnimationFrame(()=>analizador.repintar());
  }
  const puerta=window.crearAccionEvaluacion({alCambiar(v){ocupada=v;form.dataset.ocupado=String(v);dibujarPreguntas();},alError(e){aviso(e instanceof TypeError?'No pudimos conectar. Tus respuestas se conservan; intenta de nuevo.':e.message);}});
- function trasladar(){const d=actual();if(!d)return;const s=d.estado;
-  Object.assign(s.ajustes,reglas.ajustes(nombre=>$('[data-chip="'+nombre+'"]')?.checked));
-  for(const k of ['cuello','tronco']){const si=$('[data-chip="'+k+'_campo"]').checked,tipo=valor(k+'_tipo'),mapa=$('[data-orientacion="'+k+'"][data-tipo="'+tipo+'"]');s.ajustes[k+'Girado']=si&&mapa?.dataset.girada==='true';s.ajustes[k+'Inclinado']=si&&mapa?.dataset.inclinada==='true';}
-  if(valor('muneca_campo'))s.manual.MUNECA=Number(valor('muneca_campo'));
-  s.giro=$('[data-chip="giro_extremo"]').checked?'EXTREMO':'MEDIO';s.piernas=!$('[data-chip="pies_sin_apoyo"]').checked;s.html=null;s.revision++;
- }
+ function trasladar(){const d=actual();if(!d)return;const s=d.estado;Object.assign(s.ajustes,reglas.ajustes(k=>$('[data-chip="'+k+'"]')?.checked));for(const k of ['cuello','tronco']){const g=$('[data-chip="'+k+'Girado"]').checked,i=$('[data-chip="'+k+'Inclinado"]').checked,tipo=g&&i?'AMBAS':g?'GIRADA':'INCLINADA',m=$('[data-orientacion="'+k+'"][data-tipo="'+tipo+'"]');s.ajustes[k+'Girado']=(g||i)&&m.dataset.girada==='true';s.ajustes[k+'Inclinado']=(g||i)&&m.dataset.inclinada==='true';}if(valor('muneca_campo'))s.manual.MUNECA=Number(valor('muneca_campo'));s.giro=$('[data-chip="giro_extremo"]').checked?'EXTREMO':'MEDIO';s.piernas=!$('[data-chip="pies_sin_apoyo"]').checked;s.html=null;s.revision++;}
  $$('[data-abrir]').forEach(b=>b.onclick=()=>{if(!ocupada)desplegar(abierta===b.dataset.abrir?null:b.dataset.abrir);});
- $$('[data-respuesta]').forEach(b=>b.onclick=()=>{
-  const n=b.dataset.respuesta;if(ocupada)return;poner(n,b.dataset.valor);contexto();
-  if(n.startsWith('rango_')){const k=n.slice(6),d=actual();if(d){d.estado.manual[k]=Number(b.dataset.valor);analizador.actualizar(k);}}
-  if(n==='registro'&&b.dataset.valor==='CON_FOTOS')window.AplomoDeteccion.preparar();
-  if(n==='registro'&&b.dataset.valor==='SIN_REGISTRO_FOTOGRAFICO'&&!existente){fotos.forEach(f=>f.file&&URL.revokeObjectURL(f.preview));fotos=[];tareas=[];posturas=[];indice=0;}
-  trasladar();if(paso===5)desplegar(null);dibujarPreguntas(paso!==5);
- });
+ $$('[data-respuesta]').forEach(b=>b.onclick=()=>{if(ocupada)return;const n=b.dataset.respuesta;poner(n,b.dataset.valor);if(n.startsWith('rango_')&&actual()){actual().estado.manual[n.slice(6)]=Number(b.dataset.valor);analizador.actualizar(n.slice(6));}if(n==='registro'&&b.dataset.valor==='CON_FOTOS')window.AplomoDeteccion.preparar();if(n==='registro'&&b.dataset.valor==='SIN_REGISTRO_FOTOGRAFICO'&&!existente){fotos=[];tareas=[];posturas=reglas.plan();indice=0;}trasladar();desplegar(null);contexto();dibujarPreguntas();});
  $$('[data-muneca]').forEach(b=>b.onclick=()=>{if(ocupada)return;poner('muneca_campo',b.dataset.muneca);$$('[data-muneca]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));trasladar();dibujarPreguntas();});
- form.addEventListener('change',e=>{
-  const condiciones=['escritorio','pantalla','pies','apoyapies','apoyabrazos','regulable'],el=e.target;
-  if(el?.name==='ninguna'&&el.checked)condiciones.forEach(k=>form.elements[k].checked=false);if(condiciones.includes(el?.name)&&el.checked)form.elements.ninguna.checked=false;
-  form.elements.condiciones_respondidas.value=form.elements.ninguna.checked?'NINGUNA':condiciones.some(k=>form.elements[k].checked)?'SELECCION':'';
-  if(el?.hasAttribute('data-chip')){trasladar();dibujarPreguntas();if(el.checked&&['cuello_campo','tronco_campo'].includes(el.dataset.chip))desplegar(el.dataset.chip.replace('_campo','_tipo'));}
-  contexto();dibujarPreguntas();
- });
- form.addEventListener('input',()=>dibujarPreguntas());
- function configurarPosturas(){
-  const nuevos=reglas.plan(valor('momento_campo'),valor('duracion_campo'));
-  // Revisar la conversación conserva las fotos y mediciones ya hechas de cada postura.
-  posturas=nuevos.map((p,i)=>({...posturas[i],...p}));indice=Math.min(indice,posturas.length-1);contexto();
- }
- function datosGuardar(){
-  contexto();const datos=existente?new URLSearchParams({csrf:valor('csrf')}):new FormData(form);
-  for(const k of [...datos.keys()])if(!['csrf','visita','puesto','recorrido','postura','motivo','criterio','minutos','condiciones_respondidas','acepta','registro','escritorio','pantalla','pies','apoyapies','apoyabrazos','regulable','observaciones'].includes(k))datos.delete(k);
-  if(!existente)datos.set('asistente_completo','si');
-  if(conFotos()){if(!existente)fotos.forEach((f,i)=>{datos.append('foto_'+i,f.file);datos.append('foto_'+i+'_vista',f.vista);datos.append('foto_'+i+'_descripcion',f.descripcion);});analizador.solicitudes().forEach((p,i)=>datos.append('analisis_'+i,p));}return datos;
- }
- function recordarActual(){Object.assign(posturas[indice],{fotos,tareas,lado,muneca:valor('muneca_campo'),respuestas:new Map(respuestas),chips:$$('[data-chip]').map(c=>[c.dataset.chip,c.checked]),datos:datosGuardar(),puntaje:Number($('[data-resultados] [data-puntaje-final]')?.dataset.puntajeFinal||0),html:$('[data-resultados]').innerHTML});}
- function resumen(){
-  const destino=$('[data-resultados]');destino.replaceChildren();$('[data-resumen-titulo]').hidden=!ultima();
-  const resultados=ultima()?posturas:[posturas[indice]],max=Math.max(...resultados.map(p=>Number(new DOMParser().parseFromString(p.html||'','text/html').querySelector('[data-puntaje-final]')?.dataset.puntajeFinal||0)));
-  resultados.forEach(p=>{const seccion=document.createElement('section');seccion.className='card stack';const titulo=document.createElement('h3');titulo.textContent=reglas.aviso(posturas.indexOf(p),posturas.length,p,nombreMomento(p.momento));seccion.append(titulo);const parsed=new DOMParser().parseFromString(p.html||'','text/html'),score=Number(parsed.querySelector('[data-puntaje-final]')?.dataset.puntajeFinal||0);if(max&&score===max){seccion.classList.add('postura-critica');const tag=document.createElement('strong');tag.textContent='Postura más crítica';seccion.append(tag);}seccion.append(...parsed.body.childNodes);destino.append(seccion);});
- }
- function limpiarCuerpo(){
-  for(const q of $$('[data-pregunta]'))if(Number(q.closest('[data-paso]').dataset.paso)>=5){const n=q.dataset.pregunta;form.elements[n].value='';respuestas.delete(n);q.querySelector('.campo-respuesta span').textContent='Elige una opción';q.querySelector('[data-origen]')?.remove();q.querySelectorAll('[data-respuesta]').forEach(b=>b.setAttribute('aria-pressed','false'));}
-  form.elements.muneca_campo.value='';$$('[data-muneca]').forEach(b=>b.setAttribute('aria-pressed','false'));$$('[data-chip]').forEach(c=>c.checked=false);$$('[data-angulo]').forEach(e=>e.textContent='Sin medir');$$('[data-apoyo-vista]').forEach(d=>d.replaceChildren());$$('.campo-apoyo').forEach(d=>d.open=false);$('[data-resultados]').replaceChildren();
- }
- function activar(i){
-  if(posturas[indice])Object.assign(posturas[indice],{fotos,tareas,lado,muneca:valor('muneca_campo'),respuestas:new Map(respuestas),chips:$$('[data-chip]').map(c=>[c.dataset.chip,c.checked])});
-  indice=i;peticion++;limpiarCuerpo();const p=posturas[i];fotos=p.fotos||[];tareas=p.tareas||[];lado=p.lado||lado;
-  if(p.respuestas)for(const [n,v]of p.respuestas)if(form.elements[n]&&Number($('[data-pregunta="'+n+'"]')?.closest('[data-paso]').dataset.paso)>=5)poner(n,v.valor,v.origen);
-  form.elements.muneca_campo.value=p.muneca||'';
-  for(const [n,v]of p.chips||[])$('[data-chip="'+n+'"]').checked=v;
-  $$('[data-muneca]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.muneca===valor('muneca_campo'))));form.elements.lado_recorrido.value=lado;
-  if(tareas.length){analizador.iniciar();analizador.seleccionar(0);delete tareas[0].analisis.firmaCampo;leyendo=medir().catch(e=>aviso(e.message));}
- }
- $('[data-siguiente]').onclick=()=>puerta.ejecutar(async()=>{
-  if(faltante())return;
-  if(paso===2)configurarPosturas();
-  if(paso===3&&!conFotos()){for(const p of posturas)p.html='<p>Se guardará sin fotos ni puntaje.</p>';indice=posturas.length-1;mostrar(7);resumen();return;}
-  if(paso===4){lado=valor('lado_recorrido');if(tareas.length){tareas[0].ladoFijo=lado;actual().estado.lado=lado;analizador.actualizar();}if(existente&&!tareas.length)activarExistente();contexto();mostrar(5);retornoLado=false;return;}
-  if(paso===5){if(leyendo)await leyendo;if(faltante())return;trasladar();}
-  if(paso===6){
-   const peso=valor('peso_campo'),act=valor('esfuerzo_opcion'),golpe=valor('golpe_campo'),carga=$('[data-mapeos] [data-peso="'+peso+'"][data-actividad="'+act+'"][data-golpe="'+golpe+'"]')?.dataset.carga;
-   if(!carga)throw new Error('Responde el peso, la frecuencia y los golpes.');const d=actual();trasladar();Object.assign(d.estado,{actividadEleccion:act,actividad:act!=='NINGUNA',carga,actividadConfirmada:true,cargaConfirmada:true,ajustesConfirmados:true});await analizador.paso6();recordarActual();mostrar(7);resumen();return;
-  }mostrar(paso+1);
- });
- $('[data-postura-siguiente]').onclick=()=>puerta.ejecutar(async()=>{activar(indice+1);maximo=5;mostrar(5);});
- $$('[data-cambiar-lado]').forEach(b=>b.onclick=()=>{if(ocupada)return;retornoLado=true;mostrar(4);});
- $('[data-atras-evaluacion]').onclick=()=>{if(ocupada||posturas.some(p=>p.guardada))return;if(indice>0&&paso===5){activar(indice-1);mostrar(7);resumen();return;}if(indice>0&&paso===4&&retornoLado){mostrar(5);return;}if(paso===1||existente&&paso===4){let p=$('[data-salir-inline]');if(!p){p=document.createElement('p');p.dataset.salirInline='';p.className='aviso';const a=document.createElement('a');a.className='btn';a.href=existente?'/evaluaciones/'+existente:'/visitas/'+valor('visita');a.textContent='Salir sin guardar';p.append('Tus cambios aún no están guardados. ',a);form.prepend(p);}return;}mostrar(paso===7&&!conFotos()?3:paso-1);};
- $('[data-cerrar-error]').onclick=()=>aviso('');
- function iniciarFoto(f){tareas.push({...f,indiceFoto:fotos.indexOf(f),ladoFijo:lado});analizador.iniciar();analizador.seleccionar(tareas.length-1);$('[data-foto-revision]').hidden=false;$('[data-subir-perfil]').hidden=true;$('[data-muestra-perfil]').hidden=true;$('[data-falta]').textContent='Preparando la foto…';}
- function activarExistente(){const f=fotos.find(f=>f.vista==='PERFIL')||fotos[0];if(f){f.uso='MEDIR';iniciarFoto(f);}}
- async function recibir(file,tipo){if(!file)return;window.AplomoFotosCampo.validar(file,conFotos(),fotos.length);const perfil=tipo==='PERFIL',f={file,preview:URL.createObjectURL(file),vista:tipo,descripcion:perfil?'Perfil':tipo==='FRENTE'?'Frente':'Detalle de mano y muñeca · solo evidencia',uso:perfil?'MEDIR':'APOYO',ladoOrigen:lado};fotos.push(f);if(perfil){iniciarFoto(f);return;}const destino=$('[data-apoyo-vista="'+tipo+'"]'),im=document.createElement('img');im.src=f.preview;im.alt=f.descripcion;im.className='campo-foto';destino.replaceChildren(im);aviso('');}
- $('[data-perfil]').onclick=()=>$('[data-archivo-perfil]').click();$('[data-archivo-perfil]').onchange=e=>{const file=e.target.files[0];e.target.value='';recibir(file,'PERFIL').catch(e=>aviso(e.message));};
- $$('[data-agregar]').forEach(b=>b.onclick=()=>b.parentElement.querySelector('[data-archivo-extra]').click());$$('[data-archivo-extra]').forEach(i=>i.onchange=()=>{const file=i.files[0];i.value='';recibir(file,i.dataset.archivoExtra).catch(e=>aviso(e.message));});
+ form.addEventListener('change',e=>{const condiciones=['escritorio','pantalla','pies','apoyapies','apoyabrazos','regulable'],el=e.target;if(el?.name==='ninguna'&&el.checked)condiciones.forEach(k=>form.elements[k].checked=false);if(condiciones.includes(el?.name)&&el.checked)form.elements.ninguna.checked=false;form.elements.condiciones_respondidas.value=form.elements.ninguna.checked?'NINGUNA':condiciones.some(k=>form.elements[k].checked)?'SELECCION':'';if(el?.hasAttribute('data-chip'))trasladar();contexto();dibujarPreguntas();});form.addEventListener('input',()=>dibujarPreguntas());
+ function limpiarCuerpo(){for(const q of $$('[data-paso="3"] [data-pregunta]')){const n=q.dataset.pregunta;form.elements[n].value='';respuestas.delete(n);q.querySelector('.campo-respuesta span').textContent='Elige una opción';q.querySelector('[data-origen]')?.remove();q.querySelectorAll('[data-respuesta]').forEach(b=>b.setAttribute('aria-pressed','false'));}for(const [n,v]of Object.entries(cargas))poner(n,v);form.elements.muneca_campo.value='';$$('[data-muneca]').forEach(b=>b.setAttribute('aria-pressed','false'));$$('[data-chip]').forEach(c=>c.checked=false);$$('[data-angulo]').forEach(e=>e.textContent='Sin medir');$$('[data-apoyo-vista]').forEach(e=>e.replaceChildren());$$('.campo-apoyo').forEach(d=>d.open=false);desplegar(null);}
+ function guardarUIFoto(){const d=actual();if(d)d.foto.campo={respuestas:new Map([...respuestas].filter(([n])=>n.startsWith('rango_')||n in cargas)),muneca:valor('muneca_campo'),chips:$$('[data-chip]').map(c=>[c.dataset.chip,c.checked])};}
+ function restaurarUIFoto(){limpiarCuerpo();const c=actual()?.foto.campo;if(c){for(const[n,v]of c.respuestas)poner(n,v.valor,v.origen);form.elements.muneca_campo.value=c.muneca;for(const[n,v]of c.chips)$('[data-chip="'+n+'"]').checked=v;$$('[data-muneca]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.muneca)===Number(c.muneca))));}}
+ function activar(i){guardarUIFoto();if(posturas[indice])Object.assign(posturas[indice],{fotos,tareas,lado:tareas[0]?.analisis.lado||lado,modoLado});indice=i;peticion++;const p=posturas[i];fotos=p.fotos||[];tareas=p.tareas||[];lado=p.lado||posturas[0].lado||'DERECHO';modoLado=p.modoLado||posturas[0].modoLado||'AUTO';perfilOtro=false;esperandoPerfil=false;limpiarCuerpo();if(tareas.length){analizador.iniciar();analizador.seleccionar(0);restaurarUIFoto();delete actual().estado.firmaCampo;leyendo=medir().catch(e=>aviso(e.message));}}
+ function datosGuardar(){contexto();const datos=existente?new URLSearchParams({csrf:valor('csrf')}):new FormData(form);for(const k of [...datos.keys()])if(!['csrf','visita','puesto','recorrido','postura','motivo','criterio','minutos','condiciones_respondidas','acepta','registro','escritorio','pantalla','pies','apoyapies','apoyabrazos','regulable','observaciones'].includes(k))datos.delete(k);if(!existente)datos.set('asistente_completo','si');if(conFotos()){if(!existente)fotos.forEach((f,i)=>{datos.append('foto_'+i,f.file);datos.append('foto_'+i+'_vista',f.vista);datos.append('foto_'+i+'_descripcion',f.descripcion);});analizador.solicitudes().forEach((p,i)=>datos.append('analisis_'+i,p));}return datos;}
+ function recordarActual(){guardarUIFoto();Object.assign(posturas[indice],{fotos,tareas,lado:tareas[0]?.analisis.lado||lado,modoLado,datos:datosGuardar(),puntaje:Math.max(0,...$$('[data-resultados] [data-puntaje-final]').map(e=>Number(e.dataset.puntajeFinal))),html:$('[data-resultados]').innerHTML});}
+ function resumen(){const destino=$('[data-resultados]');destino.replaceChildren();$('[data-resumen-titulo]').hidden=false;const max=Math.max(...posturas.map(p=>p.puntaje||0));posturas.forEach((p,i)=>{const seccion=document.createElement('section');seccion.className='card stack';const titulo=document.createElement('h3');titulo.textContent=reglas.aviso(i,posturas.length,p);seccion.append(titulo);if(max&&p.puntaje===max){seccion.classList.add('postura-critica');const tag=document.createElement('strong');tag.textContent='Postura más crítica';seccion.append(tag);}const parsed=new DOMParser().parseFromString(p.html||'<p>Se guardará sin fotos ni puntaje.</p>','text/html');seccion.append(...parsed.body.childNodes);destino.append(seccion);});}
+ async function confirmarFoto(){if(leyendo)await leyendo;if(faltante())return;trasladar();const d=actual(),act=valor('actividad_campo'),carga=$('[data-mapeos] [data-peso="'+valor('carga_campo')+'"][data-actividad="'+act+'"][data-golpe="'+valor('tirones_campo')+'"]')?.dataset.carga;if(!carga)throw Error('Revisa las opciones de esfuerzo y carga.');Object.assign(d.estado,{actividadEleccion:act,actividad:act!=='NINGUNA',carga,actividadConfirmada:true,cargaConfirmada:true,ajustesConfirmados:true});guardarUIFoto();await analizador.paso6();if(modoLado==='AMBOS'&&tareas.length<2){lado=d.estado.lado==='DERECHO'?'IZQUIERDO':'DERECHO';perfilOtro=true;esperandoPerfil=true;limpiarCuerpo();if(existente){const otra=fotos.find(f=>f.vista==='PERFIL'&&f.id!==d.foto.id);if(otra)iniciarFoto({...otra,uso:'MEDIR'});}mostrar(3);return;}recordarActual();if(indice===0&&!existente){activar(1);mostrar(3);}else{mostrar(5);resumen();}}
+ $('[data-siguiente]').onclick=()=>puerta.ejecutar(async()=>{if(faltante())return;if(paso===1){mostrar(2);return;}if(paso===2){if(!conFotos()){posturas.forEach(p=>{p.html='<p>Se guardará sin fotos ni puntaje.</p>';});mostrar(5);resumen();return;}activar(0);mostrar(3);return;}if(paso===3)await confirmarFoto();});
+ $('[data-atras-evaluacion]').onclick=()=>{if(ocupada||posturas.some(p=>p.guardada))return;if(paso===1||existente&&paso===3){let p=$('[data-salir-inline]');if(!p){p=document.createElement('p');p.dataset.salirInline='';const a=document.createElement('a');a.className='btn';a.href=existente?'/evaluaciones/'+existente:'/visitas/'+valor('visita');a.textContent='Salir sin guardar';p.append('Tus cambios aún no están guardados. ',a);form.prepend(p);}return;}if(paso===5){if(!conFotos()){mostrar(2);return;}activar(posturas.length-1);mostrar(3);return;}if(paso===3&&indice>0){activar(indice-1);mostrar(3);return;}mostrar(paso===3?2:1);};
+ $('[data-cerrar-error]').onclick=()=>{errorFoto=false;aviso('');};
+ $$('[data-lado-campo]').forEach(b=>b.onclick=()=>{if(ocupada)return;guardarUIFoto();if(b.dataset.ladoCampo==='AMBOS'){modoLado='AMBOS';}else{modoLado=b.dataset.ladoCampo;lado=modoLado;if(actual()){const t=actual().foto;t.ladoFijo=lado;t.autoLado=false;actual().estado.lado=lado;tareas=[t];analizador.seleccionar(0);perfilOtro=false;analizador.actualizar();}}contexto();dibujarPreguntas();});
+ function iniciarFoto(f){esperandoPerfil=false;const fijo=perfilOtro||indice>0||['DERECHO','IZQUIERDO'].includes(modoLado);tareas.push({...f,indiceFoto:fotos.findIndex(x=>f.id?x.id===f.id:x.file===f.file),ladoFijo:fijo?lado:undefined,autoLado:!fijo});analizador.iniciar();analizador.seleccionar(tareas.length-1);$('[data-foto-revision]').hidden=false;$('[data-subir-perfil]').hidden=true;$('[data-muestra-perfil]').hidden=true;}
+ async function recibir(file,tipo){if(!file)return;try{window.AplomoFotosCampo.validar(file,conFotos(),fotos.length);if(tipo==='PERFIL'){await window.AplomoFotosCampo.verificarPerfil(file);const antigua=actual()?.foto;if(antigua){const i=fotos.findIndex(f=>f.file===antigua.file);if(i>=0){URL.revokeObjectURL(fotos[i].preview);fotos.splice(i,1);}tareas=tareas.filter(t=>t!==antigua);limpiarCuerpo();}}const f={file,preview:URL.createObjectURL(file),vista:tipo,descripcion:tipo==='PERFIL'?(perfilOtro?'Perfil · otro lado':'Perfil'):tipo==='FRENTE'?'Frente · solo respaldo':'Detalle de mano y muñeca · solo respaldo',uso:tipo==='PERFIL'?'MEDIR':'APOYO'};errorFoto=false;aviso('');fotos.push(f);tareas.forEach(t=>t.indiceFoto=fotos.findIndex(x=>x.file===t.file));if(tipo==='PERFIL'){iniciarFoto(f);return;}const im=document.createElement('img');im.src=f.preview;im.alt=f.descripcion;im.className='campo-foto';$('[data-apoyo-vista="'+tipo+'"]').replaceChildren(im);}catch(e){if(tipo==='PERFIL')problemaFoto({mensaje:e.message,permiteUsar:false});else aviso(e.message);}}
+ $('[data-perfil]').onclick=()=>$('[data-archivo-perfil]').click();$('[data-archivo-perfil]').onchange=e=>{const file=e.target.files[0];e.target.value='';recibir(file,'PERFIL');};
+ $$('[data-agregar]').forEach(b=>b.onclick=()=>b.parentElement.querySelector('[data-archivo-extra]').click());$$('[data-archivo-extra]').forEach(i=>i.onchange=()=>{const file=i.files[0];i.value='';recibir(file,i.dataset.archivoExtra);});
+ $$('[data-apoyo-tipo]').forEach(b=>b.onclick=()=>{$$('[data-apoyo-panel]').forEach(p=>p.hidden=p.dataset.apoyoPanel!==b.dataset.apoyoTipo);$$('[data-apoyo-tipo]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});
  $$('[data-usar-ejemplo]').forEach(b=>b.onclick=()=>puerta.ejecutar(async()=>{await window.AplomoFotosCampo.ejemplo(b.dataset.usarEjemplo,file=>recibir(file,b.dataset.vistaEjemplo));b.closest('.galeria-demo').open=false;}));
+ $('[data-foto-reemplazar]').onclick=()=>$('[data-archivo-perfil]').click();
+ for(const selector of ['[data-foto-manual]','[data-foto-usar]'])$(selector).onclick=()=>{const d=actual();if(!d)return;d.estado.fotoAceptada=true;d.estado.mensajeIA=selector==='[data-foto-manual]'?'Marca los puntos en la foto.':'Foto aceptada: revisa los puntos.';if(selector==='[data-foto-usar]'&&d.estado.candidataIA?.L){const r=d.estado.candidataIA;d.estado.puntos={...r.L,coronilla:r.L.cabeza};delete d.estado.puntos.cabeza;}errorFoto=false;aviso('');analizador.actualizar('PUNTOS');dibujarPreguntas();};
+ form.addEventListener('aplomo:foto-revisada',e=>{const d=actual();if(!d||d.foto!==e.detail.foto)return;if(e.detail.revision)problemaFoto(e.detail.revision);dibujarPreguntas();});
  async function medir(){const d=actual();if(!d?.foto.ancho)return;$('[data-medidas-compactas]').hidden=false;const firma=JSON.stringify([d.estado.puntos,d.estado.manual,d.foto.ancho,d.estado.lado]);if(d.estado.firmaCampo===firma)return;d.estado.firmaCampo=firma;const turno=++peticion;d.estado.propuestas||={};
   await Promise.all([...angulos,'MUNECA'].map(async k=>{
    if(d.estado.manual[k]===undefined&&d.grupos[k].length!==3){if(angulos.includes(k)){delete d.estado.propuestas[k];if(respuestas.get('rango_'+k)?.origen==='foto'){form.elements['rango_'+k].value='';respuestas.delete('rango_'+k);const q=$('[data-pregunta="rango_'+k+'"]');q.querySelector('.campo-respuesta span').textContent='Elige una opción';q.querySelector('[data-origen]')?.remove();$('[data-angulo="'+k+'"]').textContent='Sin medir';}}return;}
@@ -141,20 +59,10 @@
   }));dibujarPreguntas();
  }
 
+
  let temporizador;
- form.addEventListener('aplomo:analisis',()=>{if(!actual())return;clearTimeout(temporizador);temporizador=setTimeout(()=>{leyendo=medir().catch(e=>aviso(e.message));},80);});
- form.addEventListener('submit',e=>{e.preventDefault();const agregar=e.submitter?.hasAttribute('data-agregar-postura');puerta.ejecutar(async()=>{
-  if(paso!==7||!ultima())return;if(!existente&&(!form.elements.acepta.checked||!valor('criterio')||!valor('minutos')||!valor('condiciones_respondidas')))throw new Error('Completa el consentimiento y la conversación inicial.');
-  if(conFotos()){await analizador.paso6();recordarActual();}else{for(let i=0;i<posturas.length;i++){indice=i;posturas[i].datos=datosGuardar();}indice=posturas.length-1;}
-  // Un envío por postura usa el contrato existente; conservar los acuses evita repetir los ya guardados.
-  if(!existente){const compartidos=new FormData(form);for(const p of posturas)for(const k of ['minutos','condiciones_respondidas','acepta','registro','escritorio','pantalla','pies','apoyapies','apoyabrazos','regulable','observaciones']){if(compartidos.has(k))p.datos.set(k,compartidos.get(k));else p.datos.delete(k);}}
-  // La última evaluación determina el estado actual del puesto: guardar al final la más crítica.
-  await reglas.guardarPendientes(reglas.ordenGuardado(posturas),async p=>{
-   p.datos.set('csrf',valor('csrf'));const r=await fetch(form.action,{method:'POST',body:p.datos,credentials:'same-origin',redirect:'manual'});
-   if(r.status===201)return r.headers.get('Location');if(r.status===403&&await renovar())throw new Error('Actualizamos el formulario. Tus respuestas se conservan; vuelve a guardar.');throw new Error((r.headers.get('Content-Type')||'').startsWith('text/plain')?await r.text():'No pudimos guardar. Tus respuestas y fotos se conservan.');
-  });
-  if(!existente)try{sessionStorage.setItem(clave,JSON.stringify({tiempo_campo:valor('tiempo_campo')}));}catch(_){}
-  const ruta=reglas.ordenGuardado(posturas).at(-1).guardada;if(agregar){const base=ruta.split('?')[0];location.assign(base+'/analizar');}else location.assign('/visitas/'+valor('visita')+'?aviso='+encodeURIComponent('Evaluación guardada.'));
- });});
- if(existente){fotos=$$('[data-foto-id]').map(el=>({id:Number(el.dataset.fotoId),vista:el.dataset.vista,descripcion:el.dataset.descripcion,src:el.dataset.src,preview:el.dataset.src}));posturas=[{momento:'Análisis adicional',criterio:form.dataset.criterio}];$$('.campo-apoyo').forEach(d=>d.hidden=true);mostrar(4);}else{if(anterior?.tiempo_campo&&$('[data-respuesta="tiempo_campo"][data-valor="'+anterior.tiempo_campo+'"]'))poner('tiempo_campo',anterior.tiempo_campo,'anterior');mostrar(1);}
+ form.addEventListener('aplomo:analisis',()=>{const d=actual();if(!d)return;lado=d.estado.lado;contexto();clearTimeout(temporizador);temporizador=setTimeout(()=>{leyendo=medir().catch(e=>aviso(e.message));},80);});
+ form.addEventListener('submit',e=>{e.preventDefault();const agregar=e.submitter?.hasAttribute('data-agregar-postura');puerta.ejecutar(async()=>{if(paso!==5)return;if(!existente&&(!form.elements.acepta.checked||!valor('minutos')||!valor('condiciones_respondidas')))throw Error('Completa el permiso y los datos del puesto.');if(!conFotos()){const anterior=indice;for(let i=0;i<posturas.length;i++){indice=i;posturas[i].datos=datosGuardar();}indice=anterior;}if(!existente){const comunes=new FormData(form);for(const p of posturas)for(const k of ['minutos','condiciones_respondidas','acepta','registro','escritorio','pantalla','pies','apoyapies','apoyabrazos','regulable','observaciones']){if(comunes.has(k))p.datos.set(k,comunes.get(k));else p.datos.delete(k);}}
+ await reglas.guardarPendientes(reglas.ordenGuardado(posturas),async p=>{p.datos.set('csrf',valor('csrf'));const r=await fetch(form.action,{method:'POST',body:p.datos,credentials:'same-origin',redirect:'manual'});if(r.status===201)return r.headers.get('Location');if(r.status===403&&await renovar())throw Error('Actualizamos el formulario. Tus respuestas se conservan; vuelve a guardar.');throw Error((r.headers.get('Content-Type')||'').startsWith('text/plain')?await r.text():'No pudimos guardar. Tus respuestas y fotos se conservan.');});const ruta=reglas.ordenGuardado(posturas).at(-1).guardada;location.assign(agregar?ruta.split('?')[0]+'/analizar':'/visitas/'+valor('visita')+'?aviso='+encodeURIComponent('Evaluación guardada.'));});});
+ limpiarCuerpo();if(existente){fotos=$$('[data-foto-id]').map(el=>({id:Number(el.dataset.fotoId),vista:el.dataset.vista,descripcion:el.dataset.descripcion,src:el.dataset.src,preview:el.dataset.src}));const f=fotos.find(f=>f.vista==='PERFIL')||fotos[0];if(f)iniciarFoto({...f,uso:'MEDIR'});$$('.campo-apoyo').forEach(d=>d.hidden=true);$('[data-lado-campo=AMBOS]').hidden=fotos.filter(f=>f.vista==='PERFIL').length<2;mostrar(3);}else mostrar(1);
 })();

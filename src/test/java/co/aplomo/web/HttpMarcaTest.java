@@ -60,4 +60,6 @@ class HttpMarcaTest extends HttpPrueba {
         assertTrue(get("/empresas?q=no-existe-qa-marca").body().contains("<p>No hay registros con estos filtros."));
     }
     private static void conteo(String html,String color,int cantidad){assertTrue(html.contains("data-color=\""+color+"\" data-cantidad=\""+cantidad+"\""),color+"="+cantidad);}
+
+ @org.junit.jupiter.api.Test void marcaDeLoginEnPanelYHeroSinTexto()throws Exception{String h=get("/login").body(),hero=h.substring(h.indexOf("<section class=\"hero\""),h.indexOf("<!-- Lado derecho"));assertFalse(hero.contains("class=\"in\""));assertFalse(hero.contains("class=\"lockup\""));assertTrue(h.indexOf("class=\"login-marca\"")>h.indexOf("id=\"contenido\""));assertFalse(h.contains("Evaluación ergonómica de puestos de trabajo con el método RULA:"));assertTrue(h.contains("compacto&&texto?"));}
 }

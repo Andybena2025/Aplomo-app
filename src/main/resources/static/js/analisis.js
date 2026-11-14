@@ -39,17 +39,19 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     const revision=s.revision;s.ia='cargando';s.etapaIA='';s.mensajeIA='Detectando puntos… la primera vez tarda unos segundos';
     if(f===foto())mostrarDeteccion();
     try{
-      const r=await window.AplomoDeteccion.conTiempo(window.AplomoDeteccion.detectarPuntos(f.src||f.preview),60000,'La detección tardó demasiado.');
+      const r=await window.AplomoDeteccion.conTiempo(window.AplomoDeteccion.detectarPuntos(f.src||f.preview,{perfil:!!form.dataset.conversacion&&f.vista==='PERFIL'}),60000,'La detección tardó demasiado.');
       if(!obtenerFotos().includes(f))return;
       if(s.revision!==revision||(f===foto()&&arrastre)){s.ia='manual';s.mensajeIA='Se conservaron tus correcciones manuales.';return;}
       if(!r){s.ia='nada';s.mensajeIA=falloDeteccion;s.etapaIA=window.AplomoDeteccion.diagnostico.etapa;return;}
+      if(form.dataset.conversacion){if(f.autoLado&&r.mira)s.lado=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';s.revisionFoto=r.revisionPerfil;s.fotoAceptada=false;s.candidataIA=r;form.dispatchEvent(new CustomEvent('aplomo:foto-revisada',{detail:{foto:f,revision:r.revisionPerfil}}));if(r.revisionPerfil?.bloquea){s.ia='revisar';s.mensajeIA=r.revisionPerfil.mensaje;return;}}
+      if(!r.L){s.ia='nada';s.mensajeIA=falloDeteccion;return;}
       const perfil=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';
-      if(f.ladoFijo&&perfil!==f.ladoFijo){s.ia='otroPerfil';s.mensajeIA='Esta foto muestra el otro perfil. Usa otra foto o elige los rangos por observación directa.';return;}
+      if(f.ladoFijo&&!f.autoLado&&perfil!==f.ladoFijo){s.ia='otroPerfil';s.mensajeIA='Esta foto muestra el otro perfil. Usa otra foto o elige los rangos por observación directa.';return;}
       s.raw=r.raw;s.ia='ok';s.mensajeIA='Puntos detectados automáticamente: revísalos';
       if(f.vista==='PERFIL'){
         s.puntos={...r.L,coronilla:r.L.cabeza};delete s.puntos.cabeza;
         const lado=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';
-        if(!f.ladoFijo&&s.lado!==lado){s.lado=lado;s.mensajeIA+=' · Lado ajustado a '+(lado==='DERECHO'?'Derecho':'Izquierdo')+' según la foto.';}
+        if((!f.ladoFijo||f.autoLado)&&s.lado!==lado){s.lado=lado;s.mensajeIA+=' · Lado ajustado a '+(lado==='DERECHO'?'Derecho':'Izquierdo')+' según la foto.';}
         s.revision++;s.html=null;
         if(f===foto()){sincronizar();dibujar();await medir(f).catch(e=>aviso(e.message));}
       }
