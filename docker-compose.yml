@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Crea .env con MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: rula_ergonomia
+      MYSQL_USER: app_rula
+      MYSQL_PASSWORD: ${APLOMO_DB_CLAVE:?Crea .env con APLOMO_DB_CLAVE}
+      TZ: America/Bogota
+    volumes:
+      - datos_mysql:/var/lib/mysql
+      - ./docs/base_de_datos/Script_MySQL_RULA.sql:/docker-entrypoint-initdb.d/01-aplomo.sql:ro
+      - ./docker/initdb/02-app-red.sql:/docker-entrypoint-initdb.d/02-app-red.sql:ro
+      - ./docs/base_de_datos/datos_demo.sql:/demo/datos_demo.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", 'MYSQL_PWD="$${MYSQL_ROOT_PASSWORD}" mysqladmin ping -h 127.0.0.1 -u root --silent']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APLOMO_DB_URL: jdbc:mysql://db:3306/rula_ergonomia?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Bogota&characterEncoding=UTF-8
+      APLOMO_DB_USUARIO: app_rula
+      APLOMO_DB_CLAVE: ${APLOMO_DB_CLAVE:?Crea .env con APLOMO_DB_CLAVE}
+      APLOMO_PUERTO: "8080"
+      APLOMO_CARPETA_FOTOS: /app/fotos
+      TZ: America/Bogota
+    ports:
+      - "8080:8080"
+    volumes:
+      - fotos_aplomo:/app/fotos
+    restart: unless-stopped
+volumes:
+  datos_mysql:
+  fotos_aplomo:

@@ -42,8 +42,8 @@ public final class Demo {
                 cargar(con,Path.of("docs/base_de_datos/datos_demo.sql"));
                 con.commit();
             }catch(Exception e){con.rollback();throw e;}
-            int borradas=limpiarFotos(con,Path.of("fotos"),fotos);
-            copiarMuestras(Path.of("fotos"));
+            int borradas=limpiarFotos(con,Config.carpetaFotos(),fotos);
+            copiarMuestras(Config.carpetaFotos());
             terminal.printf("Demostración lista. Entra como Administrador y abre Evaluar ahora. Fotos antiguas retiradas: %d.%n",borradas);
             terminal.printf("No se modificaron otras empresas, cuentas ni config/db.properties.%n");
         }catch(Exception e){throw new IllegalStateException("No se pudo completar la demostración. Si falló la base, todos sus cambios se revirtieron. Revisa la conexión, los permisos y las cuentas vinculadas. "+(e instanceof IllegalArgumentException?e.getMessage():""),e);}

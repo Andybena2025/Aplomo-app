@@ -35,3 +35,8 @@ __pycache__/
 # Temporales
 *.log
 *.tmp
+
+# Variables locales de Docker (nunca subir claves)
+.env
+.env.*
+!.env.ejemplo

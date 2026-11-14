@@ -1,0 +1,16 @@
+target/
+.git/
+.gitignore
+fotos/
+config/
+.env
+.env.*
+!.env.ejemplo
+.idea/
+.vscode/
+docs/
+src/test/
+fotos_de_prueba/
+*.log
+*.tmp
+.DS_Store

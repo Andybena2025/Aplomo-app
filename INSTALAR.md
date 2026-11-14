@@ -2,6 +2,47 @@
 
 Guía para el equipo. La primera vez toma unos **15 minutos**; después, arrancar la app toma segundos.
 
+
+## Con Docker
+
+Necesitas **Docker Desktop** instalado y abierto. No necesitas instalar Java ni MySQL. Desde la raíz del repositorio:
+
+```sh
+cp .env.ejemplo .env
+```
+
+Abre `.env` y cambia las dos claves de ejemplo por claves distintas. Ese archivo está ignorado por Git. Luego:
+
+```sh
+docker compose up --build -d
+```
+
+Abre **http://localhost:8080**. Cuenta inicial: **admin@rula.local**, contraseña temporal **Cambiar2026**; la app exige cambiarla en el primer ingreso. Es el Administrador de APLOMO, no el usuario root de MySQL. Si otra copia de APLOMO está usando 8080, detén esa copia antes de levantar Docker.
+
+```sh
+docker compose logs -f app
+docker compose restart app
+docker compose down
+```
+
+MySQL y las fotos se guardan en volúmenes con nombre; reiniciar o apagar con `down` los conserva. El SQL aprobado se ejecuta únicamente al inicializar un volumen vacío. La cuenta `app_rula` puede conectarse desde la red interna con SELECT, INSERT y UPDATE; no tiene DELETE. No se publica el puerto de MySQL en el equipo.
+
+**Solo si quieres reiniciar desde cero:** `docker compose down -v` **borra los datos y las fotos de esos volúmenes**. No lo uses para actualizar la app.
+
+La instalación sin Docker sigue igual: `bash scripts/iniciar.sh` en Mac o `scripts\iniciar.bat` en Windows. Las variables `APLOMO_DB_URL`, `APLOMO_DB_USUARIO`, `APLOMO_DB_CLAVE`, `APLOMO_PUERTO` y `APLOMO_CARPETA_FOTOS` permiten configurar la app; si faltan variables de conexión se conserva el respaldo de `config/db.properties`. Las sustituciones `-Daplomo.db.url`, `-Daplomo.puerto` y `-Daplomo.fotos` siguen disponibles, especialmente para aislar las pruebas.
+
+### Demostración opcional en Docker
+
+Para practicar rápidamente, después de cambiar la contraseña abre **Inicio → Probar evaluación**. Si quieres además las tres empresas y el historial del demo completo, estos comandos reutilizan el SQL y las mismas cuatro imágenes que `scripts/cargar_demo.sh`, sin cambiar ese script:
+
+```sh
+docker compose exec -T db sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -u root --default-character-set=utf8mb4 rula_ergonomia < /demo/datos_demo.sql'
+docker compose exec -T app sh -c 'for n in de100001-493b-4bc9-a64e-d51b4ea3c901.jpg de100002-493b-4bc9-a64e-d51b4ea3c902.jpg de100003-493b-4bc9-a64e-d51b4ea3c903.jpg de100004-493b-4bc9-a64e-d51b4ea3c904.jpg; do cp -n /app/demo/muestra_perfil.jpg "$APLOMO_CARPETA_FOTOS/$n"; done'
+```
+
+La carga es voluntaria e idempotente: no borra los datos existentes. Cambiar las claves en `.env` no cambia automáticamente las cuentas de un volumen de MySQL ya inicializado.
+
+
 ## Qué necesitas
 
 | Programa | Para qué | ¿Se instala solo? |

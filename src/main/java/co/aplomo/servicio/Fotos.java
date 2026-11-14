@@ -17,7 +17,7 @@ public final class Fotos {
     public record Imagen(byte[] bytes, String extension, String vista, String descripcion) {}
 
     /** Usa la carpeta del servidor, configurable para aislar los archivos de las pruebas. */
-    public Fotos() { this(Path.of(System.getProperty("aplomo.fotos", "fotos"))); }
+    public Fotos() { this(co.aplomo.config.Config.carpetaFotos()); }
     /** Recibe una carpeta aislada para las pruebas. */
     public Fotos(Path raiz) { this.raiz = raiz.toAbsolutePath().normalize(); }
 
