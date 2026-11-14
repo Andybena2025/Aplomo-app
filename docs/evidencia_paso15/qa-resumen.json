@@ -1,0 +1,31 @@
+{
+  "medidas": 54,
+  "desbordeMaximo": 0,
+  "listasAbiertasMaximo": 1,
+  "campoMinimo": 52,
+  "planta": {
+    "guardada": true,
+    "fotos": 4,
+    "analisis": 2,
+    "nota": "Perfil repetido intencionalmente en el segundo lado para verificar el respaldo manual; ensayo funcional, no evaluación clínica."
+  },
+  "oficina": {
+    "guardada": true,
+    "fotos": 1,
+    "analisis": 1,
+    "fotosOpcionalesOmitidas": true
+  },
+  "anadirAnalisis": true,
+  "sinFotosGuardado": true,
+  "tecladoEnter": true,
+  "editarConservaOtrasRespuestas": true,
+  "consolaIntegrado": 0,
+  "safari": {
+    "version": "26.6.2",
+    "diagnosticoSegundos": 2.73,
+    "diagnosticoErrores": 0,
+    "deteccionEnApp": true
+  },
+  "iPadFisico": "No disponible; sin certificación táctil",
+  "criterioCampoMinimo": "Se excluyen pantallas sin campo de respuesta (null en medidas.json)."
+}
