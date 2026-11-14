@@ -28,10 +28,10 @@ class HttpCierreTest extends HttpPrueba {
         String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+segundo).body();var opciones=java.util.regex.Pattern.compile("<label class=\"tour-opcion[^\"]*\">(.*?)</label>",java.util.regex.Pattern.DOTALL).matcher(h);Set<String> ids=new HashSet<>();int cantidad=0,tiempos=0;
         while(opciones.find()){String opcion=opciones.group(1);cantidad++;assertFalse(opcion.matches("(?s).*\\bchecked(?:=|[ >]).*"));
             if(opcion.contains("name=\"minutos\"")){tiempos++;continue;}
-            assertTrue(opcion.contains("<small class=\"tour-ayuda\""),opcion);var id=java.util.regex.Pattern.compile("aria-describedby=\"([^\"]+)\"").matcher(opcion);assertTrue(id.find());assertTrue(ids.add(id.group(1)),"Id de pista repetido");assertTrue(opcion.contains("id=\""+id.group(1)+"\""));
+            assertFalse(opcion.contains("<small class=\"tour-ayuda\""));
         }
-        assertEquals(8,cantidad);assertEquals(0,tiempos);assertTrue(h.contains("Suma los ratos de este trabajo durante el día."));assertFalse(h.contains("Ayuda · cómo reconocer las condiciones"));
-        assertTrue(h.contains("Bienvenida y consentimiento"));assertTrue(h.contains("¿Permite tomar fotos?"));assertTrue(h.contains("Sí, permite fotos"));assertTrue(h.contains("No permite fotos"));
+        assertEquals(8,cantidad);assertEquals(0,tiempos);assertFalse(h.contains("Suma los ratos de este trabajo durante el día."));assertFalse(h.contains("Ayuda · cómo reconocer las condiciones"));
+        assertTrue(h.contains("Consentimiento"));assertTrue(h.contains("Permiso de fotos"));assertTrue(h.contains("Sí, permite fotos"));assertTrue(h.contains("No permite fotos"));
     }
     @Test void lasPistasEscapanHtmlYLasFotosExistentesTambienLasIncluyen()throws Exception{
         String h=PaginasEvaluacion.opcion("prueba","valor","Etiqueta","",false,"","<script>texto & prueba</script>");assertFalse(h.contains("<script>"));assertTrue(h.contains("&lt;script&gt;texto &amp; prueba&lt;/script&gt;"));
@@ -39,9 +39,8 @@ class HttpCierreTest extends HttpPrueba {
     }
     @Test void ayudaDeLadoApareceEnLaPantallaDeLadoSinCambiarLaPregunta()throws Exception{
         String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+segundo).body();String lado=h.substring(h.indexOf("data-paso=\"4\""),h.indexOf("data-paso=\"5\""));
-        assertTrue(lado.contains("<h2>¿Qué lado del cuerpo trabaja más?</h2>"));assertTrue(lado.contains("class=\"campo-lado\""));assertFalse(lado.contains("<details"));
-        for(String texto:List.of("¿Con qué mano sostiene la herramienta, la pieza o la carga?","¿Qué brazo se levanta más o se aleja más del cuerpo?","¿Qué brazo repite más el movimiento?","¿Qué muñeca se dobla o gira más?","Si no está claro, elige Ambos."))assertTrue(lado.contains(texto),texto);
-        assertFalse(lado.contains(" checked"));
+        assertTrue(lado.contains("<h2>¿Qué lado del cuerpo trabaja más?</h2>"));assertFalse(lado.contains("AMBOS"));assertTrue(lado.contains("Derecho"));assertTrue(lado.contains("Izquierdo"));assertFalse(lado.contains(" checked"));
+
     }
     @ParameterizedTest @EnumSource(MotorRula.Carga.class)
     void lasSeisCargasTienenSuMosaicoExactoYSuPuntajeActual(MotorRula.Carga carga)throws Exception{
@@ -51,7 +50,7 @@ class HttpCierreTest extends HttpPrueba {
     }
     @Test void anadirAnalisisComparteCuerpoEsfuerzoYResultadoSinValoresIniciales()throws Exception{
         var r=get("/evaluaciones/"+evaluacion+"/analizar");assertEquals(200,r.statusCode());String h=r.body();
-        for(String texto:List.of("data-tour=\"campo\"","data-conversacion=\"si\"","data-foto-id","class=\"campo-lado\"","esfuerzo_estatica.png","data-pregunta=\"peso_campo\"","data-pregunta=\"golpe_campo\"","data-paso=\"9\"","Guardar y evaluar siguiente puesto","Guardar y volver a la visita"))assertTrue(h.contains(texto),texto);
+        for(String texto:List.of("data-tour=\"campo\"","data-conversacion=\"si\"","data-foto-id","campo-dos-columnas","data-pregunta=\"peso_campo\"","data-pregunta=\"golpe_campo\"","data-paso=\"7\"","Guardar y terminar","Agregar otra postura"))assertTrue(h.contains(texto),texto);
         assertFalse(h.contains(" checked"));assertFalse(h.contains("data-puntaje-final"));
     }
     @Test void siguienteEsActivoYPendienteDeEstaVisitaInclusoSinPuntaje()throws Exception{

@@ -44,7 +44,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 12 | Calificación de sedes y empresa + informe general en PDF | ✅ Hecho |
 | 13 | Pulido final, prueba en Chrome, Edge y Firefox, datos de demostración | 🟡 13G: contador estable, pantallas completas, demo lista y Evaluar ahora ([informe](docs/informe_paso13g.md)); revisión de Andy y QA físico / compatibilidad completa pendientes |
 | 14 | Evaluación por revisión y detección automática de puntos | 🟡 Implementado; 842 pruebas y QA visual; prueba táctil iPad pendiente ([informe](docs/informe_paso14_revision.md)) |
-| 15 | Evaluación como conversación guiada y detección con salida manual | 🟡 Conversación y ajustes 15-B implementados; iPad físico pendiente ([informe](docs/informe_paso15.md)) |
+| 15 | Evaluación como conversación guiada y detección con salida manual | 🟡 Dos posturas guiadas y panel 15-C implementados; iPad físico pendiente ([informe](docs/informe_paso15.md)) |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 
@@ -116,7 +116,7 @@ Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuent
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**888 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**892 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 

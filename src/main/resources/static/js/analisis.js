@@ -97,7 +97,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     if(P.hombro&&P.codo&&P.muneca){P._e1={x:P.codo.x+(P.codo.x-P.hombro.x)*.4,y:P.codo.y+(P.codo.y-P.hombro.y)*.4};if((!destacado||destacado==='ANTEBRAZO')&&texto('ANTEBRAZO'))arco('codo','_e1','muneca',texto('ANTEBRAZO'));}
     if(P.codo&&P.muneca&&P.nudillos){P._e2={x:P.muneca.x+(P.muneca.x-P.codo.x)*.4,y:P.muneca.y+(P.muneca.y-P.codo.y)*.4};if((!destacado||destacado==='MUNECA')&&texto('MUNECA'))arco('muneca','_e2','nudillos',texto('MUNECA'));}
     if(P.cadera&&P.hombro){P._e3={x:P.hombro.x+(P.hombro.x-P.cadera.x)*.4,y:P.hombro.y+(P.hombro.y-P.cadera.y)*.4};P._v={x:P.cadera.x,y:P.cadera.y-100};if((!destacado||destacado==='CUELLO')&&texto('CUELLO'))arco('hombro','_e3','coronilla',texto('CUELLO'));if((!destacado||destacado==='TRONCO')&&texto('TRONCO'))arco('cadera','_v','hombro',texto('TRONCO'));}
-    for(const[k,t]of marcas)if(P[k]){ctx.globalAlpha=iluminados.has(k)?1:.14;const p=P[k];if(arrastre===k){ctx.beginPath();ctx.arc(p.x,p.y,16*escala,0,Math.PI*2);ctx.fillStyle='rgba(237,230,216,.18)';ctx.fill();}ctx.beginPath();ctx.arc(p.x,p.y,form.dataset.conversacion?22:Math.max(5,6.5*escala),0,Math.PI*2);ctx.fillStyle='#0B0B0C';ctx.fill();ctx.strokeStyle='#EDE6D8';ctx.lineWidth=2.4;ctx.stroke();ctx.font='12px Inter, sans-serif';ctx.fillStyle='#EDE6D8';ctx.fillText(t,Math.min(p.x+10,w-65),Math.max(15,p.y-10));}
+    for(const[k,t]of marcas)if(P[k]){ctx.globalAlpha=iluminados.has(k)?1:.14;const p=P[k];if(arrastre===k){ctx.beginPath();ctx.arc(p.x,p.y,16*escala,0,Math.PI*2);ctx.fillStyle='rgba(237,230,216,.18)';ctx.fill();}ctx.beginPath();ctx.arc(p.x,p.y,form.dataset.conversacion?11:Math.max(5,6.5*escala),0,Math.PI*2);ctx.fillStyle=form.dataset.conversacion?'#EDE6D8':'#0B0B0C';ctx.fill();ctx.strokeStyle='#EDE6D8';ctx.lineWidth=2.4;ctx.stroke();ctx.font='12px Inter, sans-serif';ctx.fillStyle=form.dataset.conversacion?'#0B0B0C':'#EDE6D8';if(form.dataset.conversacion){ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(marcas.findIndex(m=>m[0]===k)+1),p.x,p.y);ctx.restore();}else ctx.fillText(t,Math.min(p.x+10,w-65),Math.max(15,p.y-10));}
     ctx.globalAlpha=1;
     if(destacado==='TRONCO'&&P.cadera){ctx.beginPath();ctx.arc(P.cadera.x,6,5,0,Math.PI*2);ctx.fillStyle='#EDE6D8';ctx.fill();ctx.fillText('Vertical',Math.min(P.cadera.x+10,w-60),18);}
   }
@@ -124,7 +124,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   }
   function cargarFoto(){
     const f=foto();if(!f)return;imagen=null;zoom=0;paneo=null;caja.scrollLeft=0;caja.scrollTop=0;const img=new Image();
-    img.onload=()=>{if(f!==foto())return;imagen=img;f.ancho=img.naturalWidth;f.alto=img.naturalHeight;dibujar();autoDetectar(f);};
+    img.onload=()=>{if(f!==foto())return;imagen=img;f.ancho=img.naturalWidth;f.alto=img.naturalHeight;dibujar();if(form.dataset.conversacion)form.dispatchEvent(new Event('aplomo:analisis'));autoDetectar(f);};
     img.onerror=()=>aviso('No pudimos abrir la foto. Comprueba tu sesión y vuelve a seleccionarla sin cerrar este formulario.');img.src=f.src||f.preview;
   }
   function tabs(){
@@ -157,7 +157,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     if(!foto()||!imagen||(destacado==='PIERNAS'||destacado==='GIRO'))return;e.preventDefault();const s=estado(foto()),p=posicion(e),r=cv.getBoundingClientRect(),dedo=e.pointerType!=='mouse';let cercano=null,distancia=Infinity;
     for(const[k]of marcas)if(s.puntos[k]){const q=s.puntos[k],d=Math.hypot((q.x-p.x)*r.width,(q.y-p.y)*r.height);if(d<distancia){distancia=d;cercano=k;}}
     const sig=marcasActuales().find(([k])=>!s.puntos[k]);
-    if(cercano&&(distancia<(dedo?44:22)||(!sig&&distancia<(dedo?90:40)))){arrastre=cercano;try{cv.setPointerCapture(e.pointerId);}catch(_){}dibujar();return;}
+    if(cercano&&(distancia<(form.dataset.conversacion?22:dedo?44:22)||(!sig&&distancia<(dedo?90:40)))){arrastre=cercano;try{cv.setPointerCapture(e.pointerId);}catch(_){}dibujar();return;}
     if(zoom>0){paneo={x:e.clientX,y:e.clientY,left:caja.scrollLeft,top:caja.scrollTop,p,sig,movido:false};try{cv.setPointerCapture(e.pointerId);}catch(_){}return;}
     if(!sig)return;s.puntos[sig[0]]=p;cambiado('PUNTOS');
   });

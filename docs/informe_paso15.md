@@ -1,5 +1,17 @@
 # Paso 15 · Evaluación como conversación guiada
 
+## Actualización 15-C · 14 nov 2026
+
+Siete pantallas: permiso, conversación, condiciones, lado, foto y ángulos, carga, resultado. P2/P3 planifican dos posturas independientes; «Es la misma» deja una y conserva el motivo exacto. Consentimiento escrito en persona_acepto y confirmación con responsable/fecha/hora en la bitácora existente. Sin tabla ni campo nuevos.
+
+Foto y panel juntos; cuatro filas de ángulos con siluetas, ajustes en chips sin marcar y muñeca obligatoria 5/8/25 según MapeosCampo. Si se marca cabeza/espalda torcida o inclinada, se conserva la aclaración Girada/Inclinada/Ambas para no sumar dos ajustes por uno. Puntos de 22 px, numerados y con área táctil invisible de 44 px. Sin subtextos bajo las preguntas ni siluetas en títulos. Frente y detalle opcionales, plegados; IA y validaciones de 15-B conservadas.
+
+Elección de implementación: cada postura es un registro de evaluación, pues el criterio pertenece a evaluación en el esquema actual. Se guarda al final la de mayor puntaje recibido del servidor para que sea el estado actual del puesto; el resumen conserva el orden 1/2. Los envíos son individuales, no una transacción conjunta: se conservan los acuses y se omiten los ya guardados si falla un envío posterior. «Agregar otra postura» guarda primero y abre Añadir análisis de la más crítica con las fotos existentes. Sin fotos se conserva el guardado sin puntaje.
+
+**Comprobaciones:** 892 pruebas Maven y 41 JS aprobadas. Navegador integrado: dos recorridos completos de dos posturas con fotos, retroceso conservando respuestas, corrección de rango, ajuste de cuello, guardado, Añadir análisis y Oficina con «Es la misma» sin fotos. Resultado 7/6 y estado del puesto 7 comprobado tras el ajuste de orden. 36 mediciones de las siete pantallas y estados de ambas posturas a 1366/834/390: cero desbordamiento horizontal; cero errores de consola en los recorridos. Datos exclusivamente en rula_ergonomia_pruebas y ROLLBACK confirmado. Sin capturas ni archivos de evidencia, por instrucción expresa.
+
+**Límites:** no se probó en iPad físico ni con el dedo. Safari WebDriver no permitió abrir sesión porque la automatización remota no está habilitada; no se cambió esa preferencia ni se descargaron navegadores. No se certifica el aspecto visual mediante capturas. Sin cambios de esquema, paquete co.aplomo.rula ni POST /evaluaciones/calcular. Para probar: nueva evaluación → confirmar consentimiento → responder P1/P2/P3 → condiciones/lado → foto/ángulos/chips/carga → segunda postura si corresponde → resumen → Guardar y terminar.
+
 ## Actualización 15-B · 14 nov 2026
 
 Esta actualización reemplaza los límites y el apagado de IA descritos en el informe histórico de abajo: script 20 s, modelo 60 s, inferencia 20 s y detección total 60 s. La preparación no bloquea nuevos intentos; Detectar puntos queda visible y el fallo muestra su etapa temporal en gris. Se mantienen 1280 px, modelo ligero y cierre al salir.

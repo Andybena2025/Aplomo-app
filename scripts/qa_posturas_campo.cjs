@@ -1,0 +1,16 @@
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const r=require('../src/main/resources/static/js/posturas-campo.js');
+test('dos respuestas crean dos posturas con criterios independientes',()=>assert.deepEqual(r.plan('EXIGENTE','DURADERA'),[{momento:'EXIGENTE',criterio:'MAS_INADECUADA',misma:false},{momento:'DURADERA',criterio:'MAYOR_EXPOSICION',misma:false}]));
+test('Es la misma produce una sola evaluación con el criterio más incómodo',()=>assert.deepEqual(r.plan('DURADERA','MISMA'),[{momento:'DURADERA',criterio:'MAS_INADECUADA',misma:true}]));
+test('no se deduce Es la misma sin confirmación explícita',()=>assert.equal(r.plan('EXIGENTE','EXIGENTE').length,2));
+test('faltan respuestas o No sabe no crean un plan supuesto',()=>{for(const p of [['','MISMA'],['EXIGENTE',''],['NO_SABE','EXIGENTE']])assert.throws(()=>r.plan(...p));});
+test('postura incluye puesto, momento y lado',()=>assert.equal(r.descripcion('Mesa','Caja','IZQUIERDO'),'Mesa · Caja · lado izquierdo'));
+test('la descripción respeta 150 caracteres Unicode',()=>{const s=r.descripcion('🧍'.repeat(180),'Caja','DERECHO');assert.equal(Array.from(s).length,150);assert.ok(s.endsWith(' · Caja · lado derecho'));assert.ok(s.startsWith('🧍'));});
+test('el aviso distingue las dos posturas',()=>{const p=r.plan('EXIGENTE','DURADERA');assert.equal(r.aviso(0,2,p[0],'Caja'),'Postura 1 de 2 · La más incómoda: Caja');assert.equal(r.aviso(1,2,p[1],'Mesa'),'Postura 2 de 2 · La que más tiempo se mantiene: Mesa');});
+test('los ajustes no marcados quedan en falso sin copiar la postura anterior',()=>assert.deepEqual(Object.values(r.ajustes(()=>false)),[false,false,false,false,false]));
+test('solo se trasladan ajustes marcados',()=>assert.deepEqual(r.ajustes(k=>k==='hombroElevado'),{hombroElevado:true,brazoSeparado:false,brazoApoyado:false,antebrazoCruza:false,munecaDesviada:false}));
+test('guardar envía ambas posturas en orden y conserva sus acuses',async()=>{const p=r.plan('EXIGENTE','DURADERA'),orden=[];await r.guardarPendientes(p,async(x,i)=>{orden.push(x.criterio);return '/evaluaciones/'+(i+1);});assert.deepEqual(orden,['MAS_INADECUADA','MAYOR_EXPOSICION']);assert.equal(p[1].guardada,'/evaluaciones/2');});
+test('si falla la segunda conserva la primera y un reintento no la duplica',async()=>{const p=r.plan('EXIGENTE','DURADERA');await assert.rejects(r.guardarPendientes(p,async(x,i)=>{if(i)throw Error('Sin conexión');return '/evaluaciones/1';}),/1 de 2/);const enviados=[];await r.guardarPendientes(p,async(x,i)=>{enviados.push(i);return '/evaluaciones/2';});assert.deepEqual(enviados,[1]);});
+test('un resultado no confirmado no se presenta como guardado',async()=>{const p=r.plan('EXIGENTE','MISMA');await assert.rejects(r.guardarPendientes(p,async()=>null));assert.equal(p[0].guardada,undefined);});
+
+test('la más crítica queda como última evaluación sin alterar el orden del resumen',()=>{const p=[{puntaje:7},{puntaje:3}];assert.deepEqual(r.ordenGuardado(p).map(x=>x.puntaje),[3,7]);assert.deepEqual(p.map(x=>x.puntaje),[7,3]);});

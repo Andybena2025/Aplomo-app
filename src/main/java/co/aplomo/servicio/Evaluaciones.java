@@ -96,7 +96,7 @@ public final class Evaluaciones {
                     idsFotos.add(dao.foto(con, id, nombre, imagen.vista(), imagen.descripcion(), imagen.bytes().length));
                 }
                 bitacora.registrar(con, responsable.id(), LocalDateTime.now(reloj), "evaluacion", id, "CREAR", null,
-                        null, "Evaluación del puesto " + puesto.numero() + (d.sinFotos() ? " · Sin registro fotográfico" : " · Con fotos"));
+                        null, "Evaluación del puesto " + puesto.numero() + " · Consentimiento escrito confirmado" + (d.sinFotos() ? " · Sin registro fotográfico" : " · Con fotos"));
                 if(solicitudes!=null) {
                     if(d.sinFotos()&&!solicitudes.isEmpty())throw new IllegalArgumentException("Sin fotos no se puede guardar un análisis RULA.");
                     if(!d.sinFotos()&&(solicitudes.isEmpty()||solicitudes.size()>20))throw new IllegalArgumentException("Mide al menos una foto antes de guardar el resultado.");
@@ -172,7 +172,7 @@ public final class Evaluaciones {
         if (!d.aceptaFotos()) throw new IllegalArgumentException("Confirma que la persona firmó en papel el consentimiento para ser evaluada.");
         String momento=criterio.equals("MAS_INADECUADA")?"La postura más exigente":"La que más tiempo dura";
         boolean campo=Set.of("El momento que señala el trabajador.","La postura que más repite.").contains(d.motivo()==null?"":d.motivo());
-        String motivo=campo?(criterio.equals("MAS_INADECUADA")?"El momento que señala el trabajador.":"La postura que más repite."):"Momento: "+momento+". Postura: "+postura+".";
+        String motivo="También es la que más tiempo se mantiene".equals(d.motivo())&&criterio.equals("MAS_INADECUADA")?d.motivo():campo?(criterio.equals("MAS_INADECUADA")?"El momento que señala el trabajador.":"La postura que más repite."):"Momento: "+momento+". Postura: "+postura+".";
         Validacion.entero(Integer.toString(d.minutos()), "minutos por jornada", 1, 720);
         String obs = Validacion.notas(d.observaciones());
         if (obs.codePointCount(0, obs.length()) > 255) throw new IllegalArgumentException("Otras observaciones permite hasta 255 caracteres.");

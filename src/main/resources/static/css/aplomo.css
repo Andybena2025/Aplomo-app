@@ -1113,3 +1113,41 @@ form[data-conversacion] .galeria-demo-opcion img{width:80px;height:80px;object-f
 [data-etapa-deteccion]{display:block;color:var(--muted);font-size:13px}
 
 :root body [data-detectar-puntos]{max-width:100%;height:auto;min-height:48px;white-space:normal;line-height:1.3;padding:8px 14px}
+
+/* Paso 15-C: foto y revisión juntas, sin columnas de ancho mínimo fijo. */
+form[data-conversacion]{max-width:1240px}
+form[data-conversacion] .campo-progreso{grid-template-columns:repeat(7,minmax(0,1fr))}
+form[data-conversacion] .campo-progreso:has([data-etapa="1"][hidden]){grid-template-columns:repeat(3,minmax(0,1fr))}
+form[data-conversacion] .campo-dos-columnas{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:start;gap:24px}
+form[data-conversacion] :is(.campo-imagen,.campo-panel,.campo-medida>div){min-width:0}
+form[data-conversacion] .campo-panel{display:grid;gap:16px}
+form[data-conversacion] .campo-muestra{max-width:none}
+form[data-conversacion] .campo-muestra img{width:100%;max-height:620px;object-fit:contain}
+form[data-conversacion] [data-foto-revision] .foto-zoom{height:650px;width:100%;min-width:0}
+form[data-conversacion] .campo-compacta{gap:12px}
+form[data-conversacion] .campo-medida{display:grid;grid-template-columns:48px minmax(0,1fr);gap:12px;align-items:center;padding-bottom:12px}
+form[data-conversacion] .campo-medida .campo-silueta{width:48px;height:64px;object-fit:contain}
+form[data-conversacion] .campo-medida .campo-pregunta>p{margin:0 0 4px}
+form[data-conversacion] .campo-medida [data-angulo]{font-size:18px}
+form[data-conversacion] .campo-chips{display:flex;flex-wrap:wrap;gap:8px;min-width:0}
+form[data-conversacion] .campo-chip{display:flex;align-items:center;gap:8px;min-height:52px;max-width:100%;padding:10px 12px;border:1px solid var(--line2);border-radius:12px;background:var(--bg);color:var(--ivory);font:14px/1.4 var(--sans);white-space:normal;cursor:pointer;box-sizing:border-box}
+form[data-conversacion] .campo-chip:has(input:checked),form[data-conversacion] .campo-chip[aria-pressed=true]{background:var(--ivory);color:var(--bg);border-color:var(--ivory)}
+form[data-conversacion] .campo-chip:focus-within{outline:2px solid var(--ivory);outline-offset:3px}
+form[data-conversacion] .campo-chip input{flex-shrink:0;accent-color:var(--ivory);width:20px;height:20px}
+form[data-conversacion] .campo-muneca{border:0;padding:0;margin:16px 0 0;min-width:0}
+form[data-conversacion] .campo-muneca legend{font-size:16px;margin-bottom:8px}
+form[data-conversacion] .campo-ajustes{display:grid;gap:12px}
+form[data-conversacion] .campo-postura-aviso{padding:12px 16px;border:1px solid var(--line2);border-radius:12px;overflow-wrap:anywhere}
+form[data-conversacion] .postura-critica{border-color:var(--ivory)}
+form[data-conversacion] .campo-titulo:empty{display:none}
+form[data-conversacion] .campo-apoyo .campo-foto{max-width:100%}
+form[data-conversacion] .wizfoot>.link{min-height:52px;white-space:normal}
+form[data-conversacion] :is(.campo-respuesta,.campo-opcion){overflow-wrap:anywhere}
+@media(max-width:720px){
+ form[data-conversacion] .campo-dos-columnas{grid-template-columns:minmax(0,1fr);gap:16px}
+ form[data-conversacion] .campo-progreso{grid-template-columns:repeat(3,minmax(0,1fr))}
+ form[data-conversacion] [data-foto-revision] .foto-zoom{height:auto}
+ form[data-conversacion] .campo-medida{grid-template-columns:40px minmax(0,1fr);gap:8px}
+ form[data-conversacion] .campo-medida .campo-silueta{width:40px;height:56px}
+ form[data-conversacion] .campo-chip{font-size:14px;padding:10px}
+}
