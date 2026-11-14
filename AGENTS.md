@@ -47,6 +47,8 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 
 - Paso 13F-3 implementado y comprobado el 14 nov 2026: listas Oficina/Planta y Otra postura; momento con textos adaptados; tomas de Perfil/Frente/Detalle una por una con metadatos automáticos; otro lado reutiliza el tour; zoom 1×–3× y fotos sin barras a 1×; imágenes que llenan sus fichas. 811 pruebas aprobadas y 96 medidas finales, todas sin desplazamiento en las cuatro ventanas del encargo. Marcado real a 1×/2×: mismo ángulo 47,5°. Ambos modos guardados con las tres fotos S6. Informe `docs/informe_paso13f3.md`, evidencia `docs/evidencia_paso13f3/`. Se conservan recuerdos con aviso/confirmación por aclaración explícita de Andy. Sin cambios de motor, endpoint de cálculo, esquema, valores del criterio, dependencias ni colores de botones. QA solo en base de pruebas y revertido; sin descargas de navegadores. Prueba física/otros navegadores pendientes. Commit/push a origin/main autorizados; resultado pendiente de revisión por Andy. No se hizo 13F-2.
 
+- Paso 13G-A: nueve fases estables, barra monotónica y 241 medidas finales sin desplazamiento en Oficina/Planta a las cuatro ventanas del encargo; informe `docs/informe_paso13g.md`. 824 pruebas aprobadas. Bloque B autorizado y en preparación; un solo push al terminar ambos. Sin nuevas descargas ni cambios de motor/esquema.
+
 ## Reglas que no se negocian
 
 1. **Un paso de `docs/06` a la vez.** Nunca empieces el siguiente sin el "OK" de Andy.

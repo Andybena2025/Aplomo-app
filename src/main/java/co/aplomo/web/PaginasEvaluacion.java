@@ -28,10 +28,10 @@ public final class PaginasEvaluacion {
         StringBuilder h=new StringBuilder("<div class=\"pagehead\"><div><span class=\"eyebrow\">Evaluaciones · Nueva</span><h1>Nueva evaluación</h1><p class=\"muted\">")
             .append(escapar(ficha.empresaNombre())).append(" · ").append(escapar(ficha.salonNombre())).append("</p><p class=\"hint\" data-contexto-puesto>")
             .append(elegido==null?"Elige el puesto que vas a evaluar.":"Puesto "+elegido.numero()+" · "+escapar(elegido.descripcion())).append("</p></div><span class=\"tag\" data-modo>").append(modo).append("</span></div>")
-            .append("<form data-evaluacion data-tour=\"contexto\" data-cuerpo=\"si\" data-inicio=\"").append(elegido==null?0:1).append("\" method=\"post\" action=\"/evaluaciones\" enctype=\"multipart/form-data\" novalidate>")
+            .append("<form data-evaluacion data-fases=\"9\" data-tour=\"contexto\" data-cuerpo=\"si\" data-inicio=\"").append(elegido==null?0:1).append("\" method=\"post\" action=\"/evaluaciones\" enctype=\"multipart/form-data\" novalidate>")
             .append("<input type=\"hidden\" name=\"cuenta_recuerdo\" value=\"").append(sesion.cuenta().id()).append("\">").append(Html.csrf(sesion)).append("<input type=\"hidden\" name=\"visita\" value=\"").append(ficha.visita().id()).append("\"><input type=\"hidden\" name=\"recorrido\" value=\"guiado\">")
             .append("<input type=\"hidden\" name=\"motivo\"><input type=\"hidden\" name=\"condiciones_respondidas\">")
-            .append("<div class=\"tour-progreso\"><div class=\"row between\"><button type=\"button\" class=\"btn\" data-atras-evaluacion>← Atrás</button><span id=\"pasoActual\" role=\"status\">Paso 1 de ").append(elegido==null?18:17).append("</span></div><progress max=\"").append(elegido==null?18:17).append("\" value=\"1\" aria-label=\"Avance de la evaluación\"></progress></div>");
+            .append("<div class=\"tour-progreso\"><div class=\"row between\"><button type=\"button\" class=\"btn\" data-atras-evaluacion>← Atrás</button><span id=\"pasoActual\" role=\"status\">Paso 1 de ").append(9).append("</span></div><progress max=\"").append(9).append("\" value=\"1\" aria-label=\"Avance de la evaluación\"></progress></div>");
         if(elegido==null){
             h.append("<section class=\"card stack tour-pregunta\" data-paso=\"0\"><h2>¿Qué puesto vas a evaluar?</h2><div class=\"field\"><label for=\"puesto\">Puesto de trabajo</label><select class=\"input\" id=\"puesto\" name=\"puesto\" required><option value=\"\">Elige un puesto</option>");
             for(var p:contexto.puestos())h.append("<option value=\"").append(p.id()).append("\" data-tipo=\"").append(escapar(p.tipo())).append("\">Puesto ").append(p.numero()).append(" · ").append(escapar(p.descripcion())).append("</option>");
@@ -59,7 +59,7 @@ public final class PaginasEvaluacion {
             .append(FotosGuiadas.pantallas())
             .append(RecorridoCuerpo.pasos())
             .append("<p class=\"tour-pendiente\" data-pregunta-pendiente role=\"status\" hidden>Responde para continuar.</p><div class=\"aviso\" role=\"alert\" data-error-evaluacion hidden><span></span><button type=\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerrar aviso\">Cerrar</button></div><div class=\"wizfoot\"><button type=\"button\" class=\"btn p\" data-siguiente aria-disabled=\"true\">Continuar →</button>").append(PaginasAnalisis.botonesGuardar()).append("</div></form>").append(PaginasAnalisis.scripts()).append("");
-        return Html.pagina("Nueva evaluación",h.toString(),sesion,false,false);
+        return Html.pagina("Nueva evaluación",fases(h.toString()),sesion,false,false);
     }
 
     /** Opciones con pista vinculada y nombre independiente de su descripción. */
@@ -69,6 +69,10 @@ public final class PaginasEvaluacion {
         String pista=ayuda.isEmpty()?"":"<small class=\"tour-ayuda\" id=\""+id+"-ayuda\">"+escapar(ayuda)+"</small>";
         return "<label class=\"tour-opcion"+(imagen.startsWith("postura_")?" tour-postura":"")+"\"><input type=\""+(multiple?"checkbox":"radio")+"\" name=\""+nombre+"\" value=\""+escapar(valor)+"\" "+atributos+" aria-labelledby=\""+id+"-texto\""+(ayuda.isEmpty()?"":" aria-describedby=\""+id+"-ayuda\"")+"><span>"+img+"<span class=\"tour-franja\"><span id=\""+id+"-texto\">"+escapar(etiqueta)+"</span>"+pista+"</span></span></label>";
     }
+
+    /** Nueve fases estables: las tomas, los segmentos y el esfuerzo son detalle de su fase. */
+    static int fase(int paso){return paso>=8&&paso<=10?8:paso==11?9:Math.max(1,paso);}
+    static String fases(String html){return java.util.regex.Pattern.compile("data-paso=\"(\\d+)\"").matcher(html).replaceAll(m->m.group()+" data-fase=\""+fase(Integer.parseInt(m.group(1)))+"\"");}
 
     static List<String> posturasDelModo(String modo) {
         return modo.equals("Oficina")?List.of("computador","sentado","inclinado","brazos_arriba","herramienta","otra"):List.of("de_pie","cargando","inclinado","brazos_arriba","herramienta","agachado","otra");

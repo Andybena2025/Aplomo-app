@@ -6,7 +6,7 @@
   const tour=!!form.dataset.tour, inicio=tour?Number(form.dataset.inicio):1;
   const corporal=!!form.dataset.cuerpo;
   const FOTOS=tour?6:3, LADO=7, ANGULOS=corporal?8:tour?7:4, AJUSTES=corporal?9:tour?8:5, RESULTADO=corporal?11:tour?9:6;
-  let paso = continuar ? FOTOS : inicio, enviando = false, avanceAutomatico=null, intentado=false, clavePregunta=null;
+  let paso = continuar ? FOTOS : inicio, enviando = false, avanceAutomatico=null, intentado=false, clavePregunta=null, avanceMaximo=0;
   const reducirMovimiento=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
   const error = form.querySelector('[data-error-evaluacion]');
   const atras = form.querySelector('[data-atras-evaluacion]');
@@ -244,18 +244,9 @@
     form.querySelectorAll('[data-paso]').forEach(p=>p.classList.toggle('tour-sin-respuesta',Number(p.dataset.paso)===paso&&!completa&&intentado));
   }
   function actualizarProgreso(){
-    const sinFotos=tour&&form.querySelector('[name="registro"]:checked')?.value==='SIN_REGISTRO_FOTOGRAFICO';
-    const recorrido=cuerpo?.progreso(),extra=tour&&inicio===0?1:0;
-    let total=tour?(sinFotos?FOTOS:RESULTADO)+extra:6,numero=paso+extra;
-    if(corporal&&!sinFotos){const base=continuar?2:7,esf=esfuerzo.progreso();total=base+recorrido.total+esf.total+1+extra;
-      if(continuar)numero=paso===FOTOS?1:2;
-      if(paso===ANGULOS)numero=base+1+recorrido.actual+extra;
-      else if(paso===9||paso===10)numero=base+1+recorrido.total+esf.actual+extra;
-      else if(paso===RESULTADO)numero=total;
-    }
-    if(fotosGuiadas&&!sinFotos&&form.querySelector('[name="registro"]:checked')){const f=fotosGuiadas.progreso();total+=f.total-1;if(paso===FOTOS)numero+=f.actual;else if(paso>FOTOS)numero+=f.total-1;}
+    const panel=form.querySelector(`[data-paso="${paso}"]`),total=Number(form.dataset.fases||9),numero=Number(panel?.dataset.fase||Math.max(1,paso));
     document.querySelector('#pasoActual').textContent=`Paso ${numero} de ${total}`;
-    if(tour){const progreso=form.querySelector('progress');progreso.max=total;progreso.value=numero;}
+    const progreso=form.querySelector('progress');if(progreso){avanceMaximo=Math.max(avanceMaximo,numero);progreso.max=total;progreso.value=avanceMaximo;}
   }
   function armarMotivo(){
     if(!tour||continuar)return;

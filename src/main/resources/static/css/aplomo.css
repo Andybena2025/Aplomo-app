@@ -887,3 +887,41 @@ form[data-tour] .cuerpo-rangos .tour-opcion>.tour-pastilla{padding:3px 7px;font-
  form[data-tour] [data-editor-foto] .measure>div:first-child>.foto-zoom{height:324px}
  form[data-tour] .cuerpo-rangos .tour-franja{padding:5px}
 }
+
+/* Paso 13G-A · fases estables y todas las pantallas de iPad completas. */
+.ayuda-lado summary{display:flex;align-items:center;min-height:44px;cursor:pointer;list-style:none;color:var(--ivory)}
+.ayuda-lado summary::-webkit-details-marker{display:none}.ayuda-lado summary::after{content:'+';margin-left:12px}.ayuda-lado[open] summary::after{content:'−'}
+.ayuda-lado>div{font-size:13px;line-height:1.35}.ayuda-lado ul{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;margin:6px 0;padding-left:18px}
+@media(min-width:721px){
+ form[data-tour] [data-paso="7"]>.tour-opciones{grid-template-columns:repeat(3,minmax(0,1fr));max-width:660px}
+ form[data-tour] [data-paso="8"]{grid-template-columns:minmax(0,1fr) auto}
+ form[data-tour] [data-paso="8"]>p{max-width:220px}
+}
+@media(min-width:721px) and (max-height:800px){
+ form[data-tour] [data-paso="7"]>.tour-opciones{max-width:510px}
+ form[data-tour] [data-editor-foto] .measure>div:first-child>.foto-zoom{height:260px}
+}
+@media(min-width:721px) and (max-width:1000px) and (orientation:portrait){
+ form[data-tour] [data-editor-foto] .measure>div:first-child>.foto-zoom{height:292px}
+ form[data-tour] .cuerpo-rangos .tour-franja{padding:4px}
+}
+@media(max-width:720px){.ayuda-lado ul{grid-template-columns:1fr}}
+
+@media(min-width:721px){
+ form[data-tour] [data-resultados]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+ form[data-tour] [data-resultados]>.hint{grid-column:1/-1;margin:0}
+ form[data-tour] .resultado-por-foto+.resultado-por-foto{border-top:0;padding-top:0;margin-top:0}
+ form[data-tour] .resultado-por-foto:only-of-type{grid-column:1/-1}
+}
+
+@media(min-width:721px){form[data-tour] [data-paso="9"]>.tour-opciones{grid-template-columns:repeat(3,minmax(0,1fr));max-width:660px;width:100%}}
+@media(min-width:721px) and (max-height:800px){
+ form[data-tour] [data-paso="7"]:has(.ayuda-lado[open])>.tour-opciones{max-width:420px}
+ form[data-tour] [data-paso="9"]>h2{font-size:24px;line-height:1.15}
+}
+
+@media(min-width:721px) and (max-height:800px){form[data-tour] [data-paso="9"]>.tour-opciones{max-width:660px;width:100%}}
+
+@media(min-width:721px) and (max-width:1000px) and (orientation:portrait){form[data-tour] [data-paso="10"]>.tour-opciones{max-width:630px;width:100%}}
+
+@media(min-width:721px) and (max-width:1000px) and (orientation:portrait){form[data-tour] .cuerpo-rangos .tour-franja>span,form[data-tour] .cuerpo-rangos .tour-franja .tour-ayuda{line-height:1.2}}
