@@ -932,3 +932,73 @@ form[data-tour] .cuerpo-rangos .tour-opcion>.tour-pastilla{padding:3px 7px;font-
 .evaluar-puestos li{display:flex;gap:var(--s3);justify-content:space-between;align-items:center;border:1px solid var(--line2);border-radius:16px;padding:var(--s4);min-width:0}
 .evaluar-puestos li>div{min-width:0;overflow-wrap:anywhere}.evaluar-puestos .btn{flex-shrink:0}
 @media(max-width:720px){.evaluar-puestos{grid-template-columns:1fr}}
+
+/* Paso 14 · revisión por excepción, sin nuevos colores ni ventanas. */
+form[data-revision] .tour-pregunta{gap:12px;min-height:0}
+form[data-revision] .tour-opcion>span{padding:0}
+form[data-revision] .tour-opcion:not(:has(img)){min-height:48px}
+form[data-revision] .tour-opcion:not(:has(img)) .tour-franja{padding:10px 12px 10px 42px}
+form[data-revision] .contexto-revision{display:grid;grid-template-columns:1fr 1fr}
+form[data-revision] .contexto-revision>h2,form[data-revision] .contexto-revision>div:first-of-type{grid-column:1/-1}
+form[data-revision] .contexto-revision .tiempo-revision{grid-template-columns:repeat(2,minmax(0,1fr))}
+form[data-revision] .contexto-revision .row{gap:8px}
+form[data-revision] .contexto-revision .row .btn{padding-inline:14px;font-size:14px}
+form[data-revision] .lado-revision{display:grid;grid-template-columns:2fr 1.35fr 1fr;gap:16px;align-items:center}
+form[data-revision] .lado-revision .tour-opciones{grid-template-columns:1fr 1fr}
+form[data-revision] .lado-revision .tour-opcion img{height:180px;aspect-ratio:auto;object-fit:contain}
+form[data-revision] .lado-revision .ayuda-lado ul{display:block;line-height:1.4}
+form[data-revision] .revision-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start}
+form[data-revision] .revision-lista{max-height:calc(100dvh - 340px);overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;min-width:0;border-radius:14px}
+form[data-revision] .revision-fila{border:1px solid var(--perla);border-radius:12px;background:var(--panel);margin-bottom:6px}
+form[data-revision] .revision-fila[data-pendiente="true"]{border-color:var(--perla-media)}
+form[data-revision] .revision-fila summary{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px;padding:12px;min-height:58px;cursor:pointer;list-style:none;font-family:Inter,sans-serif}
+form[data-revision] .revision-fila summary::-webkit-details-marker{display:none}
+form[data-revision] .revision-fila summary>[data-resumen-segmento]{font-size:13px;color:var(--muted);grid-column:1;grid-row:2}
+form[data-revision] .revision-fila summary .tag{grid-column:2;font-size:11px}
+form[data-revision] .revision-opciones{padding:12px}
+form[data-revision] .revision-opciones .tour-opciones{grid-template-columns:repeat(2,minmax(0,1fr))}
+form[data-revision] .revision-opciones .tour-opcion img{height:110px;object-fit:contain;aspect-ratio:auto}
+form[data-revision] .revision-opciones .tour-franja{font-size:13px;padding:8px}
+form[data-revision] .revision-ajustes{padding:12px 0;border-top:1px solid var(--line)}
+form[data-revision] .revision-ajustes .opts{gap:6px}
+form[data-revision] [data-foto-revision]>.stack{gap:8px}
+form[data-revision] .foto-zoom{height:calc(100dvh - 420px);min-height:190px;max-height:420px}
+form[data-revision] .foto-zoom .canvasbox{margin-top:46px}
+form[data-revision] .foto-zoom .zoom-control{top:0!important;right:0!important;left:auto!important;max-width:160px}
+form[data-revision] .revision-apoyo{width:100%;height:calc(100dvh - 420px);min-height:190px;object-fit:contain}
+form[data-revision] [data-evidencias]{gap:6px}
+form[data-revision] [data-evidencias] .btn,form[data-revision] [data-foto-revision] .row .btn{padding-inline:12px;font-size:14px}
+form[data-revision] .esfuerzo-revision{display:grid;grid-template-columns:1fr 1.6fr;align-items:start}
+form[data-revision] .esfuerzo-revision>h2,form[data-revision] .esfuerzo-revision>strong,form[data-revision] .esfuerzo-revision>p{grid-column:1/-1}
+form[data-revision] .esfuerzo-revision .tour-opciones{grid-template-columns:repeat(3,minmax(0,1fr))}
+form[data-revision] .esfuerzo-revision img{height:88px;aspect-ratio:auto;object-fit:contain}
+form[data-revision] .esfuerzo-revision .tour-franja{padding:8px;font-size:13px}
+form[data-revision] .esfuerzo-revision .tour-ayuda{font-size:12px;line-height:1.25}
+form[data-revision] .wizfoot{position:sticky;bottom:0;background:var(--bg);z-index:5}
+@keyframes revisionPulso{50%{box-shadow:0 0 0 2px var(--perla-media)}}
+form[data-revision] .revision-pulso{animation:revisionPulso .8s ease-out 1}
+@media(min-width:721px) and (max-height:800px){
+ form[data-revision] .tour-pregunta{gap:8px}
+ form[data-revision] .lado-revision .tour-opcion img{height:126px}
+ form[data-revision] .esfuerzo-revision img{height:64px}
+ form[data-revision] .revision-lista{max-height:calc(100dvh - 320px)}
+ form[data-revision] .foto-zoom{height:210px}
+ form[data-revision] .revision-foto{gap:6px}
+ form[data-revision] .contexto-revision{font-size:14px}
+}
+@media(min-width:721px) and (max-width:1000px) and (orientation:portrait){
+ form[data-revision] .lado-revision{grid-template-columns:1.8fr 1.4fr 1fr;gap:8px}
+ form[data-revision] .lado-revision .tour-opcion img{height:140px}
+ form[data-revision] .esfuerzo-revision{grid-template-columns:1fr 1.5fr}
+}
+@media(max-width:720px){
+ form[data-revision] .contexto-revision,form[data-revision] .esfuerzo-revision{display:flex}
+ form[data-revision] .lado-revision{grid-template-columns:1fr 1fr}
+ form[data-revision] .lado-revision>.tour-opciones{grid-column:1/-1}
+ form[data-revision] .lado-revision .tour-opcion img{height:120px}
+ form[data-revision] .revision-layout{grid-template-columns:1fr}
+ form[data-revision] .revision-lista{max-height:65dvh}
+ form[data-revision] .foto-zoom{height:360px}
+ form[data-revision] .esfuerzo-revision .tour-opciones{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){form[data-revision] .revision-pulso{animation:none}}

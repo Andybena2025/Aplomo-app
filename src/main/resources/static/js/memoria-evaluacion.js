@@ -4,7 +4,7 @@ window.crearMemoriaEvaluacion=form=>{
   const clave=habilitada?`aplomo:recorrido:${form.elements.cuenta_recuerdo.value}:${form.elements.visita.value}`:null;
   let anterior=null;
   try{if(clave)anterior=JSON.parse(sessionStorage.getItem(clave));}catch(_){}
-  const contextos={2:['postura_opcion','postura'],3:['criterio'],4:['minutos']};
+  const contextos=form.dataset.revision?{2:['postura','criterio','minutos']}:{2:['postura_opcion','postura'],3:['criterio'],4:['minutos']};
   function marcarRecordada(controles,valor){
     controles.forEach(r=>{const etiqueta=r.closest('label');etiqueta.querySelector('[data-pastilla-anterior]')?.remove();if(r.value===valor){const pastilla=document.createElement('span');pastilla.className='tag tour-pastilla';pastilla.dataset.pastillaAnterior='';pastilla.textContent='Del puesto anterior';etiqueta.append(pastilla);}});
   }
@@ -13,7 +13,7 @@ window.crearMemoriaEvaluacion=form=>{
     for(const nombre of ['postura_opcion','criterio','minutos']){
       const radio=[...form.querySelectorAll(`input[name="${nombre}"]`)].find(r=>r.value===anterior[nombre]);if(radio){radio.checked=true;marcarRecordada([...form.querySelectorAll(`input[name="${nombre}"]`)],radio.value);}
     }
-    if(form.querySelector('[name="postura_opcion"]:checked')&&typeof anterior.postura==='string'&&anterior.postura.length<=150)form.elements.postura.value=anterior.postura;
+    if((form.dataset.revision||form.querySelector('[name="postura_opcion"]:checked'))&&typeof anterior.postura==='string'&&anterior.postura.length<=150)form.elements.postura.value=anterior.postura;
   }
   function aviso(n){
     const panel=form.querySelector(`[data-paso="${n}"]`);if(!panel||!contextos[n])return;
@@ -23,7 +23,8 @@ window.crearMemoriaEvaluacion=form=>{
   }
   return {
     restaurar,aviso,marcarRecordada,
-    esfuerzo(foto,lado){return Array.isArray(anterior?.esfuerzos)?anterior.esfuerzos.find(e=>e.foto===foto&&e.lado===lado):null;},
+    tareaAnterior(){return anterior?.postura||null;},
+    esfuerzo(foto,lado){return Array.isArray(anterior?.esfuerzos)?anterior.esfuerzos.find(e=>(form.dataset.revision||e.foto===foto)&&e.lado===lado):null;},
     guardar(tareas){
       if(!clave)return;
       const datos={};for(const nombre of ['postura_opcion','criterio','minutos'])datos[nombre]=form.querySelector(`[name="${nombre}"]:checked`)?.value;

@@ -30,17 +30,17 @@ class HttpCierreTest extends HttpPrueba {
             if(opcion.contains("name=\"minutos\"")){tiempos++;continue;}
             assertTrue(opcion.contains("<small class=\"tour-ayuda\""),opcion);var id=java.util.regex.Pattern.compile("aria-describedby=\"([^\"]+)\"").matcher(opcion);assertTrue(id.find());assertTrue(ids.add(id.group(1)),"Id de pista repetido");assertTrue(opcion.contains("id=\""+id.group(1)+"\""));
         }
-        assertTrue(cantidad>60);assertEquals(4,tiempos);assertTrue(h.contains("Suma todos los ratos del turno en que la persona está en esta postura."));assertFalse(h.contains("Ayuda · cómo reconocer las condiciones"));
-        assertTrue(h.contains("Consentimiento para la evaluación"));assertTrue(h.contains("¿La persona permite que le tomes fotos?"));assertTrue(h.contains("Sí, permite fotos"));assertTrue(h.contains("No permite fotos"));
+        assertEquals(59,cantidad);assertEquals(4,tiempos);assertTrue(h.contains("Suma todos los ratos del turno en que la persona está en esta postura."));assertFalse(h.contains("Ayuda · cómo reconocer las condiciones"));
+        assertTrue(h.contains("Consentimiento y permiso de fotos"));assertTrue(h.contains("Permiso de fotos"));assertTrue(h.contains("Sí, permite fotos"));assertTrue(h.contains("No permite fotos"));
     }
     @Test void lasPistasEscapanHtmlYLasFotosExistentesTambienLasIncluyen()throws Exception{
         String h=PaginasEvaluacion.opcion("prueba","valor","Etiqueta","",false,"","<script>texto & prueba</script>");assertFalse(h.contains("<script>"));assertTrue(h.contains("&lt;script&gt;texto &amp; prueba&lt;/script&gt;"));
-        h=get("/evaluaciones/"+evaluacion+"/analizar").body();assertTrue(h.contains("Perfil o frente nítido, con el cuerpo completo. Con esta foto se calculan los ángulos."));assertTrue(h.contains("Foto de contexto: el puesto, la herramienta o la mano. Se guarda, pero no se mide."));assertFalse(h.contains(" checked"));
+        h=get("/evaluaciones/"+evaluacion+"/analizar").body();assertTrue(h.contains("data-foto-id=\""+foto+"\""));assertTrue(h.contains("data-revision=\"si\""));assertTrue(h.contains("Agregar foto"));assertFalse(h.contains(" checked"));
     }
     @Test void ayudaDeLadoApareceEnLaPantallaDeLadoSinCambiarLaPregunta()throws Exception{
-        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+segundo).body();String lado=h.substring(h.indexOf("data-paso=\"7\""),h.indexOf("data-paso=\"8\""));
-        assertTrue(lado.contains("<h2>¿Qué lado tiene más carga?</h2>"));assertTrue(lado.contains("data-ayuda-lado"));
-        for(String texto:List.of("¿Cómo saber qué lado tiene más carga? Observa varios ciclos de la tarea:","¿Con qué mano sostiene la herramienta, la pieza o la carga?","¿Qué brazo se levanta más o se aleja más del cuerpo?","¿Qué brazo repite más el movimiento?","¿Qué muñeca se dobla o gira más?","Si no está claro, elige «Ambos»."))assertTrue(lado.contains(texto),texto);
+        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+segundo).body();String lado=h.substring(h.indexOf("data-paso=\"4\""),h.indexOf("data-paso=\"5\""));
+        assertTrue(lado.contains("<h2>¿Qué lado tiene más carga?</h2>"));assertTrue(lado.contains("class=\"ayuda-lado\""));assertFalse(lado.contains("<details"));
+        for(String texto:List.of("Observa varios ciclos de la tarea:","¿Con qué mano sostiene la herramienta, la pieza o la carga?","¿Qué brazo se levanta más o se aleja más del cuerpo?","¿Qué brazo repite más el movimiento?","¿Qué muñeca se dobla o gira más?","Si no está claro, elige Ambos."))assertTrue(lado.contains(texto),texto);
         assertFalse(lado.contains(" checked"));
     }
     @ParameterizedTest @EnumSource(MotorRula.Carga.class)
@@ -51,7 +51,7 @@ class HttpCierreTest extends HttpPrueba {
     }
     @Test void anadirAnalisisComparteCuerpoEsfuerzoYResultadoSinValoresIniciales()throws Exception{
         var r=get("/evaluaciones/"+evaluacion+"/analizar");assertEquals(200,r.statusCode());String h=r.body();
-        for(String texto:List.of("data-tour=\"analisis\"","data-cuerpo=\"si\"","data-uso-guardada","data-ayuda-lado","esfuerzo_estatica.png","esfuerzo_repetitiva.png","esfuerzo_ninguno.png","carga_1.png","carga_4.png","data-paso=\"11\"","Guardar y evaluar siguiente puesto","Guardar y volver a la visita"))assertTrue(h.contains(texto),texto);
+        for(String texto:List.of("data-tour=\"revision\"","data-revision=\"si\"","data-foto-id","class=\"ayuda-lado\"","esfuerzo_estatica.png","esfuerzo_repetitiva.png","esfuerzo_ninguno.png","carga_1.png","carga_4.png","data-paso=\"7\"","Guardar y evaluar siguiente puesto","Guardar y volver a la visita"))assertTrue(h.contains(texto),texto);
         assertFalse(h.contains(" checked"));assertFalse(h.contains("data-puntaje-final"));
     }
     @Test void siguienteEsActivoYPendienteDeEstaVisitaInclusoSinPuntaje()throws Exception{

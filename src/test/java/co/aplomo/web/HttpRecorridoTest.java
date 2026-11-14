@@ -60,8 +60,9 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
     void contextoDelPuestoDeterminaModoYNoMarcaRespuestas(int numero,String modo)throws Exception {
         int id=numero==1?puesto:planta;String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+id).body();
         assertTrue(h.contains("data-modo>"+modo));assertTrue(h.contains("name=\"puesto\" value=\""+id+"\""));assertTrue(h.contains("La persona firmó en papel el consentimiento para ser evaluada y quedó archivado."));
-        assertTrue(h.contains("role=\"radiogroup\""));assertTrue(h.contains("Editar descripción"));assertTrue(h.contains("data-ninguna-condicion"));assertTrue(h.contains("data-paso=\"9\""));
-        assertFalse(h.contains("data-piernas checked"));assertTrue(h.contains("data-giro><option value=\"\""));assertTrue(h.contains("data-carga><option value=\"\""));assertTrue(h.contains(numero==1?"postura_computador.jpg":"postura_de_pie.jpg"));assertFalse(h.contains(numero==1?"postura_de_pie.jpg":"postura_computador.jpg"));
+        assertTrue(h.contains("role=\"radiogroup\""));assertTrue(h.contains("Cambiar"));assertTrue(h.contains("name=\"ninguna\""));assertTrue(h.contains("data-paso=\"7\""));
+        assertFalse(h.contains(" checked"));assertTrue(h.contains("data-giro><option value=\"\""));assertTrue(h.contains("data-carga><option value=\"\""));assertFalse(h.contains("postura_computador.jpg"));assertFalse(h.contains("postura_de_pie.jpg"));assertTrue(h.contains("value=\""+(numero==1?"Computador":"Ensamble")+"\""));
+
     }
     @Test void puestoAjenoOInactivoNoPuedeEntrarPorDireccionManual()throws Exception {
         var otro=new Empresas(tx).salon(cuenta(admin),new Empresas(tx).guardar(cuenta(admin),new Salon(0,salon.sede(),"Otro salón","Prueba",1,20,true)).id());int ajeno=new Empresas(tx).guardar(cuenta(admin),new Puesto(0,otro.id(),null,null,1,"Ajeno","MESA","Centro",null,true)).id();
@@ -101,25 +102,28 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
         assertEquals(403,get("/visitas/"+visita).statusCode());assertEquals(403,get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).statusCode());
         assertThrows(SecurityException.class,()->new Visitas(tx,reloj).puestos(cuenta(usuario),visita));assertEquals(0,cantidad());
     }
-    @ParameterizedTest @CsvSource({"1,computador;sentado;inclinado;brazos_arriba;herramienta;otra","2,de_pie;cargando;inclinado;brazos_arriba;herramienta;agachado;otra"})
-    void oficinaYPlantaMuestranListasExactasDistintas(int numero,String lista)throws Exception{
+    @ParameterizedTest @ValueSource(ints={1,2})
+    void oficinaYPlantaTienenAtajosDeTareaSinGaleriaNiSelecciones(int numero)throws Exception{
         String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+(numero==1?puesto:planta)).body();
-        var m=java.util.regex.Pattern.compile("data-postura=\"([^\"]+)\"").matcher(h);List<String> claves=new ArrayList<>();while(m.find())claves.add(m.group(1));assertEquals(List.of(lista.split(";")),claves);
-        String otra=h.substring(h.lastIndexOf("<label",h.indexOf("data-postura=\"otra\"")),h.indexOf("</label>",h.indexOf("data-postura=\"otra\"")));assertFalse(otra.contains("<img"));assertTrue(otra.contains("Otra postura"));assertTrue(h.contains("Descríbela con tus palabras"));assertFalse(h.contains(" checked"));
+        var m=java.util.regex.Pattern.compile("data-tarea=\"([^\"]+)\"").matcher(h);List<String> claves=new ArrayList<>();while(m.find())claves.add(m.group(1));
+        assertEquals(List.of("Levantar una caja","Trabajar inclinado","Brazos arriba","Con herramienta","Agachado","Otra"),claves);
+        assertTrue(h.contains("data-cambiar-tarea"));assertTrue(h.contains("maxlength=\"150\""));assertFalse(h.contains(" checked"));assertFalse(h.contains("class=\"tour-opcion tour-postura\""));
     }
     @Test void otraPosturaExigeTextoYConservaSus150Caracteres()throws Exception{
         var f=campos();f.put("postura","");assertEquals(400,enviar(f,null).statusCode());assertEquals(0,cantidad());
         f.put("postura","á".repeat(151));assertEquals(400,enviar(f,null).statusCode());assertEquals(0,cantidad());
         String texto="Evaluación personalizada "+"á".repeat(125);assertEquals(150,texto.length());f.put("postura",texto);var r=enviar(f,null);assertEquals(201,r.statusCode(),r.body());assertEquals(texto,Sql.<String>uno(con,"SELECT postura FROM evaluacion WHERE id_visita=?",rs->rs.getString(1),visita));
     }
-    @ParameterizedTest @CsvSource({"MAS_INADECUADA,Lo más difícil del puesto","MAYOR_EXPOSICION,Lo que más dura"})
+    @ParameterizedTest @CsvSource({"MAS_INADECUADA,Es el momento de mayor esfuerzo postural","MAYOR_EXPOSICION,Es la postura que mantiene durante más tiempo"})
     void momentoCambiaEtiquetaYConservaValorGuardado(String criterio,String etiqueta)throws Exception{
-        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();assertTrue(h.contains("¿Qué vas a fotografiar?"));assertTrue(h.contains(etiqueta));assertTrue(h.contains("Solo se evalúa una postura por foto. Elige una."));assertFalse(h.contains("¿Qué momento vas a evaluar?"));
+        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();assertTrue(h.contains("Contexto de la evaluación"));assertTrue(h.contains(etiqueta));assertTrue(h.contains("Cómo elegir"));assertFalse(h.contains("¿Qué vas a fotografiar?"));
         var f=campos();f.put("criterio",criterio);f.put("minutos","180");var r=enviar(f,null);assertEquals(201,r.statusCode(),r.body());assertEquals(criterio,Sql.<String>uno(con,"SELECT criterio FROM evaluacion WHERE id_visita=?",rs->rs.getString(1),visita));assertEquals(180,Sql.<Integer>uno(con,"SELECT minutos_jornada FROM evaluacion WHERE id_visita=?",rs->rs.getInt(1),visita));
     }
     @Test void fotosUsanUnSoloRecorridoSinDescripcionNiClasificacionManuales()throws Exception{
-        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();for(String pantalla:List.of("permiso","perfil","frente","detalle","resumen"))assertEquals(1,h.split("data-foto-pantalla=\""+pantalla+"\"",-1).length-1);
-        assertTrue(h.contains("Omitir esta foto"));assertTrue(h.contains("Agregar otra foto"));assertTrue(h.contains("data-foto-otro-lado"));assertFalse(h.contains("slotImg"));assertFalse(h.contains("Las imágenes de muestra son de demostración"));assertFalse(h.contains("data-uso-guardada"));String fotos=h.substring(h.indexOf("data-fotos-guiadas"),h.indexOf("data-paso=\"7\""));assertFalse(fotos.contains("<textarea"));assertFalse(fotos.contains("data-uso-guardada"));
+        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();
+        assertEquals(7,h.split("data-revision-segmento=", -1).length-1);
+        assertTrue(h.contains("Agregar foto"));assertTrue(h.contains("data-perfil"));assertTrue(h.contains("data-evaluar-otro"));assertFalse(h.contains("data-foto-pantalla"));assertFalse(h.contains("<dialog"));assertTrue(h.contains("Confirmar mediciones"));
+
     }
     @ParameterizedTest @ValueSource(strings={"FRENTE","OTRA"})
     void perfilEsObligatorioAunqueLleguenOtrasTomas(String vista)throws Exception{

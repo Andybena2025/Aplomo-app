@@ -1,7 +1,7 @@
 /* RF-014/015/016, RNF-002/007: pasos del mismo formulario; la validación definitiva es del servidor. */
 (() => {
   const form = document.querySelector('[data-evaluacion]');
-  if (!form) return;
+  if (!form || form.dataset.revision) return;
   const continuar = Number(form.dataset.continuar || 0);
   const tour=!!form.dataset.tour, inicio=tour?Number(form.dataset.inicio):1;
   const corporal=!!form.dataset.cuerpo;

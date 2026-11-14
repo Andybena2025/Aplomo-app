@@ -30,8 +30,12 @@ class HttpCuerpoTest extends HttpPrueba {
         var f=parcial();f.put("BRAZO_modo","PUNTOS");f.put("BRAZO_puntos","0.5,0.8;0.5,0.4;0.8,0.6");assertEquals(200,post("/evaluaciones/calcular",f).statusCode());
         f.put("BRAZO_puntos","1.1,0.8;0.5,0.4;0.8,0.6");assertEquals(400,post("/evaluaciones/calcular",f).statusCode());f.put("BRAZO_modo","MANUAL");f.put("BRAZO_puntos","");f.put("ajustes_confirmados","si");assertEquals(400,post("/evaluaciones/calcular",f).statusCode());f.put("csrf","incorrecto");assertEquals(403,post("/evaluaciones/calcular",f).statusCode());
     }
-    @Test void paginaUsaLosArchivosExactosDialogoYNingunAvisoInicial()throws Exception{
-        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();assertTrue(h.contains("data-cuerpo=\"si\""));assertTrue(h.contains("class=\"tour-opcion tour-postura\""));assertTrue(h.contains("/static/img/tour/postura_de_pie.jpg"));assertFalse(h.contains("/static/img/tour/postura_computador.jpg"));assertTrue(h.contains("data-postura=\"otra\""));assertTrue(h.contains("/static/img/tour/muneca_desviada.png"));assertTrue(h.contains("aria-modal=\"true\" role=\"dialog\""));assertTrue(h.contains("data-pregunta-pendiente role=\"status\" hidden"));assertTrue(h.contains("name=\"lado_recorrido\" value=\"AMBOS\""));assertFalse(h.contains("class=\"tour-sin-respuesta\""));assertEquals(200,get("/static/js/recorrido.js").statusCode());
+    @Test void paginaUsaRevisionInlineArchivosExactosYNingunAvisoInicial()throws Exception{
+        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();
+        assertTrue(h.contains("data-revision=\"si\""));assertFalse(h.contains("tour-opcion tour-postura"));assertFalse(h.contains("postura_de_pie.jpg"));assertFalse(h.contains("postura_computador.jpg"));
+        assertTrue(h.contains("/static/img/tour/muneca_desviada.png"));assertFalse(h.contains("<dialog"));assertFalse(h.contains("role=\"dialog\""));
+        assertTrue(h.contains("data-error-evaluacion hidden"));assertTrue(h.contains("name=\"lado_recorrido\" value=\"AMBOS\""));assertFalse(h.contains("tour-sin-respuesta"));
+        assertEquals(7,h.split("data-revision-segmento=",-1).length-1);assertEquals(200,get("/static/js/revision-evaluacion.js").statusCode());
     }
     private byte[] png()throws Exception{var b=new ByteArrayOutputStream();ImageIO.write(new java.awt.image.BufferedImage(30,60,1),"png",b);return b.toByteArray();}
     private HttpResponse<String> enviarAmbos(int fotos,boolean duplicado)throws Exception{
