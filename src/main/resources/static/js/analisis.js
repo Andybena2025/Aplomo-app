@@ -20,9 +20,10 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   const estado=f=>f.analisis||(f.analisis={habilitada:form.dataset.tour?f.uso==='MEDIR':f.vista==='PERFIL',lado:f.ladoFijo||'DERECHO',puntos:{},manual:{},ajustes:{},ajustesConfirmados:false,giro:'',piernas:null,actividad:null,carga:'',html:null,revision:0});
   const detectarBoton=form.querySelector('[data-detectar-puntos]');
   const estadoDeteccion=form.querySelector('[data-estado-deteccion]');
-  const falloDeteccion='No se encontró una persona en la foto. Marca los puntos a mano.';
+  const falloDeteccion=form.dataset.conversacion?'Marca los puntos en la foto para seguir. Puedes moverlos con el dedo.':'No se encontró una persona en la foto. Marca los puntos a mano.';
   function mostrarDeteccion(){
     const f=foto();if(!f)return;const s=estado(f);
+    detectarBoton.hidden=!!form.dataset.conversacion&&(s.ia==='error'||!window.AplomoDeteccion.disponible);
     detectarBoton.disabled=s.ia==='cargando'||f.vista==='OTRA';
     detectarBoton.textContent=s.ia==='cargando'?'Detectando puntos…':'Detectar puntos';
     estadoDeteccion.hidden=!s.mensajeIA;estadoDeteccion.textContent=s.mensajeIA||'';
@@ -34,7 +35,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     const revision=s.revision;s.ia='cargando';s.mensajeIA='Detectando puntos…';
     if(f===foto())mostrarDeteccion();
     try{
-      const r=await window.AplomoDeteccion.conTiempo(window.AplomoDeteccion.detectarPuntos(f.src||f.preview),60000,'La detección tardó demasiado.');
+      const r=await window.AplomoDeteccion.conTiempo(window.AplomoDeteccion.detectarPuntos(f.src||f.preview),form.dataset.conversacion?8000:60000,'La detección tardó demasiado.');
       if(!obtenerFotos().includes(f))return;
       if(s.revision!==revision||(f===foto()&&arrastre)){s.ia='manual';s.mensajeIA='Se conservaron tus correcciones manuales.';return;}
       if(!r){s.ia='nada';s.mensajeIA=falloDeteccion;return;}
@@ -48,7 +49,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
         s.revision++;s.html=null;
         if(f===foto()){sincronizar();dibujar();await medir(f).catch(e=>aviso(e.message));}
       }
-    }catch(_){s.ia='error';s.mensajeIA=falloDeteccion;}
+    }catch(_){s.ia='error';s.mensajeIA=falloDeteccion;if(form.dataset.conversacion)window.AplomoDeteccion.cancelar();}
     finally{if(f===foto())mostrarDeteccion();form.dispatchEvent(new Event('aplomo:analisis'));}
   }
   function grupos(f){
@@ -92,13 +93,13 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     if(P.hombro&&P.codo&&P.muneca){P._e1={x:P.codo.x+(P.codo.x-P.hombro.x)*.4,y:P.codo.y+(P.codo.y-P.hombro.y)*.4};if((!destacado||destacado==='ANTEBRAZO')&&texto('ANTEBRAZO'))arco('codo','_e1','muneca',texto('ANTEBRAZO'));}
     if(P.codo&&P.muneca&&P.nudillos){P._e2={x:P.muneca.x+(P.muneca.x-P.codo.x)*.4,y:P.muneca.y+(P.muneca.y-P.codo.y)*.4};if((!destacado||destacado==='MUNECA')&&texto('MUNECA'))arco('muneca','_e2','nudillos',texto('MUNECA'));}
     if(P.cadera&&P.hombro){P._e3={x:P.hombro.x+(P.hombro.x-P.cadera.x)*.4,y:P.hombro.y+(P.hombro.y-P.cadera.y)*.4};P._v={x:P.cadera.x,y:P.cadera.y-100};if((!destacado||destacado==='CUELLO')&&texto('CUELLO'))arco('hombro','_e3','coronilla',texto('CUELLO'));if((!destacado||destacado==='TRONCO')&&texto('TRONCO'))arco('cadera','_v','hombro',texto('TRONCO'));}
-    for(const[k,t]of marcas)if(P[k]){ctx.globalAlpha=iluminados.has(k)?1:.14;const p=P[k];if(arrastre===k){ctx.beginPath();ctx.arc(p.x,p.y,16*escala,0,Math.PI*2);ctx.fillStyle='rgba(237,230,216,.18)';ctx.fill();}ctx.beginPath();ctx.arc(p.x,p.y,Math.max(5,6.5*escala),0,Math.PI*2);ctx.fillStyle='#0B0B0C';ctx.fill();ctx.strokeStyle='#EDE6D8';ctx.lineWidth=2.4;ctx.stroke();ctx.font='12px Inter, sans-serif';ctx.fillStyle='#EDE6D8';ctx.fillText(t,Math.min(p.x+10,w-65),Math.max(15,p.y-10));}
+    for(const[k,t]of marcas)if(P[k]){ctx.globalAlpha=iluminados.has(k)?1:.14;const p=P[k];if(arrastre===k){ctx.beginPath();ctx.arc(p.x,p.y,16*escala,0,Math.PI*2);ctx.fillStyle='rgba(237,230,216,.18)';ctx.fill();}ctx.beginPath();ctx.arc(p.x,p.y,form.dataset.conversacion?22:Math.max(5,6.5*escala),0,Math.PI*2);ctx.fillStyle='#0B0B0C';ctx.fill();ctx.strokeStyle='#EDE6D8';ctx.lineWidth=2.4;ctx.stroke();ctx.font='12px Inter, sans-serif';ctx.fillStyle='#EDE6D8';ctx.fillText(t,Math.min(p.x+10,w-65),Math.max(15,p.y-10));}
     ctx.globalAlpha=1;
     if(destacado==='TRONCO'&&P.cadera){ctx.beginPath();ctx.arc(P.cadera.x,6,5,0,Math.PI*2);ctx.fillStyle='#EDE6D8';ctx.fill();ctx.fillText('Vertical',Math.min(P.cadera.x+10,w-60),18);}
   }
   function pintarMedidas(f){
     if(f!==foto())return;const s=estado(f),pagina=s.html?new DOMParser().parseFromString(s.html,'text/html'):null;
-    if(!form.dataset.cuerpo)s.medidas={};else s.medidas=s.medidas||{};
+    if(!form.dataset.cuerpo&&!form.dataset.conversacion)s.medidas={};else s.medidas=s.medidas||{};
     for(const fila of form.querySelectorAll('[data-segmento]')){
       const k=fila.dataset.segmento,m=pagina&&pagina.querySelector('[data-medicion="'+k+'"]');
       if(m)s.medidas[k]={grados:m.dataset.grados,manual:m.textContent.includes('manual')};

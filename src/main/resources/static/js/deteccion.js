@@ -3,7 +3,11 @@
   const MP_URL='https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/';
   const CORONILLA={arriba:1.2,atras:0.9};
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-  let MP=null,cargando=null,scriptLista=null,cola=Promise.resolve();
+  const LIMITE_MS=8000,MAX_LADO=1280,COMPLEJIDAD=0;
+  let MP=null,cargando=null,scriptLista=null,cola=Promise.resolve(),generacion=0,fallida=false;
+  const diagnostico={etapa:'lista',historial:[]};
+  function etapa(nombre){diagnostico.etapa=nombre;diagnostico.historial.push({etapa:nombre,ms:Math.round(performance.now())});if(diagnostico.historial.length>40)diagnostico.historial.shift();}
+  function cancelar(){fallida=true;generacion++;if(MP)cerrar(MP);cargando=null;etapa('manual');}
 
   function conTiempo(promesa,ms,mensaje){
     let reloj;
@@ -13,11 +17,11 @@
   function cargarScript(){
     if(window.Pose)return Promise.resolve();
     if(scriptLista)return scriptLista;
-    const script=document.createElement('script');
+    etapa('script');const script=document.createElement('script');
     script.src=MP_URL+'pose.js';script.crossOrigin='anonymous';
     const carga=new Promise((ok,no)=>{script.onload=ok;script.onerror=()=>no(new Error('No se pudo cargar la detección.'));});
     document.head.append(script);
-    scriptLista=conTiempo(carga,15000,'La detección no pudo cargarse a tiempo.').catch(error=>{script.remove();scriptLista=null;throw error;});
+    scriptLista=conTiempo(carga,LIMITE_MS,'La detección no pudo cargarse a tiempo.').catch(error=>{script.remove();scriptLista=null;throw error;});
     return scriptLista;
   }
   function cerrar(instancia){
@@ -25,23 +29,30 @@
     try{Promise.resolve(instancia.pose.close()).catch(()=>{});}catch(_){/* El marcado manual sigue disponible. */}
   }
   async function poseLista(){
+    if(fallida)throw new Error('Marca los puntos en la foto.');
     if(MP)return MP;
     if(cargando)return cargando;
+    const turno=generacion;
     cargando=(async()=>{
       await cargarScript();
       const instancia={pose:new window.Pose({locateFile:archivo=>MP_URL+archivo}),resultado:null};
-      instancia.pose.setOptions({modelComplexity:1,staticImageMode:true,smoothLandmarks:false,minDetectionConfidence:.5});
+      instancia.pose.setOptions({modelComplexity:COMPLEJIDAD,staticImageMode:true,smoothLandmarks:false,enableSegmentation:false,minDetectionConfidence:.5});
       instancia.pose.onResults(resultado=>{instancia.resultado=resultado;});
-      try{await conTiempo(instancia.pose.initialize(),45000,'El modelo no pudo cargarse a tiempo.');}
+      etapa('modelo');try{await conTiempo(instancia.pose.initialize(),LIMITE_MS,'El modelo no pudo cargarse a tiempo.');}
       catch(error){cerrar(instancia);throw error;}
-      MP=instancia;return instancia;
+      if(turno!==generacion||fallida){cerrar(instancia);throw new Error('Marca los puntos en la foto.');}MP=instancia;etapa('modelo-listo');return instancia;
     })().finally(()=>{cargando=null;});
     return cargando;
   }
   async function detectar(src){
     const instancia=await poseLista();
     const im=new Image();im.src=src;await im.decode();
-    instancia.resultado=null;await instancia.pose.send({image:im});
+    const escala=Math.min(1,MAX_LADO/Math.max(im.naturalWidth,im.naturalHeight));
+    const lienzo=document.createElement('canvas');lienzo.width=Math.max(1,Math.round(im.naturalWidth*escala));lienzo.height=Math.max(1,Math.round(im.naturalHeight*escala));
+    const ctx=lienzo.getContext('2d');if(!ctx)throw new Error('Marca los puntos en la foto.');ctx.drawImage(im,0,0,lienzo.width,lienzo.height);
+    etapa('imagen-lista');instancia.resultado=null;
+    try{etapa('inferencia');await instancia.pose.send({image:lienzo});etapa('inferencia-lista');}finally{lienzo.width=1;lienzo.height=1;}
+
     const L=instancia.resultado?.poseLandmarks;if(!L)return null;
     if(L.length<33||L.some(q=>!Number.isFinite(q.x)||!Number.isFinite(q.y)))return null;
     const v=i=>L[i].visibility||0;
@@ -57,10 +68,10 @@
     return {L:{cadera:P(I.c),hombro:P(I.h),codo:P(I.co),muneca:P(I.m),nudillos:nud,cabeza:cab},mira:nariz.x>oreja.x?'Derecho':'Izquierdo',raw};
   }
   function detectarPuntos(src){
-    if(window.navigator?.onLine===false)return Promise.reject(new Error("Sin conexión para cargar la detección."));
-    // Una inferencia a la vez: MediaPipe comparte el callback entre fotos.
-    const trabajo=cola.then(()=>conTiempo(detectar(src),60000,'La detección tardó demasiado.').catch(error=>{if(MP)cerrar(MP);throw error;}));
+    if(fallida||window.navigator?.onLine===false)return Promise.reject(new Error('Marca los puntos en la foto.'));
+    const trabajo=cola.then(()=>conTiempo(detectar(src),LIMITE_MS,'Marca los puntos en la foto.').catch(error=>{cancelar();throw error;}));
     cola=trabajo.catch(()=>{});return trabajo;
   }
-  window.AplomoDeteccion={detectarPuntos,conTiempo};
+  function preparar(){if(fallida||window.navigator?.onLine===false)return Promise.resolve(false);return conTiempo(poseLista(),LIMITE_MS,'Marca los puntos en la foto.').then(()=>true).catch(()=>{cancelar();return false;});}
+  window.AplomoDeteccion={detectarPuntos,conTiempo,preparar,cancelar,get disponible(){return !fallida&&typeof WebAssembly!=='undefined';},diagnostico,LIMITE_MS,MAX_LADO};
 })();
