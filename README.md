@@ -179,9 +179,11 @@ La carga es voluntaria e idempotente: no borra los datos existentes. Cambiar las
 
 ## Equipo
 
+- Andrés Eduardo Benavides (Andy) — Diseñador UI y desarrollador
 - Laura Gabriella Romero Gómez
 - Johan Andrés Zapata Quintero
-- Andrés Eduardo Benavides
+
+Proyecto Nuclear de Ingeniería de Software, Corporación Universitaria Empresarial Alexander von Humboldt, 2026-2
 
 Docente: Ing. Arle Morales Ortiz.
 
