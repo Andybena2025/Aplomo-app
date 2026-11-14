@@ -24,6 +24,19 @@ public final class VisitaDao {
     /** Datos de cálculo de la calificación; los nulos representan fotos o análisis aún inexistentes. */
     public record Resultado(int evaluacion, int puesto, Integer foto, Integer analisis, Integer puntaje) {}
 
+    /** Puesto pendiente de una visita en curso; puesto nulo si ya no quedan pendientes. */
+    public record ParaEvaluar(int visita,String empresa,String sede,Integer puesto,Integer numero,String descripcion) {}
+
+    /** Solo se invoca después de validar el Administrador vigente en el servicio. */
+    public List<ParaEvaluar> paraEvaluar(Connection con) throws SQLException {
+        return Sql.listar(con,"SELECT v.id_visita,e.nombre empresa,s.nombre sede,p.id_puesto,p.numero,p.descripcion "
+            +"FROM visita v JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa e USING(id_empresa) "
+            +"LEFT JOIN puesto_trabajo p ON p.id_salon=l.id_salon AND p.activo=TRUE AND NOT EXISTS "
+            +"(SELECT 1 FROM evaluacion ev WHERE ev.id_visita=v.id_visita AND ev.id_puesto=p.id_puesto) "
+            +"WHERE v.estado='EN_CURSO' ORDER BY e.nombre,s.nombre,v.id_visita,p.numero,p.id_puesto",
+            f->new ParaEvaluar(f.getInt("id_visita"),f.getString("empresa"),f.getString("sede"),Sql.enteroOpcional(f,"id_puesto"),Sql.enteroOpcional(f,"numero"),f.getString("descripcion")));
+    }
+
     /** Crea el acceso JDBC a las visitas. */
     public VisitaDao() {}
 

@@ -925,3 +925,10 @@ form[data-tour] .cuerpo-rangos .tour-opcion>.tour-pastilla{padding:3px 7px;font-
 @media(min-width:721px) and (max-width:1000px) and (orientation:portrait){form[data-tour] [data-paso="10"]>.tour-opciones{max-width:630px;width:100%}}
 
 @media(min-width:721px) and (max-width:1000px) and (orientation:portrait){form[data-tour] .cuerpo-rangos .tour-franja>span,form[data-tour] .cuerpo-rangos .tour-franja .tour-ayuda{line-height:1.2}}
+
+/* Paso 13G-B · acceso a los puestos pendientes, sin nuevos colores. */
+.evaluar-ahora{margin-bottom:var(--s5)}.evaluar-ahora h3{margin:0}.evaluar-ahora p{margin:0}
+.evaluar-puestos{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}
+.evaluar-puestos li{display:flex;gap:var(--s3);justify-content:space-between;align-items:center;border:1px solid var(--line2);border-radius:16px;padding:var(--s4);min-width:0}
+.evaluar-puestos li>div{min-width:0;overflow-wrap:anywhere}.evaluar-puestos .btn{flex-shrink:0}
+@media(max-width:720px){.evaluar-puestos{grid-template-columns:1fr}}

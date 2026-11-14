@@ -42,7 +42,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 10 | Sugerencias del sistema y seguimiento de mejoras | ✅ Hecho |
 | 11 | Consultas: buscar, filtrar y ordenar en las 11 secciones | ✅ Hecho |
 | 12 | Calificación de sedes y empresa + informe general en PDF | ✅ Hecho |
-| 13 | Pulido final, prueba en Chrome, Edge y Firefox, datos de demostración | 🟡 13G-A: contador estable y pantallas de tableta completas ([informe](docs/informe_paso13g.md)); bloque B y QA físico / compatibilidad completa pendientes |
+| 13 | Pulido final, prueba en Chrome, Edge y Firefox, datos de demostración | 🟡 13G: contador estable, pantallas completas, demo lista y Evaluar ahora ([informe](docs/informe_paso13g.md)); revisión de Andy y QA físico / compatibilidad completa pendientes |
 | 14 | (Opcional) Detección automática de puntos con IA | ✅ Implementado · pendiente de revisión |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
@@ -105,13 +105,17 @@ Sin frameworks, como lo pide la guía del proyecto.
 - **HTML, CSS y JavaScript puro**, con el estilo "Obsidian & Ivory" del prototipo
 - **Maven** (incluido con `./mvnw`, no hace falta instalarlo)
 
+Demo opcional lista para evaluar: Mac `bash scripts/cargar_demo.sh`; Windows `scripts\cargar_demo.bat`. Cada empresa trae Oficina/Planta y una visita En curso.
+Reinicio de desarrollo: Mac `bash scripts/reiniciar_demo.sh`; Windows `scripts\reiniciar_demo.bat`; exige administrador de MySQL y escribir `REINICIAR DEMO` antes de borrar solo las tres empresas DEMO-APLOMO.
+Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuentas vinculadas, cancela; las cuentas y otras empresas se conservan. Cierra la app antes de reiniciar y vuelve a abrirla después.
+
 ## Pruebas
 
 ```bash
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**824 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**833 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 

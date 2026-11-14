@@ -1,0 +1,19 @@
+{
+  "base": "rula_ergonomia_pruebas",
+  "origen": "Inicio → Evaluar ahora",
+  "modos": [
+    "Planta",
+    "Oficina"
+  ],
+  "fotoPerfil": "S6_levantando_pieza_pesada_perfil.jpg",
+  "guardadas": 2,
+  "analisisPorEvaluacion": 2,
+  "puntajes": [
+    7,
+    7
+  ],
+  "erroresConsola": [],
+  "usuarioSinTarjeta": true,
+  "direccionManual": "Acceso denegado",
+  "medidasRecorrido": 60
+}

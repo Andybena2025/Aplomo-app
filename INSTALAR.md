@@ -119,6 +119,10 @@ La demostración aparece en las listas de Empresas y Reservas. En la universidad
 
 ---
 
+Demo opcional lista para evaluar: Mac `bash scripts/cargar_demo.sh`; Windows `scripts\cargar_demo.bat`. Cada empresa trae Oficina/Planta y una visita En curso.
+Reinicio de desarrollo: Mac `bash scripts/reiniciar_demo.sh`; Windows `scripts\reiniciar_demo.bat`; exige administrador de MySQL y escribir `REINICIAR DEMO` antes de borrar solo las tres empresas DEMO-APLOMO.
+Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuentas vinculadas, cancela; las cuentas y otras empresas se conservan. Cierra la app antes de reiniciar y vuelve a abrirla después.
+
 ## Pruebas (opcional)
 
 Las pruebas usan una base aparte, **`rula_ergonomia_pruebas`**, para no ensuciar la real.
@@ -128,7 +132,7 @@ bash scripts/crear_base_pruebas.sh   # Mac; en Windows usa "Git Bash" con el mis
 ./mvnw test                           # Windows: mvnw.cmd test
 ```
 
-Deben aprobar **824 pruebas**.
+Deben aprobar **833 pruebas**.
 
 ---
 

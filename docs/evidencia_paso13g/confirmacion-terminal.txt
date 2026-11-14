@@ -1,0 +1,5 @@
+Ensayo manual en terminal: base rula_ergonomia_pruebas.
+Usuario root de MySQL; contraseña solicitada de forma oculta.
+Mostró alcance DEMO-APLOMO-E1/E2/E3 y pidió REINICIAR DEMO.
+Se respondió NO: «Cancelado. No se cambió ningún dato.»
+No se confirmó ni ejecutó un reinicio en la base real.

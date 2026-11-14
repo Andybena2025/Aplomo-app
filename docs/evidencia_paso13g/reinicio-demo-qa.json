@@ -1,0 +1,1 @@
+{"base":"rula_ergonomia_pruebas","administrador_mysql":true,"carga_doble_sin_duplicados":true,"reinicio_y_recarga":true,"empresa_E4_y_puesto_conservados":true,"cuentas_intactas":true,"cuenta_vinculada_bloquea":true,"fallo_revertible":true,"fotos_demo_enumeradas":4,"rollback_final":true}

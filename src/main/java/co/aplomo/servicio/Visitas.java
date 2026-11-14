@@ -39,6 +39,11 @@ public final class Visitas {
         });
     }
 
+    /** Acceso administrativo a puestos pendientes; no expone visitas en curso al Usuario. */
+    public List<ParaEvaluar> paraEvaluar(Cuenta actor) throws SQLException {
+        return tx.ejecutar(con->{administrador(con,actor);return visitas.paraEvaluar(con);});
+    }
+
     /** Consulta una visita; el Usuario solo puede abrir las finalizadas de su propia empresa. */
     public Ficha consultar(Cuenta actor, int id) throws SQLException {
         return tx.ejecutar(con -> visible(con, actor, id));
