@@ -58,7 +58,7 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
     @ParameterizedTest @CsvSource({"1,Oficina","2,Planta"})
     void contextoDelPuestoDeterminaModoYNoMarcaRespuestas(int numero,String modo)throws Exception {
         int id=numero==1?puesto:planta;String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+id).body();
-        assertTrue(h.contains("data-modo>"+modo));assertTrue(h.contains("name=\"puesto\" value=\""+id+"\""));assertTrue(h.contains("La persona firmó el consentimiento físico y queda archivado"));
+        assertTrue(h.contains("data-modo>"+modo));assertTrue(h.contains("name=\"puesto\" value=\""+id+"\""));assertTrue(h.contains("La persona firmó en papel el consentimiento para ser evaluada y quedó archivado."));
         assertTrue(h.contains("role=\"radiogroup\""));assertTrue(h.contains("Editar descripción"));assertTrue(h.contains("data-ninguna-condicion"));assertTrue(h.contains("data-paso=\"9\""));
         assertFalse(h.contains("data-piernas checked"));assertTrue(h.contains("data-giro><option value=\"\""));assertTrue(h.contains("data-carga><option value=\"\""));assertTrue(h.contains("postura_de_pie.jpg"));
     }
@@ -77,7 +77,7 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
     }
     @ParameterizedTest @ValueSource(strings={"CON_FOTOS","SIN_REGISTRO_FOTOGRAFICO"})
     void sinConsentimientoFisicoNoGuardaAunqueSeSalteLaInterfaz(String registro)throws Exception {
-        var f=campos();f.put("registro",registro);f.remove("acepta");var respuesta=enviar(f,null);assertEquals(400,respuesta.statusCode());assertTrue(respuesta.body().contains("consentimiento físico"));assertEquals(0,cantidad());
+        var f=campos();f.put("registro",registro);f.remove("acepta");var respuesta=enviar(f,null);assertEquals(400,respuesta.statusCode());assertTrue(respuesta.body().contains("consentimiento para ser evaluada"));assertEquals(0,cantidad());
     }
     @ParameterizedTest @ValueSource(strings={"tiempo","sinCondiciones","ningunaYCondicion","fotoSinRegistro"})
     void rechazaContextoIncompletoOContradictorioSinPerderValidaciones(String caso)throws Exception {

@@ -47,6 +47,8 @@ Al siguiente puesto de la misma visita se recuerdan postura (también la descrip
 
 Añadir análisis empieza con Para medir / De apoyo en fotos existentes, luego lado, el mismo cuerpo, dos preguntas de esfuerzo por análisis y el mismo resultado. Crea análisis nuevos y conserva los anteriores; no edita contexto de la evaluación ni aplica recuerdos de otro puesto. Se conserva la compatibilidad HTTP del destino anterior para clientes que no envían destino_guardado. Los diagramas y la especificación de casos de uso siguen a cargo de Claude, como indicó el encargo.
 
+**Pulido 13F (encargo de Andy, 13 nov 2026):** ayudas por opción (Tiempo usa una sola ayuda); consentimiento en papel y permiso de fotos con textos separados. La detección consulta los cinco segmentos al servidor y los propone sin confirmar, con resumen «Lo que midió la foto» y «Según la foto»; una elección distinta queda indicada sin mover la sugerencia. Los recuerdos de 13E se conservan preseleccionados con aviso, confirmación explícita y «Del puesto anterior», según OPCIÓN 2 del encargo final. Cero desplazamiento vertical/lateral comprobado en las cuatro ventanas de iPad indicadas; no implica prueba física. Detalle y medidas: `informe_paso13f.md`.
+
 Al terminar las evaluaciones, **Finalizar visita** (RF-013b): requiere al menos una evaluación guardada; pide notas; calcula la calificación (promedio) y pasa la reserva a Finalizada.
 
 ## Listas (RF-024)

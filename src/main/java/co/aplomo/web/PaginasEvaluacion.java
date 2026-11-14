@@ -39,26 +39,24 @@ public final class PaginasEvaluacion {
             if(contexto.puestos().isEmpty())h.append("<p class=\"banner\">Este salón no tiene puestos activos</p>").append(PaginasEmpresas.enlace("/salones/"+ficha.salon()+"/puestos/nuevo","Registrar un puesto",false));
             h.append("</section>");
         }else h.append("<input type=\"hidden\" name=\"puesto\" value=\"").append(elegido.id()).append("\" data-tipo=\"").append(escapar(elegido.tipo())).append("\">");
-        h.append("<section class=\"card stack tour-pregunta\" data-paso=\"1\"").append(elegido==null?" hidden":"").append("><h2>Consentimiento</h2><label class=\"tour-opcion tour-consentimiento\"><input type=\"checkbox\" name=\"acepta\" value=\"si\" required><span>La persona firmó el consentimiento físico y queda archivado</span></label><p class=\"hint\">La autorización de las fotos se elige después, por separado.</p></section>")
+        h.append("<section class=\"card stack tour-pregunta\" data-paso=\"1\"").append(elegido==null?" hidden":"").append("><h2>Consentimiento para la evaluación</h2>").append(opcion("acepta","si","La persona firmó en papel el consentimiento para ser evaluada y quedó archivado.","",true,"required","Este permiso es para observar y evaluar su puesto. Las fotos son un permiso aparte: lo eliges en el paso Fotos.").replace("class=\"tour-opcion\"","class=\"tour-opcion tour-consentimiento\"")).append("</section>")
             .append("<section class=\"card stack tour-pregunta\" data-paso=\"2\" hidden><h2>¿Qué postura vas a evaluar?</h2><p class=\"muted\" data-consejo-modo></p><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Postura que vas a evaluar\" data-posturas>");
-        String[][] posturas={{"de_pie","De pie en mesa o línea"},{"computador","Sentado en computador"},{"sentado","Sentado sin computador"},{"inclinado","Inclinado hacia adelante"},{"brazos_arriba","Brazos por encima de los hombros"},{"cargando","Levantando o cargando"},{"herramienta","Con herramienta en mano"},{"agachado","Agachado o arrodillado"}};
-        for(var p:posturas)h.append(opcion("postura_opcion",p[1],p[1],"postura_"+p[0]+".jpg",false,"data-postura=\""+p[0]+"\""));
+        String[][] posturas={{"de_pie","De pie en mesa o línea","Trabaja de pie frente a una mesa, banco o línea."},{"computador","Sentado en computador","Usa pantalla, teclado o mouse casi todo el tiempo."},{"sentado","Sentado sin computador","Trabaja sentado con las manos: ensamble, costura, revisión."},{"inclinado","Inclinado hacia adelante","Dobla la espalda para alcanzar o mirar la tarea."},{"brazos_arriba","Brazos por encima de los hombros","Las manos trabajan más arriba que los hombros."},{"cargando","Levantando o cargando","Levanta, lleva o empuja cajas, piezas o material."},{"herramienta","Con herramienta en mano","Sostiene un taladro, pistola, pinza u otra herramienta."},{"agachado","Agachado o arrodillado","Trabaja cerca del piso, en cuclillas o de rodillas."}};
+        for(var p:posturas)h.append(opcion("postura_opcion",p[1],p[1],"postura_"+p[0]+".jpg",false,"data-postura=\""+p[0]+"\"",p[2]));
         h.append("</div><button type=\"button\" class=\"link\" data-editar-postura aria-expanded=\"false\">Editar descripción</button><div class=\"field\" data-descripcion-postura hidden><label for=\"postura\">Descripción de la postura</label><input id=\"postura\" class=\"input\" name=\"postura\" maxlength=\"150\" required></div></section>")
             .append("<section class=\"card stack tour-pregunta\" data-paso=\"3\" hidden><h2>¿Qué momento vas a evaluar?</h2><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Momento de la tarea\">")
-            .append(opcion("criterio","MAS_INADECUADA","La postura más exigente","",false,""))
-            .append(opcion("criterio","MAYOR_EXPOSICION","La que más tiempo dura","",false,""))
-            .append("</div></section><section class=\"card stack tour-pregunta\" data-paso=\"4\" hidden><h2>¿Cuánto tiempo de la jornada?</h2><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Tiempo por jornada\">");
+            .append(opcion("criterio","MAS_INADECUADA","La postura más exigente","",false,"","Elige el momento con brazos más altos, espalda más doblada o más fuerza, aunque dure poco."))
+            .append(opcion("criterio","MAYOR_EXPOSICION","La que más tiempo dura","",false,"","Elige la postura en la que pasa la mayor parte del turno."))
+            .append("</div></section><section class=\"card stack tour-pregunta\" data-paso=\"4\" hidden><h2>¿Cuánto tiempo de la jornada?</h2><p class=\"hint\">Suma todos los ratos del turno en que la persona está en esta postura.</p><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Tiempo por jornada\">");
         String[][] tiempos={{"30","Menos de 1 h"},{"90","1–2 h"},{"180","2–4 h"},{"300","Más de 4 h"}};
-        for(var t:tiempos)h.append(opcion("minutos",t[0],t[1],"",false,""));
+        for(var t:tiempos)h.append(opcion("minutos",t[0],t[1],"",false,"",""));
         h.append("</div></section><section class=\"card stack tour-pregunta\" data-paso=\"5\" hidden><h2>¿Qué ves en el puesto?</h2><div class=\"tour-opciones\" role=\"group\" aria-label=\"Condiciones del puesto\">");
-        for(var c:CONDICIONES)h.append(opcion(c[0],"si",c[1],"",true,"aria-describedby=\"ayuda-"+c[0]+"\""));
-        h.append(opcion("ninguna","si","Ninguna","",true,"data-ninguna-condicion"))
-            .append("</div><details class=\"guia\"><summary>Ayuda · cómo reconocer las condiciones</summary><ul class=\"ayuda-condiciones\">");
-        for(var c:CONDICIONES)h.append("<li id=\"ayuda-").append(c[0]).append("\"><b>").append(c[1]).append(":</b> ").append(c[2]).append("</li>");
-        h.append("</ul></details>").append(Formularios.texto(Map.of(),"observaciones","Otras observaciones (opcional)",255,false)).append("<p class=\"hint\">Máximo 255 caracteres. La nota se guarda completa y no se añade al motivo.</p></section>")
-            .append("<section class=\"card stack tour-pregunta\" data-paso=\"6\" hidden><h2>Fotos</h2><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Registro fotográfico\">")
-            .append(opcion("registro","CON_FOTOS","Con fotos","",false,""))
-            .append(opcion("registro","SIN_REGISTRO_FOTOGRAFICO","Sin fotos (la persona no aceptó fotos)","",false,""))
+        for(var c:CONDICIONES)h.append(opcion(c[0],"si",c[1],"",true,"",c[2]));
+        h.append(opcion("ninguna","si","Ninguna","",true,"data-ninguna-condicion","No ves ninguna de estas condiciones."))
+            .append("</div>").append(Formularios.texto(Map.of(),"observaciones","Otras observaciones (opcional)",255,false)).append("<p class=\"hint\">Máximo 255 caracteres. La nota se guarda completa y no se añade al motivo.</p></section>")
+            .append("<section class=\"card stack tour-pregunta\" data-paso=\"6\" hidden><h2>¿La persona permite que le tomes fotos?</h2><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Registro fotográfico\">")
+            .append(opcion("registro","CON_FOTOS","Sí, permite fotos","",false,"","Tomas de 1 a 10 fotos. Con ellas se miden los ángulos y se calcula el puntaje."))
+            .append(opcion("registro","SIN_REGISTRO_FOTOGRAFICO","No permite fotos","",false,"","Se guarda la evaluación sin fotos y sin puntaje RULA."))
             .append("</div><div data-con-fotos hidden class=\"stack\"><p class=\"hint\">De 1 a 10 fotos JPG o PNG de hasta 5 MB. Elige para cada una si sirve para medir o de apoyo.</p><div data-lado-principal><h3>Perfil, frente y detalle</h3></div><div class=\"slots\" data-lado-principal>")
             .append(slot("perfil","Perfil","PERFIL","Cámara a 90° del costado, a la altura de la cadera y a 2–3 metros. Que se vean la cabeza y los pies.","perfil"))
             .append(slot("frente","Frente","FRENTE","Cámara de frente, a la altura de la cadera y a 2–3 metros. Mismo momento de la tarea.","frente"))
@@ -72,9 +70,12 @@ public final class PaginasEvaluacion {
         return Html.pagina("Nueva evaluación",h.toString(),sesion,false,false);
     }
 
-    private static String opcion(String nombre,String valor,String etiqueta,String imagen,boolean multiple,String atributos) {
+    /** Opciones con pista vinculada y nombre independiente de su descripción. */
+    static String opcion(String nombre,String valor,String etiqueta,String imagen,boolean multiple,String atributos,String ayuda) {
         String img=!imagen.isEmpty() && PaginasEvaluacion.class.getResource("/static/img/tour/"+imagen)!=null ? "<img src=\"/static/img/tour/"+imagen+"\" alt=\"\" loading=\"lazy\">" : "";
-        return "<label class=\"tour-opcion"+(imagen.startsWith("postura_")?" tour-postura":"")+"\"><input type=\""+(multiple?"checkbox":"radio")+"\" name=\""+nombre+"\" value=\""+escapar(valor)+"\" "+atributos+"><span>"+img+"<span>"+escapar(etiqueta)+"</span></span></label>";
+        String id="tour-"+nombre+"-"+HexFormat.of().formatHex(valor.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        String pista=ayuda.isEmpty()?"":"<small class=\"tour-ayuda\" id=\""+id+"-ayuda\">"+escapar(ayuda)+"</small>";
+        return "<label class=\"tour-opcion"+(imagen.startsWith("postura_")?" tour-postura":"")+"\"><input type=\""+(multiple?"checkbox":"radio")+"\" name=\""+nombre+"\" value=\""+escapar(valor)+"\" "+atributos+" aria-labelledby=\""+id+"-texto\""+(ayuda.isEmpty()?"":" aria-describedby=\""+id+"-ayuda\"")+"><span>"+img+"<span class=\"tour-franja\"><span id=\""+id+"-texto\">"+escapar(etiqueta)+"</span>"+pista+"</span></span></label>";
     }
 
     private static String slot(String id, String titulo, String vista, String ayuda, String muestra) {

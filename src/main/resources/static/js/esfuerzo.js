@@ -10,6 +10,7 @@ window.crearEsfuerzoGuiado=(form,analizador,memoria,actualizar)=>{
     const previo=n===9?recordado?.actividad:recordado?.carga;
     const opcion=valor||previo;
     for(const radio of form.querySelectorAll(grupos[n]))radio.checked=radio.value===opcion;
+    memoria.marcarRecordada([...form.querySelectorAll(grupos[n])],previo);
     const panel=form.querySelector(`[data-paso="${n}"]`);
     panel.querySelector('[data-tarea-esfuerzo]').textContent=`Foto ${(d.foto.indiceFoto??indice)+1} · Lado ${d.estado.lado==='DERECHO'?'derecho':'izquierdo'} · ${indice+1} de ${fotos.length}`;
     panel.querySelector('[data-recuerdo-esfuerzo]').hidden=!!valor||!previo;

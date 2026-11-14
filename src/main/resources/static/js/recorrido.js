@@ -15,6 +15,8 @@ window.crearRecorridoCorporal=(form,analizador,aviso,renovar,alCambiar,alTermina
   panel.querySelector('[data-analizar-foto]').closest('label').hidden=true;
   editor.querySelector('[data-lado]').closest('.field').hidden=true;
   medida.lastElementChild.hidden=true;rangos.hidden=false;medida.append(rangos);
+  const resumen=document.createElement('div');resumen.className='resumen-ia';resumen.dataset.resumenIa='';resumen.setAttribute('role','status');resumen.hidden=true;fotoPanel.append(resumen);
+  const gradosTexto=v=>Number(v).toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})+'°';
   const actual=()=>{const d=analizador.datos();if(!d)return null;d.estado.recorrido||={confirmados:{},ajustes:{},elecciones:{},noFoto:{},manualEscrito:{},sugerencias:{}};return {...d,r:d.estado.recorrido,k:orden[segmento]};};
   const radios=k=>[...rangos.querySelectorAll(`[data-rangos="${k}"] input[type="radio"]`)];
   const igual=(k,a,b)=>angulares.includes(k)?Number(a)===Number(b):a===b;
@@ -29,24 +31,63 @@ window.crearRecorridoCorporal=(form,analizador,aviso,renovar,alCambiar,alTermina
     form.querySelector('[data-puntaje-parcial]').textContent=d.r.ultimo?`Puntaje parcial · ${d.r.ultimo}`:'Puntaje parcial · Pendiente';
     form.querySelector('[data-final-pendiente]').textContent='Puntaje final: Pendiente';
     rangos.querySelectorAll('[data-rangos]').forEach(g=>g.hidden=g.dataset.rangos!==d.k);
-    for(const radio of radios(d.k))radio.checked=elegido(d)&&igual(d.k,radio.value,d.r.elecciones[d.k]);
+    for(const k of orden)for(const radio of radios(k))radio.checked=d.r.elecciones[k]!==undefined&&igual(k,radio.value,d.r.elecciones[k]);
     fotoPanel.hidden=!!d.r.noFoto[d.k];
     rangos.querySelector('[data-corregir-cuerpo]').hidden=!angulares.includes(d.k);
     manual.hidden=!d.r.manualAbierto||!angulares.includes(d.k);
     angulo.min=d.k==='ANTEBRAZO'?'0':'-180';angulo.value=d.estado.manual[d.k]??'';
     rangos.querySelector('[data-no-foto]').textContent=d.r.noFoto[d.k]?'Volver a ver la foto':'No se ve en la foto';
-    const sug=d.r.sugerencias[d.k];let texto='';
+    const sug=d.r.medicionActual?.[d.k]||d.r.sugerencias[d.k];let texto='';
     if(d.k==='PIERNAS'&&d.r.piernasSugeridas&&!d.r.confirmados.PIERNAS)texto='Según lo que marcaste en el puesto: confirma el apoyo de las piernas.';
-    else if(sug)texto=(sug.manual?'Corrección manual: ':'Sugerido por la foto: ')+Number(sug.grados).toLocaleString('es-CO',{maximumFractionDigits:2})+'° · revísalo y confirma.';
+    else if(sug)texto=(sug.manual?'Corrección manual: ':'Sugerido por la foto: ')+gradosTexto(sug.grados)+' · revísalo y confirma.';
     else if(angulares.includes(d.k))texto=d.r.noFoto[d.k]?'Elige el rango que observas directamente en el puesto.':'Marca los puntos, detecta la postura o elige un rango por observación directa.';
     form.querySelector('[data-sugerencia-foto]').textContent=texto;
-    analizador.destacar(d.k);alCambiar();
+    pintarResumen(d);pintarSugerida(d);analizador.destacar(d.k);alCambiar();
+  }
+  const etiquetaRango=(k,valor)=>radios(k).find(r=>igual(k,r.value,valor))?.closest('label').querySelector('.tour-franja > span')?.textContent||'';
+  function pintarResumen(d){
+    resumen.hidden=d.estado.ia!=='ok';if(resumen.hidden)return;
+    resumen.replaceChildren();const titulo=document.createElement('strong'),nota=document.createElement('p');titulo.textContent='Lo que midió la foto';nota.className='hint';nota.textContent='Revisa cada segmento. Si no estás de acuerdo, toca otra opción.';resumen.append(titulo,nota);
+    for(const k of angulares){const fila=document.createElement('div'),texto=document.createElement('span'),s=d.r.sugerencias[k];fila.dataset.resumenSegmento=k;fila.classList.toggle('actual',k===d.k);
+      texto.textContent=(d.r.confirmados[k]?'✓ ':'')+nombres[k]+' · '+(s?gradosTexto(s.grados)+' → '+etiquetaRango(k,s.rango):d.grupos[k].length===3?'Revisando la medición…':'sin puntos → elige a mano');fila.append(texto);
+      if(d.r.elecciones[k]!==undefined&&(!s||!igual(k,s.rango,d.r.elecciones[k]))){const eleccion=document.createElement('small');eleccion.textContent='Tu elección: '+etiquetaRango(k,d.r.elecciones[k]);fila.append(eleccion);}resumen.append(fila);
+    }
+  }
+  function pintarSugerida(d){
+    const s=d.estado.ia==='ok'?d.r.sugerencias[d.k]:null;
+    const candidata=s?radios(d.k).find(r=>igual(d.k,r.value,s.rango))?.closest('label'):null;
+    for(const etiqueta of rangos.querySelectorAll('.tour-opcion')){
+      if(etiqueta!==candidata){etiqueta.classList.remove('tour-sugerida','tour-brilla');etiqueta.querySelector('[data-pastilla-foto]')?.remove();}
+    }
+    if(candidata&&!candidata.classList.contains('tour-sugerida')){candidata.classList.add('tour-sugerida');const tag=document.createElement('span');tag.className='tag tour-pastilla';tag.dataset.pastillaFoto='';tag.textContent='Según la foto';candidata.append(tag);
+      d.r.brillos||=new Set();const clave=d.k+':'+s.rango;if(!d.r.brillos.has(clave)){d.r.brillos.add(clave);candidata.classList.add('tour-brilla');}
+    }
+  }
+  async function consultar(p){
+    p.set('csrf',form.elements.csrf.value);p.set('visita',form.elements.visita.value);
+    let respuesta=await fetch('/evaluaciones/calcular',{method:'POST',body:p,credentials:'same-origin',redirect:'manual'});
+    if(respuesta.status===403&&await renovar()){p.set('csrf',form.elements.csrf.value);respuesta=await fetch('/evaluaciones/calcular',{method:'POST',body:p,credentials:'same-origin',redirect:'manual'});}
+    if(!respuesta.ok)throw new Error((respuesta.headers.get('Content-Type')||'').startsWith('text/plain')?await respuesta.text():'No pudimos revisar la medición. Tus respuestas se conservan; inténtalo de nuevo.');
+    const nodo=new DOMParser().parseFromString(await respuesta.text(),'text/html').querySelector('[data-parcial]');if(!nodo)throw new Error('No pudimos recibir la medición. Inténtalo de nuevo.');return nodo;
+  }
+  async function medirFotoCompleta(){
+    const d=actual();if(!d||d.estado.ia!=='ok')return;
+    const firma=JSON.stringify([d.estado.puntos,d.foto.ancho,d.foto.alto,d.estado.lado]);if(d.r.firmaFoto===firma)return;d.r.firmaFoto=firma;
+    await Promise.all(angulares.map(async k=>{
+      if(d.grupos[k].length!==3){delete d.r.sugerencias[k];if(d.estado.manual[k]===undefined){delete d.r.medicionActual?.[k];if(!d.r.confirmados[k]&&!d.r.eleccionExplicita?.[k]&&!d.r.manualEscrito[k])delete d.r.elecciones[k];}return;}
+      const p=analizador.parametrosActuales();p.set('segmento',k);p.set(k+'_modo','PUNTOS');p.delete(k+'_grados');p.set('ajustes_confirmados','no');
+      try{const n=await consultar(p);if(d.r.firmaFoto!==firma)return;const sug={grados:Number(n.dataset.grados),rango:Number(n.dataset.rango),manual:false};d.r.sugerencias[k]=sug;d.estado.medidas||={};if(d.estado.manual[k]===undefined){d.estado.medidas[k]={grados:sug.grados,manual:false};d.r.medicionActual||={};d.r.medicionActual[k]=sug;}
+        if(!d.r.confirmados[k]&&!d.r.eleccionExplicita?.[k]&&!d.r.manualEscrito[k]&&d.estado.manual[k]===undefined)d.r.elecciones[k]=String(sug.rango);
+        if(actual()?.estado===d.estado){refrescar();analizador.repintar();}
+      }catch(e){if(d.r.firmaFoto===firma)delete d.r.firmaFoto;aviso(e.message);}
+    }));
+    if(actual()?.estado===d.estado)refrescar();
   }
   function entrar(){
     clearTimeout(autoavance);const d=actual();if(!d)return;d.r.manualAbierto=false;refrescar();programar();
     titulo.tabIndex=-1;titulo.focus({preventScroll:true});window.scrollTo({top:0,behavior:reducir()?'auto':'smooth'});
   }
-  function programar(){clearTimeout(temporizador);temporizador=setTimeout(()=>sondear().catch(e=>aviso(e.message)),140);}
+  function programar(){clearTimeout(temporizador);temporizador=setTimeout(()=>{medirFotoCompleta().catch(e=>aviso(e.message));sondear().catch(e=>aviso(e.message));},140);}
   async function sondear(){
     const d=actual();if(!d)return null;const k=d.k,p=analizador.parametrosActuales();if(!p)return null;
     if(angulares.includes(k)){
@@ -55,15 +96,11 @@ window.crearRecorridoCorporal=(form,analizador,aviso,renovar,alCambiar,alTermina
     }else{const valor=d.r.elecciones[k];if(valor===undefined||!d.r.confirmados[k])return null;p.set('respuesta',valor);}
     p.set('segmento',k);p.set('csrf',form.elements.csrf.value);p.set('visita',form.elements.visita.value);p.set('ajustes_confirmados',d.r.ajustes[k]?'si':'no');
     const num=++peticion,revision=d.estado.revision;
-    let respuesta=await fetch('/evaluaciones/calcular',{method:'POST',body:p,credentials:'same-origin',redirect:'manual'});
-    if(respuesta.status===403&&await renovar()){p.set('csrf',form.elements.csrf.value);respuesta=await fetch('/evaluaciones/calcular',{method:'POST',body:p,credentials:'same-origin',redirect:'manual'});}
-    if(!respuesta.ok)throw new Error((respuesta.headers.get('Content-Type')||'').startsWith('text/plain')?await respuesta.text():'No pudimos revisar la medición. Tus respuestas se conservan; inténtalo de nuevo.');
-    const html=await respuesta.text(),nodo=new DOMParser().parseFromString(html,'text/html').querySelector('[data-parcial]');
-    if(!nodo)throw new Error('No pudimos recibir la medición. Inténtalo de nuevo.');
+    const nodo=await consultar(p);
     if(num!==peticion||revision!==d.estado.revision||actual()?.estado!==d.estado||actual()?.k!==k)return null;
     if(angulares.includes(k)){
       const sug={grados:Number(nodo.dataset.grados),rango:Number(nodo.dataset.rango),manual:nodo.dataset.manual==='true'};
-      d.r.sugerencias[k]=sug;
+      d.r.medicionActual||={};d.r.medicionActual[k]=sug;if(!sug.manual)d.r.sugerencias[k]=sug;
       d.estado.medidas||={};d.estado.medidas[k]={grados:sug.grados,manual:sug.manual};
       if(d.r.elecciones[k]===undefined||!d.r.confirmados[k]&&!d.r.eleccionExplicita?.[k]&&!d.r.manualEscrito[k]&&d.estado.manual[k]===undefined)d.r.elecciones[k]=String(sug.rango);
     }
@@ -73,7 +110,7 @@ window.crearRecorridoCorporal=(form,analizador,aviso,renovar,alCambiar,alTermina
   function prepararEleccion(d){
     if(!elegido(d))return false;
     if(angulares.includes(d.k)){
-      const valor=Number(d.r.elecciones[d.k]),sug=d.r.sugerencias[d.k];
+      const valor=Number(d.r.elecciones[d.k]),sug=d.r.medicionActual?.[d.k]||d.r.sugerencias[d.k];
       const conserva=sug&&igual(d.k,sug.rango,valor)&&(d.estado.manual[d.k]!==undefined&&d.r.manualEscrito[d.k]||!d.r.noFoto[d.k]&&d.estado.manual[d.k]===undefined&&d.grupos[d.k].length===3);
       if(!conserva){d.estado.manual[d.k]=String(valor);d.r.manualEscrito[d.k]=false;}
       d.r.confirmados[d.k]=false;analizador.actualizar(d.k);

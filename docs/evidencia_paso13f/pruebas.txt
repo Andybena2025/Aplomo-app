@@ -1,0 +1,8 @@
+TZ=America/Bogota ./mvnw -Daplomo.evidencia.rendimiento=docs/evidencia_paso13f/rendimiento.json test
+[INFO] Tests run: 801, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  01:10 min
+[INFO] Finished at: 2026-11-13T21:13:25-05:00
+6 archivos JavaScript: node --check correcto
+76 medidas completas: vertical=0, lateral=0
+QA13E: ROLLBACK completado (dos servidores de esta sesión)

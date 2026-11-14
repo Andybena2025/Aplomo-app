@@ -24,6 +24,19 @@ class HttpCierreTest extends HttpPrueba {
         var r=get("/evaluaciones/"+evaluacion+"/analizar");var f=CasosRulaPrueba.campos(CasosRulaPrueba.todos().get(0).entrada());f.put("foto",""+foto);
         return new LinkedHashMap<>(Map.of("csrf",csrf(r),"destino_guardado",destino,"analisis_0",CasosRulaPrueba.codificar(f)));
     }
+    @Test void todasLasOpcionesTienenPistaVinculadaYNoHayRespuestasMarcadasEnElPrimerPuesto()throws Exception{
+        String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+segundo).body();var opciones=java.util.regex.Pattern.compile("<label class=\"tour-opcion[^\"]*\">(.*?)</label>",java.util.regex.Pattern.DOTALL).matcher(h);Set<String> ids=new HashSet<>();int cantidad=0,tiempos=0;
+        while(opciones.find()){String opcion=opciones.group(1);cantidad++;assertFalse(opcion.matches("(?s).*\\bchecked(?:=|[ >]).*"));
+            if(opcion.contains("name=\"minutos\"")){tiempos++;continue;}
+            assertTrue(opcion.contains("<small class=\"tour-ayuda\""),opcion);var id=java.util.regex.Pattern.compile("aria-describedby=\"([^\"]+)\"").matcher(opcion);assertTrue(id.find());assertTrue(ids.add(id.group(1)),"Id de pista repetido");assertTrue(opcion.contains("id=\""+id.group(1)+"\""));
+        }
+        assertTrue(cantidad>60);assertEquals(4,tiempos);assertTrue(h.contains("Suma todos los ratos del turno en que la persona está en esta postura."));assertFalse(h.contains("Ayuda · cómo reconocer las condiciones"));
+        assertTrue(h.contains("Consentimiento para la evaluación"));assertTrue(h.contains("¿La persona permite que le tomes fotos?"));assertTrue(h.contains("Sí, permite fotos"));assertTrue(h.contains("No permite fotos"));
+    }
+    @Test void lasPistasEscapanHtmlYLasFotosExistentesTambienLasIncluyen()throws Exception{
+        String h=PaginasEvaluacion.opcion("prueba","valor","Etiqueta","",false,"","<script>texto & prueba</script>");assertFalse(h.contains("<script>"));assertTrue(h.contains("&lt;script&gt;texto &amp; prueba&lt;/script&gt;"));
+        h=get("/evaluaciones/"+evaluacion+"/analizar").body();assertTrue(h.contains("Perfil o frente nítido, con el cuerpo completo. Con esta foto se calculan los ángulos."));assertTrue(h.contains("Foto de contexto: el puesto, la herramienta o la mano. Se guarda, pero no se mide."));assertFalse(h.contains(" checked"));
+    }
     @Test void ayudaDeLadoApareceEnLaPantallaDeLadoSinCambiarLaPregunta()throws Exception{
         String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+segundo).body();String lado=h.substring(h.indexOf("data-paso=\"7\""),h.indexOf("data-paso=\"8\""));
         assertTrue(lado.contains("<h2>¿Qué lado tiene más carga?</h2>"));assertTrue(lado.contains("data-ayuda-lado"));

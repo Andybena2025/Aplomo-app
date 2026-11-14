@@ -169,7 +169,7 @@ public final class Evaluaciones {
         if (d == null) throw new IllegalArgumentException("Completa los datos de la evaluación.");
         String postura = Validacion.texto(d.postura(), "postura o tarea", 150);
         String criterio = Validacion.opcion(d.criterio(), "criterio de elección", "MAS_INADECUADA", "MAYOR_EXPOSICION");
-        if (!d.aceptaFotos()) throw new IllegalArgumentException("Confirma que la persona firmó el consentimiento físico y queda archivado.");
+        if (!d.aceptaFotos()) throw new IllegalArgumentException("Confirma que la persona firmó en papel el consentimiento para ser evaluada.");
         String momento=criterio.equals("MAS_INADECUADA")?"La postura más exigente":"La que más tiempo dura";
         String motivo="Momento: "+momento+". Postura: "+postura+".";
         Validacion.entero(Integer.toString(d.minutos()), "minutos por jornada", 1, 720);

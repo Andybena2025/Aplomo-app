@@ -76,7 +76,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
       const radio=Math.max(15,26*escala);ctx.save();ctx.strokeStyle='#C9CCD2';ctx.setLineDash([3,3]);ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(P[v].x,P[v].y,radio,inicio,inicio+recorrido,recorrido<0);ctx.stroke();ctx.setLineDash([]);
       const medio=inicio+recorrido/2,x=P[v].x+Math.cos(medio)*(radio+16),y=P[v].y+Math.sin(medio)*(radio+16);ctx.font='600 12px Inter, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';const ancho=ctx.measureText(texto).width+10;ctx.fillStyle='rgba(11,11,12,.85)';ctx.fillRect(x-ancho/2,y-9,ancho,18);ctx.fillStyle='#EDE6D8';ctx.fillText(texto,x,y);ctx.restore();
     };
-    const texto=k=>s.medidas&&s.medidas[k]?Number(s.medidas[k].grados).toFixed(1)+'°'+(s.medidas[k].manual?'*':''):null;
+    const texto=k=>s.medidas&&s.medidas[k]?Number(s.medidas[k].grados).toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})+'°'+(s.medidas[k].manual?'*':''):null;
     if((!destacado||destacado==='BRAZO')&&texto('BRAZO'))arco('hombro','cadera','codo',texto('BRAZO'));
     if(P.hombro&&P.codo&&P.muneca){P._e1={x:P.codo.x+(P.codo.x-P.hombro.x)*.4,y:P.codo.y+(P.codo.y-P.hombro.y)*.4};if((!destacado||destacado==='ANTEBRAZO')&&texto('ANTEBRAZO'))arco('codo','_e1','muneca',texto('ANTEBRAZO'));}
     if(P.codo&&P.muneca&&P.nudillos){P._e2={x:P.muneca.x+(P.muneca.x-P.codo.x)*.4,y:P.muneca.y+(P.muneca.y-P.codo.y)*.4};if((!destacado||destacado==='MUNECA')&&texto('MUNECA'))arco('muneca','_e2','nudillos',texto('MUNECA'));}

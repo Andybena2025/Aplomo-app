@@ -8,20 +8,20 @@ import java.util.*;
 /** Paso 13E-B: catálogo visual y adaptación al motor existente; ninguna fórmula RULA en JavaScript. */
 public final class RecorridoCuerpo {
     private RecorridoCuerpo() {}
-    public record Rango(String imagen,String etiqueta,double grados,int puntos) {}
+    public record Rango(String imagen,String etiqueta,double grados,int puntos,String ayuda) {}
     public static final Map<Segmento,List<Rango>> RANGOS=Map.of(
-        Segmento.BRAZO,List.of(new Rango("brazo_extension.png","Hacia atrás más de 20°",-30,2),new Rango("brazo_neutro.png","Entre −20° y 20°",0,1),new Rango("brazo_20_45.png","20° a 45°",30,2),new Rango("brazo_45_90.png","45° a 90°",60,3),new Rango("brazo_mas_90.png","Más de 90°",110,4)),
-        Segmento.ANTEBRAZO,List.of(new Rango("antebrazo_60_100.png","Entre 60° y 100°",80,1),new Rango("antebrazo_fuera.png","Menos de 60° o más de 100°",40,2)),
-        Segmento.MUNECA,List.of(new Rango("muneca_neutra.png","Recta",0,1),new Rango("muneca_15.png","Doblada hasta 15°",10,2),new Rango("muneca_mas_15.png","Doblada más de 15°",25,3)),
-        Segmento.CUELLO,List.of(new Rango("cuello_0_10.png","0° a 10°",5,1),new Rango("cuello_10_20.png","10° a 20°",15,2),new Rango("cuello_mas_20.png","Más de 20°",30,3),new Rango("cuello_extension.png","Hacia atrás",-15,4)),
-        Segmento.TRONCO,List.of(new Rango("tronco_erguido.png","Erguido o sentado bien apoyado",0,1),new Rango("tronco_0_20.png","0° a 20°",10,2),new Rango("tronco_20_60.png","20° a 60°",40,3),new Rango("tronco_mas_60.png","Más de 60°",75,4)));
+        Segmento.BRAZO,List.of(new Rango("brazo_extension.png","Hacia atrás más de 20°",-30,2,"El codo queda por detrás del cuerpo."),new Rango("brazo_neutro.png","Entre −20° y 20°",0,1,"El brazo cuelga junto al cuerpo."),new Rango("brazo_20_45.png","20° a 45°",30,2,"El brazo va un poco hacia adelante, codo bajo."),new Rango("brazo_45_90.png","45° a 90°",60,3,"El brazo va hacia adelante, por debajo del hombro."),new Rango("brazo_mas_90.png","Más de 90°",110,4,"La mano trabaja por encima del hombro.")),
+        Segmento.ANTEBRAZO,List.of(new Rango("antebrazo_60_100.png","Entre 60° y 100°",80,1,"El codo está doblado más o menos en escuadra."),new Rango("antebrazo_fuera.png","Menos de 60° o más de 100°",40,2,"El brazo está casi estirado o muy doblado.")),
+        Segmento.MUNECA,List.of(new Rango("muneca_neutra.png","Recta",0,1,"La mano sigue la línea del antebrazo."),new Rango("muneca_15.png","Doblada hasta 15°",10,2,"La mano se dobla un poco hacia arriba o hacia abajo."),new Rango("muneca_mas_15.png","Doblada más de 15°",25,3,"La mano se dobla mucho hacia arriba o hacia abajo.")),
+        Segmento.CUELLO,List.of(new Rango("cuello_0_10.png","0° a 10°",5,1,"Mira casi al frente."),new Rango("cuello_10_20.png","10° a 20°",15,2,"La cabeza se inclina un poco hacia abajo."),new Rango("cuello_mas_20.png","Más de 20°",30,3,"La cabeza se inclina mucho hacia abajo."),new Rango("cuello_extension.png","Hacia atrás",-15,4,"Mira hacia arriba, con la cabeza echada atrás.")),
+        Segmento.TRONCO,List.of(new Rango("tronco_erguido.png","Erguido o sentado bien apoyado",0,1,"Espalda recta, o sentado con buen respaldo."),new Rango("tronco_0_20.png","0° a 20°",10,2,"La espalda se inclina un poco."),new Rango("tronco_20_60.png","20° a 60°",40,3,"La espalda se dobla claramente."),new Rango("tronco_mas_60.png","Más de 60°",75,4,"La espalda queda casi horizontal.")));
     public static final String[][] ORDEN={{"BRAZO","Brazo"},{"ANTEBRAZO","Antebrazo"},{"MUNECA","Muñeca"},{"GIRO","Giro de muñeca"},{"CUELLO","Cuello"},{"TRONCO","Tronco"},{"PIERNAS","Piernas"}};
     private static final Map<String,String[][]> AJUSTES=Map.of(
-        "BRAZO",new String[][]{{"hombroElevado","Hombro levantado","brazo_hombro.png"},{"brazoSeparado","Brazo separado del cuerpo","brazo_separado.png"},{"brazoApoyado","Apoyado o persona inclinada","brazo_apoyado.png"}},
-        "ANTEBRAZO",new String[][]{{"antebrazoCruza","Cruza la línea media o sale hacia el lado","antebrazo_cruza.png"}},
-        "MUNECA",new String[][]{{"munecaDesviada","Doblada hacia un lado","muneca_desviada.png"}},
-        "CUELLO",new String[][]{{"cuelloGirado","Girado","cuello_girado.png"},{"cuelloInclinado","Inclinado hacia un lado","cuello_inclinado.png"}},
-        "TRONCO",new String[][]{{"troncoGirado","Girado","tronco_girado.png"},{"troncoInclinado","Inclinado hacia un lado","tronco_inclinado.png"}});
+        "BRAZO",new String[][]{{"hombroElevado","Hombro levantado","brazo_hombro.png","El hombro sube hacia la oreja."},{"brazoSeparado","Brazo separado del cuerpo","brazo_separado.png","El codo se aleja del costado."},{"brazoApoyado","Apoyado o persona inclinada","brazo_apoyado.png","El brazo descansa en la mesa o en un apoyo, o la persona se inclina y el peso lo sostiene."}},
+        "ANTEBRAZO",new String[][]{{"antebrazoCruza","Cruza la línea media o sale hacia el lado","antebrazo_cruza.png","La mano trabaja al otro lado del cuerpo o muy hacia afuera."}},
+        "MUNECA",new String[][]{{"munecaDesviada","Doblada hacia un lado","muneca_desviada.png","La mano se dobla hacia el pulgar o hacia el meñique."}},
+        "CUELLO",new String[][]{{"cuelloGirado","Girado","cuello_girado.png","La cabeza voltea hacia un lado."},{"cuelloInclinado","Inclinado hacia un lado","cuello_inclinado.png","La oreja se acerca al hombro."}},
+        "TRONCO",new String[][]{{"troncoGirado","Girado","tronco_girado.png","Los hombros giran respecto a la cadera."},{"troncoInclinado","Inclinado hacia un lado","tronco_inclinado.png","El cuerpo se dobla hacia un costado."}});
 
     /** Solo lee el componente que se está observando. Nunca emite un puntaje final incompleto. */
     public static String parcial(Map<String,String> f) {
@@ -66,39 +66,38 @@ public final class RecorridoCuerpo {
     /** Reutiliza el editor y el esfuerzo actuales; la secuencia y sus respuestas las dirige recorrido.js. */
     public static String pasos(){
         StringBuilder h=new StringBuilder("<section class=\"card stack tour-pregunta\" data-paso=\"7\" hidden><h2>¿Qué lado tiene más carga?</h2><div class=\"ayuda-lado\" data-ayuda-lado><p>¿Cómo saber qué lado tiene más carga? Observa varios ciclos de la tarea:</p><ul><li>¿Con qué mano sostiene la herramienta, la pieza o la carga?</li><li>¿Qué brazo se levanta más o se aleja más del cuerpo?</li><li>¿Qué brazo repite más el movimiento?</li><li>¿Qué muñeca se dobla o gira más?</li></ul><p>Si no está claro, elige «Ambos».</p></div><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Lado que vas a evaluar\">");
-        for(var lado:new String[][]{{"DERECHO","Derecho","lado_derecho.png"},{"IZQUIERDO","Izquierdo","lado_izquierdo.png"},{"AMBOS","Ambos","lado_ambos.png"}})h.append(opcion("lado_recorrido",lado[0],lado[1],lado[2],false,""));
-        h.append("</div></section>").append(PaginasAnalisis.pasos().replace("data-paso=\"4\"","data-paso=\"8\"").replace("data-paso=\"5\"","data-controles-anteriores").replace("data-paso=\"6\"","data-paso=\"11\""));
+        for(var lado:new String[][]{{"DERECHO","Derecho","lado_derecho.png","El lado derecho trabaja más."},{"IZQUIERDO","Izquierdo","lado_izquierdo.png","El lado izquierdo trabaja más."},{"AMBOS","Ambos","lado_ambos.png","Trabajan parecido o no está claro."}})h.append(opcion("lado_recorrido",lado[0],lado[1],lado[2],false,"",lado[3]));
+        h.append("</div></section>").append(PaginasAnalisis.pasos().replace("class=\"card stack\" data-paso", "class=\"card stack tour-pregunta\" data-paso").replace("data-paso=\"4\"","data-paso=\"8\"").replace("data-paso=\"5\"","data-controles-anteriores").replace("data-paso=\"6\"","data-paso=\"11\""));
         h.append(esfuerzo());
         h.append("<div data-cuerpo-cabecera hidden><div class=\"cuerpo-pildoras\" aria-label=\"Segmentos del cuerpo\">");
         for(var seg:ORDEN)h.append("<span class=\"tag\" data-pildora=\"").append(seg[0]).append("\">").append(seg[1]).append("</span>");
         h.append("</div><p class=\"hint\" data-tarea-cuerpo></p><div class=\"row\"><span class=\"tag\" role=\"status\" data-puntaje-parcial>Puntaje parcial · Pendiente</span><span class=\"hint\" data-final-pendiente>Puntaje final: Pendiente</span></div></div><div data-cuerpo-rangos hidden class=\"stack cuerpo-rangos\"><p role=\"status\" class=\"hint\" data-sugerencia-foto></p>");
         for(var seg:ORDEN){h.append("<div data-rangos=\"").append(seg[0]).append("\" class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Rango de ").append(seg[1].toLowerCase(Locale.ROOT)).append("\" hidden>");
-            if(segmento(seg[0])!=null)for(var rango:RANGOS.get(segmento(seg[0])))h.append(opcion("rango_"+seg[0],""+rango.grados(),rango.etiqueta(),rango.imagen(),false,"data-rango-segmento=\""+seg[0]+"\""));
-            else if(seg[0].equals("GIRO")){h.append(opcion("rango_GIRO","MEDIO","Rango medio","giro_medio.png",false,"data-rango-segmento=\"GIRO\""));h.append(opcion("rango_GIRO","EXTREMO","Cerca del extremo","giro_extremo.png",false,"data-rango-segmento=\"GIRO\""));}
-            else {h.append(opcion("rango_PIERNAS","si","Bien apoyadas y equilibradas","piernas_apoyadas.png",false,"data-rango-segmento=\"PIERNAS\""));h.append(opcion("rango_PIERNAS","no","Sin buen apoyo o desequilibradas","piernas_no_apoyadas.png",false,"data-rango-segmento=\"PIERNAS\""));}
+            if(segmento(seg[0])!=null)for(var rango:RANGOS.get(segmento(seg[0])))h.append(opcion("rango_"+seg[0],""+rango.grados(),rango.etiqueta(),rango.imagen(),false,"data-rango-segmento=\""+seg[0]+"\"",rango.ayuda()));
+            else if(seg[0].equals("GIRO")){h.append(opcion("rango_GIRO","MEDIO","Rango medio","giro_medio.png",false,"data-rango-segmento=\"GIRO\"","La palma gira a medias, sin forzar."));h.append(opcion("rango_GIRO","EXTREMO","Cerca del extremo","giro_extremo.png",false,"data-rango-segmento=\"GIRO\"","La palma gira casi al máximo, hacia arriba o hacia abajo."));}
+            else {h.append(opcion("rango_PIERNAS","si","Bien apoyadas y equilibradas","piernas_apoyadas.png",false,"data-rango-segmento=\"PIERNAS\"","Los dos pies apoyados y el peso repartido."));h.append(opcion("rango_PIERNAS","no","Sin buen apoyo o desequilibradas","piernas_no_apoyadas.png",false,"data-rango-segmento=\"PIERNAS\"","Un solo pie, de puntillas o sin apoyo estable."));}
             h.append("</div>");
         }
         h.append("<button type=\"button\" class=\"link\" data-corregir-cuerpo>Corregir medición</button><div class=\"field\" data-manual-cuerpo hidden><label for=\"angulo-cuerpo\">Ángulo corregido a mano</label><input id=\"angulo-cuerpo\" type=\"number\" class=\"input\" min=\"-180\" max=\"180\" step=\"0.01\"><button type=\"button\" class=\"link\" data-restaurar-foto>Usar los puntos de la foto</button></div><button type=\"button\" class=\"link\" data-no-foto>No se ve en la foto</button></div><dialog class=\"hoja-cuerpo\" aria-modal=\"true\" role=\"dialog\" aria-labelledby=\"titulo-hoja-cuerpo\"><div class=\"stack\"><div class=\"row between\"><h2 id=\"titulo-hoja-cuerpo\">¿Algo más en el segmento?</h2><button type=\"button\" class=\"btn\" data-cerrar-hoja aria-label=\"Cerrar ajustes\">Cerrar</button></div>");
         for(var seg:ORDEN)if(AJUSTES.containsKey(seg[0])){
             h.append("<div class=\"tour-opciones\" data-hoja-segmento=\"").append(seg[0]).append("\" role=\"group\" aria-label=\"Ajustes de ").append(seg[1].toLowerCase(Locale.ROOT)).append("\" hidden>");
-            for(var a:AJUSTES.get(seg[0]))h.append(opcion("ajuste_"+a[0],a[0],a[1],a[2],true,"data-cuerpo-ajuste=\""+a[0]+"\""));
+            for(var a:AJUSTES.get(seg[0]))h.append(opcion("ajuste_"+a[0],a[0],a[1],a[2],true,"data-cuerpo-ajuste=\""+a[0]+"\"",a[3]));
             String img=seg[0].equals("CUELLO")?"cuello_ninguno.png":seg[0].equals("TRONCO")?"tronco_ninguno.png":"brazo_ninguno.png";
-            h.append(opcion("ninguno_"+seg[0],"NINGUNO","Ninguno",img,true,"data-cuerpo-ninguno")).append("</div>");
+            h.append(opcion("ninguno_"+seg[0],"NINGUNO","Ninguno",img,true,"data-cuerpo-ninguno","No ves ninguno de estos.")).append("</div>");
         }
         return h.append("<p class=\"tour-pendiente\" role=\"status\" data-aviso-hoja hidden>Responde para continuar.</p><button type=\"button\" class=\"btn p\" data-listo-hoja aria-disabled=\"true\">Listo</button></div></dialog>").toString();
     }
     /** RF-019: correspondencia fija uno a uno con el enum del motor existente. */
-    public static final String[][] CARGAS={{"MENOS_2KG_INTERMITENTE","Menos de 2 kg, a ratos","carga_1.png"},{"DE_2_A_10KG_INTERMITENTE","2 a 10 kg, a ratos","carga_2.png"},{"DE_2_A_10KG_ESTATICA_O_REPETITIVA","2 a 10 kg, sostenido o repetido","carga_3.png"},{"MAS_10KG_INTERMITENTE","Más de 10 kg, a ratos","carga_3.png"},{"MAS_10KG_ESTATICA_O_REPETITIVA","Más de 10 kg, sostenido o repetido","carga_4.png"},{"GOLPES_O_FUERZAS_BRUSCAS","Golpes o fuerzas bruscas","carga_4.png"}};
+    public static final String[][] CARGAS={{"MENOS_2KG_INTERMITENTE","Menos de 2 kg, a ratos","carga_1.png","Por ejemplo papeles, un mouse o una pieza pequeña."},{"DE_2_A_10KG_INTERMITENTE","2 a 10 kg, a ratos","carga_2.png","Por ejemplo una resma o una herramienta, de vez en cuando."},{"DE_2_A_10KG_ESTATICA_O_REPETITIVA","2 a 10 kg, sostenido o repetido","carga_3.png","Ese mismo peso, sostenido o levantado una y otra vez."},{"MAS_10KG_INTERMITENTE","Más de 10 kg, a ratos","carga_3.png","Por ejemplo una caja pesada, de vez en cuando."},{"MAS_10KG_ESTATICA_O_REPETITIVA","Más de 10 kg, sostenido o repetido","carga_4.png","Carga pesada sostenida o levantada una y otra vez."},{"GOLPES_O_FUERZAS_BRUSCAS","Golpes o fuerzas bruscas","carga_4.png","Martilla, golpea o hace tirones fuertes."}};
     private static String esfuerzo(){
         StringBuilder h=new StringBuilder("<section class=\"card stack tour-pregunta\" data-paso=\"9\" hidden><p class=\"hint\" data-tarea-esfuerzo></p><h2>¿La postura se mantiene más de 1 minuto o se repite más de 4 veces por minuto?</h2><p class=\"hint\" data-recuerdo-esfuerzo hidden>Respuesta del puesto anterior: revísala y pulsa Continuar para confirmarla.</p><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Actividad muscular\">");
-        for(var a:new String[][]{{"ESTATICA","Se mantiene más de 1 minuto","esfuerzo_estatica.png"},{"REPETITIVA","Se repite más de 4 veces por minuto","esfuerzo_repetitiva.png"},{"NINGUNA","Ninguna de las dos","esfuerzo_ninguno.png"}})h.append(opcion("esfuerzo_opcion",a[0],a[1],a[2],false,"data-esfuerzo-opcion"));
+        for(var a:new String[][]{{"ESTATICA","Se mantiene más de 1 minuto","esfuerzo_estatica.png","Sostiene la misma postura sin moverse más de 1 minuto."},{"REPETITIVA","Se repite más de 4 veces por minuto","esfuerzo_repetitiva.png","Repite el mismo movimiento más de 4 veces por minuto."},{"NINGUNA","Ninguna de las dos","esfuerzo_ninguno.png","Se mueve con libertad, sin sostener ni repetir."}})h.append(opcion("esfuerzo_opcion",a[0],a[1],a[2],false,"data-esfuerzo-opcion",a[3]));
         h.append("</div><p class=\"hint\">Puntaje final: Pendiente</p></section><section class=\"card stack tour-pregunta\" data-paso=\"10\" hidden><p class=\"hint\" data-tarea-esfuerzo></p><h2>¿Cuánto pesa lo que maneja?</h2><p class=\"hint\" data-recuerdo-esfuerzo hidden>Respuesta del puesto anterior: revísala y pulsa Continuar para confirmarla.</p><div class=\"tour-opciones\" role=\"radiogroup\" aria-label=\"Carga o fuerza\">");
-        for(var c:CARGAS)h.append(opcion("carga_opcion",c[0],c[1],c[2],false,"data-carga-opcion"));
+        for(var c:CARGAS)h.append(opcion("carga_opcion",c[0],c[1],c[2],false,"data-carga-opcion",c[3]));
         return h.append("</div><p class=\"hint\">Una resma de papel ≈ 2,5 kg · un galón de agua ≈ 4 kg</p><p class=\"hint\">Puntaje final: Pendiente</p></section>").toString();
     }
     private static Segmento segmento(String s){try{return Segmento.valueOf(s);}catch(IllegalArgumentException e){return null;}}
-    private static String opcion(String nombre,String valor,String etiqueta,String imagen,boolean multiple,String extra){
-        String img=RecorridoCuerpo.class.getResource("/static/img/tour/"+imagen)==null?"":"<img src=\"/static/img/tour/"+imagen+"\" alt=\"\" loading=\"lazy\">";
-        return "<label class=\"tour-opcion\"><input type=\""+(multiple?"checkbox":"radio")+"\" name=\""+nombre+"\" value=\""+valor+"\" "+extra+"><span>"+img+"<span>"+Html.escapar(etiqueta)+"</span></span></label>";
+    private static String opcion(String nombre,String valor,String etiqueta,String imagen,boolean multiple,String extra,String ayuda){
+        return PaginasEvaluacion.opcion(nombre,valor,etiqueta,imagen,multiple,extra,ayuda);
     }
 }

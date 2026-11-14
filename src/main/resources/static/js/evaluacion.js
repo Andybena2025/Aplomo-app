@@ -62,7 +62,7 @@
     const registro=form.querySelector('[name="registro"]:checked');
     if (!registro) throw new Error('Elige Con registro fotográfico o Sin registro fotográfico.');
     const conFotos=registro.value==='CON_FOTOS';
-    if (!form.elements.acepta.checked) throw new Error('Confirma que la persona firmó el consentimiento físico y queda archivado.');
+    if (!form.elements.acepta.checked) throw new Error('Confirma que la persona firmó en papel el consentimiento para ser evaluada.');
     if (conFotos && (fotos.length<1 || fotos.length>10)) throw new Error('Agrega de 1 a 10 fotos antes de continuar.');
     if (conFotos && fotos.some(f=>!f.descripcion.trim() || f.descripcion.length>200)) throw new Error('Cada foto necesita una descripción de hasta 200 caracteres.');
     if(tour&&conFotos&&fotos.some(f=>!f.uso))throw new Error('Elige Para medir o De apoyo en cada foto.');
@@ -125,6 +125,7 @@
   });
   function renderFotos() {
     if(continuar)return;
+    form.dataset.fotos=String(fotos.length);
     urls.forEach(URL.revokeObjectURL); urls = [];
     elegidas.replaceChildren();
     const cuenta = document.createElement('span'); cuenta.className='eyebrow'; cuenta.textContent=`${fotos.length} de 10 fotos seleccionadas`;
@@ -151,7 +152,10 @@
         const grupo=document.createElement('div');grupo.className='tour-opciones tour-uso';grupo.setAttribute('role','radiogroup');grupo.setAttribute('aria-label',`Uso de la foto ${i+1}`);
         for(const[v,t]of[['MEDIR','Para medir'],['APOYO','De apoyo']]){
           const label=document.createElement('label');label.className='tour-opcion';const radio=document.createElement('input');radio.type='radio';radio.name=`uso_foto_${i}`;radio.value=v;radio.checked=foto.uso===v;
-          const texto=document.createElement('span');texto.textContent=t;label.append(radio,texto);grupo.append(label);
+          const texto=document.createElement('span'),franja=document.createElement('span'),titulo=document.createElement('span'),ayuda=document.createElement('small');
+          franja.className='tour-franja';titulo.id=`uso-${i}-${v}-texto`;titulo.textContent=t;ayuda.className='tour-ayuda';ayuda.id=`uso-${i}-${v}-ayuda`;
+          ayuda.textContent=v==='MEDIR'?'Perfil o frente nítido, con el cuerpo completo. Con esta foto se calculan los ángulos.':'Foto de contexto: el puesto, la herramienta o la mano. Se guarda, pero no se mide.';
+          radio.setAttribute('aria-labelledby',titulo.id);radio.setAttribute('aria-describedby',ayuda.id);franja.append(titulo,ayuda);texto.append(franja);label.append(radio,texto);grupo.append(label);
           radio.addEventListener('change',()=>{foto.uso=v;if(foto.analisis)foto.analisis.habilitada=v==='MEDIR';actualizarGuia();});
         }
         campos.append(grupo);
