@@ -52,6 +52,15 @@
     })();cargando=trabajo;return trabajo.promesa;
   }
   const PERFIL=Object.freeze({visibilidad:.5,frontal:.45,margen:.10});
+  // Sugerencia visual, no puntuación RULA. Distancias relativas al alto de la imagen.
+  const APOYO_PIES=Object.freeze({PUNTOS:Object.freeze([23,24,27,28]),DIFERENCIA_RELATIVA_MINIMA:.15,ALTURA_CADERA_TOBILLOS_MINIMA:.22,MARGEN_NUMERICO:1e-9,CONTEXTOS_EXCLUIDOS:Object.freeze(['OFICINA'])});
+  function sugerirPiesSinApoyo(puntos,{contexto='',vista='PERFIL'}={}){
+    if(vista!=='PERFIL'||APOYO_PIES.CONTEXTOS_EXCLUIDOS.includes(contexto.toUpperCase()))return null;
+    if(!APOYO_PIES.PUNTOS.every(i=>{const p=puntos?.[i];return p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x<=1&&p.y>=0&&p.y<=1&&(p.visibility??p.v??0)>=PERFIL.visibilidad;}))return null;
+    const cadera=(puntos[23].y+puntos[24].y)/2,tobillos=(puntos[27].y+puntos[28].y)/2,altura=Math.abs(tobillos-cadera);
+    if(altura<APOYO_PIES.ALTURA_CADERA_TOBILLOS_MINIMA)return null;
+    return Math.abs(puntos[27].y-puntos[28].y)/altura-APOYO_PIES.DIFERENCIA_RELATIVA_MINIMA>APOYO_PIES.MARGEN_NUMERICO?true:null;
+  }
   function revisarPerfil(puntos,ancho=1,alto=1){
     const aviso=(tipo,mensaje,bloquea=true)=>({tipo,mensaje,bloquea,permiteUsar:true});
     if(!puntos||puntos.length<33)return aviso('SIN_PERSONA','No se ve una persona. Toma otra de lado, con el cuerpo completo.');
@@ -93,7 +102,7 @@
     const cab={x:clamp((oreja.x+(CORONILLA.arriba*px+CORONILLA.atras*ux)*n)/w,0,1),y:clamp((oreja.y+(CORONILLA.arriba*py+CORONILLA.atras*uy)*n)/h,0,1)};
     const nud={x:clamp((L[I.n].x+L[I.p].x)/2,0,1),y:clamp((L[I.n].y+L[I.p].y)/2,0,1)};
     const raw=L.map(q=>({x:+q.x.toFixed(4),y:+q.y.toFixed(4),v:+(q.visibility||0).toFixed(2)}));
-    return {L:{cadera:P(I.c),hombro:P(I.h),codo:P(I.co),muneca:P(I.m),nudillos:nud,cabeza:cab},mira:nariz.x>oreja.x?'Derecho':'Izquierdo',raw,revisionPerfil:opciones.perfil?revisarPerfil(L,im.naturalWidth,im.naturalHeight):null};
+    return {L:{cadera:P(I.c),hombro:P(I.h),codo:P(I.co),muneca:P(I.m),nudillos:nud,cabeza:cab},mira:nariz.x>oreja.x?'Derecho':'Izquierdo',raw,piesSinApoyo:opciones.perfil?sugerirPiesSinApoyo(L,{contexto:opciones.contexto||''}):null,revisionPerfil:opciones.perfil?revisarPerfil(L,im.naturalWidth,im.naturalHeight):null};
   }
   function detectarPuntos(src,opciones={}){
     if(window.navigator?.onLine===false){etapa('falló al cargar el script');return Promise.reject(new Error('Marca los puntos en la foto.'));}
@@ -104,5 +113,5 @@
   // La preparación solo adelanta la descarga: un fallo no cancela ni bloquea futuros intentos.
   function preparar(){if(window.navigator?.onLine===false)return Promise.resolve(false);return poseLista().then(()=>true).catch(()=>false);}
   window.addEventListener?.('pagehide',()=>{liberar();etapa('pagina-cerrada');});
-  window.AplomoDeteccion={revisarPerfil,PERFIL,detectarPuntos,conTiempo,preparar,cancelar,get disponible(){return typeof WebAssembly!=='undefined';},diagnostico,LIMITES,LIMITE_MS:LIMITES.total,MAX_LADO};
+  window.AplomoDeteccion={sugerirPiesSinApoyo,APOYO_PIES,revisarPerfil,PERFIL,detectarPuntos,conTiempo,preparar,cancelar,get disponible(){return typeof WebAssembly!=='undefined';},diagnostico,LIMITES,LIMITE_MS:LIMITES.total,MAX_LADO};
 })();

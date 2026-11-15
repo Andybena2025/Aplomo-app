@@ -143,7 +143,7 @@ bash scripts/crear_base_pruebas.sh   # Mac; en Windows usa "Git Bash" con el mis
 ./mvnw test                           # Windows: mvnw.cmd test
 ```
 
-Deben aprobar **948 pruebas**.
+Deben aprobar **949 pruebas**.
 
 ---
 

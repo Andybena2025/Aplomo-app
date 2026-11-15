@@ -51,7 +51,8 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     const revision=s.revision;s.ia='cargando';s.etapaIA='';s.mensajeIA='Detectando puntos… la primera vez tarda unos segundos';
     if(f===foto())mostrarDeteccion();
     try{
-      const r=await window.AplomoDeteccion.conTiempo(window.AplomoDeteccion.detectarPuntos(f.src||f.preview,{perfil:!!form.dataset.conversacion&&f.vista==='PERFIL'}),60000,'La detección tardó demasiado.');
+      const puesto=form.elements.puesto,opcion=puesto?.selectedOptions?.[0]||puesto;
+      const r=await window.AplomoDeteccion.conTiempo(window.AplomoDeteccion.detectarPuntos(f.src||f.preview,{perfil:!!form.dataset.conversacion&&f.vista==='PERFIL',contexto:opcion?.dataset.contexto||''}),60000,'La detección tardó demasiado.');
       if(!obtenerFotos().includes(f))return;
       if(s.revision!==revision||(f===foto()&&arrastre)){s.ia='manual';s.mensajeIA='Se conservaron tus correcciones manuales.';return;}
       if(!r){s.ia='nada';s.mensajeIA=falloDeteccion;s.etapaIA=window.AplomoDeteccion.diagnostico.etapa;return;}
@@ -63,6 +64,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
         s.puntos={...r.L,coronilla:r.L.cabeza};delete s.puntos.cabeza;
         s.revision++;s.html=null;
         if(f===foto()){sincronizar();dibujar();await medir(f).catch(e=>aviso(e.message));}
+        form.dispatchEvent(new CustomEvent('aplomo:puntos-ia',{detail:{foto:f,piesSinApoyo:r.piesSinApoyo}}));
       }
     }catch(_){window.AplomoDeteccion.cancelar();s.ia='error';s.mensajeIA=falloDeteccion;s.etapaIA=window.AplomoDeteccion.diagnostico.etapa;}
     finally{if(f===foto())mostrarDeteccion();form.dispatchEvent(new Event('aplomo:analisis'));}

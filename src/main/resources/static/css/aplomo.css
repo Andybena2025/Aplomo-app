@@ -1205,3 +1205,6 @@ form[data-conversacion] [data-subir-perfil]{width:100%;margin-top:auto}
 form[data-conversacion] .galeria-demo-opcion small{display:block;margin-top:4px}
 form[data-conversacion] .galeria-demo-opcion[hidden]{display:none}
 @media(max-width:900px){form[data-conversacion] .campo-panel:has(>[data-subir-perfil]:not([hidden])){display:block}}
+
+/* Paso 20: la ayuda de pies ocupa una línea propia entre los ajustes. */
+form[data-conversacion] [data-ayuda-pies]{flex-basis:100%;margin:0}

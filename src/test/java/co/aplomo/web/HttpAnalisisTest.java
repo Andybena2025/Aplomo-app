@@ -13,6 +13,11 @@ class HttpAnalisisTest extends HttpPrueba {
         var d=new Evaluaciones.Datos(puesto,"Ensamble","MAS_INADECUADA","Trabajo mantenido",120,false,false,false,false,false,false,"",true,false);
         eval=evaluaciones.guardar(cuenta(admin),visita,d,List.of(new Fotos.Entrada(png(),"PERFIL","Foto completa")));foto=new EvaluacionDao().fotos(con,eval).get(0).id();entrar(admin);
     }
+    @Test void agregarAnalisisConservaOficinaYLaAyudaDePiesSinPreseleccion()throws Exception{
+        String h=get("/evaluaciones/"+eval+"/analizar").body();
+        assertTrue(h.contains("data-contexto=\"OFICINA\""));assertTrue(h.contains("data-segun-foto-pies"));assertTrue(h.contains("Según la foto"));assertTrue(h.contains("Parece que está sobre una sola pierna. Revisa si los pies están bien apoyados."));assertTrue(h.contains("aria-describedby=\"ayuda-apoyo-pies\""));
+        assertFalse(java.util.regex.Pattern.compile("<input[^>]*data-chip=\"pies_sin_apoyo\"[^>]*checked").matcher(h).find());
+    }
     private byte[] png()throws Exception{var b=new ByteArrayOutputStream();ImageIO.write(new java.awt.image.BufferedImage(200,400,1),"png",b);return b.toByteArray();}
     private Map<String,String> formulario(int caso)throws Exception{
         var f=CasosRulaPrueba.campos(CasosRulaPrueba.todos().get(caso-1).entrada());f.put("csrf",csrf(get("/evaluaciones/"+eval+"/analizar")));f.put("visita",""+visita);return f;

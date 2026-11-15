@@ -12,7 +12,7 @@ public final class EvaluacionDao {
     /** Metadatos de una foto; su ruta nunca se entrega a un Usuario. */
     public record Foto(int id, int evaluacion, String nombre, String vista, String descripcion) {}
     /** Evaluación guardada y sus campos aprobados para la consulta administrativa. */
-    public record Ficha(int id, int visita, int puesto, int numero, LocalDate fecha, Datos datos, String responsable) {}
+    public record Ficha(int id, int visita, int puesto, int numero, LocalDate fecha, Datos datos, String responsable, String tipoPuesto) {}
     /** Crea el acceso JDBC de evaluación. */
     public EvaluacionDao() {}
     /** Lista puestos activos del salón reservado y su jerarquía activa. */
@@ -42,9 +42,9 @@ public final class EvaluacionDao {
 
     /** Consulta los datos y condiciones de una evaluación con su responsable de creación. */
     public Ficha consultar(Connection con, int id) throws SQLException {
-        return Sql.uno(con, "SELECT e.*,c.*,p.numero,(SELECT q.nombre FROM bitacora b JOIN cuenta q ON q.id_cuenta=b.id_cuenta WHERE b.tabla='evaluacion' AND b.id_registro=e.id_evaluacion AND b.accion='CREAR' ORDER BY b.id_bitacora LIMIT 1) AS responsable FROM evaluacion e JOIN condiciones_puesto c USING(id_evaluacion) JOIN puesto_trabajo p ON p.id_puesto=e.id_puesto WHERE e.id_evaluacion=?",
+        return Sql.uno(con, "SELECT e.*,c.*,p.numero,p.tipo AS tipo_puesto,(SELECT q.nombre FROM bitacora b JOIN cuenta q ON q.id_cuenta=b.id_cuenta WHERE b.tabla='evaluacion' AND b.id_registro=e.id_evaluacion AND b.accion='CREAR' ORDER BY b.id_bitacora LIMIT 1) AS responsable FROM evaluacion e JOIN condiciones_puesto c USING(id_evaluacion) JOIN puesto_trabajo p ON p.id_puesto=e.id_puesto WHERE e.id_evaluacion=?",
                 r -> new Ficha(r.getInt("id_evaluacion"),r.getInt("id_visita"),r.getInt("id_puesto"),r.getInt("numero"),r.getDate("fecha").toLocalDate(),
-                        new Datos(r.getInt("id_puesto"),r.getString("postura"),r.getString("criterio"),r.getString("motivo"),r.getInt("minutos_jornada"),r.getBoolean("escritorio_muy_alto"),r.getBoolean("pantalla_muy_alta"),r.getBoolean("pies_colgando"),r.getBoolean("tiene_apoyapies"),r.getBoolean("silla_con_apoyabrazos"),r.getBoolean("silla_regulable"),r.getString("otras_observaciones"),r.getBoolean("persona_acepto"),r.getString("registro_fotografico").equals("SIN_REGISTRO_FOTOGRAFICO")),r.getString("responsable")),id);
+                        new Datos(r.getInt("id_puesto"),r.getString("postura"),r.getString("criterio"),r.getString("motivo"),r.getInt("minutos_jornada"),r.getBoolean("escritorio_muy_alto"),r.getBoolean("pantalla_muy_alta"),r.getBoolean("pies_colgando"),r.getBoolean("tiene_apoyapies"),r.getBoolean("silla_con_apoyabrazos"),r.getBoolean("silla_regulable"),r.getString("otras_observaciones"),r.getBoolean("persona_acepto"),r.getString("registro_fotografico").equals("SIN_REGISTRO_FOTOGRAFICO")),r.getString("responsable"),r.getString("tipo_puesto")),id);
     }
     /** Lista las fotos de una evaluación después de la comprobación administrativa del servicio. */
     public List<Foto> fotos(Connection con, int evaluacion) throws SQLException {
