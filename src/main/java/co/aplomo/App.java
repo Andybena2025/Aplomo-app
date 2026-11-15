@@ -14,6 +14,7 @@ public final class App {
         if(args.length==1&&(args[0].equals("--cargar-demo")||args[0].equals("--reiniciar-demo"))){
             co.aplomo.instalacion.Demo.ejecutar(args[0].equals("--reiniciar-demo"));return;
         }
+        if(args.length==1&&args[0].equals("--cargar-demo-entorno")){co.aplomo.instalacion.Demo.ejecutarEntorno();return;}
         int puerto=co.aplomo.config.Config.puerto();
         HttpServer servidor=HttpServer.create(new InetSocketAddress("0.0.0.0",puerto),0);
         servidor.createContext("/",new Router());

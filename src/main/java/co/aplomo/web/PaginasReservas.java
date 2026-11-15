@@ -109,7 +109,7 @@ public final class PaginasReservas {
                 .append("<div class=\"row\"><button class=\"btn p\">Guardar reserva</button>")
                 .append(enlace("/reservas", "Volver a reservas", false)).append("</div></form>");
         if (nueva) html.append(altas(sesion));
-        return Html.pagina(nueva ? "Nueva reserva" : "Editar " + contexto.anterior().reserva().codigo(), nueva?Html.conPanel(html.toString(),"Mide la jornada real.","Agenda la visita en el horario real de trabajo: RULA evalúa la postura que el trabajador mantiene más tiempo."):html.toString(), sesion);
+        return Html.pagina(nueva ? "Nueva reserva" : "Editar " + contexto.anterior().reserva().codigo(), html.toString(), sesion);
     }
 
     /** Fragmento de catálogos que se renueva al crear un lugar sin recargar el formulario principal. */
@@ -184,7 +184,7 @@ public final class PaginasReservas {
 
     private static String alta(Sesion sesion, String tipo, String titulo, String campos) {
         String unicos = campos.replace("id=\"", "id=\"alta-" + tipo + "-").replace("for=\"", "for=\"alta-" + tipo + "-");
-        return "<details class=\"card stack\"><summary>" + escapar(titulo) + "</summary><form class=\"stack\" method=\"post\" action=\"/reservas/crear-"
+        return "<details class=\"card alta-lugar\"><summary>" + escapar(titulo) + "</summary><form class=\"stack\" method=\"post\" action=\"/reservas/crear-"
                 + tipo + "\" data-alta-reserva=\"" + tipo + "\">" + Html.csrf(sesion) + unicos
                 + "<div role=\"alert\" data-error-alta></div><button class=\"btn\">Guardar "
                 + (tipo.equals("salon") ? "salón" : tipo) + "</button></form></details>";

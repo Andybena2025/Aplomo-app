@@ -10,11 +10,14 @@ import java.util.*;
 
 /** Entorno de práctica voluntario: conserva intentos y no modifica empresas existentes. */
 public final class PracticaEvaluacion {
-    public static final String NIT="DEMO-APLOMO-PRACTICA", NOMBRE="APLOMO · Práctica de evaluación";
+    public static final String NIT=co.aplomo.modelo.Demostracion.NIT_PRACTICA, NOMBRE="APLOMO · Práctica de evaluación";
     private final Transacciones tx;
     private final Clock reloj;
     public record Destino(int visita,int puesto) {}
     public PracticaEvaluacion(Transacciones tx,Clock reloj){this.tx=tx;this.reloj=reloj;}
+
+    /** Lee la visita de práctica vigente sin crear datos ni incluirla en operación. */
+    public Integer enCurso(Cuenta actor)throws SQLException{return tx.ejecutar(c->{Permisos.administrador(AccesoDatos.vigente(c,actor));return Sql.uno(c,"SELECT v.id_visita FROM visita v JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa e USING(id_empresa) WHERE e.nit=? AND v.estado='EN_CURSO' ORDER BY v.id_visita DESC LIMIT 1",rs->rs.getInt(1),NIT);});}
 
     /** Reutiliza incluso un puesto evaluado; si finalizan la visita, inicia otra sin borrar intentos. */
     public Destino abrir(Cuenta actor,String tipo)throws SQLException {

@@ -33,14 +33,13 @@ La instalación sin Docker sigue igual: `bash scripts/iniciar.sh` en Mac o `scri
 
 ### Demostración opcional en Docker
 
-Para practicar rápidamente, después de cambiar la contraseña abre **Inicio → Probar evaluación**. Si quieres además las tres empresas y el historial del demo completo, estos comandos reutilizan el SQL y las mismas cuatro imágenes que `scripts/cargar_demo.sh`, sin cambiar ese script:
+Primero inicia sesión y cambia la contraseña temporal del Administrador. Después carga el demo completo con el mismo motor y fotos que la instalación local:
 
 ```sh
-docker compose exec -T db sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -u root --default-character-set=utf8mb4 rula_ergonomia < /demo/datos_demo.sql'
-docker compose exec -T app sh -c 'for n in de100001-493b-4bc9-a64e-d51b4ea3c901.jpg de100002-493b-4bc9-a64e-d51b4ea3c902.jpg de100003-493b-4bc9-a64e-d51b4ea3c903.jpg de100004-493b-4bc9-a64e-d51b4ea3c904.jpg; do cp -n /app/demo/muestra_perfil.jpg "$APLOMO_CARPETA_FOTOS/$n"; done'
+docker compose --profile demo run --build --rm demo
 ```
 
-La carga es voluntaria e idempotente: no borra los datos existentes. Cambiar las claves en `.env` no cambia automáticamente las cuentas de un volumen de MySQL ya inicializado.
+La carga es voluntaria e idempotente: tres empresas ficticias, tres colores, doce puestos con dos posturas, fotos, pendientes, sugerencias, visitas Finalizadas y reservas futuras. No crea cuentas, no cambia contraseñas ni configuración. Las fotos se conservan en el volumen de la app. La empresa de práctica rápida es independiente y queda fuera de los contadores y consultas normales.
 
 
 ## Qué necesitas
@@ -121,52 +120,19 @@ Con la app corriendo, conecta el celular al **mismo Wi-Fi** que el computador y 
 
 Como Administrador, abre **Inicio → Probar evaluación → Abrir evaluación de prueba** y elige **Probar Planta** u **Oficina**. También puedes abrir `/demo/evaluacion`. No necesitas cargar el SQL demo ni usar root de MySQL: se prepara una empresa ficticia `DEMO-APLOMO-PRACTICA` en la base configurada, con una visita En curso reutilizable. Los intentos se guardan allí; si finalizas esa visita, el acceso abre otra sin borrar la anterior. Con `-Daplomo.modoDemo=false` se oculta y bloquea el acceso. El reinicio de las tres empresas demo anteriores no borra esta empresa de práctica.
 
-## Datos de demostración (opcional y manual)
+## Datos de demostración completos (opcional)
 
-`docs/base_de_datos/datos_demo.sql` **no se carga al iniciar ni instalar la app**. Requiere una cuenta de Administrador activa. No crea usuarios ni contraseñas; vincula los registros a un Administrador existente. Solo inserta lo que falta: repetirlo no duplica filas ni cambia los estados ya editados.
+Primero entra como Administrador y cambia su contraseña temporal. Desde la raíz del proyecto:
 
-Incluye Ensambles del Quindío, Muebles Cafeteros y la Corporación Universitaria Empresarial Alexander von Humboldt con Sede principal, Sede Alcázar y Sede Anova (Medicina). Los nombres y direcciones proceden del mock; no se verificó su vigencia. Puestos, contactos y resultados son ficticios y se identifican como demostración.
+- Mac: `bash scripts/cargar_demo.sh`.
+- Windows: `scripts\cargar_demo.bat`.
+- Docker: `docker compose --profile demo run --build --rm demo`.
 
-Hay seis reservas, dos visitas Finalizadas, cuatro evaluaciones (dos Verdes de puntaje 1; una Amarilla de puntaje 3; una Roja de puntaje 7), sus mediciones manuales, un pendiente abierto y sugerencias. Los resultados corresponden a los casos 4, 2 y 8 del plan de pruebas, comprobados con el motor RULA existente. **No son una valoración de las personas o lugares mostrados.**
+El cargador prepara Ensambles del Quindío, Muebles Cafeteros y Humboldt con datos ficticios, al menos dos sedes por empresa, tres puestos con dos posturas en cada empresa, resultados Verde/Amarillo/Rojo calculados por el motor, pendientes abiertos/arreglados, sugerencias pendientes/hechas, visitas Finalizadas y reservas futuras. Copia automáticamente las fotos originales de muestra con nombres únicos; la base conserva solo la ruta. Los ángulos son casos manuales simulados de docs/03, no una valoración real de las fotos. Repetirlo no duplica evaluaciones ni restablece estados editados.
 
-Desde la raíz del proyecto, copia la imagen de muestra generada con IA para los cuatro registros de demostración. Se usa la misma imagen ilustrativa; los ángulos provienen de los casos manuales, no de medir esa imagen.
+No cargues `datos_demo.sql` a mano para obtener resultados: ahora contiene solo estructura ficticia. Los análisis se generan desde Java con las tablas RULA de MySQL. La práctica rápida `DEMO-APLOMO-PRACTICA` está separada de estas tres empresas y no aparece en sus consultas ni indicadores.
 
-Mac:
-
-```bash
-mkdir -p fotos
-cp -n src/main/resources/static/img/muestra_perfil.jpg fotos/de100001-493b-4bc9-a64e-d51b4ea3c901.jpg
-cp -n src/main/resources/static/img/muestra_perfil.jpg fotos/de100002-493b-4bc9-a64e-d51b4ea3c902.jpg
-cp -n src/main/resources/static/img/muestra_perfil.jpg fotos/de100003-493b-4bc9-a64e-d51b4ea3c903.jpg
-cp -n src/main/resources/static/img/muestra_perfil.jpg fotos/de100004-493b-4bc9-a64e-d51b4ea3c904.jpg
-```
-
-Windows (PowerShell):
-
-```powershell
-New-Item -ItemType Directory -Force fotos | Out-Null
-foreach ($archivoDemo in @('de100001-493b-4bc9-a64e-d51b4ea3c901.jpg','de100002-493b-4bc9-a64e-d51b4ea3c902.jpg','de100003-493b-4bc9-a64e-d51b4ea3c903.jpg','de100004-493b-4bc9-a64e-d51b4ea3c904.jpg')) {
-    if (-not (Test-Path (Join-Path fotos $archivoDemo))) {
-        Copy-Item src/main/resources/static/img/muestra_perfil.jpg (Join-Path fotos $archivoDemo)
-    }
-}
-```
-
-Carga primero en la base de pruebas. En Mac o en **Símbolo del sistema** de Windows (no PowerShell), ejecuta:
-
-```bash
-mysql --default-character-set=utf8mb4 -u root -p rula_ergonomia_pruebas < docs/base_de_datos/datos_demo.sql
-```
-
-Escribe la contraseña de MySQL cuando la pida. Para cargar voluntariamente estos datos en la base de la app, sustituye el nombre por `rula_ergonomia`. No vuelvas a ejecutar el script de creación de la base para cargar la demostración. Las fotos permanecen en la carpeta ignorada por Git y solo el Administrador puede verlas.
-
-La demostración aparece en las listas de Empresas y Reservas. En la universidad, Sede principal tiene la visita Finalizada y los tres colores; Alcázar tiene la segunda visita Finalizada y un puesto Verde (caso manual 4). Hay calificación general con cobertura «2 de 3 sedes calificadas · falta Sede Anova (Medicina)». El SQL establece `SET NAMES utf8mb4` antes de iniciar la transacción para conservar tildes.
-
----
-
-Demo opcional lista para evaluar: Mac `bash scripts/cargar_demo.sh`; Windows `scripts\cargar_demo.bat`. Cada empresa trae Oficina/Planta y una visita En curso.
-Reinicio de desarrollo: Mac `bash scripts/reiniciar_demo.sh`; Windows `scripts\reiniciar_demo.bat`; exige administrador de MySQL y escribir `REINICIAR DEMO` antes de borrar solo las tres empresas DEMO-APLOMO.
-Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuentas vinculadas, cancela; las cuentas y otras empresas se conservan. Cierra la app antes de reiniciar y vuelve a abrirla después.
+Para **reiniciar solo las tres empresas DEMO**: Mac `bash scripts/reiniciar_demo.sh`; Windows `scripts\reiniciar_demo.bat`. El script exige administrador de MySQL y escribir `REINICIAR DEMO` antes de borrar los registros vinculados exclusivamente a DEMO-APLOMO-E1, E2 y E3. Si hay cuentas vinculadas, cancela. Conserva las cuentas, la práctica rápida, las demás empresas y la configuración. Cierra la app antes y vuelve a abrirla al terminar. Es una herramienta voluntaria de desarrollo.
 
 ## Pruebas (opcional)
 
@@ -177,7 +143,7 @@ bash scripts/crear_base_pruebas.sh   # Mac; en Windows usa "Git Bash" con el mis
 ./mvnw test                           # Windows: mvnw.cmd test
 ```
 
-Deben aprobar **902 pruebas**.
+Deben aprobar **930 pruebas**.
 
 ---
 

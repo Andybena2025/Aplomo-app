@@ -45,6 +45,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 13 | Pulido final, prueba en Chrome, Edge y Firefox, datos de demostración | 🟡 13G: contador estable, pantallas completas, demo lista y Evaluar ahora ([informe](docs/informe_paso13g.md)); revisión de Andy y QA físico / compatibilidad completa pendientes |
 | 14 | Evaluación por revisión y detección automática de puntos | 🟡 Implementado; 842 pruebas y QA visual; prueba táctil iPad pendiente ([informe](docs/informe_paso14_revision.md)) |
 | 15 | Evaluación como conversación guiada y detección con salida manual | 🟡 Flujo 15-D, login nuevo y práctica permanente implementados; iPad físico pendiente ([informe](docs/informe_paso15d.md)) |
+| 17 | Práctica aislada, guía manual, demostración completa y pulido | 🟡 Implementado y verificado: 930 Maven + 72 JS; revisión de Andy e iPad físico pendientes ([informe](docs/informe_paso17.md)) |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 
@@ -106,7 +107,7 @@ Sin frameworks, como lo pide la guía del proyecto.
 - **HTML, CSS y JavaScript puro**, con el estilo "Obsidian & Ivory" del prototipo
 - **Maven** (incluido con `./mvnw`, no hace falta instalarlo)
 
-Demo opcional lista para evaluar: Mac `bash scripts/cargar_demo.sh`; Windows `scripts\cargar_demo.bat`. Cada empresa trae Oficina/Planta y una visita En curso.
+Demo opcional lista para evaluar: Mac `bash scripts/cargar_demo.sh`; Windows `scripts\cargar_demo.bat`. Cada empresa trae Oficina/Planta, una visita En curso y resultados de los tres colores, con doce puestos de dos posturas en total. El cargador calcula los puntajes con el motor y copia sus fotos automáticamente. Primero cambia la contraseña temporal del Administrador.
 Reinicio de desarrollo: Mac `bash scripts/reiniciar_demo.sh`; Windows `scripts\reiniciar_demo.bat`; exige administrador de MySQL y escribir `REINICIAR DEMO` antes de borrar solo las tres empresas DEMO-APLOMO.
 Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuentas vinculadas, cancela; las cuentas y otras empresas se conservan. Cierra la app antes de reiniciar y vuelve a abrirla después.
 
@@ -116,7 +117,7 @@ Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuent
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**902 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**930 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 
@@ -168,14 +169,14 @@ La instalación sin Docker sigue igual: `bash scripts/iniciar.sh` en Mac o `scri
 
 ### Demostración opcional en Docker
 
-Para practicar rápidamente, después de cambiar la contraseña abre **Inicio → Probar evaluación**. Si quieres además las tres empresas y el historial del demo completo, estos comandos reutilizan el SQL y las mismas cuatro imágenes que `scripts/cargar_demo.sh`, sin cambiar ese script:
+Primero inicia sesión y cambia la contraseña temporal del Administrador. Después carga el demo completo con el mismo motor y fotos que la instalación local:
 
 ```sh
-docker compose exec -T db sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -u root --default-character-set=utf8mb4 rula_ergonomia < /demo/datos_demo.sql'
-docker compose exec -T app sh -c 'for n in de100001-493b-4bc9-a64e-d51b4ea3c901.jpg de100002-493b-4bc9-a64e-d51b4ea3c902.jpg de100003-493b-4bc9-a64e-d51b4ea3c903.jpg de100004-493b-4bc9-a64e-d51b4ea3c904.jpg; do cp -n /app/demo/muestra_perfil.jpg "$APLOMO_CARPETA_FOTOS/$n"; done'
+docker compose --profile demo run --build --rm demo
 ```
 
-La carga es voluntaria e idempotente: no borra los datos existentes. Cambiar las claves en `.env` no cambia automáticamente las cuentas de un volumen de MySQL ya inicializado.
+La carga es voluntaria e idempotente: tres empresas ficticias, tres colores, doce puestos con dos posturas, fotos, pendientes, sugerencias, visitas Finalizadas y reservas futuras. No crea cuentas, no cambia contraseñas ni configuración. Las fotos se conservan en el volumen de la app. La empresa de práctica rápida es independiente y queda fuera de los contadores y consultas normales.
+
 
 ## Equipo
 

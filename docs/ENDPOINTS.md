@@ -188,6 +188,9 @@ La sede muestra «Promedio histórico de sus visitas Finalizadas»; la general s
 
 ## Recursos estáticos
 
+GET `/favicon.ico` y GET `/favicon.svg`: icono A con plomada, sin sesión; respuesta 200 `image/svg+xml`. POST devuelve 405. Identidad visual, RNF-002/011.
+
+
 Fuente: [Router.estatico](../src/main/java/co/aplomo/web/Router.java).
 
 | Método | Ruta | Para qué / quién | Parámetros | Respuesta | Requisito |
@@ -201,3 +204,5 @@ Incluye `/static/img/galeria/*` (ejemplos), `/static/img/tour/*`, `/static/css/a
 El único endpoint de valor agregado sin requisito funcional propio es `/demo/evaluacion`; reutiliza creación de visita/evaluación y RNF-002. `/sugerencias/nueva` por POST es un alias de RF-023b. Los recursos estáticos y Docker son soporte de RNF, no requisitos funcionales nuevos. No se inventa un RF para ellos.
 
 `EndpointsDocumentoTest` comprueba los contextos literales registrados en App, todas las secciones de `SeccionConsulta`, las rutas literales comparadas con `ruta.equals` en los manejadores y la presencia de las familias dinámicas. No depende de espacios, números de línea ni títulos visuales. Es una alarma de documentación; no reemplaza las pruebas HTTP de roles, CSRF, cálculo y fotos. Este inventario no añade ni cambia rutas.
+
+Paso 17: la empresa DEMO-APLOMO-PRACTICA se excluye de listas, catálogos, contadores y calificaciones; conserva el acceso dedicado de práctica. El cargador completo se ejecuta por CLI o perfil Docker demo, no mediante una ruta HTTP.

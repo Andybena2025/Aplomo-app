@@ -30,12 +30,12 @@ class HttpMarcaTest extends HttpPrueba {
         assertFalse(get("/").body().contains("Semáforo de puestos"));
     }
     @Test void semaforoLeeColoresRealesYSeActualizaConLosDatos() throws Exception {
-        DatosDemoPrueba.cargar(con);entrar(admin);String h=get("/").body();
-        conteo(h,"VERDE",2);conteo(h,"AMARILLO",1);conteo(h,"ROJO",1);assertTrue(h.contains("class=\"barra\""));
-        int puesto=Sql.uno(con,"SELECT e.id_puesto FROM evaluacion e JOIN visita v USING(id_visita) JOIN reserva r USING(id_reserva) WHERE r.codigo=?",r->r.getInt(1),"DEMO-FIN-02");
+        DatosDemoPrueba.cargar(con,carpetaFotos);entrar(admin);String h=get("/").body();
+        conteo(h,"VERDE",4);conteo(h,"AMARILLO",4);conteo(h,"ROJO",4);assertTrue(h.contains("class=\"barra\""));
+        int puesto=Sql.uno(con,"SELECT e.id_puesto FROM evaluacion e JOIN visita v USING(id_visita) JOIN reserva r USING(id_reserva) WHERE r.codigo=? ORDER BY e.id_puesto LIMIT 1",r->r.getInt(1),"DEMO17-E3B");
         Sql.actualizar(con,"UPDATE puesto_trabajo SET ultimo_puntaje=? WHERE id_puesto=?",3,puesto);
-        h=get("/").body();conteo(h,"VERDE",1);conteo(h,"AMARILLO",2);conteo(h,"ROJO",1);
-        assertTrue(h.indexOf("Semáforo de puestos")<h.indexOf("<h3>Visitas en curso</h3>"));
+        h=get("/").body();conteo(h,"VERDE",3);conteo(h,"AMARILLO",5);conteo(h,"ROJO",4);
+        assertTrue(h.indexOf("Semáforo de puestos")<h.indexOf("id=\"visitas-en-curso\""));
     }
     @Test void ceroPuestosNoMuestraUnaBarraProporcionalVacia() throws Exception {
         entrar(admin);String h=get("/").body();for(String color:List.of("VERDE","AMARILLO","ROJO"))conteo(h,color,0);
@@ -43,8 +43,8 @@ class HttpMarcaTest extends HttpPrueba {
     }
     @Test void panelesSoloEnLosTresFormulariosNuevosConCamposYAccionesIntactos() throws Exception {
         entrar(admin);
-        String[] rutas={"/empresas/nueva","/reservas/nueva","/usuarios/nuevo"};
-        String[] lemas={"Cada puesto, medido con precisión.","Mide la jornada real.","Cada empresa, solo lo suyo."};
+        String[] rutas={"/empresas/nueva","/usuarios/nuevo"};
+        String[] lemas={"Cada puesto, medido con precisión.","Cada empresa, solo lo suyo."};
         for(int i=0;i<rutas.length;i++){
             String h=get(rutas[i]).body();assertTrue(h.contains("class=\"con-panel\""));assertTrue(h.contains("<aside class=\"panel-marca\""));
             assertTrue(h.contains(lemas[i]));assertTrue(h.contains("Consejo RULA"));assertTrue(h.contains("name=\"csrf\""));
@@ -53,11 +53,11 @@ class HttpMarcaTest extends HttpPrueba {
         assertFalse(get("/empresas/"+empresa+"/editar").body().contains("class=\"panel-marca\""));
     }
     @Test void vaciosConservanTextoBotonesYDecoracionesSonSoloPresentacion() throws Exception {
-        entrar(admin);String h=get("/").body();assertTrue(h.contains("class=\"empty marca\""));assertTrue(h.contains("Iniciar desde una reserva"));
+        entrar(admin);String h=get("/").body();assertTrue(h.contains("class=\"empty marca\""));assertTrue(h.contains("Ir a Reservas"));
         assertTrue(h.contains("class=\"riel riel-izq\" aria-hidden=\"true\""));assertTrue(h.contains("viewBox=\"0 0 300 300\""));assertTrue(h.contains("viewBox=\"0 0 300 380\""));
         assertFalse(h.contains("class=\"fondo\""));
         assertTrue(get("/usuarios").body().contains("class=\"empty marca\" data-usuarios-vacios hidden"));
-        assertTrue(get("/empresas?q=no-existe-qa-marca").body().contains("<p>No hay registros con estos filtros."));
+        assertTrue(get("/empresas?q=no-existe-qa-marca").body().contains("<p>Aún no hay empresas con estos filtros."));
     }
     private static void conteo(String html,String color,int cantidad){assertTrue(html.contains("data-color=\""+color+"\" data-cantidad=\""+cantidad+"\""),color+"="+cantidad);}
 

@@ -57,17 +57,16 @@
     if(!puntos||puntos.length<33)return aviso('SIN_PERSONA','No se ve una persona. Toma otra de lado, con el cuerpo completo.');
     const dentro=i=>{const p=puntos[i];return p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x<=1&&p.y>=0&&p.y<=1;};
     const visible=i=>dentro(i)&&(puntos[i].visibility??puntos[i].v??0)>=PERFIL.visibilidad;
-    // Un perfil oculta el lado lejano. Visibilidad baja no demuestra que la foto esté recortada.
-    const lados=[[11,23,25,27],[12,24,26,28]],completos=lados.filter(lado=>lado.every(dentro));
-    if(!dentro(0)||!completos.length)return aviso('CUERPO_INCOMPLETO','Se ve solo una parte del cuerpo. Necesito la foto de perfil con el cuerpo completo, de la cabeza a los pies.');
-    const confiable=visible(0)&&completos.some(lado=>lado.every(visible));
-    // No se clasifica como frente usando el hombro que el modelo no alcanza a ver.
-    if([11,12,23,24].every(visible)){
+    // Paso 17: primero orientación por coordenadas, incluso con el lado lejano oculto.
+    if([11,12,23,24].every(i=>Number.isFinite(puntos[i]?.x)&&Number.isFinite(puntos[i]?.y))){
       const h={x:(puntos[11].x+puntos[12].x)/2,y:(puntos[11].y+puntos[12].y)/2},c={x:(puntos[23].x+puntos[24].x)/2,y:(puntos[23].y+puntos[24].y)/2};
       const torso=Math.hypot((h.x-c.x)*ancho,(h.y-c.y)*alto),razon=torso?Math.abs(puntos[11].x-puntos[12].x)*ancho/torso:Infinity;
       if(razon>=PERFIL.frontal-PERFIL.margen)return aviso(razon>PERFIL.frontal+PERFIL.margen?'FRENTE':'ANGULO_DUDOSO','Parece una foto de frente. Necesito una de lado (de perfil).',razon>PERFIL.frontal+PERFIL.margen);
     }
-    if(!confiable)return aviso('PUNTOS_DUDOSOS','Algunos puntos no se ven claros. Revísalos y corrígelos sobre la foto antes de seguir.',false);
+    const vis=i=>puntos[i]?.visibility??puntos[i]?.v??0;
+    const izquierda=[11,23,25,27],derecha=[12,24,26,28],suma=lado=>lado.reduce((total,i)=>total+vis(i),0)/lado.length;
+    const cercano=suma(derecha)>=suma(izquierda)?derecha:izquierda;
+    if(![0,...cercano].every(visible))return aviso('CUERPO_INCOMPLETO','Se ve solo una parte del cuerpo. Necesito la foto de perfil con el cuerpo completo, de la cabeza a los pies.');
     return null;
   }
   async function detectar(src,turno,opciones){

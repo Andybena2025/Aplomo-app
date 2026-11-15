@@ -76,6 +76,7 @@ public final class Router implements HttpHandler {
         catch (SecurityException e) { enviar(x,403,Html.pagina("Acceso denegado",Html.aviso(e.getMessage(),false),null)); }
         catch (IllegalArgumentException e) { enviar(x,400,Html.pagina("Revisa los datos",Html.aviso(e.getMessage(),false),null)); }
         catch (SQLException e) { enviar(x,503,Html.pagina("No pudimos completar la acción",Html.aviso("Revisa la conexión e inténtalo de nuevo. Tus datos guardados se conservan.",false),null)); }
+        catch (RuntimeException e) { if(x.getResponseCode()==-1)enviar(x,500,Html.error("No pudimos abrir esta página","Inténtalo de nuevo o vuelve al inicio. Tus datos guardados se conservan.")); }
         finally { x.close(); }
     }
 
@@ -84,6 +85,7 @@ public final class Router implements HttpHandler {
         if (!metodo.equals("GET") && !metodo.equals("POST")) {
             x.getResponseHeaders().set("Allow","GET, POST"); enviar(x,405,"Método no permitido."); return;
         }
+        if(ruta.equals("/favicon.ico")||ruta.equals("/favicon.svg")){if(!metodo.equals("GET")){enviar(x,405,"Método no permitido.");return;}responder(x,200,"image/svg+xml; charset=UTF-8",Html.favicon());return;}
         if (ruta.startsWith("/static/")) { estatico(x,ruta); return; }
         String id = cookie(x);
         Sesion s = sesiones.obtener(id);
@@ -188,7 +190,7 @@ public final class Router implements HttpHandler {
             inicio.append("<div class=\"pagehead\"><div><span class=\"eyebrow\">")
                     .append(Html.fecha(Html.hoy()).toUpperCase(java.util.Locale.ROOT)).append("</span><h1>Hola, ")
                     .append(Html.escapar(nombre)).append("</h1></div></div>");
-            if(c.rol()==Cuenta.Rol.ADMINISTRADOR)inicio.append(InicioEvaluacion.practica()).append(InicioEvaluacion.tarjeta(visitas.servicio().paraEvaluar(c)));
+            if(c.rol()==Cuenta.Rol.ADMINISTRADOR)inicio.append(InicioEvaluacion.practica(visitas.servicio().practica().enCurso(c)));
             // 4 tarjetas KPI como en el mock
             inicio.append("<div class=\"grid4\" style=\"margin-bottom:24px\">")
                     .append(kpi("Visitas en curso", String.valueOf(enCurso), null))
@@ -213,19 +215,8 @@ public final class Router implements HttpHandler {
                 if(resumen[1]+resumen[2]+resumen[3]>0)inicio.append("<div class=\"barra\" aria-hidden=\"true\"><i style=\"flex:").append(resumen[2]).append(";background:var(--verde)\"></i><i style=\"flex:").append(resumen[3]).append(";background:var(--amarillo)\"></i><i style=\"flex:").append(resumen[1]).append(";background:var(--rojo)\"></i></div>");
                 inicio.append("</div>");
             }
-            inicio.append("<h3>Visitas en curso</h3>");
-            var cursando = listaVisitas.stream().filter(v -> v.visita().estado().equals("EN_CURSO")).toList();
-            if (cursando.isEmpty()) {
-                inicio.append(c.rol()==Cuenta.Rol.ADMINISTRADOR ? Html.vacio("No hay visitas en curso. Inicia una desde una reserva En cola.","<a class=\"btn p\" href=\"/reservas\">Iniciar desde una reserva</a>") : Html.vacio("No hay visitas en curso disponibles.",""));
-            } else {
-                for (var v : cursando) {
-                    inicio.append("<div class=\"card row between\"><div><div>").append(Html.escapar(v.empresaNombre()))
-                            .append("</div><div class=\"muted small\">").append(Html.escapar(v.sedeNombre()))
-                            .append(" · desde ").append(Html.fecha(v.visita().inicio().toLocalDate()))
-                            .append("</div></div><a class=\"btn p sm\" href=\"/visitas/").append(v.visita().id())
-                            .append("\">Continuar</a></div>");
-                }
-            }
+            if(c.rol()==Cuenta.Rol.ADMINISTRADOR)inicio.append(InicioEvaluacion.tarjeta(visitas.servicio().paraEvaluar(c)));
+            else inicio.append("<h3>Visitas en curso</h3>").append(Html.vacio("Aún no hay visitas disponibles.",""));
             inicio.append("</section><section class=\"stack\"><h3>Reservas</h3>");
             var pendientes = listaReservas.stream()
                     .filter(r -> r.reserva().estado().equals("EN_COLA") || r.reserva().estado().equals("ESPERANDO")).toList();
@@ -326,6 +317,10 @@ public final class Router implements HttpHandler {
 
     /** Envía HTML en UTF-8 (RNF-007). */
     public static void enviar(HttpExchange x, int estado, String html) throws IOException {
+        if(java.util.Set.of(403,404,500).contains(estado)){
+            if(!html.contains("<html"))html=Html.error(estado==403?"Acceso denegado":estado==404?"Página no disponible":"No pudimos abrir esta página",estado==403?"Tu cuenta no tiene acceso a esta página.":estado==404?"No encontramos lo que buscabas. Vuelve al inicio para continuar.":"Inténtalo de nuevo o vuelve al inicio.");
+            else if(!html.contains("Volver al inicio"))html=html.replace("</main>","<div><a class=\"btn p\" href=\"/\">Volver al inicio</a></div></main>");
+        }
         responder(x, estado, "text/html; charset=UTF-8", html);
     }
 

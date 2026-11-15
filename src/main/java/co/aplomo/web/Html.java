@@ -45,6 +45,11 @@ public final class Html {
             + "<path d=\"M47.84,64 h4.32 v2.16 L55.04,70.48 L50,82.72 L44.96,70.48 L47.84,66.16 Z\" fill=\"currentColor\"/>"
             + "<circle cx=\"50\" cy=\"10\" r=\"3.6\" fill=\"currentColor\"/></svg>";
 
+    /** Favicon A con plomada, compartido con el logo de la app (Paso 17). */
+    public static String favicon(){return icono(64).replace("<svg ","<svg xmlns=\"http://www.w3.org/2000/svg\" ").replace("currentColor","#EDE6D8");}
+    /** Error legible con identidad de la app y una salida segura. */
+    public static String error(String titulo,String mensaje){return pagina(titulo,"<section class=\"card stack\">"+logo(42)+aviso(mensaje,false)+"<div><a class=\"btn p\" href=\"/\">Volver al inicio</a></div></section>",null);}
+
     /** Logo con ícono y texto como en el mock, a la altura indicada en píxeles. */
     public static String logo(int altura) {
         int svgH = (int)(altura * 0.78);
@@ -174,6 +179,7 @@ public final class Html {
         return "<!doctype html><html lang=\"es\"><head><meta charset=\"UTF-8\">"
                 + "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">"
                 + "<title>" + escapar(titulo) + " · APLOMO.</title>"
+                + "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/favicon.svg\">"
                 + "<link href=\"https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&display=swap\" rel=\"stylesheet\">"
                 + "<link rel=\"stylesheet\" href=\"/static/css/aplomo.css\">"
                 + "<script src=\"/static/js/interfaz.js\" defer></script><script src=\"/static/js/progreso.js\" defer></script><script src=\"/static/js/cuenta.js\" defer></script><script src=\"/static/js/reservas.js\" defer></script></head><body>" + "<a class=\"saltar\" href=\"#contenido\">Saltar al contenido</a>" + cabecera + (cabecera.isEmpty()?"":laterales())

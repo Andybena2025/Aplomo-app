@@ -21,7 +21,7 @@ public final class ReservaDao {
 
     /** Lista reservas de todas las empresas para Administrador o únicamente de la empresa permitida. */
     public List<Ficha> listar(Connection con, int empresa) throws SQLException {
-        return Sql.listar(con, CONTEXTO + " WHERE (? = 0 OR s.id_empresa = ?) ORDER BY r.fecha DESC, r.hora_inicio DESC, r.id_reserva DESC",
+        return Sql.listar(con, CONTEXTO + " WHERE (? = 0 OR s.id_empresa = ?)"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" ORDER BY r.fecha DESC, r.hora_inicio DESC, r.id_reserva DESC",
                 ReservaDao::leer, empresa, empresa);
     }
 

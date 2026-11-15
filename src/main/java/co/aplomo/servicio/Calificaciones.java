@@ -48,7 +48,7 @@ public final class Calificaciones {
         if(empresa<1)throw new IllegalArgumentException("Elige una empresa para consultar sus calificaciones.");
         int permitida=AccesoDatos.empresaPermitida(actor);
         Empresa e=new EmpresaDao().buscar(c,empresa,permitida,false);
-        if(e==null)throw new SecurityException("Acceso denegado. La empresa no está disponible para tu cuenta.");
+        if(e==null||co.aplomo.modelo.Demostracion.NIT_PRACTICA.equals(e.nit()))throw new SecurityException("Acceso denegado. La empresa no está disponible para tu cuenta.");
         var sedes=new SedeDao().buscarTodos(c,empresa,permitida);
         var riesgos=dao.riesgos(c);
         var visitas=dao.visitas(c,empresa);var puestos=dao.puestos(c,empresa);

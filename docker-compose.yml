@@ -36,6 +36,24 @@ services:
     volumes:
       - fotos_aplomo:/app/fotos
     restart: unless-stopped
+  demo:
+    build: .
+    profiles: [demo]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APLOMO_DEMO_CARGA: "si"
+      APLOMO_DB_URL: jdbc:mysql://db:3306/rula_ergonomia?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Bogota&characterEncoding=UTF-8
+      APLOMO_DB_USUARIO: app_rula
+      APLOMO_DB_CLAVE: ${APLOMO_DB_CLAVE:?Crea .env con APLOMO_DB_CLAVE}
+      APLOMO_CARPETA_FOTOS: /app/fotos
+      TZ: America/Bogota
+    command: ["--cargar-demo-entorno"]
+    volumes:
+      - fotos_aplomo:/app/fotos
+    restart: "no"
+
 volumes:
   datos_mysql:
   fotos_aplomo:

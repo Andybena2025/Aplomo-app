@@ -16,7 +16,7 @@ public final class PendienteDao {
     /** Lista el alcance permitido con orden fijo elegido por lista blanca. */
     public List<Ficha> listar(Connection c,int empresa,boolean finalizadas,String estado,String orden)throws SQLException{
         String ordenar=switch(orden){case "prioridad"->"CASE p.prioridad WHEN 'ALTA' THEN 0 WHEN 'MEDIA' THEN 1 WHEN 'BAJA' THEN 2 ELSE 3 END,p.fecha_limite IS NULL,p.fecha_limite,p.id_pendiente DESC";case "limite"->"p.fecha_limite IS NULL,p.fecha_limite,p.id_pendiente DESC";default->"p.fecha_registro DESC,p.id_pendiente DESC";};
-        return Sql.listar(c,CONTEXTO+" WHERE (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA') AND (?='TODOS' OR p.estado=?) ORDER BY "+ordenar,PendienteDao::ficha,empresa,empresa,finalizadas,estado,estado);
+        return Sql.listar(c,CONTEXTO+" WHERE (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA') AND (?='TODOS' OR p.estado=?)"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" ORDER BY "+ordenar,PendienteDao::ficha,empresa,empresa,finalizadas,estado,estado);
     }
     /** Consulta dentro del alcance; bloquea solo el pendiente para no invertir bloqueos de análisis/visita. */
     public Ficha buscar(Connection c,int id,int empresa,boolean finalizadas,boolean bloquear)throws SQLException{

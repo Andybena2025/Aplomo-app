@@ -33,7 +33,7 @@ public final class VisitaDao {
             +"FROM visita v JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa e USING(id_empresa) "
             +"LEFT JOIN puesto_trabajo p ON p.id_salon=l.id_salon AND p.activo=TRUE AND NOT EXISTS "
             +"(SELECT 1 FROM evaluacion ev WHERE ev.id_visita=v.id_visita AND ev.id_puesto=p.id_puesto) "
-            +"WHERE v.estado='EN_CURSO' ORDER BY e.nombre,s.nombre,v.id_visita,p.numero,p.id_puesto",
+            +"WHERE v.estado='EN_CURSO'"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" ORDER BY e.nombre,s.nombre,v.id_visita,p.numero,p.id_puesto",
             f->new ParaEvaluar(f.getInt("id_visita"),f.getString("empresa"),f.getString("sede"),Sql.enteroOpcional(f,"id_puesto"),Sql.enteroOpcional(f,"numero"),f.getString("descripcion")));
     }
 
@@ -42,7 +42,7 @@ public final class VisitaDao {
 
     /** Lista todas las visitas para Administrador o solo las finalizadas de la empresa del Usuario. */
     public List<Ficha> listar(Connection con, int empresa, boolean soloFinalizadas) throws SQLException {
-        return Sql.listar(con, CONTEXTO + " WHERE (? = 0 OR s.id_empresa = ?) AND (? = FALSE OR v.estado = 'FINALIZADA') ORDER BY v.hora_real_inicio DESC, v.id_visita DESC",
+        return Sql.listar(con, CONTEXTO + " WHERE (? = 0 OR s.id_empresa = ?) AND (? = FALSE OR v.estado = 'FINALIZADA')"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" ORDER BY v.hora_real_inicio DESC, v.id_visita DESC",
                 VisitaDao::leer, empresa, empresa, soloFinalizadas);
     }
 

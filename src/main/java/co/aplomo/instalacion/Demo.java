@@ -44,7 +44,7 @@ public final class Demo {
             }catch(Exception e){con.rollback();throw e;}
             int borradas=limpiarFotos(con,Config.carpetaFotos(),fotos);
             copiarMuestras(Config.carpetaFotos());
-            terminal.printf("Demostración lista. Entra como Administrador y abre Evaluar ahora. Fotos antiguas retiradas: %d.%n",borradas);
+            terminal.printf("Demostración lista. Entra como Administrador y abre Visitas en curso o las consultas. Fotos antiguas retiradas: %d.%n",borradas);
             terminal.printf("No se modificaron otras empresas, cuentas ni config/db.properties.%n");
         }catch(Exception e){throw new IllegalStateException("No se pudo completar la demostración. Si falló la base, todos sus cambios se revirtieron. Revisa la conexión, los permisos y las cuentas vinculadas. "+(e instanceof IllegalArgumentException?e.getMessage():""),e);}
         finally{credenciales.clear();}
@@ -59,11 +59,17 @@ public final class Demo {
         if(!privilegios.contains("DELETE")||!(privilegios.contains("SUPER")||privilegios.contains("CREATE USER")))throw new IllegalArgumentException("Esta operación requiere una cuenta administradora de MySQL con permisos globales.");
     }
 
+    /** Carga explícita del perfil Docker demo; usa únicamente los datos ficticios del cargador. */
+    public static void ejecutarEntorno(){if(!"si".equals(System.getenv("APLOMO_DEMO_CARGA")))throw new IllegalArgumentException("Activa el perfil demo para cargar la demostración.");try(Connection c=co.aplomo.db.Conexion.obtener()){c.setAutoCommit(false);try{cargar(c,Path.of("/app/demo/datos_demo.sql"),Config.carpetaFotos());c.commit();}catch(Exception e){c.rollback();throw e;}System.out.println("Demostración completa cargada. No se cambiaron cuentas ni empresas reales.");}catch(Exception e){throw new IllegalStateException("No se pudo cargar la demostración.",e);}}
+
     /** Carga idempotente en la transacción del llamador; no confirma ni crea bases. */
-    public static void cargar(Connection con,Path sql)throws IOException,SQLException{
+    public static void cargar(Connection con,Path sql)throws IOException,SQLException{cargar(con,sql,Config.carpetaFotos());}
+
+    /** Permite aislar los archivos de pruebas sin tocar la carpeta real. */
+    public static void cargar(Connection con,Path sql,Path fotos)throws IOException,SQLException{
         if(con.getAutoCommit())throw new IllegalArgumentException("La demostración requiere una transacción.");
-        Integer admin=Sql.uno(con,"SELECT id_cuenta FROM cuenta WHERE rol='ADMINISTRADOR' AND estado='ACTIVA' ORDER BY id_cuenta LIMIT 1",r->r.getInt(1));
-        if(admin==null)throw new IllegalArgumentException("Primero debe existir un Administrador activo de APLOMO.");
+        Integer admin=Sql.uno(con,"SELECT id_cuenta FROM cuenta WHERE rol='ADMINISTRADOR' AND estado='ACTIVA' AND contrasena_temporal=FALSE ORDER BY id_cuenta LIMIT 1",r->r.getInt(1));
+        if(admin==null)throw new IllegalArgumentException("Primero ingresa como Administrador y cambia la contraseña temporal de APLOMO.");
         Integer ajenas=Sql.uno(con,"SELECT COUNT(*) FROM reserva r JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa e USING(id_empresa) WHERE r.codigo IN ('DEMO-FIN-01','DEMO-FIN-02','DEMO-COL-01','DEMO-COL-02','DEMO-ESP-01','DEMO-ESP-02','DEMO-LST-E1','DEMO-LST-E2','DEMO-LST-E3') AND NOT ("+EMPRESAS+")",r->r.getInt(1));
         if(ajenas>0)throw new IllegalArgumentException("Hay un código demo en otra empresa. No se cambió nada.");
         String texto=Files.readAllLines(sql,StandardCharsets.UTF_8).stream().filter(l->!l.stripLeading().startsWith("--")).collect(java.util.stream.Collectors.joining("\n"));
@@ -71,6 +77,7 @@ public final class Demo {
             String orden=parte.strip();if(orden.isEmpty()||orden.equalsIgnoreCase("START TRANSACTION")||orden.equalsIgnoreCase("COMMIT"))continue;
             try(PreparedStatement ps=con.prepareStatement(orden)){ps.execute();}
         }
+        DemoCompleta.cargar(con,fotos,admin);
     }
 
     /** Borra solo las tres empresas exactas; el llamador confirma o revierte. */

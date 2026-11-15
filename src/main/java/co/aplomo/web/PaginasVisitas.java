@@ -43,14 +43,15 @@ public final class PaginasVisitas {
                 .append(escapar(ficha.empresaNombre())).append("</h2><span class=\"").append(claseEstado(ficha.visita().estado())).append("\">").append(estado(ficha.visita().estado()))
                 .append("</span></div><p class=\"muted\">").append(escapar(ficha.sedeNombre())).append(" · ")
                 .append(escapar(ficha.salonNombre())).append("</p><dl class=\"datos-cuenta\">")
-                .append(dato("Inicio real", fecha(ficha.visita().inicio()))).append(dato("Fin real", fecha(ficha.visita().fin())))
-                .append(dato("Calificación", calificacion(ficha))).append(dato("Notas", ficha.visita().notas())).append("</dl>")
-                .append(enlace("/reservas/" + ficha.visita().reserva(), "Ver " + ficha.codigoReserva(), false)).append("</section>")
+                .append(dato("Inicio real", fecha(ficha.visita().inicio()))).append(ficha.visita().fin()==null?"":dato("Fin real", fecha(ficha.visita().fin())))
+                .append(dato("Calificación", calificacion(ficha))).append(ficha.visita().notas()==null||ficha.visita().notas().isBlank()?"":dato("Notas", ficha.visita().notas())).append("</dl>")
+                .append(enlace("/reservas/" + ficha.visita().reserva(), "Ver reserva", false)).append("</section>")
                 .append("<section class=\"stack\"><div class=\"row between\"><h2>" + (admin(sesion) && ficha.visita().estado().equals("EN_CURSO") ? "Puestos de esta visita" : "Evaluaciones") + "</h2><span class=\"muted\">")
                 .append(Html.plural(evaluaciones.size(), "registrada")).append("</span></div>");
         boolean enCursoAdmin = admin(sesion) && ficha.visita().estado().equals("EN_CURSO");
         if (enCursoAdmin) html.append(puestos(ficha, puestos, evaluaciones));
-        html.append(enlace("/evaluaciones?visita="+ficha.visita().id(),"Consultar evaluaciones",false));
+        html.append("<div class=\"row visita-acciones\">").append(enlace("/evaluaciones?visita="+ficha.visita().id(),"Consultar evaluaciones",false));
+        if(enCursoAdmin&&!evaluaciones.isEmpty())html.append(enlace("/visitas/"+ficha.visita().id()+"/finalizar","Finalizar visita",true));html.append("</div>");
         if (evaluaciones.isEmpty()) html.append("<p class=\"muted\">Todavía no hay evaluaciones registradas en esta visita.</p>");
         else if (!enCursoAdmin) {
             html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Puesto</th><th>Fecha</th><th>Postura</th><th>Puntaje</th></tr></thead><tbody>");
@@ -65,7 +66,7 @@ public final class PaginasVisitas {
         html.append("</section>");
         if (admin(sesion) && ficha.visita().estado().equals("EN_CURSO")) {
             if (evaluaciones.isEmpty()) html.append("<p class=\"hint\">Guarda al menos una evaluación para poder finalizar la visita.</p>");
-            else html.append(enlace("/visitas/" + ficha.visita().id() + "/finalizar", "Finalizar visita", true));
+
         }
         return Html.pagina("Visita · " + ficha.codigoReserva(), html.toString(), sesion);
     }
@@ -77,6 +78,7 @@ public final class PaginasVisitas {
         for (var p : puestos) {
             var e = ultima.get(p.id());
             h.append("<a class=\"card tour-puesto\" href=\"/evaluaciones/nueva?visita=").append(ficha.visita().id()).append("&amp;puesto=").append(p.id()).append("\"><strong>Puesto ").append(p.numero()).append("</strong><span>").append(escapar(p.descripcion())).append("</span><span class=\"tag\">").append(e == null ? "○ Pendiente" : "✓ Evaluado").append("</span>");
+            if(e==null)h.append("<span class=\"btn p\">Evaluar</span>");
             if (e != null) h.append(e.puntaje() == null ? "<span class=\"hint\">Sin puntaje disponible</span>" : Html.riesgo(e.puntaje(),e.color(),e.nivel()));
             h.append("</a>");
         }

@@ -1179,3 +1179,22 @@ form[data-conversacion] .campo-falta{outline:2px solid var(--ivory);outline-offs
 form[data-conversacion] .campo-apoyo>summary.agregar-foto{display:flex;justify-content:flex-start;gap:12px;border:1px solid var(--line2);padding:12px 20px;min-height:52px;box-sizing:border-box;width:100%;white-space:normal}
 form[data-conversacion] [data-foto-controles]{gap:8px;flex-wrap:wrap}
 @media(max-width:720px){form[data-conversacion] .seguir-zona{width:100%}}
+
+/* Paso 17: operación legible, espacios consistentes y respaldo manual. */
+.practica-discreta{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);padding:var(--s4);margin-bottom:var(--s5)}
+.practica-discreta h2{font-size:24px;margin:0}.secciones-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:var(--s4)}
+.secciones-tabs a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--line2);border-radius:999px;color:var(--muted);font-size:13px;text-decoration:none}.secciones-tabs a.on{color:var(--ivory);border-color:var(--ivory)}
+.no-wrap,.pill,.consultas-table [data-label="Puesto"] b{white-space:nowrap}.visita-acciones{gap:var(--s4);margin:var(--s4) 0}
+form[data-conversacion] [data-paso="1"] label.opt{justify-content:flex-start;text-align:left;align-items:flex-start}form[data-conversacion] [data-paso="1"] label.opt span{text-align:left;flex:1}form[data-conversacion] .campo-titulo{margin-top:var(--s4)}
+form[data-conversacion] .campo-imagen{align-self:start;position:sticky;top:100px}details.guia:not([open]),details.alta-reserva:not([open]){padding-bottom:var(--s4)}
+@media(max-width:900px){form[data-conversacion] .campo-imagen{position:static}.practica-discreta{align-items:flex-start;flex-direction:column}}
+
+.guia-manual{padding:var(--s5);border:1px solid var(--line2);border-radius:16px;margin-bottom:var(--s4)}.guia-manual h3{font-family:Inter,sans-serif;font-size:24px;margin:0 0 var(--s3)}.guia-manual .row{margin-top:var(--s4)}
+
+.alta-lugar>summary{display:flex;align-items:center;min-height:28px;list-style:none}.alta-lugar:not([open]){padding:var(--s4) var(--s5)}.alta-lugar[open]>form{margin-top:var(--s4)}.alta-lugar>summary::-webkit-details-marker{display:none}
+
+form[data-conversacion] [data-paso="1"] .tour-opcion{display:flex;align-items:flex-start;justify-content:flex-start;text-align:left;gap:12px;padding:16px}form[data-conversacion] [data-paso="1"] .tour-opcion>input{position:static;flex:0 0 auto;margin:3px 0 0}form[data-conversacion] [data-paso="1"] .tour-opcion>span{display:block;flex:1;text-align:left}form[data-conversacion] [data-paso="1"] .tour-franja{display:block;text-align:left;padding:0}
+
+/* La guía y la foto permanecen juntas al iniciar la marcación manual. */
+form[data-conversacion] [data-guia-manual]{scroll-margin-top:110px}
+@media(min-width:901px){form[data-conversacion] [data-foto-revision] .foto-zoom{height:min(560px,calc(100dvh - 270px))}}

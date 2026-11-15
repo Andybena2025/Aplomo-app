@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Datos reales de MySQL solo en la base de pruebas, revertidos por BasePrueba. */
 class DemoTest extends BasePrueba {
     @TempDir Path archivos;
-    private void cargar()throws Exception{Demo.cargar(con,Path.of("docs/base_de_datos/datos_demo.sql"));}
+    private void cargar()throws Exception{Demo.cargar(con,Path.of("docs/base_de_datos/datos_demo.sql"),archivos);}
     @Test void cadaEmpresaTieneSedesConAmbosTiposYUnaVisitaListaSinDuplicar()throws Exception{
         cargar();cargar();
         for(int i=1;i<=3;i++){
@@ -26,6 +26,11 @@ class DemoTest extends BasePrueba {
             assertEquals(1,visitas.size());
             assertEquals(2,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM puesto_trabajo p WHERE p.id_salon=? AND p.activo=TRUE AND NOT EXISTS(SELECT 1 FROM evaluacion e WHERE e.id_visita=? AND e.id_puesto=p.id_puesto)",r->r.getInt(1),visitas.get(0)[1],visitas.get(0)[0]));
         }
+    }
+    @Test void demoCompletaTieneTresColoresDosPosturasYEsIdempotente()throws Exception{
+        int cuentas=Sql.uno(con,"SELECT COUNT(*) FROM cuenta",x->x.getInt(1));cargar();int antes=Sql.uno(con,"SELECT COUNT(*) FROM evaluacion",x->x.getInt(1));cargar();assertEquals(antes,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM evaluacion",x->x.getInt(1)));assertEquals(cuentas,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM cuenta",x->x.getInt(1)));
+        for(int i=1;i<=3;i++){String nit="DEMO-APLOMO-E"+i;var colores=Sql.listar(con,"SELECT DISTINCT n.color FROM analisis_rula a JOIN fotografia f USING(id_foto) JOIN evaluacion e USING(id_evaluacion) JOIN puesto_trabajo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa em USING(id_empresa) JOIN nivel_riesgo n USING(id_nivel) WHERE em.nit=?",x->x.getString(1),nit);assertTrue(colores.containsAll(List.of("VERDE","AMARILLO","ROJO")),colores.toString());assertTrue(Sql.<Integer>uno(con,"SELECT COUNT(*) FROM visita v JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa em USING(id_empresa) WHERE em.nit=? AND v.estado='FINALIZADA' AND v.calificacion_final IS NOT NULL",x->x.getInt(1),nit)>0);}
+        int dobles=Sql.uno(con,"SELECT COUNT(*) FROM (SELECT p.id_puesto FROM evaluacion e JOIN puesto_trabajo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa em USING(id_empresa) WHERE em.nit IN ('DEMO-APLOMO-E1','DEMO-APLOMO-E2','DEMO-APLOMO-E3') GROUP BY p.id_puesto HAVING COUNT(DISTINCT e.criterio)=2) q",x->x.getInt(1));assertTrue(dobles>=3);assertTrue(Files.list(archivos).count()>=18);
     }
     @Test void sinConfirmacionNoHaceNingunaConsultaDeBorrado()throws Exception{
         assertThrows(IllegalArgumentException.class,()->Demo.vaciar(con,"sí"));

@@ -34,7 +34,7 @@ public final class PaginasUsuarios {
                     .append(Html.csrf(s)).append("<button class=\"btn sm\">")
                     .append(c.estado()==Estado.INACTIVA ? "Activar" : "Desactivar").append("</button></form></div></td></tr>");
         }
-        contenido.append("</tbody></table></div>").append(Html.vacio("No hay registros con estos filtros. Cambia la búsqueda o limpia los filtros.","").replace("class=\"empty marca\"","class=\"empty marca\" data-usuarios-vacios hidden")).append("<script src=\"/static/js/usuarios.js\" defer></script>");
+        contenido.append("</tbody></table></div>").append(Html.vacio("Aún no hay usuarios con estos filtros. Puedes cambiar la búsqueda o crear una cuenta.","<a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a>").replace("class=\"empty marca\"","class=\"empty marca\" data-usuarios-vacios hidden")).append("<script src=\"/static/js/usuarios.js\" defer></script>");
         return Html.pagina("Usuarios",contenido.toString(),s,"Gestión · Usuarios","<a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a>");
     }
 

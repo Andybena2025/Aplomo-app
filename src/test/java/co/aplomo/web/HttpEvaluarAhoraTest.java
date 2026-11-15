@@ -16,14 +16,14 @@ class HttpEvaluarAhoraTest extends HttpPrueba {
         int reserva=new Reservas(tx,reloj).guardar(cuenta(admin),0,solicitud(salon));new Reservas(tx,reloj).aceptar(cuenta(admin),reserva);
         int visita=visitas.iniciar(cuenta(admin),reserva);evaluacion(visita,salon.id(),3);
         entrar(admin);String h=get("/").body();
-        assertTrue(h.indexOf("Evaluar ahora")<h.indexOf("Visitas en curso"));
+        assertFalse(h.contains("Evaluar ahora"));assertTrue(h.contains("id=\"visitas-en-curso\""));
         assertTrue(h.contains("Computador &lt;ficticio&gt;"));
         assertTrue(h.contains("/evaluaciones/nueva?visita="+visita+"&amp;puesto="+pendiente));
         assertFalse(h.contains("&amp;puesto="+inactivo));
         assertEquals(1,visitas.paraEvaluar(cuenta(admin)).size());
         assertEquals(200,get("/evaluaciones/nueva?visita="+visita+"&puesto="+pendiente).statusCode());
         evaluacion(visita,salon.id(),1);
-        assertTrue(get("/").body().contains("Todos los puestos están evaluados."));
+        assertFalse(get("/").body().contains("Todos los puestos están evaluados."));
     }
     @Test void sinVisitasMuestraMensajeYReservas()throws Exception{
         entrar(admin);String h=get("/").body();
@@ -36,7 +36,7 @@ class HttpEvaluarAhoraTest extends HttpPrueba {
         int visita=new Visitas(tx,reloj).iniciar(cuenta(admin),reserva);
         Sql.actualizar(con,"UPDATE cuenta SET contrasena_temporal=FALSE WHERE id_cuenta=?",usuario);
         entrar(usuario);String h=get("/").body();
-        assertFalse(h.contains("evaluar-ahora"));assertFalse(h.contains("Evaluar ahora"));
+        assertFalse(h.contains("evaluar-ahora"));assertFalse(h.contains("id=\"visitas-en-curso\""));
         assertEquals(403,get("/evaluaciones/nueva?visita="+visita).statusCode());
         assertThrows(SecurityException.class,()->new Visitas(tx,reloj).paraEvaluar(cuenta(usuario)));
     }

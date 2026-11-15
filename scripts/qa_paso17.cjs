@@ -1,0 +1,10 @@
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const guia=require('../src/main/resources/static/js/marcado-manual.js'),r=require('../src/main/resources/static/js/posturas-campo.js');
+test('marcado manual pide los cinco puntos exactos en orden',()=>{assert.deepEqual(guia.ORDEN,['hombro','codo','muneca','coronilla','cadera']);assert.deepEqual(guia.TEXTOS,['Toca el hombro','Toca el codo','Toca la muñeca','Toca la cabeza','Toca la cintura']);});
+test('cada marca avanza una vez y termina al quinto punto',()=>{let paso=guia.reiniciar();for(let i=1;i<=5;i++){paso=guia.avanzar(paso);assert.equal(paso,i);}assert.equal(guia.avanzar(paso),5);});
+test('anterior no baja de cero y reiniciar vuelve al hombro',()=>{assert.equal(guia.anterior(0),0);assert.equal(guia.anterior(4),3);assert.equal(guia.reiniciar(),0);});
+test('IA cuello -6 propone 0 a 10 y exige revisar',()=>{const p=r.sugerenciaAutomatica('CUELLO',-6,-15,true);assert.equal(p.rango,5);assert.equal(p.revisar,true);assert.equal(p.ajustadaIA,true);});
+test('IA cuello -12 conserva Hacia atrás',()=>{const p=r.sugerenciaAutomatica('CUELLO',-12,-15,true);assert.equal(p.rango,-15);assert.equal(p.ajustadaIA,false);});
+test('cuello marcado o escrito a mano conserva el rango exacto de extensión',()=>{const p=r.sugerenciaAutomatica('CUELLO',-6,-15,false);assert.equal(p.rango,-15);assert.equal(p.ajustadaIA,false);});
+test('la propuesta IA incluye -10 y no amplía la regla a otros segmentos',()=>{assert.equal(r.sugerenciaAutomatica('CUELLO',-10,-15,true).rango,5);assert.equal(r.sugerenciaAutomatica('CUELLO',-10.01,-15,true).rango,-15);assert.equal(r.sugerenciaAutomatica('TRONCO',-6,10,true).rango,10);});
+test('una sola postura máxima se resalta y los empates solo muestran Mismo puntaje',()=>{assert.equal(r.critica([{puntaje:3},{puntaje:7}]).indice,1);const c=r.critica([{puntaje:7},{puntaje:7}]);assert.equal(c.indice,-1);assert.equal(c.empate,true);});

@@ -15,7 +15,7 @@ public final class EmpresaDao {
 
     /** Lee empresas para asignación; el servicio exige Administrador (RF-002). */
     public List<Opcion> listar(Connection con) throws SQLException {
-        try(var ps=con.prepareStatement("SELECT id_empresa, nombre, activo FROM empresa ORDER BY nombre, id_empresa");var rs=ps.executeQuery()) {
+        try(var ps=con.prepareStatement("SELECT id_empresa, nombre, activo FROM empresa WHERE nit <> 'DEMO-APLOMO-PRACTICA' ORDER BY nombre, id_empresa");var rs=ps.executeQuery()) {
             List<Opcion> opciones=new ArrayList<>();
             while(rs.next()) opciones.add(new Opcion(rs.getInt("id_empresa"),rs.getString("nombre"),rs.getBoolean("activo")));
             return List.copyOf(opciones);
@@ -37,7 +37,7 @@ public final class EmpresaDao {
 
     /** Lista el catálogo de un padre y limita los resultados a la empresa autorizada (RF-002). */
     public List<Empresa> buscarTodos(Connection con, int padre, int empresaPermitida) throws SQLException {
-        return Sql.listar(con, "SELECT r.* FROM empresa r WHERE (? = 0 OR r.id_empresa = ?) ORDER BY r.nombre, r.id_empresa",
+        return Sql.listar(con, "SELECT r.* FROM empresa r WHERE (? = 0 OR r.id_empresa = ?)"+co.aplomo.modelo.Demostracion.filtro("r.id_empresa")+" ORDER BY r.nombre, r.id_empresa",
                 EmpresaDao::leer, empresaPermitida, empresaPermitida);
     }
 
@@ -59,7 +59,7 @@ public final class EmpresaDao {
 
     /** RF-028: ofrece solamente opciones activas bajo una jerarquía también activa. */
     public List<Empresa> activas(Connection con) throws SQLException {
-        return Sql.listar(con, "SELECT r.* FROM empresa r WHERE r.activo = TRUE ORDER BY r.nombre, r.id_empresa", EmpresaDao::leer);
+        return Sql.listar(con, "SELECT r.* FROM empresa r WHERE r.activo = TRUE"+co.aplomo.modelo.Demostracion.filtro("r.id_empresa")+" ORDER BY r.nombre, r.id_empresa", EmpresaDao::leer);
     }
 
     private static Empresa leer(ResultSet fila) throws SQLException {

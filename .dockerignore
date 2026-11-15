@@ -14,3 +14,9 @@ fotos_de_prueba/
 *.log
 *.tmp
 .DS_Store
+
+!docs/
+docs/*
+!docs/base_de_datos/
+docs/base_de_datos/*
+!docs/base_de_datos/datos_demo.sql

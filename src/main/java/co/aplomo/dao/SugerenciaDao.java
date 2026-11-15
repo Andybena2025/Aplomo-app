@@ -23,7 +23,7 @@ public final class SugerenciaDao {
     }
     /** Lista solo sugerencias activas dentro del alcance; evaluación cero significa todas. */
     public List<Ficha> listar(Connection c,int empresa,boolean finalizadas,int evaluacion)throws SQLException {
-        var contextos=Sql.listar(c,CONTEXTO+" WHERE (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA') AND (?=0 OR e.id_evaluacion=?) ORDER BY e.id_evaluacion DESC",SugerenciaDao::contexto,empresa,empresa,finalizadas,evaluacion,evaluacion);
+        var contextos=Sql.listar(c,CONTEXTO+(evaluacion==0?" WHERE TRUE"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" AND":" WHERE")+" (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA') AND (?=0 OR e.id_evaluacion=?) ORDER BY e.id_evaluacion DESC",SugerenciaDao::contexto,empresa,empresa,finalizadas,evaluacion,evaluacion);
         List<Ficha> salida=new ArrayList<>();for(var e:contextos)for(var s:porEvaluacion(c,e.evaluacion(),true))salida.add(new Ficha(s,e));return List.copyOf(salida);
     }
     /** Lee una fila; el servicio comprueba después su empresa y visita. */

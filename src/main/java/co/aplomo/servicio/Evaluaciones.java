@@ -156,14 +156,14 @@ public final class Evaluaciones {
     public long[] resumen(Cuenta actor) throws SQLException {
         return tx.ejecutar(c->{
             Cuenta actual=AccesoDatos.vigente(c,actor);int empresa=AccesoDatos.empresaPermitida(actual);boolean usuario=actual.rol()==Cuenta.Rol.USUARIO;
-            long evaluaciones=Sql.uno(c,"SELECT COUNT(*) FROM evaluacion e JOIN visita v USING(id_visita) JOIN puesto_trabajo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA')",r->r.getLong(1),empresa,empresa,usuario);
+            long evaluaciones=Sql.uno(c,"SELECT COUNT(*) FROM evaluacion e JOIN visita v USING(id_visita) JOIN puesto_trabajo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA')"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa"),r->r.getLong(1),empresa,empresa,usuario);
             long rojos;
             if(!usuario){
                 Map<String,Long> colores=new HashMap<>();
-                for(var fila:Sql.listar(c,"SELECT n.color,COUNT(*) FROM puesto_trabajo p JOIN nivel_riesgo n ON p.ultimo_puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo GROUP BY n.color",r->Map.entry(r.getString(1),r.getLong(2))))colores.put(fila.getKey(),fila.getValue());
+                for(var fila:Sql.listar(c,"SELECT n.color,COUNT(*) FROM puesto_trabajo p JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN nivel_riesgo n ON p.ultimo_puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo WHERE TRUE"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" GROUP BY n.color",r->Map.entry(r.getString(1),r.getLong(2))))colores.put(fila.getKey(),fila.getValue());
                 return new long[]{evaluaciones,colores.getOrDefault("ROJO",0L),colores.getOrDefault("VERDE",0L),colores.getOrDefault("AMARILLO",0L)};
             }
-            else rojos=Sql.uno(c,"SELECT COUNT(*) FROM puesto_trabajo p JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE s.id_empresa=? AND EXISTS (SELECT 1 FROM nivel_riesgo n WHERE n.color=? AND (SELECT MAX(a.puntaje_final) FROM fotografia f JOIN analisis_rula a USING(id_foto) WHERE f.id_evaluacion=(SELECT MAX(e.id_evaluacion) FROM evaluacion e JOIN visita v USING(id_visita) WHERE e.id_puesto=p.id_puesto AND v.estado='FINALIZADA')) BETWEEN n.puntaje_minimo AND n.puntaje_maximo)",r->r.getLong(1),empresa,"ROJO");
+            else rojos=Sql.uno(c,"SELECT COUNT(*) FROM puesto_trabajo p JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE s.id_empresa=?"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" AND EXISTS (SELECT 1 FROM nivel_riesgo n WHERE n.color=? AND (SELECT MAX(a.puntaje_final) FROM fotografia f JOIN analisis_rula a USING(id_foto) WHERE f.id_evaluacion=(SELECT MAX(e.id_evaluacion) FROM evaluacion e JOIN visita v USING(id_visita) WHERE e.id_puesto=p.id_puesto AND v.estado='FINALIZADA')) BETWEEN n.puntaje_minimo AND n.puntaje_maximo)",r->r.getLong(1),empresa,"ROJO");
             return new long[]{evaluaciones,rojos};
         });
     }

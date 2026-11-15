@@ -12,6 +12,7 @@ RUN groupadd --gid 10001 aplomo && useradd --uid 10001 --gid aplomo --no-create-
 COPY --from=compilacion /construccion/target/aplomo-1.0-SNAPSHOT.jar /app/aplomo.jar
 COPY --from=compilacion /construccion/target/dependency/ /app/lib/
 COPY src/main/resources/static/img/muestra_perfil.jpg /app/demo/muestra_perfil.jpg
+COPY docs/base_de_datos/datos_demo.sql /app/demo/datos_demo.sql
 USER aplomo
 EXPOSE 8080
 ENTRYPOINT ["java","-Duser.timezone=America/Bogota","-cp","/app/aplomo.jar:/app/lib/*","co.aplomo.App"]

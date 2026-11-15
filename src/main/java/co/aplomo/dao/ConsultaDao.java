@@ -30,7 +30,7 @@ public final class ConsultaDao {
             case SUGERENCIAS->{select="sg.id_sugerencia id,e.id_evaluacion evaluacion,e.id_visita visita,"+DATOS_LUGAR+"sg.titulo nombre,sg.descripcion,sg.tipo,sg.prioridad,sg.origen,sg.estado,sg.fecha_limite fecha,"+MAXIMO+" puntaje";desde="sugerencia sg JOIN evaluacion e ON e.id_evaluacion=sg.id_evaluacion JOIN visita v ON v.id_visita=e.id_visita JOIN puesto_trabajo p ON p.id_puesto=e.id_puesto"+LUGAR;extra=" AND sg.activo=TRUE AND (?=FALSE OR v.estado='FINALIZADA')";}
             default->throw new IllegalArgumentException("Sección no disponible.");
         }
-        String sql="SELECT q.*,n.color,n.nivel_oficial_rula nivel FROM (SELECT "+select+" FROM "+desde+" WHERE (?=0 OR em.id_empresa=?)"+extra+") q LEFT JOIN nivel_riesgo n ON q.puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo WHERE (?=0 OR q.id=?)";
+        String sql="SELECT q.*,n.color,n.nivel_oficial_rula nivel FROM (SELECT "+select+" FROM "+desde+" WHERE (?=0 OR em.id_empresa=?)"+co.aplomo.modelo.Demostracion.filtro("em.id_empresa")+extra+") q LEFT JOIN nivel_riesgo n ON q.puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo WHERE (?=0 OR q.id=?)";
         params.add(empresa);params.add(empresa);if(!extra.isEmpty())params.add(usuario);params.add(id);params.add(id);
         return Sql.listar(c,sql,ConsultaDao::fila,params.toArray());
     }
@@ -45,7 +45,7 @@ public final class ConsultaDao {
     }
     /** Niveles y colores oficiales para los filtros, desde la misma tabla MySQL. */
     public Map<String,List<String>> riesgos(Connection c)throws SQLException{return Map.of("color",Sql.listar(c,"SELECT color FROM nivel_riesgo GROUP BY color ORDER BY MIN(puntaje_minimo)",r->r.getString(1)),"nivel",Sql.listar(c,"SELECT DISTINCT nivel_oficial_rula FROM nivel_riesgo ORDER BY nivel_oficial_rula",r->r.getString(1)));}
-    private static List<Opcion> opciones(Connection c,String sql,int empresa)throws SQLException{return Sql.listar(c,sql+" WHERE (?=0 OR em.id_empresa=?) ORDER BY nombre,id",r->new Opcion(r.getInt("id"),r.getInt("empresa"),r.getInt("sede"),r.getString("nombre")),empresa,empresa);}
+    private static List<Opcion> opciones(Connection c,String sql,int empresa)throws SQLException{return Sql.listar(c,sql+" WHERE (?=0 OR em.id_empresa=?)"+co.aplomo.modelo.Demostracion.filtro("em.id_empresa")+" ORDER BY nombre,id",r->new Opcion(r.getInt("id"),r.getInt("empresa"),r.getInt("sede"),r.getString("nombre")),empresa,empresa);}
     private static String activo(String alias){return "CASE WHEN "+alias+".activo THEN 'ACTIVO' ELSE 'INACTIVO' END";}
     private static Fila fila(ResultSet r)throws SQLException{Map<String,String> datos=new LinkedHashMap<>();var m=r.getMetaData();for(int i=1;i<=m.getColumnCount();i++){String valor=r.getString(i);datos.put(m.getColumnLabel(i),valor==null?"":valor);}return new Fila(Map.copyOf(datos));}
 }
