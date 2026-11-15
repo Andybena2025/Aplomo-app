@@ -1208,3 +1208,22 @@ form[data-conversacion] .galeria-demo-opcion[hidden]{display:none}
 
 /* Paso 20: la ayuda de pies ocupa una línea propia entre los ajustes. */
 form[data-conversacion] [data-ayuda-pies]{flex-basis:100%;margin:0}
+
+/* Paso 22: encuadre de portada solo en celular; iPad y computador conservados. */
+@media(max-width:700px){
+ .login{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+ .login .hero{flex:none;height:46vh;height:46dvh;min-height:0}
+ .login .hero::after{background:linear-gradient(0deg,var(--bg) 0%,rgba(14,14,16,.55) 12%,rgba(14,14,16,0) 42%)}
+ .login .form{justify-content:flex-start;padding:8px 24px max(16px,env(safe-area-inset-bottom,0px));gap:12px}
+ .login .login-marca{gap:6px;padding-bottom:10px}
+ .login .login-marca .lockup{width:max-content;font-size:40px!important;margin-left:calc(var(--plomada-x,50vw) - 44px)}
+ .login .login-marca .lockup svg{width:40px;height:40px;flex:none}
+ .login .login-marca .tagline{text-align:center}
+ .login .login-cuerpo,.login .login-cuerpo>form{gap:12px}
+}
+@media(min-width:721px){
+ .tablewrap table:has(td[data-label="Detalle"],td[data-label="Acciones"]) :is(th:last-child,td:last-child){position:sticky;right:0;z-index:1;background:var(--bg)}
+ .usuarios-table :is(th:nth-child(2),td[data-label="Rol"]){min-width:9rem;white-space:nowrap}
+ .usuarios-table td[data-label="Rol"] .cell-value{white-space:nowrap;overflow-wrap:normal;word-break:normal}
+}
+@media(max-width:720px){.pagehead .eyebrow{font-size:11px;letter-spacing:.1em;white-space:nowrap}}

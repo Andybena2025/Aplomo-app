@@ -40,3 +40,6 @@ __pycache__/
 .env
 .env.*
 !.env.ejemplo
+
+# Lista privada de cuentas del equipo (solo se versiona la plantilla)
+config/cuentas.csv

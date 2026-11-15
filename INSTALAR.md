@@ -134,6 +134,10 @@ No cargues `datos_demo.sql` a mano para obtener resultados: ahora contiene solo 
 
 Para **reiniciar solo las tres empresas DEMO**: Mac `bash scripts/reiniciar_demo.sh`; Windows `scripts\reiniciar_demo.bat`. El script exige administrador de MySQL y escribir `REINICIAR DEMO` antes de borrar los registros vinculados exclusivamente a DEMO-APLOMO-E1, E2 y E3. Si hay cuentas vinculadas, cancela. Conserva las cuentas, la práctica rápida, las demás empresas y la configuración. Cierra la app antes y vuelve a abrirla al terminar. Es una herramienta voluntaria de desarrollo.
 
+## Cuentas del equipo
+
+Para crear varias cuentas sin contraseñas en archivos, copia la plantilla privada y sigue [CUENTAS.md](docs/CUENTAS.md). Mac: `bash scripts/crear_cuentas.sh`; Windows: `scripts\crear_cuentas.bat`. Usa un Administrador vigente de APLOMO; las cuentas existentes se conservan.
+
 ## Pruebas (opcional)
 
 Las pruebas usan una base aparte, **`rula_ergonomia_pruebas`**, para no ensuciar la real.
@@ -143,7 +147,7 @@ bash scripts/crear_base_pruebas.sh   # Mac; en Windows usa "Git Bash" con el mis
 ./mvnw test                           # Windows: mvnw.cmd test
 ```
 
-Deben aprobar **949 pruebas**.
+Deben aprobar **965 pruebas**.
 
 ---
 
