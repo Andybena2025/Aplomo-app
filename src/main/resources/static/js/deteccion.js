@@ -53,7 +53,7 @@
   }
   const PERFIL=Object.freeze({visibilidad:.5,frontal:.45,margen:.10});
   // Sugerencia visual, no puntuación RULA. Distancias relativas al alto de la imagen.
-  const APOYO_PIES=Object.freeze({PUNTOS:Object.freeze([23,24,27,28]),DIFERENCIA_RELATIVA_MINIMA:.15,ALTURA_CADERA_TOBILLOS_MINIMA:.22,MARGEN_NUMERICO:1e-9,CONTEXTOS_EXCLUIDOS:Object.freeze(['OFICINA'])});
+  const APOYO_PIES=Object.freeze({PUNTOS:Object.freeze([23,24,27,28]),DIFERENCIA_RELATIVA_MINIMA:.40,ALTURA_CADERA_TOBILLOS_MINIMA:.22,MARGEN_NUMERICO:1e-9,CONTEXTOS_EXCLUIDOS:Object.freeze(['OFICINA'])});
   function sugerirPiesSinApoyo(puntos,{contexto='',vista='PERFIL'}={}){
     if(vista!=='PERFIL'||APOYO_PIES.CONTEXTOS_EXCLUIDOS.includes(contexto.toUpperCase()))return null;
     if(!APOYO_PIES.PUNTOS.every(i=>{const p=puntos?.[i];return p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x<=1&&p.y>=0&&p.y<=1&&(p.visibility??p.v??0)>=PERFIL.visibilidad;}))return null;
