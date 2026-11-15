@@ -29,7 +29,7 @@ MySQL y las fotos se guardan en volúmenes con nombre; reiniciar o apagar con `d
 
 **Solo si quieres reiniciar desde cero:** `docker compose down -v` **borra los datos y las fotos de esos volúmenes**. No lo uses para actualizar la app.
 
-La instalación sin Docker sigue igual: `bash scripts/iniciar.sh` en Mac o `scripts\iniciar.bat` en Windows. Las variables `APLOMO_DB_URL`, `APLOMO_DB_USUARIO`, `APLOMO_DB_CLAVE`, `APLOMO_PUERTO` y `APLOMO_CARPETA_FOTOS` permiten configurar la app; si faltan variables de conexión se conserva el respaldo de `config/db.properties`. Las sustituciones `-Daplomo.db.url`, `-Daplomo.puerto` y `-Daplomo.fotos` siguen disponibles, especialmente para aislar las pruebas.
+La instalación sin Docker sigue igual: `bash scripts/iniciar.sh` en Mac o `scripts\iniciar.bat` en Windows. Guía de los tres comandos: [docs/DOCKER.md](docs/DOCKER.md). En hosting, `PORT` tiene prioridad sobre `APLOMO_PUERTO`; sin ambos, 8080. Las variables `APLOMO_DB_URL`, `APLOMO_DB_USUARIO`, `APLOMO_DB_CLAVE`, `APLOMO_PUERTO` y `APLOMO_CARPETA_FOTOS` permiten configurar la app; si faltan variables de conexión se conserva el respaldo de `config/db.properties`. Las sustituciones `-Daplomo.db.url`, `-Daplomo.puerto` y `-Daplomo.fotos` siguen disponibles, especialmente para aislar las pruebas.
 
 ### Demostración opcional en Docker
 
@@ -143,7 +143,7 @@ bash scripts/crear_base_pruebas.sh   # Mac; en Windows usa "Git Bash" con el mis
 ./mvnw test                           # Windows: mvnw.cmd test
 ```
 
-Deben aprobar **943 pruebas**.
+Deben aprobar **948 pruebas**.
 
 ---
 

@@ -18,7 +18,7 @@ public final class Config {
         }
         String url=valor(entorno,p,"APLOMO_DB_URL","db.url"),usuario=valor(entorno,p,"APLOMO_DB_USUARIO","db.usuario"),clave=valor(entorno,p,"APLOMO_DB_CLAVE","db.clave");
         if(!url.startsWith("jdbc:mysql://"))throw new IllegalStateException("Configura una URL JDBC de MySQL.");
-        int puerto=puerto(entorno.getOrDefault("APLOMO_PUERTO","8080"));String carpeta=entorno.getOrDefault("APLOMO_CARPETA_FOTOS","fotos");if(carpeta.isBlank())throw new IllegalStateException("Configura APLOMO_CARPETA_FOTOS.");
+        int puerto=puerto(entorno.getOrDefault("PORT",entorno.getOrDefault("APLOMO_PUERTO","8080")));String carpeta=entorno.getOrDefault("APLOMO_CARPETA_FOTOS","fotos");if(carpeta.isBlank())throw new IllegalStateException("Configura APLOMO_CARPETA_FOTOS.");
         return new Datos(url,usuario,clave,puerto,Path.of(carpeta));
     }
     private static String valor(Map<String,String> e,Properties p,String variable,String propiedad){String v=e.containsKey(variable)?e.get(variable):p.getProperty(propiedad);if(v==null||v.isBlank())throw new IllegalStateException("Falta configurar "+variable+" o "+propiedad+".");return v;}

@@ -47,6 +47,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 15 | Evaluación como conversación guiada y detección con salida manual | 🟡 Flujo 15-D, login nuevo y práctica permanente implementados; iPad físico pendiente ([informe](docs/informe_paso15d.md)) |
 | 17 | Práctica aislada, guía manual, demostración completa y pulido | 🟡 Implementado y verificado: 930 Maven + 72 JS; revisión de Andy e iPad físico pendientes ([informe](docs/informe_paso17.md)) |
 | 18 | Galería por contexto, vista y lado; dirección por foto y postura 2 en Automático | 🟡 18B: S5 espejo solo como error; 943 Maven + 87 JS aprobadas; revisión de Andy e iPad físico pendientes ([informe](docs/informe_paso18.md)) |
+| 19 | Docker: semillas, acceso, foto persistente, entorno y PORT | 🟡 Verificado; 948 Maven + 87 JS; revisión de Andy pendiente ([informe](docs/informe_paso19.md)) |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 
@@ -118,7 +119,7 @@ Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuent
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**943 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**948 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 
