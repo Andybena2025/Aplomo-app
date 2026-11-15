@@ -89,10 +89,23 @@ class HttpRevisionEvaluacionTest extends HttpPrueba {
   String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();String seccion=h.substring(h.indexOf("data-paso=\""+paso+"\""),h.indexOf("data-paso=\""+(paso+1)+"\""));assertFalse(seccion.contains("<img"));assertFalse(seccion.contains("campo-silueta"));assertFalse(seccion.contains("campo-foto"));
   if(paso==2)for(var c:PaginasEvaluacion.CONDICIONES){assertTrue(seccion.contains(c[1]));assertFalse(seccion.contains(c[2]));}
  }
- @Test void cadaSubidaTieneCincoEjemplosDeSuVistaYSeSirvenComoJpg()throws Exception{
-  String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();assertEquals(15,h.split("data-usar-ejemplo=",-1).length-1);assertEquals(3,h.split("Usar foto de ejemplo",-1).length-1);
-  for(var par:new String[][]{{"PERFIL","perfil"},{"FRENTE","frente"},{"OTRA","detalle"}}){assertEquals(5,h.split("data-vista-ejemplo=\""+par[0]+"\"",-1).length-1);var r=get("/static/img/galeria/S6_levantando_pieza_pesada_"+par[1]+".jpg");assertEquals(200,r.statusCode());assertTrue(r.headers().firstValue("Content-Type").orElse("").startsWith("image/jpeg"));}
+ @Test void cadaSubidaTieneCatalogoDeSuVistaYSeSirveComoJpg()throws Exception{
+  String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();assertEquals(GaleriaDemo.FOTOS.size(),h.split("data-usar-ejemplo=",-1).length-1);assertEquals(3,h.split("Usar foto de ejemplo",-1).length-1);
+  for(String archivo:GaleriaDemo.FOTOS.stream().map(GaleriaDemo.Foto::archivo).distinct().toList()){var r=get("/static/img/galeria/"+archivo);assertEquals(200,r.statusCode());assertTrue(r.headers().firstValue("Content-Type").orElse("").startsWith("image/jpeg"));}
  }
+ @Test void pantallaExplicaOtroBrazoYPermiteAutomaticoPorPostura()throws Exception{
+  String h=get("/evaluaciones/nueva?visita="+visita+"&puesto="+puesto).body();assertTrue(h.contains("data-contexto=\"PLANTA\""));assertTrue(h.contains("data-lado-campo=\"AUTO\" aria-pressed=\"true\""));assertTrue(h.contains("Falta la foto del otro brazo: sube un perfil del lado que aún no subiste, de esta misma postura."));assertTrue(h.contains("Seguir solo con este brazo"));assertTrue(h.contains("/static/js/galeria-ejemplos.js"));
+ }
+ @ParameterizedTest @org.junit.jupiter.params.provider.CsvSource({"DERECHO","IZQUIERDO"})
+ void direccionRealDeLaFotoConservaFlexionPositivaEnElServidor(String lado)throws Exception{
+  double[][] puntos={{.4,.9},{.55,.5},{.85,.65},{.75,.25}};if(lado.equals("IZQUIERDO"))for(var p:puntos)p[0]=1-p[0];
+  for(String segmento:List.of("BRAZO","CUELLO","TRONCO")){
+   int[] ids=segmento.equals("BRAZO")?new int[]{0,1,2}:segmento.equals("CUELLO")?new int[]{0,1,3}:new int[]{0,1,-1};var codificados=new ArrayList<String>();for(int id:ids)codificados.add(id<0?puntos[0][0]+",0":puntos[id][0]+","+puntos[id][1]);
+   var f=new HashMap<>(Map.of("csrf",token,"visita",""+visita,"segmento",segmento,"lado",lado,"ancho","200","alto","400",segmento+"_modo","PUNTOS",segmento+"_puntos",String.join(";",codificados)));
+   var r=post("/evaluaciones/calcular",f);assertEquals(200,r.statusCode(),r.body());var m=java.util.regex.Pattern.compile("data-grados=\"([^\"]+)\"").matcher(r.body());assertTrue(m.find());assertTrue(Double.parseDouble(m.group(1))>0,segmento+" "+lado+" "+r.body());
+  }
+ }
+
 
  @Test void unaPosturaConservaConfirmacionYMotivoExactoSinFotos()throws Exception{
   var f=campos();f.put("recorrido","campo");f.put("minutos","180");f.put("motivo","También es la que más tiempo se mantiene");f.put("registro","SIN_REGISTRO_FOTOGRAFICO");

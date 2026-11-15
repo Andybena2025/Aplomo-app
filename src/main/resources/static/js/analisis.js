@@ -29,6 +29,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     detectarBoton.disabled=s.ia==='cargando'||f.vista==='OTRA';
     detectarBoton.textContent=s.ia==='cargando'?'Detectando puntos… la primera vez tarda unos segundos':'Detectar puntos';
     estadoDeteccion.hidden=!s.mensajeIA;estadoDeteccion.textContent=s.mensajeIA||'';
+    const ajuste=form.querySelector('[data-lado-ajustado]');if(ajuste){ajuste.hidden=!s.avisoLado;ajuste.textContent=s.avisoLado||'';}
     actualizarGuia();
   }
   const guia=window.AplomoMarcadoManual;
@@ -54,15 +55,12 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
       if(!obtenerFotos().includes(f))return;
       if(s.revision!==revision||(f===foto()&&arrastre)){s.ia='manual';s.mensajeIA='Se conservaron tus correcciones manuales.';return;}
       if(!r){s.ia='nada';s.mensajeIA=falloDeteccion;s.etapaIA=window.AplomoDeteccion.diagnostico.etapa;return;}
-      if(form.dataset.conversacion){if(f.autoLado&&r.mira)s.lado=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';s.revisionFoto=r.revisionPerfil;s.fotoAceptada=false;s.candidataIA=r;form.dispatchEvent(new CustomEvent('aplomo:foto-revisada',{detail:{foto:f,revision:r.revisionPerfil}}));if(r.revisionPerfil?.bloquea){s.ia='revisar';s.mensajeIA=r.revisionPerfil.mensaje;return;}}
+      if(form.dataset.conversacion){s.revisionFoto=r.revisionPerfil;s.fotoAceptada=false;s.candidataIA=r;form.dispatchEvent(new CustomEvent('aplomo:foto-revisada',{detail:{foto:f,revision:r.revisionPerfil}}));if(r.revisionPerfil?.bloquea){s.ia='revisar';s.mensajeIA=r.revisionPerfil.mensaje;return;}}
       if(!r.L){s.ia='nada';s.mensajeIA=falloDeteccion;return;}
-      const perfil=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';
-      if(f.ladoFijo&&!f.autoLado&&perfil!==f.ladoFijo){s.ia='otroPerfil';s.mensajeIA='Esta foto muestra el otro perfil. Usa otra foto o elige los rangos por observación directa.';return;}
+      const anterior=s.lado;s.mira=r.mira;s.lado=window.AplomoPosturasCampo.ladoFoto(r.mira,r.L,f.ladoElegido||s.lado);s.avisoLado=window.AplomoPosturasCampo.avisoLado(anterior,s.lado);
       s.origenPuntos='ia';s.guiaManual=null;s.revisados={};s.anguloIAOriginal={};s.raw=r.raw;s.ia='ok';s.mensajeIA='Puntos detectados automáticamente: revísalos'+(r.revisionPerfil&&!r.revisionPerfil.bloquea?' · '+r.revisionPerfil.mensaje:'');
       if(f.vista==='PERFIL'){
         s.puntos={...r.L,coronilla:r.L.cabeza};delete s.puntos.cabeza;
-        const lado=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';
-        if((!f.ladoFijo||f.autoLado)&&s.lado!==lado){s.lado=lado;s.mensajeIA+=' · Lado ajustado a '+(lado==='DERECHO'?'Derecho':'Izquierdo')+' según la foto.';}
         s.revision++;s.html=null;
         if(f===foto()){sincronizar();dibujar();await medir(f).catch(e=>aviso(e.message));}
       }
@@ -164,7 +162,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     }finally{terminarProgreso?.();}
   }
   function cambiado(segmento){
-    const f=foto();if(!f)return;const s=estado(f);s.revision++;s.html=null;if(form.dataset.cuerpo&&s.recorrido){for(const k of segmentos)if(segmento===k||(segmento==='PUNTOS'&&s.manual[k]===undefined)){s.recorrido.confirmados[k]=false;if(s.recorrido.eleccionExplicita)s.recorrido.eleccionExplicita[k]=false;}}pintarMedidas(f);siguientePunto();dibujar();clearTimeout(temporizador);form.dispatchEvent(new Event('aplomo:analisis'));
+    const f=foto();if(!f)return;const s=estado(f);if(s.origenPuntos==='manual'){const anterior=s.lado;s.mira=null;s.lado=window.AplomoPosturasCampo.ladoFoto(null,s.puntos,f.ladoElegido||f.ladoFijo||s.lado);s.avisoLado=window.AplomoPosturasCampo.avisoLado(anterior,s.lado)||s.avisoLado;mostrarDeteccion();}s.revision++;s.html=null;if(form.dataset.cuerpo&&s.recorrido){for(const k of segmentos)if(segmento===k||(segmento==='PUNTOS'&&s.manual[k]===undefined)){s.recorrido.confirmados[k]=false;if(s.recorrido.eleccionExplicita)s.recorrido.eleccionExplicita[k]=false;}}pintarMedidas(f);siguientePunto();dibujar();clearTimeout(temporizador);form.dispatchEvent(new Event('aplomo:analisis'));
     actualizarGuia();temporizador=setTimeout(()=>medir(f).catch(e=>aviso(e.message)),180);
   }
   const posicion=e=>{const r=cv.getBoundingClientRect();return{x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))};};
@@ -196,7 +194,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   function respondido(f){const s=estado(f);return (!form.dataset.cuerpo||s.recorrido&&['BRAZO','ANTEBRAZO','MUNECA','GIRO','CUELLO','TRONCO','PIERNAS'].every(k=>s.recorrido.confirmados[k]))&&(!form.dataset.cuerpo||s.actividadConfirmada&&s.cargaConfirmada)&&s.ajustesConfirmados&&!!s.giro&&s.piernas!==null&&s.actividad!==null&&!!s.carga;}
   return {
     iniciarManual,
-    elegirBrazo(lado){const s=estado(foto());s.lado=lado;const p=window.AplomoPosturasCampo?.puntosBrazo(s.raw,lado);if(p)Object.assign(s.puntos,p);cambiado('PUNTOS');sincronizar();},
+    elegirBrazo(lado){const f=foto(),s=estado(f);if(form.dataset.conversacion){f.ladoElegido=lado;const real=window.AplomoPosturasCampo.ladoFoto(s.origenPuntos==='ia'?s.mira:null,s.puntos,lado);s.avisoLado=window.AplomoPosturasCampo.avisoLado(lado,real);s.lado=real;}else{s.lado=lado;const p=window.AplomoPosturasCampo?.puntosBrazo(s.raw,lado);if(p)Object.assign(s.puntos,p);}cambiado('PUNTOS');sincronizar();},
     elegirEsfuerzo(k,v){const s=estado(foto());if(k==='actividad'){s.actividadEleccion=v;s.actividad=v!=='NINGUNA';s.actividadConfirmada=true;}else{s.carga=v;s.cargaConfirmada=true;}cambiado('ESFUERZO');sincronizar();},
     datos(){const f=foto();return f?{foto:f,estado:estado(f),indice:activa,grupos:grupos(f)}:null;},
     seleccionar(i){const cambio=activa!==i;activa=i;tabs();sincronizar();if(cambio||!imagen)cargarFoto();},

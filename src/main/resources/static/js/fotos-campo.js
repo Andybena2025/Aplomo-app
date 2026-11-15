@@ -18,7 +18,7 @@
    if(w<api.MIN_LADO||h<api.MIN_LADO)throw new Error('La foto es muy pequeña. Sube una de mejor calidad.');return {ancho:w,alto:h};
   },
   async ejemplo(url,recibir,{descargar=raiz.fetch?.bind(raiz),Archivo=raiz.File}={}){
-   if(!/^\/static\/img\/galeria\/S[2-6]_[a-z0-9_]+_(perfil|frente|detalle)\.jpg$/.test(url))throw new Error('Esa foto de ejemplo no está disponible.');
+   if(!/^\/static\/img\/galeria\/(?:S[2-6]_[a-z0-9_]+|oficina_[a-z0-9_]+|planta_[a-z0-9_]+|error_[a-z0-9_]+)\.jpg$/.test(url))throw new Error('Esa foto de ejemplo no está disponible.');
    const r=await descargar(url);if(!r.ok)throw new Error('No pudimos abrir el ejemplo. Intenta de nuevo.');
    const blob=await r.blob(),file=new Archivo([blob],url.split('/').pop(),{type:blob.type});
    return recibir(file);

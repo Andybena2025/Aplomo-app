@@ -61,7 +61,7 @@
     if([11,12,23,24].every(i=>Number.isFinite(puntos[i]?.x)&&Number.isFinite(puntos[i]?.y))){
       const h={x:(puntos[11].x+puntos[12].x)/2,y:(puntos[11].y+puntos[12].y)/2},c={x:(puntos[23].x+puntos[24].x)/2,y:(puntos[23].y+puntos[24].y)/2};
       const torso=Math.hypot((h.x-c.x)*ancho,(h.y-c.y)*alto),razon=torso?Math.abs(puntos[11].x-puntos[12].x)*ancho/torso:Infinity;
-      if(razon>=PERFIL.frontal-PERFIL.margen)return aviso(razon>PERFIL.frontal+PERFIL.margen?'FRENTE':'ANGULO_DUDOSO','Parece una foto de frente. Necesito una de lado (de perfil).',razon>PERFIL.frontal+PERFIL.margen);
+      if(razon>=PERFIL.frontal-PERFIL.margen)return aviso(razon>PERFIL.frontal+PERFIL.margen?'FRENTE':'ANGULO_DUDOSO','Parece una foto de frente o de espaldas. Necesito una de lado (de perfil).',razon>PERFIL.frontal+PERFIL.margen);
     }
     const vis=i=>puntos[i]?.visibility??puntos[i]?.v??0;
     const izquierda=[11,23,25,27],derecha=[12,24,26,28],suma=lado=>lado.reduce((total,i)=>total+vis(i),0)/lado.length;

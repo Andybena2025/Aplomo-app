@@ -9,7 +9,21 @@
  function estadoSeguir(falta,ocupada,paso){return {visible:true,desactivado:!!falta||ocupada,texto:ocupada?'Cargando…':paso===5?'Guardar y terminar':'Seguir →'};}
  function sugerenciaAutomatica(segmento,grados,rango,ia){return segmento==='CUELLO'&&ia&&grados<0&&grados>=-10?{rango:5,revisar:true,ajustadaIA:true}:{rango,revisar:false,ajustadaIA:false};}
  function critica(posturas){const max=Math.max(...posturas.map(p=>p.puntaje||0)),ganadoras=posturas.filter(p=>(p.puntaje||0)===max);return {max,indice:max&&ganadoras.length===1?posturas.indexOf(ganadoras[0]):-1,empate:posturas.length>1&&ganadoras.length>1};}
+ // Solo elige la orientación de la foto; los ángulos se siguen midiendo en Java.
+ function ladoFoto(mira,puntos,elegido='DERECHO'){
+  if(mira==='Derecho'||mira==='DERECHO')return 'DERECHO';
+  if(mira==='Izquierdo'||mira==='IZQUIERDO')return 'IZQUIERDO';
+  const c=puntos?.cadera,h=puntos?.coronilla||puntos?.cabeza,m=puntos?.muneca;
+  if(c&&h&&m&&[c.x,h.x,m.x].every(Number.isFinite)){
+   const signos=[h.x-c.x,m.x-c.x].filter(v=>Math.abs(v)>=.025).map(Math.sign);
+   if(signos.length&&signos.every(v=>v===signos[0]))return signos[0]>0?'DERECHO':'IZQUIERDO';
+  }
+  return elegido==='IZQUIERDO'?'IZQUIERDO':'DERECHO';
+ }
+ function avisoLado(anterior,actual){return anterior&&anterior!==actual?'Esta foto muestra el lado '+(actual==='DERECHO'?'derecho':'izquierdo')+'; lo ajustamos.':'';}
+ function mismoLado(tareas,modo){return modo==='AMBOS'&&tareas.length>1&&tareas[0].analisis?.lado===tareas[1].analisis?.lado?'Esta foto muestra el mismo lado que la primera. Sube una del otro lado, o sigue solo con este brazo.':'';}
+ function modoPostura(postura){return postura.modoLado||'AUTO';}
  function ordenGuardado(posturas){return [...posturas].sort((a,b)=>(a.puntaje||0)-(b.puntaje||0));}
  async function guardarPendientes(posturas,enviar){for(let i=0;i<posturas.length;i++){const p=posturas[i];if(p.guardada)continue;try{const ruta=await enviar(p,i);if(!/^\/evaluaciones\/\d+(?:\?|$)/.test(ruta||''))throw new Error('No pudimos confirmar el guardado.');p.guardada=ruta;}catch(e){const cantidad=posturas.filter(p=>p.guardada).length;throw new Error((cantidad?'Ya se guardaron '+cantidad+' de '+posturas.length+' posturas. ':'')+e.message);}}}
- return {plan,descripcion,aviso,ajustes,sugerenciaAutomatica,critica,retirarFoto,puntosBrazo,estadoSeguir,ordenGuardado,guardarPendientes};
+ return {ladoFoto,avisoLado,mismoLado,modoPostura,plan,descripcion,aviso,ajustes,sugerenciaAutomatica,critica,retirarFoto,puntosBrazo,estadoSeguir,ordenGuardado,guardarPendientes};
 });

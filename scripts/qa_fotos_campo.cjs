@@ -16,3 +16,5 @@ test('imagen de perfil muy pequeña se rechaza sin cambiar los límites del serv
 test('imagen válida conserva dimensiones y bytes',async()=>{assert.deepEqual(await fotos.verificarPerfil(png,{medir:async()=>[800,1200]}),{ancho:800,alto:1200});});
 test('PDF renombrado jpg con MIME falso no llega a la detección',async()=>{const f=new File(['%PDF-1.7'],'falsa.jpg',{type:'image/jpeg'});await assert.rejects(fotos.verificarPerfil(f,{medir:async()=>[800,1200]}),/no es JPG ni PNG/);});
 test('un archivo con firma pero no decodificable pide otra foto',async()=>{await assert.rejects(fotos.verificarPerfil(png,{medir:async()=>{throw Error('imagen rota');}}),/No pudimos abrir/);});
+
+test('fotos nuevas y espejos usan la misma descarga y validación',async()=>{for(const nombre of ['oficina_sentado_perfil_derecha.jpg','planta_caja_perfil_izquierda.jpg','error_de_espaldas.jpg','S2_mesa_alta_cabeza_inclinada_perfil_izq.jpg']){let nombreRecibido;await fotos.ejemplo('/static/img/galeria/'+nombre,f=>{nombreRecibido=fotos.validar(f,true,0).name;},opciones(new Blob(['jpg'],{type:'image/jpeg'})));assert.equal(nombreRecibido,nombre);}});
