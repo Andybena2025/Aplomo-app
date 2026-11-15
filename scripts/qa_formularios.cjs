@@ -1,0 +1,15 @@
+// node --test scripts/qa_formularios.cjs · regresión de formularios nativos, sin dependencias.
+const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+const codigo=fs.readFileSync(path.join(__dirname,'../src/main/resources/static/js/cuenta.js'),'utf8');
+function entorno(){
+ const eventos={},botones=['PLANTA','OFICINA'].map(value=>({name:'tipo',value,disabled:false,textContent:'Probar '+value,dataset:{}})),campos=[{type:'hidden',name:'csrf',value:'token-de-prueba',dataset:{}}],handlers={};
+ const form={dataset:{},method:'post',action:'http://localhost:8087/demo/evaluacion',addEventListener(n,fn){handlers[n]=fn;},querySelector(){return botones[0];},querySelectorAll(){return campos.filter(x=>x.dataset.submitterEnvio);},append(el){el.remove=()=>{const i=campos.indexOf(el);if(i>=0)campos.splice(i,1);};campos.push(el);}};
+ const document={querySelectorAll(s){if(s.startsWith('form:'))return [form];if(s==='[data-envio-normal]')return botones.filter(b=>b.dataset.envioNormal);return [];},querySelector(){return null;},createElement(){return {dataset:{}};}};
+ vm.runInNewContext(codigo,{document,window:{addEventListener(n,fn){eventos[n]=fn;}},location:{href:form.action,pathname:'/demo/evaluacion'},URL,setTimeout});
+ return {form,botones,campos,submit(b,prevenido=false){const e={submitter:b,defaultPrevented:prevenido,preventDefault(){this.defaultPrevented=true;}};handlers.submit(e);return e;},entradas(b){return [...campos.filter(c=>!c.disabled).map(c=>[c.name,c.value]),...(!b?.disabled&&b?.name?[[b.name,b.value]]:[])];},volver(){eventos.pageshow();}};
+}
+for(const i of [0,1])test('el envío nativo conserva '+['Planta','Oficina'][i]+' mientras desactiva su botón',()=>{const e=entorno(),b=e.botones[i];e.submit(b);assert.equal(b.disabled,true);assert.deepEqual(e.entradas(b),[['csrf','token-de-prueba'],['tipo',b.value]]);assert.match(b.textContent,/Guardando/);});
+test('un segundo clic no duplica el envío ni el campo de selección',()=>{const e=entorno();assert.equal(e.submit(e.botones[0]).defaultPrevented,false);assert.equal(e.submit(e.botones[1]).defaultPrevented,true);assert.equal(e.campos.filter(c=>c.name==='tipo').length,1);});
+test('volver con historial limpia la selección temporal y permite elegir otro puesto',()=>{const e=entorno();e.submit(e.botones[0]);e.volver();assert.equal(e.botones[0].disabled,false);assert.equal(e.botones[0].textContent,'Probar PLANTA');assert.equal(e.campos.filter(c=>c.name==='tipo').length,0);e.submit(e.botones[1]);assert.deepEqual(e.entradas(e.botones[1]),[['csrf','token-de-prueba'],['tipo','OFICINA']]);});
+test('un formulario atendido por otro script no cambia ni agrega campos',()=>{const e=entorno();e.submit(e.botones[0],true);assert.equal(e.botones[0].disabled,false);assert.equal(e.campos.length,1);});
+test('botón sin nombre no agrega datos ajenos al formulario',()=>{const e=entorno();e.botones[0].name='';e.submit(e.botones[0]);assert.deepEqual(e.entradas(e.botones[0]),[['csrf','token-de-prueba']]);});

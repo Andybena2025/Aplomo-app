@@ -6,13 +6,16 @@ formulariosNormales.forEach(f=>f.addEventListener('submit',e=>{
   if(e.defaultPrevented)return;
   if(f.dataset.enviando){e.preventDefault();return;}
   const b=e.submitter||f.querySelector('button[type="submit"],button:not([type])');
+  // El botón desactivado deja de enviarse: conserva su nombre/valor antes de bloquearlo.
+  f.querySelectorAll('[data-submitter-envio]').forEach(el=>el.remove());
+  if(b?.name){const elegido=document.createElement('input');elegido.type='hidden';elegido.name=b.name;elegido.value=b.value;elegido.dataset.submitterEnvio='si';f.append(elegido);}
   f.dataset.enviando='si';
   const guardar=f.method.toUpperCase()==='POST'&&!['/login','/logout'].includes(new URL(f.action,location.href).pathname);
   if(b){b.dataset.textoAnterior=b.textContent;b.dataset.envioNormal='si';b.disabled=true;b.textContent=guardar?'Guardando…':'Cargando…';}
 }));
 /* Volver con el historial restaura controles conservados por la caché del navegador. */
 window.addEventListener('pageshow',()=>{
-  formulariosNormales.forEach(f=>delete f.dataset.enviando);
+  formulariosNormales.forEach(f=>{delete f.dataset.enviando;f.querySelectorAll('[data-submitter-envio]').forEach(el=>el.remove());});
   document.querySelectorAll('[data-envio-normal]').forEach(b=>{b.disabled=false;b.textContent=b.dataset.textoAnterior;delete b.dataset.textoAnterior;delete b.dataset.envioNormal;});
 });
 /* Resaltar la pestaña activa según la ruta actual (como el mock). */

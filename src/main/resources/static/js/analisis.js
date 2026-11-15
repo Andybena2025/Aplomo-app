@@ -47,7 +47,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
       if(!r.L){s.ia='nada';s.mensajeIA=falloDeteccion;return;}
       const perfil=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';
       if(f.ladoFijo&&!f.autoLado&&perfil!==f.ladoFijo){s.ia='otroPerfil';s.mensajeIA='Esta foto muestra el otro perfil. Usa otra foto o elige los rangos por observación directa.';return;}
-      s.raw=r.raw;s.ia='ok';s.mensajeIA='Puntos detectados automáticamente: revísalos';
+      s.raw=r.raw;s.ia='ok';s.mensajeIA='Puntos detectados automáticamente: revísalos'+(r.revisionPerfil&&!r.revisionPerfil.bloquea?' · '+r.revisionPerfil.mensaje:'');
       if(f.vista==='PERFIL'){
         s.puntos={...r.L,coronilla:r.L.cabeza};delete s.puntos.cabeza;
         const lado=r.mira==='Derecho'?'DERECHO':'IZQUIERDO';

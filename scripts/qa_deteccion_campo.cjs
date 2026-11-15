@@ -6,7 +6,8 @@ function entorno({esperaModelo=false,esperaImagen=false,esperaInferencia=false,m
  class Pose{
   constructor(){instancias.push(this);}setOptions(o){this.opciones=o;}onResults(fn){this.resultado=fn;}
   initialize(){if(modeloFalla-->0)return Promise.reject(new Error('fallo de modelo'));return esperaModelo&&instancias.length===1?new Promise(r=>resolver=r):Promise.resolve();}
-  send({image}){this.entrada=[image.width,image.height];if(inferenciaFalla-->0)return Promise.reject(new Error('fallo de inferencia'));if(esperaInferencia&&instancias.length===1)return new Promise(()=>{});this.resultado({poseLandmarks:Array.from({length:33},(_,i)=>({x:.2+i*.01,y:.2+i*.01,visibility:1}))});return Promise.resolve();}
+  reset(){this.reinicios=(this.reinicios||0)+1;(this.orden||=[]).push('reset');}
+  send({image}){(this.orden||=[]).push('send');this.entrada=[image.width,image.height];if(inferenciaFalla-->0)return Promise.reject(new Error('fallo de inferencia'));if(esperaInferencia&&instancias.length===1)return new Promise(()=>{});this.resultado({poseLandmarks:Array.from({length:33},(_,i)=>({x:.2+i*.01,y:.2+i*.01,visibility:1}))});return Promise.resolve();}
   close(){this.cerrada=true;return Promise.resolve();}
  }
  class Imagen{constructor(){this.width=this.naturalWidth=6000;this.height=this.naturalHeight=4000;}decode(){decodificaciones++;return esperaImagen&&decodificaciones===1?new Promise(()=>{}):Promise.resolve();}}
@@ -28,7 +29,15 @@ test('sin conexión no queda apagada al recuperar internet',async()=>{const e=en
 function perfilSimulado(razon=.1){const p=Array.from({length:33},()=>({x:.5,y:.5,visibility:1}));p[0]={x:.52,y:.1,visibility:1};for(const i of [11,12])p[i]={x:.5+(i===11?-1:1)*razon*.3/2,y:.3,visibility:1};for(const i of [23,24])p[i]={x:.5,y:.6,visibility:1};for(const i of [25,26])p[i]={x:.5,y:.8,visibility:1};for(const i of [27,28])p[i]={x:.5,y:.95,visibility:1};return p;}
 test('perfil completo y estrecho no genera advertencia',()=>assert.equal(entorno().api.revisarPerfil(perfilSimulado(),1000,1000),null));
 test('no persona ofrece recuperación manual y aviso de foto',()=>assert.equal(entorno().api.revisarPerfil(null).tipo,'SIN_PERSONA'));
-for(const i of [0,11,12,23,24,25,26,27,28])test('cuerpo incompleto: punto '+i+' poco visible o fuera de imagen',()=>{const api=entorno().api,p=perfilSimulado();p[i].visibility=.49;assert.equal(api.revisarPerfil(p).tipo,'CUERPO_INCOMPLETO');p[i].visibility=1;p[i].x=1.1;assert.equal(api.revisarPerfil(p).tipo,'CUERPO_INCOMPLETO');});
+test('perfil con el lado lejano oculto conserva la detección del lado visible',()=>{const api=entorno().api,p=perfilSimulado();for(const i of [11,23,25,27])p[i].visibility=.1;assert.equal(api.revisarPerfil(p),null);});
+test('puntos de baja confianza piden revisión sin fingir que el cuerpo está recortado',()=>{const api=entorno().api,p=perfilSimulado();for(const i of [27,28])p[i].visibility=.2;const r=api.revisarPerfil(p);assert.equal(r.tipo,'PUNTOS_DUDOSOS');assert.equal(r.bloquea,false);assert.equal(r.permiteUsar,true);});
+test('nariz poco visible permite revisar los puntos sin bloquear sus ángulos',()=>{const api=entorno().api,p=perfilSimulado();p[0].visibility=.1;assert.equal(api.revisarPerfil(p).bloquea,false);});
+test('el lado lejano proyectado fuera de la imagen no invalida el perfil visible',()=>{const api=entorno().api,p=perfilSimulado();for(const i of [11,23,25,27]){p[i].visibility=.1;p[i].x=-.01;}assert.equal(api.revisarPerfil(p),null);});
+for(const i of [0,11,23,25,27])test('recorte real de cabeza o ambos lados requiere revisar: '+i,()=>{const api=entorno().api,p=perfilSimulado();p[i].x=1.1;if(i!==0)p[i+1].x=1.1;const r=api.revisarPerfil(p);assert.equal(r.tipo,'CUERPO_INCOMPLETO');assert.equal(r.bloquea,true);});
+test('un hombro oculto no se usa para inventar una clasificación de frente',()=>{const api=entorno().api,p=perfilSimulado(.9);p[11].visibility=.1;assert.equal(api.revisarPerfil(p),null);});
 test('frente claro requiere revisión; la duda entre 35 y 55 por ciento no bloquea',()=>{const api=entorno().api;assert.equal(api.PERFIL.frontal,.45);assert.equal(api.revisarPerfil(perfilSimulado(.7)).bloquea,true);for(const n of [.36,.45,.54]){const r=api.revisarPerfil(perfilSimulado(n));assert.equal(r.tipo,'ANGULO_DUDOSO');assert.equal(r.bloquea,false);assert.equal(r.permiteUsar,true);}});
 
 test('el perfil devuelve el lado de la detección y solo se revisa cuando se solicita',async()=>{const e=entorno(),r=await e.api.detectarPuntos('perfil',{perfil:true});assert.equal(r.mira,'Izquierdo');assert.equal(r.revisionPerfil,null);assert.equal(r.raw.length,33);});
+
+test('cada foto reinicia el seguimiento antes de inferir sin descargar otro modelo',async()=>{const e=entorno();await e.api.preparar();await e.api.detectarPuntos('primera');await e.api.detectarPuntos('otra-postura');assert.equal(e.instancias.length,1);assert.equal(e.instancias[0].reinicios,2);assert.deepEqual(e.instancias[0].orden,['reset','send','reset','send']);});
+test('las opciones usan la interfaz JS real, sin staticImageMode que solo existe en otras variantes',async()=>{const e=entorno();await e.api.preparar();assert.equal(Object.hasOwn(e.instancias[0].opciones,'staticImageMode'),false);assert.equal(e.instancias[0].opciones.smoothLandmarks,false);});
