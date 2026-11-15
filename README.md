@@ -55,6 +55,12 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 
 ---
 
+## Estado actual del prototipo
+
+APLOMO. es un prototipo funcional del Proyecto Nuclear (periodo 2026-2). Hoy incluye una evaluación de práctica ("Probar evaluación", en Inicio) y datos de demostración (tres empresas ficticias con sus puestos, fotos y resultados) para poder probar y presentar la app. Ese campo de práctica, las fotos de ejemplo de la galería y los datos de demostración son solo para pruebas: se eliminarán cuando el producto se publique para uso real. Las evaluaciones, empresas y cuentas reales se crean con el mismo flujo de la app, sin esos datos.
+
+---
+
 ## Instalación rápida
 
 Necesitas instalar **dos programas una sola vez**: **Java 21** y **MySQL 8**. Lo demás (Maven y las librerías) se descarga solo.
@@ -181,6 +187,24 @@ docker compose --profile demo run --build --rm demo
 
 La carga es voluntaria e idempotente: tres empresas ficticias, tres colores, doce puestos con dos posturas, fotos, pendientes, sugerencias, visitas Finalizadas y reservas futuras. No crea cuentas, no cambia contraseñas ni configuración. Las fotos se conservan en el volumen de la app. La empresa de práctica rápida es independiente y queda fuera de los contadores y consultas normales.
 
+
+## Cómo se despliega hoy
+
+- **Demostración gratuita (la que se usa ahora):** la app corre en el computador de Andy con `scripts/iniciar.sh` (Mac) y se publica con un túnel de Cloudflare: `cloudflared tunnel --url http://localhost:8080`. El enlace público es temporal: cambia cada vez que se reinicia el túnel o se cae la conexión, y solo funciona mientras el computador y el túnel estén encendidos. No tiene garantía de disponibilidad y no es para datos reales.
+- **Docker:** el repositorio incluye `Dockerfile` y `docker-compose.yml` (MySQL 8 y la app). Los pasos están en [`docs/DOCKER.md`](docs/DOCKER.md). Variables de entorno: `APLOMO_DB_URL`, `APLOMO_DB_USUARIO`, `APLOMO_DB_CLAVE`, `APLOMO_PUERTO` (y `PORT`, que usan las plataformas de hosting) y `APLOMO_CARPETA_FOTOS`.
+- **Opción futura:** publicar en un hosting con Docker y MySQL (por ejemplo Railway). Requiere preparar la creación automática de la base vacía, una clave inicial segura y un volumen para las fotos; todavía no está implementado.
+- **Cuentas:** se crean desde la pantalla Usuarios o con la herramienta de [`docs/CUENTAS.md`](docs/CUENTAS.md). Nunca se guardan contraseñas en el repositorio; hay que cambiar la del Administrador inicial antes de compartir la app.
+
+## Dónde está cada cosa
+
+- Rutas y permisos: [`docs/ENDPOINTS.md`](docs/ENDPOINTS.md)
+- Docker: [`docs/DOCKER.md`](docs/DOCKER.md)
+- Cuentas: [`docs/CUENTAS.md`](docs/CUENTAS.md)
+- Reglas del cálculo RULA: [`docs/03_metodo_rula.md`](docs/03_metodo_rula.md)
+- Informes de cada paso: [`docs/`](docs/) (`informe_paso*.md`)
+- Prototipo anterior: ver la sección "Prototipo" más abajo.
+
+---
 
 ## Equipo
 
