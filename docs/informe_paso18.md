@@ -8,7 +8,7 @@
 |---|---|---|
 | 1 · Fotos | 22 imágenes copiadas con los nombres exactos; cinco perfiles S2–S6 reflejados horizontalmente, JPG calidad 100. Las once variantes se revisaron antes de copiarlas: todas coinciden con las descripciones. Los quince archivos anteriores conservan exactamente sus bytes. | `src/main/resources/static/img/galeria/`: 27 archivos nuevos; `GaleriaDemoTest.java` verifica archivos, decodificación, peso y originales. |
 | 2 · Catálogo | Archivo, vista, dirección, contexto, tipo y aviso. Una misma foto frontal es buena en Frente y error en Perfil. El caso de piernas tapadas se clasifica Error y lleva la ayuda manual. | `src/main/java/co/aplomo/web/GaleriaDemo.java`. |
-| 2 · Selección | Filtro por ranura, Oficina/Planta y lado. Contexto desconocido permite ambos. Máximo seis buenas y, solo en Perfil, un error de la terna del contexto. Rotación al abrir de nuevo, sin ventanas flotantes. Etiquetas de dirección para Automático/Ambos. | Nuevo `src/main/resources/static/js/galeria-ejemplos.js`; `conversacion-evaluacion.js`, `fotos-campo.js`; `ConversacionEvaluacion.java`, `PaginasAnalisis.java`, `aplomo.css`; `scripts/qa_paso18.cjs`, `qa_fotos_campo.cjs`, `GaleriaDemoTest.java`, `HttpRevisionEvaluacionTest.java`. |
+| 2 · Selección | Filtro por ranura, Oficina/Planta y lado. Contexto desconocido permite ambos. Máximo seis buenas y, solo en Perfil, un error de la rotación del contexto. Rotación al abrir de nuevo, sin ventanas flotantes. Etiquetas de dirección para Automático/Ambos. | Nuevo `src/main/resources/static/js/galeria-ejemplos.js`; `conversacion-evaluacion.js`, `fotos-campo.js`; `ConversacionEvaluacion.java`, `PaginasAnalisis.java`, `aplomo.css`; `scripts/qa_paso18.cjs`, `qa_fotos_campo.cjs`, `GaleriaDemoTest.java`, `HttpRevisionEvaluacionTest.java`. |
 | 3 · Aviso | FRENTE y ANGULO_DUDOSO dicen «Parece una foto de frente o de espaldas. Necesito una de lado (de perfil).». | `src/main/resources/static/js/deteccion.js`; metadatos de `GaleriaDemo.java`. Las pruebas anteriores no citaban la frase antigua exacta. |
 | 4a · Dirección | La IA usa mira de la foto, aunque contradiga el lado elegido. Se comunica el ajuste y el control/título reflejan el lado real. La marcación manual infiere orientación a partir de cabeza y muñeca respecto de cadera; si es ambigua, usa el lado elegido. El navegador no calcula ángulos ni puntajes. | `analisis.js`, `posturas-campo.js`, `conversacion-evaluacion.js`; `scripts/qa_paso18.cjs` y `HttpRevisionEvaluacionTest.java`. |
 | 4a · Ambos | Si ambas fotos muestran el mismo lado, aparece el aviso exacto y Seguir espera una foto del otro lado o «Seguir solo con este brazo». Esta última opción analiza la foto actual y conserva los archivos adjuntos. | `ConversacionEvaluacion.java`, `conversacion-evaluacion.js`, `posturas-campo.js`. |
@@ -24,12 +24,12 @@ Origen indicado por Andy: `/Users/andresbenavides/Downloads/aplomo_fotos_demo/` 
 
 - **42 archivos únicos**: 15 anteriores + 22 nuevos + 5 espejos.
 - **20,79 MiB** en total, menos de 25 MB aproximados. No fue necesario reducir las imágenes nuevas.
-- **46 entradas** de catálogo: algunas imágenes tienen un papel distinto según la ranura. Hay 38 entradas buenas y ocho de error; solo seis errores participan en las dos ternas de rotación indicadas por Andy.
+- **46 entradas** de catálogo: algunas imágenes tienen un papel distinto según la ranura. Hay 37 entradas buenas y nueve de error; siete participan en la rotación: tres de Oficina y cuatro de Planta.
 
 | Contexto | Perfil derecho bueno | Perfil izquierdo bueno | Frente bueno | Detalle bueno | Errores que rotan en Perfil |
 |---|---:|---:|---:|---:|---:|
 | Oficina | 4 | 3 | 1 | 2 | 3 |
-| Planta | 8 | 9 | 6 | 5 | 3 |
+| Planta | 8 | 8 | 6 | 5 | 4 |
 
 Las fotos de detalle no se muestran como buenas en Perfil. `oficina_sentado_inclinado_perfil_izquierda.jpg` tampoco aparece entre las buenas: su etiqueta es «La IA no la reconoce bien: usa Calcular manualmente».
 
@@ -47,10 +47,12 @@ La rotación se lleva por apertura de cada lista: recorre candidatos y cambia el
 | RNF-004/006 · Seguridad y fotos | Permisos, CSRF, validación y rutas existentes conservados | Suite completa de seguridad/fotos; ejemplos públicos usan las mismas validaciones que una subida. |
 | RNF-008 · Compatibilidad | HTML/CSS/JS plano, sin dependencias nuevas | Navegador integrado comprobado; iPad físico y otros navegadores no certificados en esta entrega. |
 
-## Pruebas y medidas de esta entrega
+## Pruebas actuales y medidas del Paso 18
 
-- `TZ=America/Bogota ./mvnw test`: **942 ejecutadas y aprobadas; 0 fallos, 0 errores, 0 omitidas**.
-- `node --test scripts/qa_*.cjs`: **86 ejecutadas y aprobadas; 0 fallos**.
+Las suites se repitieron en el Paso 18B. Las medidas y el recorrido de navegador que siguen corresponden al Paso 18; no se repitió QA visual en 18B.
+
+- `TZ=America/Bogota ./mvnw test`: **943 ejecutadas y aprobadas; 0 fallos, 0 errores, 0 omitidas**.
+- `node --test scripts/qa_*.cjs`: **87 ejecutadas y aprobadas; 0 fallos**.
 - Ventana real del navegador integrado: **1280 × 720**. Pantalla de subida: **0 px** de desbordamiento horizontal.
 - Muestra y bloque de subida cerrada: ambos terminaron en **1152,59 px** del documento, diferencia **0 px** entre sus bordes inferiores.
 - Oficina + Izquierdo: **3 buenas izquierdas + 1 error**; ninguna buena derecha.
@@ -75,7 +77,7 @@ La rotación se lleva por apertura de cada lista: recorre candidatos y cambia el
 
 ## Checklist
 
-- ✅ Maven 942/942 y JavaScript 86/86.
+- ✅ Maven 943/943 y JavaScript 87/87.
 - ✅ Archivos, peso, tipos, tres perfiles buenos por contexto/lado, rotación y separación de errores cubiertos por pruebas.
 - ✅ Misma validación de tamaño/tipo/permiso en ejemplos y subidas.
 - ✅ Direcciones izquierda/derecha y manual probadas sin cambiar el motor.
@@ -93,6 +95,21 @@ La rotación se lleva por apertura de cada lista: recorre candidatos y cambia el
 4. Con Ambos, intenta repetir el mismo lado para ver el aviso; cambia la foto o pulsa Seguir solo con este brazo.
 5. Al pasar a la postura 2, comprueba que vuelve a Automático y no pide otro brazo hasta elegir Ambos y confirmar el primero de esa misma postura.
 6. En Agregar otra foto, Frente ofrece frentes y Detalle ofrece detalles del contexto. Termina ambas posturas y guarda.
+
+## Actualización 18B · S5 espejo
+
+Se reclasificó `S5_inclinada_hacia_el_carro_perfil_izq.jpg` como ERROR de Perfil/Planta/Izquierda y se añadió a la rotación. Lleva «La IA no la reconoce bien: usa Calcular manualmente» y el aviso de frente o espaldas. El archivo se conserva sin cambios. No cambió el selector: sigue mostrando máximo seis buenas y **una sola foto con error**, incluso con cuatro candidatos de error en Planta.
+
+**Archivos tocados en 18B:** `src/main/java/co/aplomo/web/GaleriaDemo.java`, `src/test/java/co/aplomo/web/GaleriaDemoTest.java`, `scripts/qa_paso18.cjs`, `docs/informe_paso18.md`, `AGENTS.md`, `README.md` e `INSTALAR.md` (contador de pruebas).
+
+| Requisito | Implementación | Prueba nueva/actualizada |
+|---|---|---|
+| RF-016 / RNF-007 · Ejemplos y aviso claro | Entrada S5 de `GaleriaDemo.FOTOS` y selector existente | Java verifica ERROR, etiqueta, aviso, rotación y ausencia entre buenas; quedan exactamente ocho perfiles izquierdos buenos de Planta y al menos tres por contexto/lado. |
+| RF-016 · Una sola foto con error | `AplomoGaleria.seleccionar`, sin cambios | JS recorre ocho aperturas con Derecho/Izquierdo/Automático/Ambos: S5 puede salir como error, nunca como buena, y siempre hay exactamente un error. |
+
+Las pruebas Java nuevas detectaron el código anterior: BUENA en vez de ERROR y tres errores de Planta en vez de cuatro. Se conserva el total de **42 archivos / 46 entradas**. Nuevo reparto: **37 buenas / 9 errores**, con **8 perfiles izquierdos buenos y 4 errores rotativos en Planta**.
+
+Checklist 18B: ✅ suites completas en verde; ✅ JPG conservado; ✅ ningún archivo privado preparado para Git; ✅ motor, POST de cálculo y esquema intactos; ✅ textos en español. No quedaron cambios de código pendientes. No se tomaron capturas ni se repitieron navegador, matriz de tamaños, prueba táctil o MediaPipe real; el fallo de reconocimiento fue el informado por Andy. Para probarlo: abre Perfil de Planta con Izquierdo y vuelve a abrir la lista varias veces; S5 solo debe aparecer marcado como ejemplo con error. Commit: «Paso 18B: S5 espejo como ejemplo con error»; hash y publicación se informan al cierre.
 
 ## Git
 

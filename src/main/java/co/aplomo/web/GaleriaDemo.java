@@ -19,7 +19,7 @@ final class GaleriaDemo {
   new Foto("S4_brazos_sobre_la_cabeza_frente.jpg","Brazos por encima de los hombros","FRENTE","","PLANTA","BUENA","",false),
   new Foto("S4_brazos_sobre_la_cabeza_detalle.jpg","Brazos por encima de los hombros","DETALLE","","PLANTA","BUENA","",false),
   new Foto("S5_inclinada_hacia_el_carro_perfil.jpg","Inclinada hacia el carro","PERFIL","DERECHA","PLANTA","BUENA","",false),
-  new Foto("S5_inclinada_hacia_el_carro_perfil_izq.jpg","Inclinada hacia el carro","PERFIL","IZQUIERDA","PLANTA","BUENA","",false),
+  new Foto("S5_inclinada_hacia_el_carro_perfil_izq.jpg","La IA no la reconoce bien: usa Calcular manualmente","PERFIL","IZQUIERDA","PLANTA","ERROR","Parece una foto de frente o de espaldas. Necesito una de lado (de perfil).",true),
   new Foto("S5_inclinada_hacia_el_carro_frente.jpg","Inclinada hacia el carro","FRENTE","","PLANTA","BUENA","",false),
   new Foto("S5_inclinada_hacia_el_carro_detalle.jpg","Inclinada hacia el carro","DETALLE","","PLANTA","BUENA","",false),
   new Foto("S6_levantando_pieza_pesada_perfil.jpg","Levantando una pieza pesada","PERFIL","DERECHA","PLANTA","BUENA","",false),
