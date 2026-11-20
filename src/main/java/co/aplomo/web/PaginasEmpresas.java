@@ -37,14 +37,14 @@ public final class PaginasEmpresas {
                                  List<Cargo> cargos, String aviso) {
         String ruta = "/empresas/" + empresa.id();
         StringBuilder html = new StringBuilder(Html.aviso(aviso, "Datos guardados.".equals(aviso) || "Registro reactivado.".equals(aviso)));
-        html.append(enlace("/empresas", "← Empresas", false)).append("<section class=\"card stack\">")
+        html.append(avisoInactivo(sesion,empresa.activo(),"Esta empresa está desactivada.","empresa",empresa.id())).append(enlace("/empresas", "← Empresas", false)).append("<section class=\"card stack\">")
                 .append(estado(empresa.activo())).append("<dl class=\"datos-cuenta\">")
                 .append(dato("NIT", empresa.nit())).append(dato("Descripción", empresa.descripcion()))
                 .append(dato("Teléfono", empresa.telefono())).append(dato("Correo", empresa.correo()))
                 .append(dato("Contacto", empresa.contacto())).append("</dl>")
                 .append(acciones(sesion, ruta, empresa.activo())).append("</section>");
         String accionesPagina=enlace("/calificaciones?empresa="+empresa.id(),"Ver calificaciones",false);
-        if(admin(sesion))accionesPagina+=enlace("/informes/empresa/"+empresa.id(),"Generar informe",true);
+        if(admin(sesion))accionesPagina+=enlace("/informes/empresa/"+empresa.id(),"Generar informe",true)+enlace("/evaluaciones?empresa="+empresa.id(),"Ver evaluaciones de la empresa",false);
         html.append(seccion("Sedes", admin(sesion) && empresa.activo() ? ruta + "/sedes/nuevo" : null, "Nueva sede",enlace("/sedes?empresa="+empresa.id(),"Consultar sedes",false)));
         for (Sede sede : sedes) {
             html.append(tarjeta(sede.nombre(), sede.ciudad() + " · " + sede.direccion(), sede.activo(),
@@ -64,7 +64,7 @@ public final class PaginasEmpresas {
     public static String sede(Sesion sesion, Sede sede, Empresa empresa, List<Salon> salones, String aviso) {
         String ruta = "/sedes/" + sede.id();
         StringBuilder html = new StringBuilder(Html.aviso(aviso, "Datos guardados.".equals(aviso) || "Registro reactivado.".equals(aviso)));
-        html.append(enlace("/empresas/" + empresa.id(), "← " + empresa.nombre(), false))
+        html.append(avisoInactivo(sesion,sede.activo(),"Esta sede está desactivada.","sede",sede.id())).append(enlace("/empresas/" + empresa.id(), "← " + empresa.nombre(), false))
                 .append("<section class=\"card stack\">").append(estado(sede.activo())).append("<dl class=\"datos-cuenta\">")
                 .append(dato("Dirección", sede.direccion())).append(dato("Ciudad", sede.ciudad()))
                 .append(dato("Teléfono", sede.telefono())).append(dato("Horario", sede.horario()))
@@ -81,7 +81,7 @@ public final class PaginasEmpresas {
     public static String salon(Sesion sesion, Salon salon, Sede sede, Empresa empresa, List<Puesto> puestos, String aviso) {
         String ruta = "/salones/" + salon.id();
         StringBuilder html = new StringBuilder(Html.aviso(aviso, "Datos guardados.".equals(aviso) || "Registro reactivado.".equals(aviso)));
-        html.append(enlace("/sedes/" + sede.id(), "← " + sede.nombre(), false)).append("<section class=\"card stack\">")
+        html.append(avisoInactivo(sesion,salon.activo(),"Este salón está desactivado.","salon",salon.id())).append(enlace("/sedes/" + sede.id(), "← " + sede.nombre(), false)).append("<section class=\"card stack\">")
                 .append(estado(salon.activo())).append("<dl class=\"datos-cuenta\">")
                 .append(dato("Descripción", salon.descripcion())).append(dato("Piso", Integer.toString(salon.piso())))
                 .append(dato("Capacidad", Integer.toString(salon.capacidad()))).append("</dl>")
@@ -91,10 +91,38 @@ public final class PaginasEmpresas {
         for (Puesto puesto : puestos) {
             String detalle = puesto.descripcion() + " · " + etiqueta(puesto.tipo()) + " · " + puesto.ubicacion()
                     + (puesto.puntaje() == null ? " · Sin evaluar" : "");
-            html.append(tarjeta("Puesto " + puesto.numero(), detalle, puesto.activo(), (puesto.puntaje()==null?"":Html.riesgo(puesto.puntaje(),puesto.color(),puesto.nivel()))+acciones(sesion, "/puestos/" + puesto.id(), puesto.activo())));
+            html.append(tarjeta("Puesto " + puesto.numero(), detalle, puesto.activo(), (puesto.puntaje()==null?"":Html.riesgo(puesto.puntaje(),puesto.color(),puesto.nivel()))+acciones(sesion, "/puestos/" + puesto.id(), puesto.activo())+(admin(sesion)?enlace("/puestos/"+puesto.id(),"Ver historial",false):"")));
         }
         html.append(finSeccion(puestos.isEmpty(), "No hay puestos registrados."));
         return Html.pagina(salon.nombre(), html.toString(), sesion,"Gestión · Salones","");
+    }
+
+    /** RNF-009, RF-028/024/020: presenta el historial sin ocultar evaluaciones por inactividad. */
+    public static String historialPuesto(Sesion s,co.aplomo.servicio.Empresas.HistorialPuesto h){
+        var p=h.puesto();StringBuilder html=new StringBuilder("<section class=\"card stack\"><h2>Puesto "+p.numero()+"</h2>"+estado(p.activo()));
+        html.append("<p>").append(enlace("/empresas/"+h.empresa().id(),h.empresa().nombre(),false)).append(estadoNivel(h.empresa().activo(),true)).append(" &gt; ")
+            .append(enlace("/sedes/"+h.sede().id(),h.sede().nombre(),false)).append(estadoNivel(h.sede().activo(),true)).append(" &gt; ")
+            .append(enlace("/salones/"+h.salon().id(),h.salon().nombre(),false)).append(estadoNivel(h.salon().activo(),false)).append("</p><dl class=\"datos-cuenta\">")
+            .append(dato("Descripción",p.descripcion())).append(dato("Tipo",etiqueta(p.tipo()))).append(dato("Ubicación",p.ubicacion()))
+            .append("<div><dt>Área</dt><dd>").append(h.area()==null?"Sin área":escapar(h.area().nombre())+estadoNivel(h.area().activo(),true)).append("</dd></div>")
+            .append("<div><dt>Cargo</dt><dd>").append(h.cargo()==null?"Sin cargo":escapar(h.cargo().nombre())+estadoNivel(h.cargo().activo(),false)).append("</dd></div></dl></section>")
+            .append("<section class=\"stack\"><h2>Evaluaciones del puesto</h2>");
+        if(h.evaluaciones().isEmpty())html.append("<p class=\"muted\">Este puesto todavía no tiene evaluaciones.</p>");
+        else{
+            html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Fecha</th><th>Visita/Reserva</th><th>Resultado</th><th>Estado de la visita</th><th>Detalle</th></tr></thead><tbody>");
+            for(var e:h.evaluaciones()){
+                html.append("<tr data-evaluacion=\"").append(e.id()).append("\"><td data-label=\"Fecha\">").append(Html.fecha(java.time.LocalDate.parse(e.valor("fecha")))).append("</td>")
+                    .append("<td data-label=\"Visita/Reserva\">").append(enlace("/visitas/"+e.valor("visita"),"Ver visita",false)).append("<div>").append(escapar(e.valor("codigo"))).append("</div></td>")
+                    .append("<td data-label=\"Resultado\">").append(Html.riesgo(e.valor("puntaje").isEmpty()?null:Integer.valueOf(e.valor("puntaje")),e.valor("color"),e.valor("nivel").isEmpty()?0:Integer.parseInt(e.valor("nivel")))).append("</td>")
+                    .append("<td data-label=\"Estado de la visita\">").append(escapar(Formularios.etiqueta(e.valor("estado")))).append("</td><td data-label=\"Detalle\">").append(enlace("/evaluaciones/"+e.id(),"Ver",false)).append("</td></tr>");
+            }
+            html.append("</tbody></table></div>");
+        }
+        return Html.pagina("Historial del puesto",html.append("</section>").toString(),s,"Consultas · Puestos","");
+    }
+    private static String estadoNivel(boolean activo,boolean femenino){return " <span class=\"tag\">"+(activo?(femenino?"Activa":"Activo"):(femenino?"Inactiva":"Inactivo"))+"</span>";}
+    private static String avisoInactivo(Sesion s,boolean activo,String texto,String filtro,int id){
+        return !admin(s)||activo?"":Html.aviso(texto+" Su historial se conserva y se puede consultar aquí.",false)+enlace("/evaluaciones?"+filtro+"="+id,"Ver evaluaciones",false);
     }
 
     /** Presenta un formulario sin hacer consultas, conservando sus campos si guardar falla. */

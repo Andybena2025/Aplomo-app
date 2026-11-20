@@ -141,6 +141,7 @@ public final class Html {
 
     /** Permite que Inicio omita Atrás sin afectar el resto de páginas. */
     public static String pagina(String titulo, String contenido, Sesion s, boolean conPagehead, boolean atras) {
+        atras = atras && !java.util.Set.of("Inicio","Empresas","Reservas","Visitas","Pendientes de arreglo","Evaluaciones","Usuarios","Mi agenda","Agenda","Mis evaluaciones","Ayuda").contains(titulo);
         String cabecera = "";
         if (s != null && s.cuenta() != null) {
             Cuenta c = s.cuenta();
@@ -245,6 +246,6 @@ public final class Html {
                 + "<form class=\"card stack cuenta-form\" method=\"post\" action=\"/cuenta/contrasena\">" + csrf(s)
                 + campo("actual","Contraseña actual","password","",100).replace("new-password","current-password")
                 + campo("nueva","Nueva contraseña","password","",100) + campo("confirmacion","Confirmar nueva contraseña","password","",100)
-                + "<p class=\"hint\">Al menos 8 caracteres, una letra y un número.</p><button class=\"btn p\">Guardar contraseña</button></form>",s);
+                + "<p class=\"hint\">Al menos 8 caracteres, una letra y un número.</p><button class=\"btn p\">Guardar contraseña</button></form>",s,true,!s.cuenta().temporal());
     }
 }

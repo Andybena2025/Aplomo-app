@@ -1227,3 +1227,17 @@ form[data-conversacion] [data-ayuda-pies]{flex-basis:100%;margin:0}
  .usuarios-table td[data-label="Rol"] .cell-value{white-space:nowrap;overflow-wrap:normal;word-break:normal}
 }
 @media(max-width:720px){.pagehead .eyebrow{font-size:11px;letter-spacing:.1em;white-space:nowrap}}
+
+/* Paso 23 · RF-017/RNF-002/007: guía junto a la foto, sin anclar el desplazamiento al panel. */
+form[data-conversacion] .campo-dos-columnas{overflow-anchor:none}
+form[data-conversacion] .campo-dos-columnas:has(>[data-guia-manual]:not([hidden]))>.campo-imagen{position:static;grid-column:1;grid-row:1 / span 2}
+form[data-conversacion] .campo-dos-columnas>[data-guia-manual]{grid-column:2;grid-row:1;margin:var(--guia-desfase,0px) 0 0;min-width:0}
+form[data-conversacion] .campo-dos-columnas:has(>[data-guia-manual]:not([hidden]))>.campo-panel{grid-column:2;grid-row:2}
+.guia-manual[data-primer-paso]{border-color:var(--ivory)}
+form[data-conversacion] .canvasbox{scroll-margin-top:100px}
+.manual-pulso{animation:manualPulso .9s ease-out 1}
+@keyframes manualPulso{from{outline:2px solid var(--ivory);outline-offset:0}to{outline:2px solid transparent;outline-offset:10px}}
+@media(max-width:720px){
+ form[data-conversacion] .campo-dos-columnas:has(>[data-guia-manual]:not([hidden]))>:is(.campo-imagen,.campo-panel),form[data-conversacion] .campo-dos-columnas>[data-guia-manual]{grid-column:1;grid-row:auto;margin-top:0}
+}
+@media(prefers-reduced-motion:reduce){.manual-pulso{animation:none!important}}

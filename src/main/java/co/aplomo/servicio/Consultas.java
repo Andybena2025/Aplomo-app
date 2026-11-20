@@ -4,17 +4,17 @@ import java.sql.*;import java.time.*;import java.math.BigDecimal;import java.uti
 /** RF-024: búsqueda, filtros combinables y ordenación en el servidor, después del alcance SQL autorizado. */
 public final class Consultas {
     /** Resultado de una consulta sin alterar registros ni su historial. */
-    public record Pagina(SeccionConsulta seccion,List<Fila> filas,Map<String,String> filtros,Map<String,List<Opcion>> catalogos,Map<String,List<String>> riesgos) {}
+    public record Pagina(SeccionConsulta seccion,List<Fila> filas,Map<String,String> filtros,Map<String,List<Opcion>> catalogos,Map<String,List<String>> riesgos,Fila contextoEvaluacion) {}
     /** Detalle de evaluación consultable por el Usuario sin fotos ni rutas de archivos. */
     public record Detalle(Fila evaluacion,List<AnalisisDao.Resumen> analisis) {}
     private final Transacciones tx;private final ConsultaDao dao=new ConsultaDao();
     /** Comparte la fuente transaccional con la aplicación y sus pruebas reversibles. */ public Consultas(Transacciones tx){this.tx=tx;}
     /** Consulta y filtra solo los datos permitidos para la cuenta vigente. */
     public Pagina listar(Cuenta actor,SeccionConsulta seccion,Map<String,String> peticion)throws SQLException{
-        return tx.ejecutar(c->{var a=AccesoDatos.vigente(c,actor);int empresa=AccesoDatos.empresaPermitida(a);boolean usuario=a.rol()==Cuenta.Rol.USUARIO;var catalogos=dao.catalogos(c,empresa);var riesgos=dao.riesgos(c);Map<String,String> filtros=validar(seccion,peticion,catalogos,riesgos);
+        return tx.ejecutar(c->{var a=AccesoDatos.vigente(c,actor);int empresa=AccesoDatos.empresaPermitida(a);boolean usuario=a.rol()==Cuenta.Rol.USUARIO;var catalogos=dao.catalogos(c,empresa,!usuario);var riesgos=dao.riesgos(c);if(usuario&&peticion.containsKey("registros"))throw new SecurityException("Acceso denegado. El filtro Registros requiere una cuenta de Administrador.");Map<String,String> filtros=validar(seccion,peticion,catalogos,riesgos);
             if(filtros.containsKey("visita")&&new VisitaDao().buscar(c,Integer.parseInt(filtros.get("visita")),empresa,usuario,false)==null)throw new SecurityException("Acceso denegado. La visita no está disponible para tu cuenta.");
-            if(!filtros.getOrDefault("evaluacion","").isEmpty())exigir(dao.filas(c,SeccionConsulta.EVALUACIONES,empresa,usuario,Integer.parseInt(filtros.get("evaluacion"))));
-            var filas=dao.filas(c,seccion,empresa,usuario,0).stream().filter(f->coincide(f,filtros,seccion)).sorted(comparador(filtros)).toList();return new Pagina(seccion,filas,Map.copyOf(filtros),catalogos,riesgos);});
+            Fila contextoEvaluacion=null;if(!filtros.getOrDefault("evaluacion","").isEmpty())contextoEvaluacion=exigir(dao.filas(c,SeccionConsulta.EVALUACIONES,empresa,usuario,Integer.parseInt(filtros.get("evaluacion"))));
+            if(!usuario&&seccion.filtros().contains("registros"))filtros.putIfAbsent("registros","TODOS");var filas=dao.filas(c,seccion,empresa,usuario,0).stream().filter(f->coincide(f,filtros,seccion)).sorted(comparador(filtros)).toList();return new Pagina(seccion,filas,Map.copyOf(filtros),catalogos,riesgos,contextoEvaluacion);});
     }
     /** Abre únicamente una evaluación visible; una visita En curso o empresa ajena se deniega también por ID. */
     public Detalle evaluacion(Cuenta actor,int id)throws SQLException{return tx.ejecutar(c->{var a=AccesoDatos.vigente(c,actor);var f=exigir(dao.filas(c,SeccionConsulta.EVALUACIONES,AccesoDatos.empresaPermitida(a),a.rol()==Cuenta.Rol.USUARIO,id));return new Detalle(f,new AnalisisDao().listar(c,id));});}
@@ -27,6 +27,7 @@ public final class Consultas {
         for(String key:List.of("desde","hasta"))if(s.filtros().contains(key)&&!d.getOrDefault(key,"").isBlank()){String v=d.get(key);try{LocalDate dia=LocalDate.parse(v);if(dia.getYear()<1000||dia.getYear()>9999)throw new IllegalArgumentException();f.put(key,v);}catch(RuntimeException e){throw new IllegalArgumentException("Revisa la fecha "+(key.equals("desde")?"inicial":"final")+": escribe una fecha válida.");}}
         if(f.containsKey("desde")&&f.containsKey("hasta")&&f.get("desde").compareTo(f.get("hasta"))>0)throw new IllegalArgumentException("La fecha inicial no puede ser posterior a la fecha final.");
         String estado=d.getOrDefault("estado",s==SeccionConsulta.PENDIENTES?"ABIERTO":"TODOS");if(!estado.isBlank()&&!estado.equals("TODOS"))f.put("estado",Validacion.opcion(estado,"estado",s.estados().toArray(String[]::new)));else f.put("estado","TODOS");
+        if(s.filtros().contains("registros")&&d.containsKey("registros"))f.put("registros",Validacion.opcion(d.get("registros"),"registros","TODOS","ACTIVOS","INACTIVOS"));
         List<String> ordenes=new ArrayList<>(s.columnas().stream().map(SeccionConsulta.Columna::clave).toList());if(s==SeccionConsulta.PENDIENTES)ordenes.addAll(List.of("prioridad","fecha","fecha_limite"));
         String defecto=s==SeccionConsulta.PENDIENTES?"prioridad":ordenes.contains("fecha")?"fecha":ordenes.contains("nombre")?"nombre":"numero";
         String orden=d.getOrDefault("orden",defecto);if(orden.equals("limite"))orden="fecha_limite";f.put("orden",Validacion.opcion(orden,"orden",ordenes.toArray(String[]::new)));f.put("direccion",Validacion.opcion(d.getOrDefault("direccion",orden.equals("fecha")?"desc":"asc"),"dirección","asc","desc"));return f;

@@ -50,6 +50,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 19 | Docker: semillas, acceso, foto persistente, entorno y PORT | 🟡 Verificado; 948 Maven + 87 JS; revisión de Andy pendiente ([informe](docs/informe_paso19.md)) |
 | 20 | Sugerencia de pies sin buen apoyo desde la foto de perfil | 🟡 20B: umbral 40 %, tres perfiles con MediaPipe real; 949 Maven + 104 JS; revisión de Andy pendiente ([informe](docs/informe_paso20.md)) |
 | 22 | Portada móvil, acciones de tablas y herramienta privada de cuentas | 🟡 965 Maven + 110 JS; tamaños medidos y cuentas por servicio; revisión de Andy pendiente ([informe](docs/informe_paso22.md)) |
+| 23 | Historial de inactivos, navegación Atrás y guía manual | 🟡 984 Maven + 114 JS; historial/permisos y 40 medidas comprobados; revisión de Andy pendiente ([informe](docs/informe_paso23.md)) |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 
@@ -121,7 +122,7 @@ Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuent
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**965 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**984 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 

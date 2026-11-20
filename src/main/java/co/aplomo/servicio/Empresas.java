@@ -26,6 +26,18 @@ public final class Empresas {
     /** Permite probar con una transacción revertida y la base MySQL real. */
     public Empresas(Transacciones tx) { this.tx = tx; }
 
+    /** RNF-009, RF-028/024/020: datos y resultados históricos, solo lectura. */
+    public record HistorialPuesto(Puesto puesto,Empresa empresa,Sede sede,Salon salon,Area area,Cargo cargo,List<ConsultaDao.Fila> evaluaciones) {}
+
+    /** RNF-009, RF-028/024: abre todas las evaluaciones del puesto, solo para Administrador vigente. */
+    public HistorialPuesto historialPuesto(Cuenta actor,int id)throws SQLException{
+        return tx.ejecutar(con->{
+            administrador(con,actor);var p=exigir(puestos.buscar(con,id,0,false));var l=exigir(salones.buscar(con,p.salon(),0,false));
+            var s=exigir(sedes.buscar(con,l.sede(),0,false));var e=exigir(empresas.buscar(con,s.empresa(),0,false));
+            return new HistorialPuesto(p,e,s,l,p.area()==null?null:areas.buscar(con,p.area(),0,false),p.cargo()==null?null:cargos.buscar(con,p.cargo(),0,false),new ConsultaDao().historialPuesto(con,id));
+        });
+    }
+
     /** Lista todas las empresas para Administrador o únicamente la empresa del Usuario. */
     public List<Empresa> listar(Cuenta actor) throws SQLException {
         return tx.ejecutar(con -> empresas.buscarTodos(con, 0, alcance(con, actor)));

@@ -196,7 +196,12 @@ public final class EmpresasWeb {
             }
             case "areas" -> Router.redirigir(x, "/empresas/" + empresas.area(s.cuenta(), id).empresa());
             case "cargos" -> Router.redirigir(x, "/empresas/" + empresas.cargo(s.cuenta(), id).empresa());
-            case "puestos" -> Router.redirigir(x, "/salones/" + empresas.puesto(s.cuenta(), id).salon());
+            case "puestos" -> {
+                // RF-002/024: el Usuario conserva la redirección autorizada anterior; no recibe el historial administrativo.
+                Puesto puesto=empresas.puesto(s.cuenta(),id);
+                if(s.cuenta().rol()==Cuenta.Rol.ADMINISTRADOR)Router.enviar(x,200,PaginasEmpresas.historialPuesto(s,empresas.historialPuesto(s.cuenta(),id)));
+                else Router.redirigir(x,"/salones/"+puesto.salon());
+            }
             default -> noDisponible(x, s);
         }
     }

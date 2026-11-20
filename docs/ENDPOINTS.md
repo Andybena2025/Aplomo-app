@@ -1,6 +1,6 @@
 # Rutas HTTP de APLOMO.
 
-Inventario leído del código al terminar los pasos 15-E y 16 (14 nov 2026). La app sirve HTML y formularios; no es una API REST. `App.main` registra un único contexto `createContext("/", new Router())`. `Router.atender` y los manejadores enlazados abajo distribuyen las rutas. No hay otra lista central de rutas.
+Inventario leído del código al terminar los pasos 15-E y 16 (14 nov 2026). La app sirve HTML y formularios; no es una API REST. `App.main` registra un único contexto `createContext("/", new Router())`. `Router.atender` y los manejadores enlazados abajo distribuyen las rutas. Actualizado en el Paso 23 para historial de puestos y filtros administrativos. No hay otra lista central de rutas.
 
 ## Arranque y administrador inicial
 
@@ -39,6 +39,8 @@ Fuente: [Router.atender](../src/main/java/co/aplomo/web/Router.java), [Autentica
 
 El modo demo se controla con `-Daplomo.modoDemo=false` (activo por defecto). La práctica escribe solo bajo su empresa ficticia y lo anuncia en la página.
 
+El botón Atrás de cabecera se omite en Inicio y en el cambio **obligatorio** de contraseña de una cuenta temporal. El cambio voluntario conserva Atrás, igual que el resto de páginas que ya lo mostraban. El botón interno `data-atras-evaluacion` se conserva.
+
 ## Consultas comunes
 
 [ConsultasWeb.atender](../src/main/java/co/aplomo/web/ConsultasWeb.java) intercepta primero los GET de lista de [SeccionConsulta](../src/main/java/co/aplomo/modelo/SeccionConsulta.java). Devuelve **200 HTML**, tanto para A como U con su alcance, **RF-024 y RF-002**. Los manejadores de gestión conservan los POST y detalles. No confundir los filtros de consulta con los campos de escritura.
@@ -52,12 +54,14 @@ En las siguientes rutas se admiten `q` (hasta 120 caracteres), `orden` (clave de
 | GET | `/cargos` | `empresa`, `cargo`, `estado` | Cargos; RF-007 |
 | GET | `/sedes` | `empresa`, `sede`, `estado` | Sedes; RF-005 |
 | GET | `/salones` | `empresa`, `sede`, `salon`, `estado` | Salones; RF-006 |
-| GET | `/puestos` | `empresa`, `sede`, `salon`, `area`, `cargo`, `numero`, `puntaje`, `color`, `nivel`, `estado` | Puestos; RF-008 |
+| GET | `/puestos` | `empresa`, `sede`, `salon`, `area`, `cargo`, `numero`, `puntaje`, `color`, `nivel`, `estado`, `puesto`, `registros` (A) | Puestos; RF-008 |
 | GET | `/reservas` | `empresa`, `sede`, `salon`, `desde`, `hasta`, `estado` | Todas las propias para U; RF-011/012 |
-| GET | `/visitas` | `empresa`, `sede`, `salon`, `desde`, `hasta`, `estado` | U solo Finalizadas; RF-013b |
-| GET | `/evaluaciones` | `empresa`, `sede`, `salon`, `area`, `cargo`, `numero`, `desde`, `hasta`, `puntaje`, `color`, `nivel`, `estado` | U solo Finalizadas; RF-020/021 |
+| GET | `/visitas` | `empresa`, `sede`, `salon`, `desde`, `hasta`, `estado`, `registros` (A) | U solo Finalizadas; RF-013b |
+| GET | `/evaluaciones` | `empresa`, `sede`, `salon`, `area`, `cargo`, `numero`, `desde`, `hasta`, `puntaje`, `color`, `nivel`, `estado`, `puesto`, `registros` (A) | U solo Finalizadas; RF-020/021 |
 | GET | `/pendientes` | Los de Evaluaciones, estado `ABIERTO` (por defecto) o `ARREGLADO` | Orden adicional `prioridad`, `fecha`, `fecha_limite` (`limite` se admite como alias); RF-022 |
 | GET | `/sugerencias` | Los de Evaluaciones, estado `PENDIENTE`, `EN_PROCESO`, `HECHA` | `evaluacion` abre lista contextual; RF-023b |
+
+En `/evaluaciones`, `/puestos`, `/pendientes`, `/sugerencias` y `/visitas`, **solo A** dispone de `registros=TODOS|ACTIVOS|INACTIVOS`: Todos es el valor por defecto; los otros rótulos son «Solo activos» y «Solo inactivos». Una fila es inactiva si lo está su empresa, sede, salón o, cuando tiene uno, su puesto. No cambia el filtro de estado propio del registro. Un valor inválido da 400; U intentando usar `registros` recibe 403. `puesto` permite acotar por ID en Puestos/Evaluaciones/Pendientes/Sugerencias; se valida contra el catálogo autorizado. Los catálogos administrativos incluyen inactivos marcados, sin reactivarlos.
 
 `estado=TODOS` incluye los estados visibles para la cuenta, no amplía sus permisos. Los estados completos se definen en `SeccionConsulta.estados()`; riesgo y colores se leen de MySQL. Usuarios tiene filtros de presentación en el navegador, descritos a continuación.
 
@@ -93,7 +97,7 @@ Fuente: [EmpresasWeb.atender/guardar/detalle](../src/main/java/co/aplomo/web/Emp
 | GET, POST | `/salones/{salon}/puestos/nuevo` | Formulario / guardar puesto | POST F: `numero`, `descripcion`, `tipo`, `ubicacion`, `id_area`, `id_cargo` opcionales | 200 HTML / 303 salón | RF-008/010 |
 | GET | `/areas/{id}` | Resolver área autorizada | ID | 303 empresa | RF-007 |
 | GET | `/cargos/{id}` | Resolver cargo autorizado | ID | 303 empresa | RF-007 |
-| GET | `/puestos/{id}` | Resolver puesto autorizado | ID | 303 salón | RF-008 |
+| GET | `/puestos/{id}` | A: Historial del puesto, jerarquía/estados, área/cargo y todas sus evaluaciones por fecha e ID descendentes, con semáforo y enlace Ver. U: conserva la redirección autorizada anterior. | ID | A: 200 HTML; U: 303 salón propio; ajeno/inexistente: 403 como antes | RNF-009, RF-028/024/020, RF-002 |
 | GET, POST | `/{tipo}/{id}/editar` | Formulario / guardar cambios | `tipo=empresas|sedes|salones|areas|cargos|puestos`; F con los campos de creación de ese tipo | 200 HTML / 303 detalle (empresa/sede/salón) o padre (otros) | RF-009a; áreas/cargos RF-007 |
 | POST | `/{tipo}/{id}/activar` | Reactivar registro | Mismos seis tipos; F | 303 padre con aviso | RF-028 |
 | POST | `/{tipo}/{id}/desactivar` | Desactivar, conservar historial | Mismos seis tipos; F | 303 padre con aviso | RF-028, RNF-009 |
@@ -206,3 +210,7 @@ El único endpoint de valor agregado sin requisito funcional propio es `/demo/ev
 `EndpointsDocumentoTest` comprueba los contextos literales registrados en App, todas las secciones de `SeccionConsulta`, las rutas literales comparadas con `ruta.equals` en los manejadores y la presencia de las familias dinámicas. No depende de espacios, números de línea ni títulos visuales. Es una alarma de documentación; no reemplaza las pruebas HTTP de roles, CSRF, cálculo y fotos. Este inventario no añade ni cambia rutas.
 
 Paso 17: la empresa DEMO-APLOMO-PRACTICA se excluye de listas, catálogos, contadores y calificaciones; conserva el acceso dedicado de práctica. El cargador completo se ejecuta por CLI o perfil Docker demo, no mediante una ruta HTTP.
+
+## Historial de registros inactivos (Paso 23)
+
+Solo A recibe los avisos con «Ver evaluaciones» en detalles inactivos de empresa/sede/salón; el enlace conserva `empresa`, `sede` o `salon` como filtro. Toda empresa, activa o no, ofrece al Administrador «Ver evaluaciones de la empresa». Cada tarjeta de puesto del salón ofrece «Ver historial». Abrir estos GET no cambia estados ni reactiva registros. Calificaciones e informe general continúan disponibles para una empresa inactiva. U conserva empresa propia, resultados solo Finalizados y fotos denegadas.

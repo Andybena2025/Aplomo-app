@@ -35,11 +35,35 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
   const guia=window.AplomoMarcadoManual;
   function actualizarGuia(){
     const panel=form.querySelector('[data-guia-manual]'),boton=form.querySelector('[data-calcular-manual]');if(!panel||!foto())return;
-    const s=estado(foto()),g=s.guiaManual;panel.hidden=!g?.activa;
-    if(g?.activa){panel.querySelector('[data-manual-instruccion]').textContent=guia.TEXTOS[g.paso];panel.querySelector('[data-manual-contador]').textContent=(g.paso+1)+' de 5';panel.querySelector('[data-manual-anterior]').disabled=g.paso===0;}
+    const s=estado(foto()),g=s.guiaManual;ubicarGuia(panel);panel.hidden=!g?.activa;panel.toggleAttribute('data-primer-paso',!!g?.activa&&g.paso===0);alinearGuia();
+    if(g?.activa){panel.querySelector('[data-manual-instruccion]').textContent=guia.instruccion(g.paso);panel.querySelector('[data-manual-contador]').textContent=(g.paso+1)+' de 5';panel.querySelector('[data-manual-anterior]').disabled=g.paso===0;}
     boton?.classList.toggle('p',s.ia!=='ok'&&!['BRAZO','ANTEBRAZO','CUELLO','TRONCO'].every(k=>grupos(foto())[k].length===3));
   }
-  function iniciarManual(){const s=estado(foto());s.origenPuntos='manual';s.ia='manual';s.raw=null;s.puntos={};s.fotoAceptada=true;s.guiaManual={activa:true,paso:guia.reiniciar()};s.anguloIAOriginal={};s.revisados={};for(const k of ['BRAZO','ANTEBRAZO','CUELLO','TRONCO'])delete s.manual[k];s.mensajeIA='';cambiado('PUNTOS');mostrarDeteccion();}
+  // RF-017, RNF-002/007: misma foto y geometría, guía alineada sin saltar hacia el panel lateral.
+  function ubicarGuia(panel){
+    const zona=form.querySelector('.campo-dos-columnas'),marco=form.querySelector('[data-foto-revision] .foto-zoom');if(!zona||!marco)return;
+    // RNF-002: en celular, inmediatamente después de la foto y antes de sus botones.
+    if(window.innerWidth<=720){if(panel.previousElementSibling!==marco)marco.after(panel);}
+    else if(panel.parentElement!==zona)zona.insertBefore(panel,zona.querySelector('.campo-panel'));
+  }
+  function alinearGuia(){
+    const zona=form.querySelector('.campo-dos-columnas'),panel=form.querySelector('[data-guia-manual]');
+    if(!zona||!panel||panel.hidden)return;
+    const marco=form.querySelector('[data-foto-revision] .canvasbox');if(!marco)return;
+    zona.style.setProperty('--guia-desfase',(window.innerWidth>720?Math.max(0,marco.getBoundingClientRect().top-zona.getBoundingClientRect().top):0)+'px');
+  }
+  window.addEventListener('resize',actualizarGuia);
+  function presentarGuia(){
+    window.requestAnimationFrame(()=>{
+      alinearGuia();const marco=form.querySelector('[data-foto-revision] .canvasbox');if(!marco)return;
+      const reducida=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      marco.classList.remove('manual-pulso');
+      if(!reducida){marco.classList.add('manual-pulso');marco.addEventListener('animationend',()=>marco.classList.remove('manual-pulso'),{once:true});}
+      const superior=document.querySelector('.top')?.getBoundingClientRect().bottom||0;
+      if(guia.fueraDeVista(marco.getBoundingClientRect(),window.innerHeight,Math.max(0,superior)))marco.scrollIntoView({block:'start',behavior:reducida?'instant':'smooth'});
+    });
+  }
+  function iniciarManual(){const zona=form.querySelector('.campo-dos-columnas');if(zona)zona.style.minHeight=Math.ceil(zona.getBoundingClientRect().height)+'px';const s=estado(foto());s.origenPuntos='manual';s.ia='manual';s.raw=null;s.puntos={};s.fotoAceptada=true;s.guiaManual={activa:true,paso:guia.reiniciar()};s.anguloIAOriginal={};s.revisados={};for(const k of ['BRAZO','ANTEBRAZO','CUELLO','TRONCO'])delete s.manual[k];s.mensajeIA='';cambiado('PUNTOS');mostrarDeteccion();presentarGuia();}
   function origenManual(s){s.origenPuntos='manual';for(const k of Object.keys(s.anguloIAOriginal||{})){delete s.manual[k];delete s.anguloIAOriginal[k];if(s.revisados)delete s.revisados[k];}}
   function colocar(punto,pos){const s=estado(foto());origenManual(s);s.puntos[punto]=pos;if(s.guiaManual?.activa){s.guiaManual.paso=guia.avanzar(s.guiaManual.paso);if(s.guiaManual.paso===5)s.guiaManual.activa=false;}cambiado('PUNTOS');actualizarGuia();}
   form.querySelector('[data-manual-reiniciar]')?.addEventListener('click',iniciarManual);
@@ -138,6 +162,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     siguientePunto();pintarMedidas(f);mostrarDeteccion();
   }
   function cargarFoto(){
+    const zona=form.querySelector('.campo-dos-columnas');if(zona){zona.style.minHeight='';zona.style.removeProperty('--guia-desfase');}
     const f=foto();if(!f)return;imagen=null;zoom=0;paneo=null;caja.scrollLeft=0;caja.scrollTop=0;const img=new Image();
     img.onload=()=>{if(f!==foto())return;imagen=img;f.ancho=img.naturalWidth;f.alto=img.naturalHeight;dibujar();if(form.dataset.conversacion)form.dispatchEvent(new Event('aplomo:analisis'));autoDetectar(f);};
     img.onerror=()=>aviso('No pudimos abrir la foto. Comprueba tu sesión y vuelve a seleccionarla sin cerrar este formulario.');img.src=f.src||f.preview;
