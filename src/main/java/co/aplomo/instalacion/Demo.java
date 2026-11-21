@@ -27,7 +27,8 @@ import java.util.Properties;
  */
 public final class Demo {
     public static final String CONFIRMACION = "REINICIAR DEMO";
-    private static final String EMPRESAS = "nit IN ('900.512.384-1','901.638.205-4','012345')";
+    private static final String EMPRESAS = "nit IN ('900.512.384-1','901.638.205-4','012345'," +
+            "'900.782.156-2','901.428.603-7','900.315.928-5','901.267.840-3')";
     private static final List<String> MUESTRAS = List.of("de100001-493b-4bc9-a64e-d51b4ea3c901.jpg",
             "de100002-493b-4bc9-a64e-d51b4ea3c902.jpg", "de100003-493b-4bc9-a64e-d51b4ea3c903.jpg",
             "de100004-493b-4bc9-a64e-d51b4ea3c904.jpg");
@@ -61,7 +62,7 @@ public final class Demo {
             verificarAdministrador(con);
             String confirmacion = "";
             if (reiniciar) {
-                terminal.printf("Se reiniciarán SOLO las tres empresas identificadas de la demo. Las cuentas nunca " +
+                terminal.printf("Se reiniciarán SOLO las siete empresas identificadas de la demo. Las cuentas nunca " +
                         "se borran. Si alguna está vinculada, el reinicio se cancela.%n");
                 confirmacion = terminal.readLine("Escribe %s para continuar: ", CONFIRMACION);
                 if (!CONFIRMACION.equals(confirmacion)) {
@@ -161,6 +162,7 @@ public final class Demo {
                         "AND inicial.rol='ADMINISTRADOR' AND inicial.estado='INACTIVA')", fila -> fila.getInt(1));
         if (admin == null) throw new IllegalArgumentException(
                 "Primero ingresa como Administrador y cambia la contraseña temporal de ALINEO.");
+        if (!Files.isRegularFile(sql)) throw new IllegalArgumentException("Falta el archivo de la demo.");
         DemoIdentidades.preparar(con, admin);
         Integer ajenas = Sql.uno(con, "SELECT COUNT(*) FROM reserva r JOIN salon l USING(id_salon) JOIN sede s USIN" +
                 "G(id_sede) JOIN empresa e USING(id_empresa) WHERE r.codigo IN ('DEMO-FIN-01'" +
@@ -168,26 +170,17 @@ public final class Demo {
                 "-LST-E1','DEMO-LST-E2','DEMO-LST-E3') AND NOT (" + EMPRESAS + ")", fila2 -> fila2.getInt(1));
         if (ajenas > 0) throw new IllegalArgumentException("Hay un código demo en otra empresa. No se cambió nada.")
                 ;
-        DemoPresentacion.actualizarMarca(con);
-        String texto = Files.readAllLines(sql, StandardCharsets.UTF_8).stream()
-                .filter(texto2 -> !texto2.stripLeading().startsWith("--"))
-                .collect(java.util.stream.Collectors.joining("\n"));
-        texto = DemoIdentidades.adaptar(texto);
-        for (String parte : texto.split(";")) {
-            String orden = parte.strip();
-            if (orden.isEmpty() || orden.equalsIgnoreCase("START TRANSACTION") || orden.equalsIgnoreCase("COMMIT"))
-                continue;
-            try (PreparedStatement ps = con.prepareStatement(orden)) {
-                ps.execute();
-            }
-        }
-        DemoCompleta.cargar(con, fotos, admin);
+        int anteriores = Sql.uno(con, "SELECT COUNT(*) FROM empresa WHERE " + EMPRESAS, fila -> fila.getInt(1));
+        int plan = Sql.uno(con, "SELECT COUNT(*) FROM bitacora WHERE tabla='empresa' " + "AND detalle='DEMO-28-PLAN'",
+                fila -> fila.getInt(1));
+        if (anteriores > 0 && plan == 0) throw new IllegalArgumentException(
+                "La demo conserva cargas anteriores. Ejecuta scripts/reiniciar_demo.sh y confirma el reinicio.");
         DemoRoles.cargar(con, fotos, admin);
         DemoIdentidades.completar(con, admin);
     }
 
     /**
-     * Borra solo las tres empresas exactas; el llamador confirma o revierte. RNF-011.
+     * Borra solo las siete empresas identificadas; el llamador confirma o revierte. RNF-011.
      */
     public static List<String> vaciar(Connection con, String confirmacion) throws SQLException {
         if (!CONFIRMACION.equals(confirmacion))
@@ -201,6 +194,9 @@ public final class Demo {
         DemoIdentidades.exigirIdentidad(con, empresas);
         if (!hijos(con, "cuenta", "id_cuenta", "id_empresa", empresas).isEmpty()) throw new IllegalArgumentException(
                 "Hay cuentas vinculadas a una empresa demo. Reasígnalas antes; no se borró nada.");
+        if (!hijos(con, "solicitud_acceso", "id_solicitud", "id_empresa", empresas).isEmpty()) {
+            throw new IllegalArgumentException("Hay solicitudes de acceso vinculadas. Revísalas antes del reinicio.");
+        }
         ids.put("sede", hijos(con, "sede", "id_sede", "id_empresa", empresas));
         ids.put("salon", hijos(con, "salon", "id_salon", "id_sede", ids.get("sede")));
         ids.put("area", hijos(con, "area", "id_area", "id_empresa", empresas));
@@ -218,6 +214,8 @@ public final class Demo {
         ids.put("sugerencia", hijos(con, "sugerencia", "id_sugerencia", "id_evaluacion", ids.get("evaluacion")));
         ids.put("pendiente_arreglo",
                 hijos(con, "pendiente_arreglo", "id_pendiente", "id_evaluacion", ids.get("evaluacion")));
+        ids.put("cuenta_empresa", hijos(con, "cuenta_empresa", "id_cuenta_empresa", "id_empresa", empresas));
+        ids.put("mensaje", hijos(con, "mensaje", "id_mensaje", "id_reserva", ids.get("reserva")));
         ids.put("informe_empresa", hijos(con, "informe_empresa", "id_informe", "id_empresa", empresas));
         List<String> rutas = ids.get("fotografia").isEmpty() ? List.of() : Sql.listar(con,
                 "SELECT ruta FROM fotografia WHERE id_foto IN (" + marcas(ids.get("fotografia")) + ")",
@@ -233,10 +231,11 @@ public final class Demo {
             }
         Map<String, String> claves = Map.of("puesto_trabajo", "id_puesto", "condiciones_puesto", "id_evaluacion",
                 "fotografia", "id_foto", "analisis_rula", "id_analisis", "medicion_angulo", "id_medicion",
-                "pendiente_arreglo", "id_pendiente", "informe_empresa", "id_informe");
-        for (String tabla : List.of("medicion_angulo", "analisis_rula", "fotografia", "sugerencia", "pendiente_arreglo",
-                "condiciones_puesto", "evaluacion", "visita", "reserva", "puesto_trabajo", "salon", "sede", "area",
-                "cargo", "informe_empresa", "empresa")) {
+                "pendiente_arreglo", "id_pendiente", "informe_empresa", "id_informe", "cuenta_empresa",
+                "id_cuenta_empresa");
+        for (String tabla : List.of("mensaje", "cuenta_empresa", "medicion_angulo", "analisis_rula", "fotografia",
+                "sugerencia", "pendiente_arreglo", "condiciones_puesto", "evaluacion", "visita", "reserva",
+                "puesto_trabajo", "salon", "sede", "area", "cargo", "informe_empresa", "empresa")) {
             var lista = ids.get(tabla);
             if (!lista.isEmpty()) Sql.actualizar(con,
                     "DELETE FROM " + tabla + " WHERE " + claves.getOrDefault(tabla, "id_" + tabla) + " IN (" +

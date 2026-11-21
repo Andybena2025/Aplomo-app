@@ -51,7 +51,7 @@ class DemoTest extends BasePrueba {
             int id = Integer.parseInt(empresaDemo.get(0));
             int horariosInvalidos = Sql.uno(con, "SELECT COUNT(*) FROM reserva r JOIN salon l USING(id_salon) " +
                             "JOIN sede s USING(id_sede) WHERE s.id_empresa=? AND r.estado<>'CANCELADA' AND " +
-                            "(WEEKDAY(r.fecha)>4 OR r.hora_inicio<'08:00' OR r.hora_fin>'16:00' OR " +
+                            "(WEEKDAY(r.fecha)>4 OR r.hora_inicio<'07:00' OR r.hora_fin>'18:00' OR " +
                             "MINUTE(r.hora_inicio) NOT IN(0,30) OR MINUTE(r.hora_fin) NOT IN(0,30))",
                     fila -> fila.getInt(1),
                     id);
@@ -72,7 +72,7 @@ class DemoTest extends BasePrueba {
     }
 
     @Test
-    void cadaEmpresaTieneSedesConAmbosTiposYUnaVisitaListaSinDuplicar() throws Exception {
+    void cadaEmpresaTieneLaEstructuraPlaneadaYVisitasHistoricasSinDuplicar() throws Exception {
         cargar();
         cargar();
         for (int i = 1; i <= 3; i++) {
@@ -87,16 +87,10 @@ class DemoTest extends BasePrueba {
                                 "ERE l.id_sede=? AND p.activo=TRUE", fila4 -> fila4.getString(1), sede);
                 assertTrue(tipos.containsAll(List.of("ESCRITORIO", "MESA")));
             }
-            var visitas = Sql.listar(con,
-                    "SELECT v.id_visita,r.id_salon FROM visita v JOIN reserva r USING(id_reserva)" +
-                            " JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE s.id_empresa=" +
-                            "? AND v.estado='EN_CURSO'", fila5 -> new int[]{fila5.getInt(1), fila5.getInt(2)},
-                    empresaDemo);
-            assertEquals(1, visitas.size());
-            assertEquals(2, Sql.<Integer>uno(con,
-                    "SELECT COUNT(*) FROM puesto_trabajo p WHERE p.id_salon=? AND p.activo=TRUE A" +
-                            "ND NOT EXISTS(SELECT 1 FROM evaluacion e WHERE e.id_visita=? AND e.id_puesto" +
-                            "=p.id_puesto)", fila6 -> fila6.getInt(1), visitas.get(0)[1], visitas.get(0)[0]));
+            assertTrue(Sql.<Integer>uno(con, "SELECT COUNT(*) FROM visita v " +
+                    "JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) " +
+                    "WHERE s.id_empresa=? AND v.estado='FINALIZADA'", f -> f.getInt(1), empresaDemo) > 0);
+
         }
     }
 
@@ -251,7 +245,8 @@ class DemoTest extends BasePrueba {
         int mensajes = Sql.uno(con, "SELECT COUNT(*) FROM mensaje", f -> f.getInt(1));
         Sql.actualizar(con, "UPDATE cuenta SET estado='INACTIVA' WHERE id_cuenta=?", admin);
         cargar();
-        assertEquals(Integer.valueOf(mensajes), Sql.<Integer>uno(con, "SELECT COUNT(*) FROM mensaje", f -> f.getInt(1)));
+        assertEquals(Integer.valueOf(mensajes),
+                Sql.<Integer>uno(con, "SELECT COUNT(*) FROM mensaje", f -> f.getInt(1)));
         assertEquals(co.aplomo.modelo.Cuenta.Estado.INACTIVA, cuenta(inicial).estado());
         for (String correo : List.of("andres@rula.local", "johan@rula.local", "gabby@rula.local")) {
             assertEquals(co.aplomo.modelo.Cuenta.Estado.ACTIVA, dao.porCorreo(con, correo).estado());

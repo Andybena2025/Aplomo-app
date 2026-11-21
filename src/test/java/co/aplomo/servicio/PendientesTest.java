@@ -68,6 +68,16 @@ class PendientesTest extends BasePrueba {
         return new Fotos.Entrada(elemento.toByteArray(), "PERFIL", "Perfil de prueba");
     }
 
+    private int otraVisita() throws Exception {
+        int salon = Sql.uno(con, "SELECT id_salon FROM puesto_trabajo WHERE id_puesto=?", f -> f.getInt(1), puesto);
+        int reserva = Sql.insertar(con, "INSERT INTO reserva(id_salon,id_administrador,id_evaluador,codigo," +
+                        "fecha,hora_inicio,hora_fin,categoria,estado) VALUES(?,?,?,?,?,'9:00','10:00'," +
+                        "'REEVALUACION','EN_COLA')", salon, evaluadorTrabajo().id(), evaluadorTrabajo().id(),
+                UUID.randomUUID().toString().substring(0, 12), LocalDate.now(reloj).plusDays(3));
+        return Sql.insertar(con, "INSERT INTO visita(id_reserva,hora_real_inicio) VALUES(?,?)", reserva,
+                LocalDateTime.now(reloj));
+    }
+
     private void analizar(int caso) throws Exception {
         evals.analisis().guardar(cuenta(admin), eval,
                 List.of(new Analisis.Solicitud(foto, CasosRulaPrueba.todos().get(caso - 1).entrada())));
@@ -91,6 +101,29 @@ class PendientesTest extends BasePrueba {
             assertNull(elemento.limite());
             assertEquals("ABIERTO", elemento.estado());
         }
+    }
+
+    @Test
+    void dosPosturasRojasDeUnPuestoCompartenPendienteYConservanSuSeguimiento() throws Exception {
+        analizar(7);
+        int primero = id();
+        pendientes.guardar(cuenta(admin), primero, "Conservar descripción", "MEDIA", "2026-11-25");
+        pendientes.arreglar(cuenta(admin), primero);
+        int segunda = evals.guardar(cuenta(admin), visita, datos(), List.of(imagen()));
+        int otraFoto = new EvaluacionDao().fotos(con, segunda).get(0).id();
+        evals.analisis().guardar(cuenta(admin), segunda,
+                List.of(new Analisis.Solicitud(otraFoto, CasosRulaPrueba.todos().get(7).entrada())));
+        var actual = new PendienteDao().porPuestoVisita(con, segunda);
+        assertEquals(primero, actual.id());
+        assertEquals(7, actual.puntaje());
+        assertEquals("ARREGLADO", actual.estado());
+        assertEquals("Conservar descripción", actual.descripcion());
+        assertEquals(1, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM pendiente_arreglo pa " +
+                        "JOIN evaluacion e USING(id_evaluacion) WHERE e.id_visita=? AND e.id_puesto=?",
+                f -> f.getInt(1),
+                visita, puesto));
+        assertEquals(2, pendientes.posturas(cuenta(admin), primero).size());
+        assertNull(new PendienteDao().porEvaluacion(con, segunda));
     }
 
     @Test
@@ -120,10 +153,11 @@ class PendientesTest extends BasePrueba {
     }
 
     @Test
-    void otraEvaluacionGeneraOtroPendienteYUnVerdeNoBorraLosAnteriores() throws Exception {
+    void otraVisitaGeneraOtroPendienteYUnVerdeNoBorraLosAnteriores() throws Exception {
         analizar(8);
         int primero = id();
-        int segundo = evals.guardar(cuenta(admin), visita, datos(), List.of(imagen()),
+        int segundaVisita = otraVisita();
+        int segundo = evals.guardar(cuenta(admin), segundaVisita, datos(), List.of(imagen()),
                 List.of(new Analisis.Solicitud(0, CasosRulaPrueba.todos().get(7).entrada())));
         int otro = new PendienteDao().porEvaluacion(con, segundo).id();
         pendientes.arreglar(cuenta(admin), primero);
@@ -149,7 +183,7 @@ class PendientesTest extends BasePrueba {
         assertThrows(SecurityException.class, () -> pendientes.guardar(cuenta(usuario), id, "Cambiar", "BAJA", ""));
         assertThrows(SecurityException.class, () -> pendientes.arreglar(cuenta(usuario), id));
         int empresaB = Sql.insertar(con, "INSERT INTO empresa (id_administrador,nombre,nit) VALUES (?,?,?)", admin,
-                "Otra empresa", UUID.randomUUID().toString().substring(0, 20));
+                "Otra empresa", UUID.randomUUID().toString().substring(0, 12));
         int usuarioB = insertar("USUARIO", empresaB, cuenta(admin).hash(), false);
         assertTrue(pendientes.listar(cuenta(usuarioB), "TODOS", "fecha").isEmpty());
         assertThrows(SecurityException.class, () -> pendientes.consultar(cuenta(usuarioB), id));
@@ -196,7 +230,7 @@ class PendientesTest extends BasePrueba {
         int uno = id();
         pendientes.guardar(cuenta(admin), uno, "", "BAJA", "2026-12-01");
         reloj.avanzar(Duration.ofDays(1));
-        int segunda = evals.guardar(cuenta(admin), visita, datos(), List.of(imagen()),
+        int segunda = evals.guardar(cuenta(admin), otraVisita(), datos(), List.of(imagen()),
                 List.of(new Analisis.Solicitud(0, CasosRulaPrueba.todos().get(7).entrada())));
         int dos = new PendienteDao().porEvaluacion(con, segunda).id();
         pendientes.guardar(cuenta(admin), dos, "", "ALTA", "2026-11-20");

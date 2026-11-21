@@ -184,11 +184,16 @@ public final class ConsultaDao {
             case PENDIENTES -> {
                 select = "pa.id_pendiente id,e.id_evaluacion evaluacion,e.id_visita visita," + DATOS_LUGAR +
                         "pa.descripcion nombre,pa.descripcion,pa.prioridad,pa.fecha_limite,pa.fecha_r" +
-                        "egistro fecha,pa.estado,pa.puntaje";
+                        "egistro fecha,pa.estado,(SELECT MAX(pp.puntaje) FROM pendiente_arreglo pp JOIN evaluacion ep" +
+                        " " +
+                        "USING(id_evaluacion) WHERE ep.id_visita=e.id_visita AND ep.id_puesto=e.id_puesto) puntaje";
                 desde = "pendiente_arreglo pa JOIN evaluacion e ON e.id_evaluacion=pa.id_evaluacion J" +
                         "OIN visita v ON v.id_visita=e.id_visita JOIN puesto_trabajo p ON p.id_puesto" +
                         "=e.id_puesto" + LUGAR;
-                extra = " AND (?=FALSE OR v.estado='FINALIZADA')";
+                extra = " AND (?=FALSE OR v.estado='FINALIZADA') AND NOT EXISTS " +
+                        "(SELECT 1 FROM pendiente_arreglo pp JOIN evaluacion ep USING(id_evaluacion) " +
+                        "WHERE ep.id_visita=e.id_visita AND ep.id_puesto=e.id_puesto " +
+                        "AND pp.id_pendiente<pa.id_pendiente)";
             }
             case SUGERENCIAS -> {
                 select = "sg.id_sugerencia id,e.id_evaluacion evaluacion,e.id_visita visita," + DATOS_LUGAR +

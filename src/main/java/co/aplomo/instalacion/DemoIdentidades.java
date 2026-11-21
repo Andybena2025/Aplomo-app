@@ -16,7 +16,7 @@ final class DemoIdentidades {
     static final List<String> NITS = List.of("900.512.384-1", "901.638.205-4", "012345", "900.782.156-2",
             "901.428.603-7", "900.315.928-5", "901.267.840-3");
     static final List<String> SECTORES = List.of("Manufactura", "Carpintería", "Educación", "Textil", "Alimentos",
-            "Alimentos", "Confección");
+            "Alimentos", "Logística");
     static final List<String> SEDES = List.of("Planta La Tebaida", "Planta Calarcá", "Sede Alcázar", "Planta Armenia",
             "Centro de acopio Calarcá", "Planta Circasia", "Taller Centro");
     static final List<String> PLANTA = List.of("Línea de ensamble", "Taller de corte", "Taller de diseño",
@@ -110,18 +110,14 @@ final class DemoIdentidades {
                     "JOIN sede s USING(id_sede) SET v.notas='Revisión de las tareas del turno.' WHERE s.id_empresa=? " +
                     "AND (v.notas LIKE '%Demostración%' OR v.notas LIKE 'DEMO%')", empresa);
             Sql.actualizar(conexion, "UPDATE sede SET descripcion='Espacio de trabajo y coordinación'," +
-                            "direccion=CASE WHEN direccion='Dirección ficticia' THEN 'Zona industrial' ELSE direccion" +
-                            " END " +
-                            "WHERE id_empresa=? AND (descripcion LIKE '%Demo ALINEO%' " + "OR descripcion LIKE " +
-                            "'%fictici%')",
-                    empresa);
+                    "direccion=CASE WHEN direccion='Dirección ficticia' THEN 'Zona industrial' ELSE direccion" +
+                    " END " + "WHERE id_empresa=? AND (descripcion LIKE '%Demo ALINEO%' " + "OR descripcion LIKE " +
+                    "'%fictici%')", empresa);
             Sql.actualizar(conexion, "UPDATE evaluacion e JOIN visita v USING(id_visita) " +
-                            "JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede)" +
-                            " " +
-                            "SET e.postura=REPLACE(REPLACE(e.postura,'DEMO17 · ',''),'Demostración ALINEO. · ','') " +
-                            "WHERE s.id_empresa=? AND (e.postura LIKE 'DEMO17%' OR e.postura LIKE 'Demostración " +
-                            "ALINEO.%')",
-                    empresa);
+                    "JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede)" + " " +
+                    "SET e.postura=REPLACE(REPLACE(e.postura,'DEMO17 · ',''),'Demostración ALINEO. · ','') " +
+                    "WHERE s.id_empresa=? AND (e.postura LIKE 'DEMO17%' OR e.postura LIKE 'Demostración " +
+                    "ALINEO.%')", empresa);
             Sql.actualizar(conexion, "UPDATE pendiente_arreglo pa JOIN evaluacion e USING(id_evaluacion) " +
                     "JOIN visita v USING(id_visita) JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) " +
                     "JOIN sede s USING(id_sede) SET pa.descripcion=REPLACE(pa.descripcion,'DEMO17 · ','') " +
@@ -165,8 +161,8 @@ final class DemoIdentidades {
             String nuevo) throws SQLException {
         if (viejo.equals(nuevo)) return;
         Sql.actualizar(conexion, "UPDATE " + tabla + " a LEFT JOIN " + tabla + " b ON b." + padre + "=a." + padre +
-                        " AND b.nombre=? SET a.nombre=? WHERE a." + padre + "=? AND a.nombre=? " +
-                        "AND b.nombre IS NULL",
+                        " AND b.nombre=? SET a.nombre=? WHERE a." + padre + "=? AND a.nombre=? " + "AND b.nombre IS " +
+                        "NULL",
                 nuevo, nuevo, id, viejo);
     }
 

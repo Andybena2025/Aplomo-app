@@ -74,6 +74,16 @@ public final class Pendientes {
     }
 
     /**
+     * RF-022: las posturas solo se consultan después de verificar cuenta, empresa y estado de visita.
+     */
+    public List<co.aplomo.dao.ConsultaDao.Fila> posturas(Cuenta actor, int id) throws SQLException {
+        return tx.ejecutar(con -> {
+            visible(con, actor, id, false);
+            return dao.posturas(con, id);
+        });
+    }
+
+    /**
      * Guarda seguimiento opcional sin imponer fechas futuras que no exigen los documentos. RNF-011.
      */
     public void guardar(Cuenta actor, int id, String descripcion, String prioridad, String fecha) throws SQLException {
@@ -123,7 +133,7 @@ public final class Pendientes {
                         "foto) JOIN nivel_riesgo n USING(id_nivel) WHERE f.id_evaluacion=? AND n.colo" + "r=?",
                 fila -> fila.getInt(1), evaluacion, "ROJO");
         if (maximo == null || maximo == 0) return;
-        var anterior = dao.porEvaluacion(conexion, evaluacion);
+        var anterior = dao.porPuestoVisita(conexion, evaluacion);
         if (anterior == null) {
             int id = dao.crear(conexion, evaluacion, maximo, LocalDate.now(reloj));
             bitacora.registrar(conexion, actor.id(), LocalDateTime.now(reloj), "pendiente_arreglo", id, "CREAR", null,
@@ -132,7 +142,7 @@ public final class Pendientes {
             dao.puntaje(conexion, anterior.id(), maximo);
             bitacora.registrar(conexion, actor.id(), LocalDateTime.now(reloj), "pendiente_arreglo", anterior.id(),
                     "EDITAR", null, null,
-                    "El puntaje máximo de la evaluación pasó de " + anterior.puntaje() + " a " + maximo +
+                    "El puntaje máximo del puesto en la visita pasó de " + anterior.puntaje() + " a " + maximo +
                             "; se conservó su seguimiento y estado.");
         }
     }

@@ -104,6 +104,29 @@ public final class PendienteDao {
     }
 
     /**
+     * RF-022: primer pendiente del puesto en esa visita; el análisis ya bloqueó la visita.
+     */
+    public PendienteArreglo porPuestoVisita(Connection conexion, int evaluacion) throws SQLException {
+        return Sql.uno(conexion, "SELECT p.* FROM pendiente_arreglo p WHERE p.id_evaluacion IN " +
+                        "(SELECT e.id_evaluacion FROM evaluacion e JOIN evaluacion origen " +
+                        "ON origen.id_visita=e.id_visita AND origen.id_puesto=e.id_puesto " +
+                        "WHERE origen.id_evaluacion=?) ORDER BY p.id_pendiente LIMIT 1 FOR UPDATE", PendienteDao::leer,
+                evaluacion);
+    }
+
+    /**
+     * RF-022/024: todas las posturas del puesto en la visita, dentro de un pendiente ya autorizado.
+     */
+    public List<co.aplomo.dao.ConsultaDao.Fila> posturas(Connection con, int pendiente) throws SQLException {
+        var contexto = Sql.uno(con, "SELECT e.id_visita,e.id_puesto FROM pendiente_arreglo p " +
+                        "JOIN evaluacion e USING(id_evaluacion) WHERE p.id_pendiente=?",
+                f -> new int[]{f.getInt(1), f.getInt(2)}, pendiente);
+        if (contexto == null) return List.of();
+        return new ConsultaDao().historialPuesto(con, contexto[1]).stream()
+                .filter(f -> f.valor("visita").equals(Integer.toString(contexto[0]))).toList();
+    }
+
+    /**
      * Crea el pendiente sin inventar descripción, prioridad ni fecha límite. RNF-011.
      */
     public int crear(Connection conexion, int evaluacion, int puntaje, LocalDate fecha) throws SQLException {

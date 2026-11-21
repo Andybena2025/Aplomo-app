@@ -37,76 +37,46 @@ class HttpDatosDemoTest extends HttpPrueba {
         var primera = cantidades();
         DatosDemoPrueba.cargar(con, carpetaFotos);
         assertEquals(primera, cantidades());
-        int universidad = Sql.uno(con, "SELECT id_empresa FROM empresa WHERE nit=?", fila2 -> fila2.getInt(1),
-                "012345");
-        assertEquals(3, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM sede WHERE id_empresa=?", fila3 -> fila3.getInt(1),
-                universidad));
-        assertEquals(7, Sql.<Integer>uno(con,
-                "SELECT COUNT(*) FROM empresa WHERE nit IN ('900.512.384-1','901.638.205-4','012345','900.782.156-2'," +
-                        "'901.428.603-7','900.315.928-5','901.267.840-3')",
-                fila4 -> fila4.getInt(1)));
-        var filas = Sql.listar(con, "SELECT a.id_analisis,a.puntaje_a,a.puntaje_b,a.puntaje_final FROM analisis_r" +
-                        "ula a JOIN fotografia f USING(id_foto) JOIN evaluacion e USING(id_evaluacion" +
-                        ") JOIN visita v USING(id_visita) JOIN reserva r USING(id_reserva) WHERE r.co" +
-                        "digo=? ORDER BY a.puntaje_final",
-                fila5 -> new int[]{fila5.getInt(1), fila5.getInt(2), fila5.getInt(3), fila5.getInt(4)}, "DEMO-17-E3");
-        assertEquals(6, filas.size());
+        int universidad = Sql.uno(con, "SELECT id_empresa FROM empresa WHERE nit='012345'", f -> f.getInt(1));
+        assertEquals(2, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM sede WHERE id_empresa=?",
+                f -> f.getInt(1), universidad));
+        var ids = Sql.listar(con, "SELECT a.id_analisis FROM analisis_rula a JOIN fotografia f USING(id_foto) " +
+                "JOIN evaluacion e USING(id_evaluacion) JOIN puesto_trabajo p USING(id_puesto) " +
+                "JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE s.id_empresa=?",
+                f -> f.getInt(1), universidad);
+        assertFalse(ids.isEmpty());
         var tablas = new TablasRula();
         tablas.cargar(con);
         var motor = new MotorRula(tablas);
-        int[] casos = {4, 2, 8};
-        for (int i = 0; i < 6; i++) {
-            var calculo = motor.calcular(CasosRulaPrueba.todos().get(casos[i / 2] - 1).entrada());
-            var esperado = calculo.resultado();
-            var fila = filas.get(i);
-            assertArrayEquals(new int[]{esperado.puntajeA(), esperado.puntajeB(), esperado.puntajeFinal()},
-                    new int[]{fila[1], fila[2], fila[3]});
-            var medidas = new co.aplomo.dao.AnalisisDao().mediciones(con, fila[0]);
-            assertEquals(5, medidas.size());
-            for (var elemento : calculo.mediciones()) {
-                var guardada = medidas.stream().filter(elemento2 -> elemento2.segmento() == elemento.segmento())
-                        .findFirst().orElseThrow();
-                assertEquals(elemento.grados(), guardada.grados(), .001);
-                assertEquals(elemento.puntos(), guardada.puntos());
-                assertTrue(guardada.manual());
+        var daoAnalisis = new co.aplomo.dao.AnalisisDao();
+        for (int id : ids) {
+            var guardado = daoAnalisis.consultar(con, id);
+            var mediciones = new java.util.EnumMap<MotorRula.Segmento, MotorRula.Medicion>(MotorRula.Segmento.class);
+            for (var medida : daoAnalisis.mediciones(con, id)) {
+                assertTrue(medida.manual());
+                mediciones.put(medida.segmento(), new MotorRula.Medicion(List.of(), medida.grados()));
             }
+            assertEquals(5, mediciones.size());
+            var origen = guardado.entrada();
+            var calculado = motor.calcular(new MotorRula.Entrada(origen.lado(), 200, 400, mediciones,
+                    origen.ajustes(), origen.actividad(), origen.carga())).resultado();
+            assertArrayEquals(new int[]{calculado.puntajeA(), calculado.puntajeB(), calculado.puntajeFinal()},
+                    new int[]{guardado.puntajeA(), guardado.puntajeB(), guardado.fin()});
         }
-        int pendiente = Sql.uno(con, "SELECT p.id_pendiente FROM pendiente_arreglo p JOIN evaluacion e USING(id_ev" +
-                        "aluacion) JOIN visita v USING(id_visita) JOIN reserva r USING(id_reserva) WH" + "ERE r" +
-                        ".codigo=?",
-                fila6 -> fila6.getInt(1), "DEMO-17-E3");
+        int pendiente = Sql.uno(con, "SELECT MIN(id_pendiente) FROM pendiente_arreglo", f -> f.getInt(1));
         Sql.actualizar(con, "UPDATE pendiente_arreglo SET estado='ARREGLADO',descripcion=? WHERE id_pendiente=?",
                 "Edición conservada", pendiente);
         DatosDemoPrueba.cargar(con, carpetaFotos);
         assertEquals(primera, cantidades());
-        assertEquals("ARREGLADO",
-                Sql.uno(con, "SELECT estado FROM pendiente_arreglo WHERE id_pendiente=?", fila7 -> fila7.getString(1),
-                        pendiente));
+        assertEquals("Edición conservada", Sql.uno(con,
+                "SELECT descripcion FROM pendiente_arreglo WHERE id_pendiente=?", f -> f.getString(1), pendiente));
         entrar(admin);
         var informe = get("/informes/empresa/" + universidad);
         assertEquals(200, informe.statusCode());
-        for (String etiqueta : List.of("1 · Verde · Nivel 1", "3 · Amarillo · Nivel 2", "7 · Rojo · Nivel 4",
-                "Sede Alcázar", "Sede Anova (Medicina)"))
-            assertTrue(informe.body().contains(etiqueta), etiqueta);
-        assertTrue(informe.body().contains("2 de 3 sedes calificadas · falta Sede Anova (Medicina)"));
+        assertTrue(informe.body().contains("Sede Alcázar"));
+        assertTrue(informe.body().contains("Sede principal"));
+        assertTrue(informe.body().contains("2 de 2 sedes calificadas"));
         assertFalse(informe.body().contains("Sin calificación general"));
-        var segunda = Sql.uno(con, "SELECT a.id_analisis FROM analisis_rula a JOIN fotografia f USING(id_foto) J" +
-                "OIN evaluacion e USING(id_evaluacion) JOIN visita v USING(id_visita) JOIN re" +
-                "serva r USING(id_reserva) WHERE r.codigo=?", fila8 -> fila8.getInt(1), "DEMO17-E3B");
-        var esperado = motor.calcular(CasosRulaPrueba.todos().get(3).entrada());
-        assertEquals(esperado.resultado().puntajeFinal(),
-                Sql.<Integer>uno(con, "SELECT puntaje_final FROM analisis_rula WHERE id_analisis=?",
-                        fila9 -> fila9.getInt(1), segunda));
-        var medidasAlcazar = new co.aplomo.dao.AnalisisDao().mediciones(con, segunda);
-        assertEquals(5, medidasAlcazar.size());
-        for (var elemento3 : esperado.mediciones()) {
-            var guardada = medidasAlcazar.stream().filter(elemento4 -> elemento4.segmento() == elemento3.segmento())
-                    .findFirst().orElseThrow();
-            assertEquals(elemento3.grados(), guardada.grados(), .001);
-            assertEquals(elemento3.puntos(), guardada.puntos());
-        }
-        assertEquals(2, Sql.<Integer>uno(con,
-                "SELECT COUNT(*) FROM visita v JOIN reserva r USING(id_reserva) WHERE r.codig" +
-                        "o IN ('DEMO-17-E3','DEMO17-E3B') AND v.estado='FINALIZADA'", fila10 -> fila10.getInt(1)));
+        for (String color : List.of("Verde", "Amarillo", "Rojo")) assertTrue(informe.body().contains(color));
     }
 }

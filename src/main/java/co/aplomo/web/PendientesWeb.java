@@ -53,7 +53,7 @@ public final class PendientesWeb {
         if (!post && accion.isEmpty()) {
             Router.enviar(intercambio, 200,
                     PaginasPendientes.detalle(sesion, elemento, servicio.historial(sesion.cuenta(), id),
-                            Router.consulta(intercambio).get("aviso"), true));
+                            Router.consulta(intercambio).get("aviso"), true, servicio.posturas(sesion.cuenta(), id)));
             return;
         }
         if (!post && accion.equals("editar")) {

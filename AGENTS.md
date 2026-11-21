@@ -238,3 +238,8 @@ Luego ESPERA el OK de Andy.
 - 28A cerrado: 1096 Maven distintos verificados (suite completa una vez y repetición de clases fallidas),
   138 JS aprobados. Tablas comunes, historial e inactivos conservados; menú una fila >=1180 px, tablas con scroll
   interno; 0 px de desborde exterior tras corrección. Datos QA revertidos. 28B/C continúan autorizados.
+
+- 28B: RF-022 agrupa por puesto/visita sin borrar historia; detalle reúne posturas. Demo planeada: 7 empresas,
+  10 sedes/salones, 40 puestos (16 Verde/14 Amarillo/10 Rojo, 2 con 7), 5 pendientes abiertos y 24 citas del mes.
+  Reinicio explícito de las siete identidades marcadas; no ejecutado en real. Suite 1098 casos distintos verificados
+  (una ejecución completa y corrección dirigida del informe de demo), 138 JS. 28C sigue autorizado.

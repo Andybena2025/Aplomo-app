@@ -41,7 +41,7 @@ Primero inicia sesión y cambia la contraseña temporal del Administrador. Despu
 docker compose --profile demo run --build --rm demo
 ```
 
-La carga es voluntaria e idempotente: tres empresas ficticias, tres colores, doce puestos con dos posturas, fotos, pendientes, sugerencias, visitas Finalizadas y reservas futuras. No crea cuentas, no cambia contraseñas ni configuración. Las fotos se conservan en el volumen de la app. La empresa de práctica rápida es independiente y queda fuera de los contadores y consultas normales.
+La carga es voluntaria e idempotente: siete empresas identificadas, 40 puestos con dos posturas y puntajes calculados, fotos, pendientes, sugerencias, visitas Finalizadas y reservas futuras. Conserva las claves existentes y crea solo las cuentas demo faltantes; no cambia la configuración. Las fotos se conservan en el volumen de la app. La empresa de práctica rápida es independiente y queda fuera de los contadores y consultas normales.
 
 
 ## Qué necesitas
@@ -120,7 +120,7 @@ Con la app corriendo, conecta el celular al **mismo Wi-Fi** que el computador y 
 
 ## Práctica rápida desde la app
 
-Como Administrador, abre **Inicio → Probar evaluación → Abrir evaluación de prueba** y elige **Probar Planta** u **Oficina**. También puedes abrir `/demo/evaluacion`. No necesitas cargar el SQL demo ni usar root de MySQL: se prepara una empresa ficticia `DEMO-APLOMO-PRACTICA` en la base configurada, con una visita En curso reutilizable. Los intentos se guardan allí; si finalizas esa visita, el acceso abre otra sin borrar la anterior. Con `-Daplomo.modoDemo=false` se oculta y bloquea el acceso. El reinicio de las tres empresas demo anteriores no borra esta empresa de práctica.
+Como Administrador, abre **Inicio → Probar evaluación → Abrir evaluación de prueba** y elige **Probar Planta** u **Oficina**. También puedes abrir `/demo/evaluacion`. No necesitas cargar el SQL demo ni usar root de MySQL: se prepara una empresa ficticia `DEMO-APLOMO-PRACTICA` en la base configurada, con una visita En curso reutilizable. Los intentos se guardan allí; si finalizas esa visita, el acceso abre otra sin borrar la anterior. Con `-Daplomo.modoDemo=false` se oculta y bloquea el acceso. El reinicio de las siete empresas demo no borra esta empresa de práctica.
 
 ## Datos de demostración completos (opcional)
 
@@ -134,7 +134,7 @@ El cargador prepara Ensambles del Quindío, Muebles Cafeteros y Humboldt con dat
 
 No cargues `datos_demo.sql` a mano para obtener resultados: ahora contiene solo estructura ficticia. Los análisis se generan desde Java con las tablas RULA de MySQL. La práctica rápida `DEMO-APLOMO-PRACTICA` está separada de estas tres empresas y no aparece en sus consultas ni indicadores.
 
-Para **reiniciar solo las tres empresas DEMO**: Mac `bash scripts/reiniciar_demo.sh`; Windows `scripts\reiniciar_demo.bat`. El script exige administrador de MySQL y escribir `REINICIAR DEMO` antes de borrar los registros de Ensambles (900.512.384-1), Muebles Cafeteros (901.638.205-4) y Humboldt (012345), comprobando además su marca privada de demo. Si hay cuentas vinculadas, cancela. Conserva las cuentas, la práctica rápida, las demás empresas y la configuración. Cierra la app antes y vuelve a abrirla al terminar. Es una herramienta voluntaria de desarrollo.
+Para **reiniciar solo las tres empresas DEMO**: Mac `bash scripts/reiniciar_demo.sh`; Windows `scripts\reiniciar_demo.bat`. El script exige administrador de MySQL y escribir `REINICIAR DEMO` antes de borrar los registros de las siete empresas identificadas por NIT y marca de demo, comprobando además su marca privada de demo. Si hay cuentas vinculadas, cancela. Conserva las cuentas, la práctica rápida, las demás empresas y la configuración. Cierra la app antes y vuelve a abrirla al terminar. Es una herramienta voluntaria de desarrollo.
 
 ## Cuentas del equipo
 
@@ -173,7 +173,7 @@ Detén la app. En Mac ejecuta `bash scripts/migrar_paso24.sh`; en Windows `scrip
 
 ## Contacto de soporte (Paso 25)
 
-Copia `config/contacto.properties.ejemplo` a `config/contacto.properties` y reemplaza los datos ficticios por el nombre, cargo, correo, teléfono y WhatsApp autorizados. Para el contacto de Gabriella, usa su nombre completo y el cargo «Administradora principal de ALINEO.»; no se incluyen correo ni teléfono reales en el repositorio. WhatsApp admite el código de país, sin signos o espacios (por ejemplo el valor ficticio de la plantilla). El archivo es privado y está ignorado por Git y Docker; en el servidor se configura localmente en config/. No hace falta reiniciar para leer un cambio. Si falta un dato, esa línea se omite y aparece «Escríbele al Administrador de tu cuenta.».
+Copia `config/contacto.properties.ejemplo` a `config/contacto.properties` y reemplaza los datos ficticios por el nombre, cargo, correo, teléfono y WhatsApp autorizados. Para el contacto de Gabriella, usa su nombre completo y el cargo «Administradora principal de ALINEO.»; no se incluyen correo ni teléfono reales en el repositorio. WhatsApp admite el código de país, sin signos o espacios (por ejemplo el valor ficticio de la plantilla). El archivo es privado y está ignorado por Git y Docker; en el servidor se configura localmente en config/. No hace falta reiniciar para leer un cambio. Si falta un dato, su botón se omite.
 
 
 ## Actualización Paso 26
@@ -211,3 +211,10 @@ antes de arrancar esta versión. Hace respaldo, añade el responsable de la cita
 sin borrar datos. Es seguro repetirlo. La cuenta de la app conserva SELECT/INSERT/UPDATE, nunca DELETE.
 
 Paso 27C: repite el mismo migrar_paso27 para añadir solicitud_acceso sin borrar datos.
+
+
+## Demo planeada · Paso 28B
+
+1. Para reemplazar cargas antiguas, cierra la app y ejecuta `bash scripts/reiniciar_demo.sh` (Windows: `scripts\reiniciar_demo.bat`); escribe `REINICIAR DEMO` y usa el administrador de MySQL.
+2. Solo se reinician las siete empresas con su marca de demo y sus registros; se conservan cuentas, claves, práctica rápida, otras empresas y configuración. Cuentas antiguas vinculadas o solicitudes de acceso detienen el reinicio.
+3. Abre la app: 40 puestos, 16 Verde/14 Amarillo/10 Rojo, solo 2 con 7, 5 pendientes abiertos y 8 citas mensuales por Evaluador. Repetir `cargar_demo` no modifica los intentos; los puntajes se calculan en Java, no se importan a mano desde SQL.

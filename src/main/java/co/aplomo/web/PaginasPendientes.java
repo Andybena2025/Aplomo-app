@@ -25,7 +25,7 @@ public final class PaginasPendientes {
     public static String lista(Sesion sesion, List<Ficha> lista, String estado, String orden, String aviso) {
         StringBuilder contenido2 = new StringBuilder(Html.aviso(aviso, true)).append(
                 enlace("/sugerencias", "Sugerencias", false));
-        contenido2.append("<p class=\"muted\">Los resultados rojos generan un pendiente por evaluación." +
+        contenido2.append("<p class=\"muted\">Los resultados rojos generan un pendiente por puesto y visita." +
                         " Los anteriores se conservan.</p><form class=\"row filtros-pendientes\" meth" +
                         "od=\"get\" action=\"/pendientes\">")
                 .append(Formularios.selector(Map.of("estado", estado), "estado", "Mostrar",
@@ -64,6 +64,24 @@ public final class PaginasPendientes {
             contenido2.append("</tbody></table></div>");
         }
         return pagina("Pendientes de arreglo", contenido2.toString(), sesion);
+    }
+
+    /**
+     * RF-022: un seguimiento reúne las posturas del puesto en esa visita, sin fotos.
+     */
+    public static String detalle(Sesion sesion, Ficha ficha, List<Cambio> cambios, String aviso, boolean exito,
+            List<co.aplomo.dao.ConsultaDao.Fila> posturas) {
+        String html = detalle(sesion, ficha, cambios, aviso, exito);
+        StringBuilder bloque = new StringBuilder("<section class=\"card stack\"><h2>Posturas de esta visita</h2>");
+        for (var postura : posturas) {
+            bloque.append("<a class=\"lista-fila\" href=\"/evaluaciones/").append(postura.id()).append("\"><strong>")
+                    .append(escapar(postura.valor("postura"))).append("</strong>").append(SistemaVisual.riesgo(
+                            postura.valor("puntaje").isBlank() ? null : Integer.parseInt(postura.valor("puntaje")),
+                            postura.valor("color"),
+                            postura.valor("nivel").isBlank() ? 0 : Integer.parseInt(postura.valor("nivel"))))
+                    .append("<span>›</span></a>");
+        }
+        return html.replace("</main>", bloque.append("</section></main>").toString());
     }
 
     /**
