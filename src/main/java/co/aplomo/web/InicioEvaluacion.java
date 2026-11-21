@@ -1,28 +1,63 @@
 package co.aplomo.web;
 
 import co.aplomo.dao.VisitaDao.ParaEvaluar;
+
 import java.util.List;
 
-/** Atajo del Administrador: el servicio filtra visitas en curso y puestos pendientes. */
+/**
+ * Atajo del Administrador: el servicio filtra visitas en curso y puestos pendientes.
+ */
 final class InicioEvaluacion {
-    private InicioEvaluacion() {}
+    private InicioEvaluacion() {
+    }
+
     static String practica(Integer visita) {
-        return GaleriaDemo.habilitada()?"<section class=\"card practica-discreta\" aria-labelledby=\"practicar-evaluacion\"><div><span class=\"eyebrow\">Demostración</span><h2 id=\"practicar-evaluacion\">Probar evaluación</h2></div><div class=\"row\"><a class=\"btn\" href=\"/demo/evaluacion\">Abrir evaluación de prueba</a>"+(visita==null?"":"<a class=\"btn\" href=\"/visitas/"+visita+"\">Continuar práctica</a>")+"</div></section>":"";
+        return GaleriaDemo.habilitada() ?
+                "<section class=\"card practica-discreta\" aria-labelledby=\"practicar-evalua" +
+                "cion\"><div><span class=\"eyebrow\">Demostración</span><h2 id=\"practicar-ev" +
+                "aluacion\">Probar evaluación</h2></div><div class=\"row\"><a class=\"btn\" h" +
+                "ref=\"/demo/evaluacion\">Abrir evaluación de prueba</a>" +
+                (visita == null ? "" : "<a class=\"btn\" href=\"/visitas/" + visita + "\">Continuar práctica</a>") +
+                "</div></section>" : "";
     }
-    static String paginaPractica(co.aplomo.seguridad.Sesiones.Sesion s) {
-        return Html.pagina("Probar evaluación","<div class=\"pagehead\"><div><span class=\"eyebrow\">Demostración · Evaluación</span><h1>Probar evaluación</h1></div></div><section class=\"card stack\"><p>Elige un puesto para practicar el mismo recorrido de la app.</p><p>Se prepara una visita En curso en ALINEO · Práctica de evaluación. Los resultados se guardan como demostración en la base actual; puedes repetir la prueba sin borrar intentos.</p><form method=\"post\" action=\"/demo/evaluacion\" class=\"row\">"+Html.csrf(s)+"<button class=\"btn p\" name=\"tipo\" value=\"PLANTA\">Probar Planta</button><button class=\"btn\" name=\"tipo\" value=\"OFICINA\">Probar Oficina</button></form></section>",s,false);
+
+    static String paginaPractica(co.aplomo.seguridad.Sesiones.Sesion sesion) {
+        return Html.pagina("Probar evaluación",
+                "<div class=\"pagehead\"><div><span class=\"eyebrow\">Demostración · Evaluaci" +
+                        "ón</span><h1>Probar evaluación</h1></div></div><section class=\"card stack\"" +
+                        "><p>Elige un puesto para practicar el mismo recorrido de la app.</p><p>Se pr" +
+                        "epara una visita En curso en ALINEO · Práctica de evaluación. Los resultados" +
+                        " se guardan como demostración en la base actual; puedes repetir la prueba si" +
+                        "n borrar intentos.</p><form method=\"post\" action=\"/demo/evaluacion\" clas" + "s=\"row\">" +
+                        Html.csrf(sesion) +
+                        "<button class=\"btn p\" name=\"tipo\" value=\"PLANTA\">Probar Planta</button" +
+                        "><button class=\"btn\" name=\"tipo\" value=\"OFICINA\">Probar Oficina</butto" +
+                        "n></form></section>", sesion, false);
     }
+
     static String tarjeta(List<ParaEvaluar> filas) {
-        StringBuilder h=new StringBuilder("<section class=\"card stack evaluar-ahora\" aria-labelledby=\"visitas-en-curso\"><h2 id=\"visitas-en-curso\">Visitas en curso</h2>");
-        if(filas.isEmpty())return h.append("<p>No hay una visita en curso</p><div><a class=\"btn p\" href=\"/reservas\">Ir a Reservas</a></div></section>").toString();
-        int anterior=-1;
-        for(var f:filas){
-            if(f.visita()!=anterior){
-                if(anterior!=-1)h.append("</ul></div>");
-                h.append("<div class=\"stack\"><h3>").append(Html.escapar(f.empresa())).append("</h3><p class=\"muted\">").append(Html.escapar(f.sede())).append("</p><a class=\"link\" href=\"/visitas/").append(f.visita()).append("\">Ver visita</a><ul class=\"evaluar-puestos\">");anterior=f.visita();
+        StringBuilder contenido = new StringBuilder(
+                "<section class=\"card stack evaluar-ahora\" aria-labelledby=\"visitas-en-cur" +
+                        "so\"><h2 id=\"visitas-en-curso\">Visitas en curso</h2>");
+        if (filas.isEmpty()) return contenido.append(
+                "<p>No hay una visita en curso</p><div><a class=\"btn p\" href=\"/reservas\">" +
+                        "Ir a Reservas</a></div></section>").toString();
+        int anterior = -1;
+        for (var visita2 : filas) {
+            if (visita2.visita() != anterior) {
+                if (anterior != -1) contenido.append("</ul></div>");
+                contenido.append("<div class=\"stack\"><h3>").append(Html.escapar(visita2.empresa()))
+                        .append("</h3><p class=\"muted\">").append(Html.escapar(visita2.sede()))
+                        .append("</p><a class=\"link\" href=\"/visitas/").append(visita2.visita())
+                        .append("\">Ver visita</a><ul class=\"evaluar-puestos\">");
+                anterior = visita2.visita();
             }
-            if(f.puesto()!=null)h.append("<li><div><strong>Puesto ").append(f.numero()).append("</strong><div class=\"muted small\">").append(Html.escapar(f.descripcion())).append("</div></div><a class=\"btn p\" href=\"/evaluaciones/nueva?visita=").append(f.visita()).append("&amp;puesto=").append(f.puesto()).append("\">Evaluar</a></li>");
+            if (visita2.puesto() != null) contenido.append("<li><div><strong>Puesto ").append(visita2.numero())
+                    .append("</strong><div class=\"muted small\">").append(Html.escapar(visita2.descripcion()))
+                    .append("</div></div><a class=\"btn p\" href=\"/evaluaciones/nueva?visita=")
+                    .append(visita2.visita()).append("&amp;puesto=").append(visita2.puesto())
+                    .append("\">Evaluar</a></li>");
         }
-        return h.append("</ul></div></section>").toString();
+        return contenido.append("</ul></div></section>").toString();
     }
 }

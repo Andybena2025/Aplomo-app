@@ -1,18 +1,30 @@
 package co.aplomo.dao;
 
 import co.aplomo.db.Sql;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
-/** RNF-005: historial de acciones, guardado en la misma transacción de la operación. */
+/**
+ * RNF-005: historial de acciones, guardado en la misma transacción de la operación.
+ */
 public class BitacoraDao {
-    /** Crea el acceso al registro de auditoría. */
-    public BitacoraDao() {}
 
-    /** Guarda responsable, fecha, acción, registro afectado y cambio de estado. */
-    public void registrar(Connection con, int cuenta, LocalDateTime cuando, String tabla, int registro,
-                          String accion, String anterior, String nuevo, String detalle) throws SQLException {
-        Sql.insertar(con, "INSERT INTO bitacora (id_cuenta, fecha_hora, tabla, id_registro, accion, estado_anterior, estado_nuevo, detalle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                cuenta, cuando, tabla, registro, accion, anterior, nuevo, detalle);
+    /**
+     * Crea el acceso al registro de auditoría. RNF-011.
+     */
+    public BitacoraDao() {
+    }
+
+    /**
+     * Guarda responsable, fecha, acción, registro afectado y cambio de estado. RNF-011.
+     */
+    public void registrar(Connection con, int cuenta, LocalDateTime cuando, String tabla, int registro, String accion,
+            String anterior, String nuevo, String detalle) throws SQLException {
+        Sql.insertar(con, "INSERT INTO bitacora (id_cuenta, fecha_hora, tabla, id_registro, accion, est" +
+                        "ado_anterior, estado_nuevo, detalle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", cuenta, cuando, tabla
+                , registro,
+                accion, anterior, nuevo, detalle);
     }
 }

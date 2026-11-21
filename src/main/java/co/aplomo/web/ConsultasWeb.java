@@ -1,15 +1,66 @@
 package co.aplomo.web;
-import co.aplomo.servicio.*;import co.aplomo.modelo.*;import co.aplomo.seguridad.Sesiones.Sesion;import com.sun.net.httpserver.HttpExchange;import java.io.*;import java.sql.*;
-/** RF-024: solo rutas GET; las acciones existentes conservan sus permisos y CSRF. */
+
+import co.aplomo.servicio.Consultas;
+import co.aplomo.servicio.Sugerencias;
+import co.aplomo.servicio.Validacion;
+import co.aplomo.modelo.Cuenta;
+import co.aplomo.modelo.SeccionConsulta;
+import co.aplomo.seguridad.Sesiones.Sesion;
+import com.sun.net.httpserver.HttpExchange;
+
+import java.io.IOException;
+import java.sql.SQLException;
+
+/**
+ * RF-024: solo rutas GET; las acciones existentes conservan sus permisos y CSRF.
+ */
 public final class ConsultasWeb {
-    private final Consultas consultas;private final Sugerencias sugerencias;
-    /** Comparte servicios autorizados y transacciones con Evaluaciones. */
-    public ConsultasWeb(Consultas consultas,Sugerencias sugerencias){this.consultas=consultas;this.sugerencias=sugerencias;}
-    /** Devuelve true únicamente cuando atendió una lista o el detalle seguro del Usuario. */
-    public boolean atender(HttpExchange x,Sesion s)throws SQLException,IOException{
-        if(!x.getRequestMethod().equals("GET"))return false;String ruta=x.getRequestURI().getPath();if(ruta.equals("/mis-evaluaciones")){var p=consultas.propias(s.cuenta(),Router.consulta(x));String h=PaginasConsultas.lista(s,p,null).replace("href=\"/evaluaciones?","href=\"/mis-evaluaciones?").replace("action=\"/evaluaciones\"","action=\"/mis-evaluaciones\"").replace("<h1>Evaluaciones</h1>","<h1>Mis evaluaciones</h1>").replace("<title>Evaluaciones ·","<title>Mis evaluaciones ·");Router.enviar(x,200,h);return true;}var seccion=SeccionConsulta.deRuta(ruta);boolean detalle=s.cuenta().rol()==Cuenta.Rol.USUARIO&&ruta.matches("/evaluaciones/[1-9][0-9]*");if(seccion==null&&!detalle)return false;
-        if(s.cuenta().temporal()){Router.redirigir(x,"/cuenta/contrasena");return true;}
-        if(detalle){int id=Validacion.entero(ruta.substring(14),"evaluación",1,Integer.MAX_VALUE);Router.enviar(x,200,PaginasConsultas.evaluacion(s,consultas.evaluacion(s.cuenta(),id)));return true;}
-        var q=Router.consulta(x);var p=consultas.listar(s.cuenta(),seccion,q);var contexto=seccion==SeccionConsulta.SUGERENCIAS&&p.filtros().containsKey("evaluacion")?sugerencias.contexto(s.cuenta(),Integer.parseInt(p.filtros().get("evaluacion"))):null;Router.enviar(x,200,PaginasConsultas.lista(s,p,contexto));return true;
+    private final Consultas consultas;
+    private final Sugerencias sugerencias;
+
+    /**
+     * Comparte servicios autorizados y transacciones con Evaluaciones. RNF-011.
+     */
+    public ConsultasWeb(Consultas consultas, Sugerencias sugerencias) {
+        this.consultas = consultas;
+        this.sugerencias = sugerencias;
+    }
+
+    /**
+     * Devuelve true únicamente cuando atendió una lista o el detalle seguro del Usuario. RNF-011.
+     */
+    public boolean atender(HttpExchange intercambio, Sesion sesion) throws SQLException, IOException {
+        if (!intercambio.getRequestMethod().equals("GET")) return false;
+        String ruta = intercambio.getRequestURI().getPath();
+        if (ruta.equals("/mis-evaluaciones")) {
+            var elemento = consultas.propias(sesion.cuenta(), Router.consulta(intercambio));
+            String texto = PaginasConsultas.lista(sesion, elemento, null)
+                    .replace("href=\"/evaluaciones?", "href=\"/mis-evaluaciones?")
+                    .replace("action=\"/evaluaciones\"", "action=\"/mis-evaluaciones\"")
+                    .replace("<h1>Evaluaciones</h1>", "<h1>Mis evaluaciones</h1>")
+                    .replace("<title>Evaluaciones ·", "<title>Mis evaluaciones ·");
+            Router.enviar(intercambio, 200, texto);
+            return true;
+        }
+        var seccion = SeccionConsulta.deRuta(ruta);
+        boolean detalle = sesion.cuenta().rol() == Cuenta.Rol.USUARIO && ruta.matches("/evaluaciones/[1-9][0-9]*");
+        if (seccion == null && !detalle) return false;
+        if (sesion.cuenta().temporal()) {
+            Router.redirigir(intercambio, "/cuenta/contrasena");
+            return true;
+        }
+        if (detalle) {
+            int id = Validacion.entero(ruta.substring(14), "evaluación", 1, Integer.MAX_VALUE);
+            Router.enviar(intercambio, 200,
+                    PaginasConsultas.evaluacion(sesion, consultas.evaluacion(sesion.cuenta(), id)));
+            return true;
+        }
+        var parametros = Router.consulta(intercambio);
+        var elemento2 = consultas.listar(sesion.cuenta(), seccion, parametros);
+        var contexto = seccion == SeccionConsulta.SUGERENCIAS &&
+                elemento2.filtros().containsKey("evaluacion") ? sugerencias.contexto(sesion.cuenta(),
+                Integer.parseInt(elemento2.filtros().get("evaluacion"))) : null;
+        Router.enviar(intercambio, 200, PaginasConsultas.lista(sesion, elemento2, contexto));
+        return true;
     }
 }

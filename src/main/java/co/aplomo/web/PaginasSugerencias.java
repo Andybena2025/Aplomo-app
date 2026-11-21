@@ -1,46 +1,228 @@
 package co.aplomo.web;
-import co.aplomo.dao.SugerenciaDao.*;import co.aplomo.dao.PendienteDao.Cambio;import co.aplomo.modelo.*;import co.aplomo.seguridad.Sesiones.Sesion;
-import java.util.*;import static co.aplomo.web.Html.escapar;import static co.aplomo.web.PaginasEmpresas.enlace;
-/** RF-023a/b, RNF-002/007: componentes de sugerencias, tarjetas y formularios del mock. */
+
+import co.aplomo.dao.SugerenciaDao.Contexto;
+import co.aplomo.dao.SugerenciaDao.Ficha;
+import co.aplomo.dao.PendienteDao.Cambio;
+import co.aplomo.modelo.Cuenta;
+import co.aplomo.modelo.Sugerencia;
+import co.aplomo.seguridad.Sesiones.Sesion;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static co.aplomo.web.Html.escapar;
+import static co.aplomo.web.PaginasEmpresas.enlace;
+
+/**
+ * RF-023a/b, RNF-002/007: componentes de sugerencias, tarjetas y formularios del mock.
+ */
 public final class PaginasSugerencias {
-    private PaginasSugerencias(){}
-    /** Lista consultable por ambos roles; el servicio ya filtró empresa y visita. */
-    public static String lista(Sesion s,List<Ficha> filas,Contexto contexto){
-        StringBuilder h=new StringBuilder(enlace("/pendientes","← Pendientes",false));
-        if(contexto!=null){h.append(contexto(contexto)).append(avisoMinimo(contexto,filas.size(),admin(s)));if(admin(s))h.append("<div class=\"row acciones-sugerencias\">").append(enlace("/sugerencias/nueva?evaluacion="+contexto.evaluacion(),"Escribir sugerencia",true)).append("</div>");}
-        h.append("<p class=\"muted\">").append(Html.plural(filas.size(),"sugerencia")).append("</p>");
-        if(filas.isEmpty())h.append(Html.vacio("Aún no hay sugerencias disponibles. El análisis se conserva aunque no haya reglas que apliquen.",""));
-        else{h.append("<div class=\"tablewrap\"><table class=\"resp sugerencias-table\"><thead><tr>"+(contexto==null?"<th>Puesto</th>":"")+"<th>Sugerencia</th><th>Origen</th><th>Prioridad</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>");for(var f:filas){var a=f.sugerencia();var c=f.contexto();h.append("<tr>");if(contexto==null)celda(h,"Puesto","Puesto "+c.numero()+"<div class=\"muted small\">"+escapar(c.empresaNombre())+" · "+escapar(c.sedeNombre())+" · "+escapar(c.salonNombre())+"</div>");celda(h,"Sugerencia",escapar(a.titulo())+"<div class=\"muted small\">"+Formularios.etiqueta(a.tipo())+"</div>");celda(h,"Origen",origen(a));celda(h,"Prioridad",Formularios.etiqueta(a.prioridad()));celda(h,"Estado",estado(a.estado()));celda(h,"Detalle",enlace("/sugerencias/"+a.id(),"Ver sugerencia",false));h.append("</tr>");}h.append("</tbody></table></div>");}
-        return pagina("Sugerencias",h.toString(),s);
+    private PaginasSugerencias() {
     }
-    /** Detalla la mejora, su avance y la reserva de Reevaluación cuando todas están Hechas. */
-    public static String detalle(Sesion s,Ficha f,List<Cambio> historia,boolean hechas,String aviso,boolean exito){
-        var a=f.sugerencia();var c=f.contexto();StringBuilder h=new StringBuilder(enlace("/sugerencias?evaluacion="+c.evaluacion(),"← Sugerencias de la evaluación",false)).append(Html.aviso(aviso,exito)).append(contexto(c));
-        h.append("<section class=\"card stack\"><div class=\"row between\"><h2>").append(escapar(a.titulo())).append("</h2>").append(a.activo()?estado(a.estado()):"<span class=\"tag\">Quitada</span>").append("</div><span class=\"eyebrow\">").append(origen(a)).append("</span><div class=\"sug texto-notas\">").append(escapar(a.descripcion())).append("</div><dl class=\"datos-cuenta\">").append(dato("Tipo",Formularios.etiqueta(a.tipo()))).append(dato("Prioridad",Formularios.etiqueta(a.prioridad()))).append(dato("Fecha límite",a.limite()==null?"Sin definir":Html.fecha(a.limite()))).append("</dl>");
-        if(admin(s)&&a.activo())h.append("<div class=\"row\">").append(enlace("/sugerencias/"+a.id()+"/editar","Editar sugerencia",true)).append("<form data-sugerencia-form method=\"post\" action=\"/sugerencias/").append(a.id()).append("/quitar\">").append(Html.csrf(s)).append("<button type=\"submit\" class=\"btn\">Quitar sugerencia</button><div class=\"aviso\" role=\"alert\" data-error-sugerencia hidden><span></span><button type=\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerrar aviso\">Cerrar</button></div></form></div><form data-sugerencia-form class=\"row\" method=\"post\" action=\"/sugerencias/").append(a.id()).append("/estado\">").append(Html.csrf(s)).append(Formularios.selector(Map.of("estado",a.estado()),"estado","Avance de la mejora",opciones("PENDIENTE","EN_PROCESO","HECHA"),true)).append("<button type=\"submit\" class=\"btn\">Guardar estado</button><div class=\"aviso\" role=\"alert\" data-error-sugerencia hidden><span></span><button type=\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerrar aviso\">Cerrar</button></div></form>");
-        h.append("</section><p class=\"hint\">Las sugerencias orientan mejoras del puesto; no reemplazan un diagnóstico médico.</p>");
-        if(hechas)h.append("<section class=\"card stack\"><h2>Mejoras completadas</h2><p>Todas las sugerencias activas de este puesto están Hechas. El Administrador registra una reserva de Reevaluación con la fecha y el horario acordados con la empresa.</p>").append(admin(s)?enlace(reevaluacion(c),"Registrar reevaluación",true):"").append("</section>");
-        h.append("<section class=\"stack\"><h2>Historial</h2>");for(var x:historia)h.append("<div class=\"card stack\"><span class=\"eyebrow\">").append(Html.fechaHora(x.fecha())).append("</span><b>").append(escapar(x.responsable())).append("</b><span>").append(escapar(Formularios.etiqueta(x.accion()))).append(x.nuevo()==null?"":" · "+Formularios.etiqueta(x.nuevo())).append("</span><p>").append(escapar(x.detalle())).append("</p></div>");
-        return pagina("Sugerencia",h.append("</section><script src=\"/static/js/sugerencias.js\" defer></script>").toString(),s);
+
+    /**
+     * Lista consultable por ambos roles; el servicio ya filtró empresa y visita. RNF-011.
+     */
+    public static String lista(Sesion sesion, List<Ficha> filas, Contexto contexto) {
+        StringBuilder contenido = new StringBuilder(enlace("/pendientes", "← Pendientes", false));
+        if (contexto != null) {
+            contenido.append(contexto(contexto)).append(avisoMinimo(contexto, filas.size(), admin(sesion)));
+            if (admin(sesion)) contenido.append("<div class=\"row acciones-sugerencias\">")
+                    .append(enlace("/sugerencias/nueva?evaluacion=" + contexto.evaluacion(), "Escribir sugerencia",
+                            true)).append("</div>");
+        }
+        contenido.append("<p class=\"muted\">").append(Html.plural(filas.size(), "sugerencia")).append("</p>");
+        if (filas.isEmpty()) contenido.append(Html.vacio(
+                "Aún no hay sugerencias disponibles. El análisis se conserva aunque no haya r" + "eglas que apliquen.",
+                ""));
+        else {
+            contenido.append("<div class=\"tablewrap\"><table class=\"resp sugerencias-table\"><thead><tr>" +
+                    (contexto == null ? "<th>Puesto</th>" : "") +
+                    "<th>Sugerencia</th><th>Origen</th><th>Prioridad</th><th>Estado</th><th>Detal" +
+                    "le</th></tr></thead><tbody>");
+            for (var sugerencia : filas) {
+                var sugerencia2 = sugerencia.sugerencia();
+                var sugerencia3 = sugerencia.contexto();
+                contenido.append("<tr>");
+                if (contexto == null) celda(contenido, "Puesto",
+                        "Puesto " + sugerencia3.numero() + "<div class=\"muted small\">" +
+                                escapar(sugerencia3.empresaNombre()) + " · " + escapar(sugerencia3.sedeNombre()) +
+                                " · " + escapar(sugerencia3.salonNombre()) + "</div>");
+                celda(contenido, "Sugerencia", escapar(sugerencia2.titulo()) + "<div class=\"muted small\">" +
+                        Formularios.etiqueta(sugerencia2.tipo()) + "</div>");
+                celda(contenido, "Origen", origen(sugerencia2));
+                celda(contenido, "Prioridad", Formularios.etiqueta(sugerencia2.prioridad()));
+                celda(contenido, "Estado", estado(sugerencia2.estado()));
+                celda(contenido, "Detalle", enlace("/sugerencias/" + sugerencia2.id(), "Ver sugerencia", false));
+                contenido.append("</tr>");
+            }
+            contenido.append("</tbody></table></div>");
+        }
+        return pagina("Sugerencias", contenido.toString(), sesion);
     }
-    /** Conserva los campos al crear y editar, con los mismos controles del mock. */
-    public static String formulario(Sesion s,Contexto c,Sugerencia a,Map<String,String> enviados,String error){
-        Map<String,String>d=new HashMap<>();d.put("titulo",a==null?"":a.titulo());d.put("descripcion",a==null?"":a.descripcion());d.put("tipo",a==null?"":a.tipo());d.put("prioridad",a==null?"":a.prioridad());d.put("fecha",a==null||a.limite()==null?"":a.limite().toString());d.putAll(enviados);
-        String ruta=a==null?"/sugerencias?evaluacion="+c.evaluacion():"/sugerencias/"+a.id();
-        String h=enlace("/sugerencias?evaluacion="+c.evaluacion(),"← Volver a sugerencias",false)+contexto(c)+Html.aviso(error,false)+"<form data-sugerencia-form class=\"card stack cuenta-form\" method=\"post\" action=\""+ruta+"\">"+Html.csrf(s)+Formularios.campo(d,"titulo","Título","text",120,true)+Formularios.texto(d,"descripcion","Descripción",65535,true)+"<div class=\"grid2\">"+Formularios.selector(d,"tipo","Tipo",opciones("MOBILIARIO","POSTURA","DESCANSOS","CARGA","OTRA"),true)+Formularios.selector(d,"prioridad","Prioridad",opciones("ALTA","MEDIA","BAJA"),true)+"</div>"+Formularios.campo(d,"fecha","Fecha límite (opcional)","date",10,false)+"<div class=\"aviso\" role=\"alert\" data-error-sugerencia hidden><span></span><button type=\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerrar aviso\">Cerrar</button></div><button class=\"btn p\" type=\"submit\">Guardar sugerencia</button></form><script src=\"/static/js/sugerencias.js\" defer></script>";
-        return pagina(a==null?"Escribir sugerencia":"Editar sugerencia",h,s);
+
+    /**
+     * Detalla la mejora, su avance y la reserva de Reevaluación cuando todas están Hechas. RNF-011.
+     */
+    public static String detalle(Sesion sesion, Ficha sugerencia, List<Cambio> historia, boolean hechas, String aviso,
+            boolean exito) {
+        var sugerencia2 = sugerencia.sugerencia();
+        var sugerencia3 = sugerencia.contexto();
+        StringBuilder contenido = new StringBuilder(
+                enlace("/sugerencias?evaluacion=" + sugerencia3.evaluacion(), "← Sugerencias de la evaluación",
+                        false)).append(Html.aviso(aviso, exito)).append(contexto(sugerencia3));
+        contenido.append("<section class=\"card stack\"><div class=\"row between\"><h2>")
+                .append(escapar(sugerencia2.titulo())).append("</h2>")
+                .append(sugerencia2.activo() ? estado(sugerencia2.estado()) : "<span class=\"tag\">Quitada</span>")
+                .append("</div><span class=\"eyebrow\">").append(origen(sugerencia2))
+                .append("</span><div class=\"sug texto-notas\">").append(escapar(sugerencia2.descripcion()))
+                .append("</div><dl class=\"datos-cuenta\">")
+                .append(dato("Tipo", Formularios.etiqueta(sugerencia2.tipo())))
+                .append(dato("Prioridad", Formularios.etiqueta(sugerencia2.prioridad()))).append(dato("Fecha límite",
+                        sugerencia2.limite() == null ? "Sin definir" : Html.fecha(sugerencia2.limite()))).append(
+                                "</dl>");
+        if (admin(sesion) && sugerencia2.activo()) contenido.append("<div class=\"row\">")
+                .append(enlace("/sugerencias/" + sugerencia2.id() + "/editar", "Editar sugerencia", true))
+                .append("<form data-sugerencia-form method=\"post\" action=\"/sugerencias/").append(sugerencia2.id())
+                .append("/quitar\">").append(Html.csrf(sesion))
+                .append("<button type=\"submit\" class=\"btn\">Quitar sugerencia</button><div class=" +
+                        "\"aviso\" role=\"alert\" data-error-sugerencia hidden><span></span><button t" +
+                        "ype=\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerrar aviso\">" +
+                        "Cerrar</button></div></form></div><form data-sugerencia-form class=\"row\" m" +
+                        "ethod=\"post\" action=\"/sugerencias/").append(sugerencia2.id()).append("/estado\">")
+                .append(Html.csrf(sesion))
+                .append(Formularios.selector(Map.of("estado", sugerencia2.estado()), "estado", "Avance de la mejora",
+                        opciones("PENDIENTE", "EN_PROCESO", "HECHA"), true))
+                .append("<button type=\"submit\" class=\"btn\">Guardar estado</button><div class=\"av" +
+                        "iso\" role=\"alert\" data-error-sugerencia hidden><span></span><button type=" +
+                        "\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerrar aviso\">Cerr" +
+                        "ar</button></div></form>");
+        contenido.append("</section><p class=\"hint\">Las sugerencias orientan mejoras del puesto; no " +
+                "reemplazan un diagnóstico médico.</p>");
+        if (hechas) contenido.append("<section class=\"card stack\"><h2>Mejoras completadas</h2><p>Todas las suger" +
+                        "encias activas de este puesto están Hechas. El Administrador registra una re" +
+                        "serva de Reevaluación con la fecha y el horario acordados con la empresa.</p" + ">")
+                .append(admin(sesion) ? enlace(reevaluacion(sugerencia3), "Registrar reevaluación", true) : "")
+                .append("</section>");
+        contenido.append("<section class=\"stack\"><h2>Historial</h2>");
+        for (var elemento : historia)
+            contenido.append("<div class=\"card stack\"><span class=\"eyebrow\">")
+                    .append(Html.fechaHora(elemento.fecha())).append("</span><b>")
+                    .append(escapar(elemento.responsable())).append("</b><span>")
+                    .append(escapar(Formularios.etiqueta(elemento.accion())))
+                    .append(elemento.nuevo() == null ? "" : " · " + Formularios.etiqueta(elemento.nuevo()))
+                    .append("</span><p>").append(escapar(elemento.detalle())).append("</p></div>");
+        return pagina("Sugerencia",
+                contenido.append("</section><script src=\"/static/js/sugerencias.js\" defer></script>").toString(),
+                sesion);
     }
-    /** RF-023a: muestra las propuestas guardadas con la clase .sug de la referencia. */
-    public static String resumen(List<Ficha> lista,Contexto c){StringBuilder h=new StringBuilder("<section class=\"card stack\"><span class=\"eyebrow\">Sugerencias del sistema</span>");for(var f:lista)h.append("<div class=\"sug\"><div><span class=\"tag\">").append(origen(f.sugerencia())).append("</span><p>").append(escapar(f.sugerencia().descripcion())).append("</p></div></div>");return h.append(avisoMinimo(c,lista.size(),true)).append(enlace("/sugerencias?evaluacion="+c.evaluacion(),"Ver y gestionar sugerencias",false)).append("</section>").toString();}
-    private static String avisoMinimo(Contexto c,int cantidad,boolean administrador){return cantidad==0&&!"VERDE".equals(c.color())?Html.aviso(administrador?"El análisis está guardado. Este resultado requiere al menos una sugerencia: escribe una para completar el seguimiento.":"El análisis está guardado. El Administrador debe completar las sugerencias de este resultado.",false):"";}
-    /** RF-024: tarjeta de contexto reutilizada al consultar una sola evaluación. */
-    public static String contexto(Contexto c){return "<section class=\"card stack\"><div class=\"row between\"><h2>Puesto "+c.numero()+"</h2>"+Html.riesgo(c.puntaje(),c.color(),c.nivel())+"</div><p>"+escapar(c.empresaNombre())+" · "+escapar(c.sedeNombre())+" · "+escapar(c.salonNombre())+"</p><p class=\"muted\">"+escapar(c.postura())+"</p>"+enlace("/visitas/"+c.visita(),"Ver visita",false)+"</section>";}
-    private static String reevaluacion(Contexto c){return "/reservas/nueva?empresa="+c.empresa()+"&sede="+c.sede()+"&salon="+c.salon()+"&categoria=REEVALUACION";}
-    private static String origen(Sugerencia a){return a.origen().equals("SISTEMA")?"Sugerencia del sistema":"Escrita por el Administrador";}
-    private static String estado(String e){return "<span class=\"tag\">"+(e.equals("HECHA")?"Hecha":e.equals("EN_PROCESO")?"En proceso":"Pendiente")+"</span>";}
-    private static List<Formularios.Opcion> opciones(String... val){return Arrays.stream(val).map(x->new Formularios.Opcion(x,Formularios.etiqueta(x))).toList();}
-    private static String dato(String n,String v){return "<div><dt>"+n+"</dt><dd>"+escapar(v)+"</dd></div>";}
-    private static String pagina(String t,String h,Sesion s){return Html.pagina(t,"<div class=\"pagehead\"><div><span class=\"eyebrow\">Mejoras · Sugerencias</span><h1>"+escapar(t)+"</h1></div></div>"+h,s,false);}
-    private static void celda(StringBuilder h,String n,String v){h.append("<td data-label=\"").append(n).append("\"><div class=\"cell-value\">").append(v).append("</div></td>");}
-    private static boolean admin(Sesion s){return s.cuenta().rol()!=Cuenta.Rol.USUARIO;}
+
+    /**
+     * Conserva los campos al crear y editar, con los mismos controles del mock. RNF-011.
+     */
+    public static String formulario(Sesion sesion, Contexto sugerencia, Sugerencia sugerencia2,
+            Map<String, String> enviados, String error) {
+        Map<String, String> parametros = new HashMap<>();
+        parametros.put("titulo", sugerencia2 == null ? "" : sugerencia2.titulo());
+        parametros.put("descripcion", sugerencia2 == null ? "" : sugerencia2.descripcion());
+        parametros.put("tipo", sugerencia2 == null ? "" : sugerencia2.tipo());
+        parametros.put("prioridad", sugerencia2 == null ? "" : sugerencia2.prioridad());
+        parametros.put("fecha",
+                sugerencia2 == null || sugerencia2.limite() == null ? "" : sugerencia2.limite().toString());
+        parametros.putAll(enviados);
+        String ruta = sugerencia2 == null ?
+                "/sugerencias?evaluacion=" + sugerencia.evaluacion() : "/sugerencias/" + sugerencia2.id();
+        String texto2 = enlace("/sugerencias?evaluacion=" + sugerencia.evaluacion(), "← Volver a sugerencias", false) +
+                contexto(sugerencia) + Html.aviso(error, false) +
+                "<form data-sugerencia-form class=\"card stack cuenta-form\" method=\"post\" " + "action=\"" + ruta +
+                "\">" + Html.csrf(sesion) + Formularios.campo(parametros, "titulo", "Título", "text", 120, true) +
+                Formularios.texto(parametros, "descripcion", "Descripción", 65535, true) + "<div class=\"grid2\">" +
+                Formularios.selector(parametros, "tipo", "Tipo",
+                        opciones("MOBILIARIO", "POSTURA", "DESCANSOS", "CARGA", "OTRA"), true) +
+                Formularios.selector(parametros, "prioridad", "Prioridad", opciones("ALTA", "MEDIA", "BAJA"), true) +
+                "</div>" + Formularios.campo(parametros, "fecha", "Fecha límite (opcional)", "date", 10, false) +
+                "<div class=\"aviso\" role=\"alert\" data-error-sugerencia hidden><span></spa" +
+                "n><button type=\"button\" class=\"link\" data-cerrar-error aria-label=\"Cerr" +
+                "ar aviso\">Cerrar</button></div><button class=\"btn p\" type=\"submit\">Guar" +
+                "dar sugerencia</button></form><script src=\"/static/js/sugerencias.js\" defe" + "r></script>";
+        return pagina(sugerencia2 == null ? "Escribir sugerencia" : "Editar sugerencia", texto2, sesion);
+    }
+
+    /**
+     * RF-023a: muestra las propuestas guardadas con la clase .sug de la referencia.
+     */
+    public static String resumen(List<Ficha> lista, Contexto sugerencia) {
+        StringBuilder contenido = new StringBuilder(
+                "<section class=\"card stack\"><span class=\"eyebrow\">Sugerencias del sistem" + "a</span>");
+        for (var sugerencia2 : lista)
+            contenido.append("<div class=\"sug\"><div><span class=\"tag\">").append(origen(sugerencia2.sugerencia()))
+                    .append("</span><p>").append(escapar(sugerencia2.sugerencia().descripcion()))
+                    .append("</p></div></div>");
+        return contenido.append(avisoMinimo(sugerencia, lista.size(), true))
+                .append(enlace("/sugerencias?evaluacion=" + sugerencia.evaluacion(), "Ver y gestionar sugerencias",
+                        false)).append("</section>").toString();
+    }
+
+    private static String avisoMinimo(Contexto sugerencia, int cantidad, boolean administrador) {
+        return cantidad == 0 && !"VERDE".equals(sugerencia.color()) ? Html.aviso(administrador ?
+                                                                                 "El análisis está guardado. Este " +
+                                                                                 "resultado requiere al menos una " +
+                                                                                 "sugerencia: " +
+                                                                                 "escribe una para completar el " +
+                                                                                 "seguimiento." :
+                                                                                 "El análisis está guardado. El " +
+                                                                                 "Administrador debe completar las " +
+                                                                                 "sugerencias d" + "e este resultado.",
+                false) : "";
+    }
+
+    /**
+     * RF-024: tarjeta de contexto reutilizada al consultar una sola evaluación.
+     */
+    public static String contexto(Contexto sugerencia) {
+        return "<section class=\"card stack\"><div class=\"row between\"><h2>Puesto " + sugerencia.numero() + "</h2>" +
+                Html.riesgo(sugerencia.puntaje(), sugerencia.color(), sugerencia.nivel()) + "</div><p>" +
+                escapar(sugerencia.empresaNombre()) + " · " + escapar(sugerencia.sedeNombre()) + " · " +
+                escapar(sugerencia.salonNombre()) + "</p><p class=\"muted\">" + escapar(sugerencia.postura()) + "</p>" +
+                enlace("/visitas/" + sugerencia.visita(), "Ver visita", false) + "</section>";
+    }
+
+    private static String reevaluacion(Contexto sugerencia) {
+        return "/reservas/nueva?empresa=" + sugerencia.empresa() + "&sede=" + sugerencia.sede() + "&salon=" +
+                sugerencia.salon() + "&categoria=REEVALUACION";
+    }
+
+    private static String origen(Sugerencia sugerencia) {
+        return sugerencia.origen().equals("SISTEMA") ? "Sugerencia del sistema" : "Escrita por el Administrador";
+    }
+
+    private static String estado(String texto) {
+        return "<span class=\"tag\">" +
+                (texto.equals("HECHA") ? "Hecha" : texto.equals("EN_PROCESO") ? "En proceso" : "Pendiente") + "</span>";
+    }
+
+    private static List<Formularios.Opcion> opciones(String... val) {
+        return Arrays.stream(val).map(texto -> new Formularios.Opcion(texto, Formularios.etiqueta(texto))).toList();
+    }
+
+    private static String dato(String texto, String texto2) {
+        return "<div><dt>" + texto + "</dt><dd>" + escapar(texto2) + "</dd></div>";
+    }
+
+    private static String pagina(String texto, String texto2, Sesion sesion) {
+        return Html.pagina(texto,
+                "<div class=\"pagehead\"><div><span class=\"eyebrow\">Mejoras · Sugerencias</" + "span><h1>" +
+                        escapar(texto) + "</h1></div></div>" + texto2, sesion, false);
+    }
+
+    private static void celda(StringBuilder contenido, String texto, String texto2) {
+        contenido.append("<td data-label=\"").append(texto).append("\"><div class=\"cell-value\">").append(texto2)
+                .append("</div></td>");
+    }
+
+    private static boolean admin(Sesion sesion) {
+        return sesion.cuenta().rol() != Cuenta.Rol.USUARIO;
+    }
 }

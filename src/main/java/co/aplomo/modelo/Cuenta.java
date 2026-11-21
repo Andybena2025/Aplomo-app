@@ -2,22 +2,40 @@ package co.aplomo.modelo;
 
 import java.time.LocalDateTime;
 
-/** RF-001a, RF-002, RF-003: cuenta persistida; nunca se entrega el hash al navegador. */
-public record Cuenta(int id, Integer empresa, String nombre, String correo, String telefono, String cargo,
-                     String hash, boolean temporal, int intentos, LocalDateTime bloqueadoHasta,
-                     Estado estado, Rol rol, String colorAgenda) {
-    /** RF-003: conserva clientes anteriores sin color asignado. */
-    public Cuenta(int id, Integer empresa, String nombre, String correo, String telefono, String cargo,
-                  String hash, boolean temporal, int intentos, LocalDateTime bloqueadoHasta,
-                  Estado estado, Rol rol) {
-        this(id, empresa, nombre, correo, telefono, cargo, hash, temporal, intentos, bloqueadoHasta,
-                estado, rol, null);
-    }
-    /** Roles del Paso 24; no existe registro libre (RF-002). */
-    public enum Rol { ADMINISTRADOR, EVALUADOR, USUARIO }
-    /** Estado de acceso; el bloqueo temporal conserva su fecha de vencimiento (RF-001a). */
-    public enum Estado { ACTIVA, INACTIVA, BLOQUEADA }
+/**
+ * RF-001a, RF-002, RF-003: cuenta persistida; nunca se entrega el hash al navegador.
+ */
+public record Cuenta(int id, Integer empresa, String nombre, String correo, String telefono, String cargo, String hash,
+                     boolean temporal, int intentos, LocalDateTime bloqueadoHasta, Estado estado, Rol rol,
+                     String colorAgenda) {
 
-    /** Representa la cuenta sin exponer su hash ni datos de contacto (RNF-004). */
-    @Override public String toString() { return "Cuenta[id=" + id + ", rol=" + rol + "]"; }
+    /**
+     * RF-003: conserva clientes anteriores sin color asignado.
+     */
+    public Cuenta(int id, Integer empresa, String nombre, String correo, String telefono, String cargo, String hash,
+            boolean temporal, int intentos, LocalDateTime bloqueadoHasta, Estado estado, Rol rol) {
+        this(id, empresa, nombre, correo, telefono, cargo, hash, temporal, intentos, bloqueadoHasta, estado, rol, null);
+    }
+
+    /**
+     * Roles del Paso 24; no existe registro libre (RF-002).
+     */
+    public enum Rol {
+        ADMINISTRADOR, EVALUADOR, USUARIO
+    }
+
+    /**
+     * Estado de acceso; el bloqueo temporal conserva su fecha de vencimiento (RF-001a).
+     */
+    public enum Estado {
+        ACTIVA, INACTIVA, BLOQUEADA
+    }
+
+    /**
+     * Representa la cuenta sin exponer su hash ni datos de contacto (RNF-004).
+     */
+    @Override
+    public String toString() {
+        return "Cuenta[id=" + id + ", rol=" + rol + "]";
+    }
 }

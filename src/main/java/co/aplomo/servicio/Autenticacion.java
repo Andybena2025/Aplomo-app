@@ -5,11 +5,17 @@ import co.aplomo.db.Transacciones;
 import co.aplomo.modelo.Cuenta;
 import co.aplomo.modelo.Cuenta.Estado;
 import co.aplomo.seguridad.Contrasenas;
+
 import java.sql.SQLException;
-import java.time.*;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Locale;
 
-/** RF-001a, RF-001c: ingreso y cambios persistentes; tiempos comprobables sin esperar minutos. */
+/**
+ * RF-001a, RF-001c: ingreso y cambios persistentes; tiempos comprobables sin esperar minutos.
+ */
 public final class Autenticacion {
     public static final int MAX_INTENTOS = 5;
     public static final Duration BLOQUEO = Duration.ofMinutes(15);
@@ -18,9 +24,13 @@ public final class Autenticacion {
     private final CuentaDao dao;
     private final Clock reloj;
     private final java.util.Map<String, IntentosVisibles> intentosVisibles = new java.util.HashMap<>();
-    private record IntentosVisibles(int cantidad, Instant ultimo) {}
 
-    /** RF-001a, RNF-004: mismo aviso para correos existentes y desconocidos. */
+    private record IntentosVisibles(int cantidad, Instant ultimo) {
+    }
+
+    /**
+     * RF-001a, RNF-004: mismo aviso para correos existentes y desconocidos.
+     */
     public synchronized String mensajeFallo(String correo) {
         String clave = correo == null ? "" : correo.strip().toLowerCase(Locale.ROOT);
         IntentosVisibles anterior = intentosVisibles.get(clave);
@@ -29,8 +39,8 @@ public final class Autenticacion {
             return "Por seguridad, tu cuenta quedó bloqueada 15 minutos.";
         }
         String mensaje = "Correo o contraseña incorrectos.";
-        return cantidad >= 3 ? mensaje + (cantidad == 4 ? " Te queda 1 intento."
-                : " Te quedan " + (MAX_INTENTOS - cantidad) + " intentos.") : mensaje;
+        return cantidad >= 3 ? mensaje + (cantidad == 4 ? " Te queda 1 intento." :
+                                          " Te quedan " + (MAX_INTENTOS - cantidad) + " intentos.") : mensaje;
     }
 
     private synchronized void registrarResultado(String correo, boolean correcto) {
@@ -45,55 +55,83 @@ public final class Autenticacion {
             intentosVisibles.clear();
         }
         int cantidad = anterior == null ? 1 : Math.min(MAX_INTENTOS, anterior.cantidad() + 1);
-        Instant inicio = cantidad == MAX_INTENTOS && anterior != null && anterior.cantidad() == MAX_INTENTOS
-                ? anterior.ultimo() : ahora;
+        Instant inicio = cantidad == MAX_INTENTOS && anterior != null &&
+                anterior.cantidad() == MAX_INTENTOS ? anterior.ultimo() : ahora;
         intentosVisibles.put(correo, new IntentosVisibles(cantidad, inicio));
     }
 
-    /** Usa MySQL y la hora local del servidor para el bloqueo (RF-001a). */
-    public Autenticacion() { this(new Transacciones(),new CuentaDao(),Clock.systemDefaultZone()); }
-    /** Permite controlar conexiones y reloj en las comprobaciones (RNF-011). */
-    public Autenticacion(Transacciones tx, CuentaDao dao, Clock reloj) { this.tx=tx; this.dao=dao; this.reloj=reloj; }
+    /**
+     * Usa MySQL y la hora local del servidor para el bloqueo (RF-001a).
+     */
+    public Autenticacion() {
+        this(new Transacciones(), new CuentaDao(), Clock.systemDefaultZone());
+    }
 
-    /** Devuelve la cuenta o null con el mismo resultado para correo, clave o estado incorrectos. */
+    /**
+     * Permite controlar conexiones y reloj en las comprobaciones (RNF-011).
+     */
+    public Autenticacion(Transacciones tx, CuentaDao dao, Clock reloj) {
+        this.tx = tx;
+        this.dao = dao;
+        this.reloj = reloj;
+    }
+
+    /**
+     * Devuelve la cuenta o null con el mismo resultado para correo, clave o estado incorrectos. RNF-011.
+     */
     public Cuenta ingresar(String correo, String clave) throws SQLException {
         String normalizado = correo == null ? "" : correo.strip().toLowerCase(Locale.ROOT);
         Cuenta resultado = tx.ejecutar(con -> {
-            Cuenta c = dao.porCorreo(con,normalizado);
-            if (c == null) { Contrasenas.verificar(clave,HASH_FICTICIO); return null; }
-            var ahora = LocalDateTime.now(reloj);
-            boolean bloqueada = c.bloqueadoHasta() != null && ahora.isBefore(c.bloqueadoHasta());
-            if (c.estado() == Estado.INACTIVA || bloqueada || (c.estado() == Estado.BLOQUEADA && c.bloqueadoHasta() == null)) {
-                Contrasenas.verificar(clave,HASH_FICTICIO); return null;
+            Cuenta cuenta = dao.porCorreo(con, normalizado);
+            if (cuenta == null) {
+                Contrasenas.verificar(clave, HASH_FICTICIO);
+                return null;
             }
-            int anteriores = c.bloqueadoHasta() != null ? 0 : c.intentos();
-            if (!Contrasenas.verificar(clave,c.hash())) {
+            var ahora = LocalDateTime.now(reloj);
+            boolean bloqueada = cuenta.bloqueadoHasta() != null && ahora.isBefore(cuenta.bloqueadoHasta());
+            if (cuenta.estado() == Estado.INACTIVA || bloqueada ||
+                    (cuenta.estado() == Estado.BLOQUEADA && cuenta.bloqueadoHasta() == null)) {
+                Contrasenas.verificar(clave, HASH_FICTICIO);
+                return null;
+            }
+            int anteriores = cuenta.bloqueadoHasta() != null ? 0 : cuenta.intentos();
+            if (!Contrasenas.verificar(clave, cuenta.hash())) {
                 int intentos = anteriores + 1;
-                dao.acceso(con,c.id(),intentos,intentos >= MAX_INTENTOS ? ahora.plus(BLOQUEO) : null,
+                dao.acceso(con, cuenta.id(), intentos, intentos >= MAX_INTENTOS ? ahora.plus(BLOQUEO) : null,
                         intentos >= MAX_INTENTOS ? Estado.BLOQUEADA : Estado.ACTIVA);
                 return null;
             }
-            dao.acceso(con,c.id(),0,null,Estado.ACTIVA);
-            return dao.porId(con,c.id(),false);
+            dao.acceso(con, cuenta.id(), 0, null, Estado.ACTIVA);
+            return dao.porId(con, cuenta.id(), false);
         });
         registrarResultado(normalizado, resultado != null);
         return resultado;
     }
 
-    /** Relee el estado y los permisos vigentes para cada petición autenticada (RF-002). */
-    public Cuenta actual(int id) throws SQLException { return tx.ejecutar(con -> dao.porId(con,id,false)); }
+    /**
+     * Relee el estado y los permisos vigentes para cada petición autenticada (RF-002).
+     */
+    public Cuenta actual(int id) throws SQLException {
+        return tx.ejecutar(con -> dao.porId(con, id, false));
+    }
 
-    /** Comprueba actual y confirmación, cambia el hash y quita la obligación temporal (RF-001c). */
+    /**
+     * Comprueba actual y confirmación, cambia el hash y quita la obligación temporal (RF-001c).
+     */
     public Cuenta cambiar(Cuenta sesion, String actual, String nueva, String confirmacion) throws SQLException {
-        if (nueva == null || !nueva.equals(confirmacion)) throw new IllegalArgumentException("La confirmación no coincide con la nueva contraseña.");
+        if (nueva == null || !nueva.equals(confirmacion))
+            throw new IllegalArgumentException("La confirmación no coincide con la nueva contraseña.");
         Contrasenas.validar(nueva);
         return tx.ejecutar(con -> {
-            Cuenta c = dao.porId(con,sesion.id(),true);
-            if (c == null || c.estado() != Estado.ACTIVA || !c.hash().equals(sesion.hash())) throw new SecurityException("La sesión ya no está disponible. Vuelve a ingresar.");
-            if (!Contrasenas.verificar(actual,c.hash())) throw new IllegalArgumentException("La contraseña actual no coincide.");
-            if (Contrasenas.verificar(nueva,c.hash())) throw new IllegalArgumentException("Elige una contraseña diferente de la actual.");
-            dao.contrasena(con,c.id(),Contrasenas.cifrar(nueva),false);
-            return dao.porId(con,c.id(),false);
+            Cuenta cuenta = dao.porId(con, sesion.id(), true);
+            if (cuenta == null || cuenta.estado() != Estado.ACTIVA || !cuenta.hash().equals(sesion.hash()))
+                throw new SecurityException("La sesión ya no está disponible. Vuelve a ingresar.");
+            if (!Contrasenas.verificar(actual, cuenta.hash()))
+                throw new IllegalArgumentException("La contraseña actual no coincide.");
+            if (Contrasenas.verificar(nueva, cuenta.hash()))
+                throw new IllegalArgumentException("Elige una contraseña diferente de la actual.");
+            dao.contrasena(con, cuenta.id(), Contrasenas.cifrar(nueva), false);
+            return dao.porId(con, cuenta.id(), false);
         });
     }
 }

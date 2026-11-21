@@ -57,6 +57,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 24 | Tres roles, Mi agenda, Mis evaluaciones y notas | ✅ Implementado y subido; [informe](docs/informe_paso24.md) |
 | 25 | ALINEO., Quiénes somos y Centro de ayuda | ✅ 1022 casos Maven verificados y 119 JS; [informe](docs/informe_paso25.md) |
 | 26 | Calendario, Archivo, Mi cuenta, login compacto y demo del equipo | ✅ 1035 Maven verificados y 122 JS; [informe](docs/informe_paso26.md) |
+| 26B | Código Java ordenado y prueba de 120 columnas con exclusiones explícitas | ✅ 1036 Maven y 122 JS; [informe](docs/informe_paso26b.md) |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 
@@ -128,7 +129,7 @@ Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuent
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**1035 casos Maven verificados y 122 pruebas JS aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**1036 pruebas Maven y 122 pruebas JS aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 

@@ -2,17 +2,25 @@ package co.aplomo.web;
 
 import co.aplomo.modelo.Cuenta;
 import co.aplomo.modelo.Cuenta.Estado;
-import co.aplomo.seguridad.*;
+import co.aplomo.seguridad.Permisos;
+import co.aplomo.seguridad.Sesiones;
 import co.aplomo.seguridad.Sesiones.Sesion;
 import co.aplomo.servicio.Autenticacion;
-import com.sun.net.httpserver.*;
-import java.io.*;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpsExchange;
+
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/** RF-001a a RF-002, RNF-004: rutas con autorización central, CSRF y mensajes sin detalles SQL. */
+/**
+ * RF-001a a RF-002, RNF-004: rutas con autorización central, CSRF y mensajes sin detalles SQL.
+ */
 public final class Router implements HttpHandler {
     private static final String COOKIE = "APLOMO_SESION";
     private final Autenticacion auth;
@@ -28,352 +36,359 @@ public final class Router implements HttpHandler {
     private final CalificacionesWeb calificaciones;
     private final CuentaWeb cuenta;
     private final ArchivoWeb archivo;
+    private final AccesoWeb acceso;
+    private final InicioWeb inicio;
+    private final AgendaWeb agenda;
+    private final DemoWeb demo;
 
-    /** Construye las rutas con servicios reales (RNF-011). */
-    public Router() { this(new Autenticacion(),new Sesiones()); }
-    /** Permite comprobar HTTP con servicios y reloj controlados (RNF-011). */
-    public Router(Autenticacion auth, Sesiones sesiones) { this(auth,sesiones,new co.aplomo.servicio.Usuarios()); }
-    /** Comparte los servicios de cuentas para verificar todo el recorrido HTTP (RNF-011). */
+    /**
+     * Construye las rutas con servicios reales (RNF-011).
+     */
+    public Router() {
+        this(new Autenticacion(), new Sesiones());
+    }
+
+    /**
+     * Permite comprobar HTTP con servicios y reloj controlados (RNF-011).
+     */
+    public Router(Autenticacion auth, Sesiones sesiones) {
+        this(auth, sesiones, new co.aplomo.servicio.Usuarios());
+    }
+
+    /**
+     * Comparte los servicios de cuentas para verificar todo el recorrido HTTP (RNF-011).
+     */
     public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios) {
         this(auth, sesiones, usuarios, new co.aplomo.servicio.Empresas());
     }
-    /** Comparte los servicios transaccionales de configuración para las pruebas HTTP (RNF-011). */
+
+    /**
+     * Comparte los servicios transaccionales de configuración para las pruebas HTTP (RNF-011).
+     */
     public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
-                  co.aplomo.servicio.Empresas empresas) {
+            co.aplomo.servicio.Empresas empresas) {
         this(auth, sesiones, usuarios, empresas, new co.aplomo.servicio.Reservas());
     }
-    /** Comparte los servicios de configuración y agenda para las comprobaciones HTTP. */
+
+    /**
+     * Comparte los servicios de configuración y agenda para las comprobaciones HTTP. RNF-011.
+     */
     public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
-                  co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas) {
+            co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas) {
         this(auth, sesiones, usuarios, empresas, reservas, new co.aplomo.servicio.Visitas());
     }
-    /** Comparte todos los servicios de la fase 4 con sus transacciones de prueba. */
+
+    /**
+     * Comparte todos los servicios de la fase 4 con sus transacciones de prueba. RNF-011.
+     */
     public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
-                  co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas,
-                  co.aplomo.servicio.Visitas visitas) {
+            co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas,
+            co.aplomo.servicio.Visitas visitas) {
         this(auth, sesiones, usuarios, empresas, reservas, visitas, new co.aplomo.servicio.Evaluaciones());
     }
-    /** Comparte los servicios y la carpeta aislada del paso 7 para las pruebas HTTP. */
+
+    /**
+     * Comparte los servicios y la carpeta aislada del paso 7 para las pruebas HTTP. RNF-011.
+     */
     public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
-                  co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas,
-                  co.aplomo.servicio.Visitas visitas, co.aplomo.servicio.Evaluaciones evaluaciones) {
+            co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas,
+            co.aplomo.servicio.Visitas visitas, co.aplomo.servicio.Evaluaciones evaluaciones) {
+        this.agenda = new AgendaWeb(reservas.agenda());
+        this.demo = new DemoWeb(visitas);
+        this.acceso = new AccesoWeb(auth, sesiones);
+        this.inicio = new InicioWeb(empresas, reservas, visitas, evaluaciones);
         this.archivo = new ArchivoWeb(evaluaciones.consultas().archivo());
         this.cuenta = new CuentaWeb(usuarios.perfil(), auth, sesiones);
-        this.auth=auth; this.sesiones=sesiones; this.usuarios=new UsuariosWeb(usuarios,sesiones);
-        this.empresas=new EmpresasWeb(empresas);
-        this.reservas=new ReservasWeb(reservas, empresas);
-        this.visitas=new VisitasWeb(visitas, reservas);
-        this.evaluaciones=new EvaluacionesWeb(evaluaciones);
-        this.pendientes=new PendientesWeb(evaluaciones.pendientes());
-        this.sugerencias=new SugerenciasWeb(evaluaciones.sugerencias());
-        this.consultas=new ConsultasWeb(evaluaciones.consultas(),evaluaciones.sugerencias());
-        this.calificaciones=new CalificacionesWeb(evaluaciones.calificaciones());
+        this.auth = auth;
+        this.sesiones = sesiones;
+        this.usuarios = new UsuariosWeb(usuarios, sesiones);
+        this.empresas = new EmpresasWeb(empresas);
+        this.reservas = new ReservasWeb(reservas, empresas);
+        this.visitas = new VisitasWeb(visitas, reservas);
+        this.evaluaciones = new EvaluacionesWeb(evaluaciones);
+        this.pendientes = new PendientesWeb(evaluaciones.pendientes());
+        this.sugerencias = new SugerenciasWeb(evaluaciones.sugerencias());
+        this.consultas = new ConsultasWeb(evaluaciones.consultas(), evaluaciones.sugerencias());
+        this.calificaciones = new CalificacionesWeb(evaluaciones.calificaciones());
     }
 
-    /** Revisa la sesión antes de atender cualquier ruta interna (RF-002). */
-    @Override public void handle(HttpExchange x) throws IOException {
-        x.getResponseHeaders().set("Cache-Control","no-store");
-        x.getResponseHeaders().set("X-Content-Type-Options","nosniff");
-        x.getResponseHeaders().set("Referrer-Policy","same-origin");
-        x.getResponseHeaders().set("X-Frame-Options","DENY");
-        try { atender(x); }
-        catch (SecurityException e) { enviar(x,403,Html.pagina("Acceso denegado",Html.aviso(e.getMessage(),false),null)); }
-        catch (IllegalArgumentException e) { enviar(x,400,Html.pagina("Revisa los datos",Html.aviso(e.getMessage(),false),null)); }
-        catch (SQLException e) { enviar(x,503,Html.pagina("No pudimos completar la acción",Html.aviso("Revisa la conexión e inténtalo de nuevo. Tus datos guardados se conservan.",false),null)); }
-        catch (RuntimeException e) { if(x.getResponseCode()==-1)enviar(x,500,Html.error("No pudimos abrir esta página","Inténtalo de nuevo o vuelve al inicio. Tus datos guardados se conservan.")); }
-        finally { x.close(); }
+    /**
+     * Revisa la sesión antes de atender cualquier ruta interna (RF-002).
+     */
+    @Override
+    public void handle(HttpExchange intercambio) throws IOException {
+        intercambio.getResponseHeaders().set("Cache-Control", "no-store");
+        intercambio.getResponseHeaders().set("X-Content-Type-Options", "nosniff");
+        intercambio.getResponseHeaders().set("Referrer-Policy", "same-origin");
+        intercambio.getResponseHeaders().set("X-Frame-Options", "DENY");
+        try {
+            atender(intercambio);
+        } catch (SecurityException error) {
+            enviar(intercambio, 403, Html.pagina("Acceso denegado", Html.aviso(error.getMessage(), false), null));
+        } catch (IllegalArgumentException error2) {
+            enviar(intercambio, 400, Html.pagina("Revisa los datos", Html.aviso(error2.getMessage(), false), null));
+        } catch (SQLException error3) {
+            enviar(intercambio, 503, Html.pagina("No pudimos completar la acción",
+                    Html.aviso("Revisa la conexión e inténtalo de nuevo. Tus datos guardados se conservan.", false),
+                    null));
+        } catch (RuntimeException error4) {
+            if (intercambio.getResponseCode() == -1) enviar(intercambio, 500, Html.error("No pudimos abrir esta página",
+                    "Inténtalo de nuevo o vuelve al inicio. Tus datos guardados se conservan."));
+        } finally {
+            intercambio.close();
+        }
     }
 
-    private void atender(HttpExchange x) throws IOException, SQLException {
-        String ruta = x.getRequestURI().getPath(), metodo = x.getRequestMethod();
+    private void atender(HttpExchange intercambio) throws IOException, SQLException {
+        String ruta = intercambio.getRequestURI().getPath(), metodo = intercambio.getRequestMethod();
         if (!metodo.equals("GET") && !metodo.equals("POST")) {
-            x.getResponseHeaders().set("Allow","GET, POST"); enviar(x,405,"Método no permitido."); return;
-        }
-        if(ruta.equals("/favicon.ico")||ruta.equals("/favicon.svg")){if(!metodo.equals("GET")){enviar(x,405,"Método no permitido.");return;}responder(x,200,"image/svg+xml; charset=UTF-8",Html.favicon());return;}
-        if (ruta.startsWith("/static/")) { estatico(x,ruta); return; }
-        if(ruta.equals("/nosotros")&&metodo.equals("GET")){redirigir(x,"/login");return;}
-        String id = cookie(x);
-        Sesion s = ruta.equals("/notas/nuevas") ? sesiones.consultar(id) : sesiones.obtener(id);
-        if (s != null && s.cuenta() != null) {
-            Cuenta c = auth.actual(s.cuenta().id());
-            if (!vigente(s.cuenta(),c)) { sesiones.cerrar(id); s=null; }
-        }
-        if (ruta.equals("/login")) {
-            if (s != null && s.cuenta() != null) { redirigir(x,s.cuenta().temporal() ? "/cuenta/contrasena" : "/"); return; }
-            if (metodo.equals("GET")) {
-                if (s == null) { s=sesiones.crear(null); ponerCookie(x,s.id()); }
-                String aviso = "inactividad=1".equals(x.getRequestURI().getRawQuery())
-                        ? "Tu sesión se cerró por inactividad o porque cambió el acceso de tu cuenta. Vuelve a ingresar." : null;
-                enviar(x,200,Html.login(s,"",aviso)); return;
-            }
-            Map<String,String> f = formulario(x);
-            if (!Sesiones.csrfValido(s,f.get("csrf"))) {
-                // RNF-004, RNF-007: rechaza el envío y permite reintentar con un formulario vigente.
-                if (s == null) { s=sesiones.crear(null); ponerCookie(x,s.id()); }
-                enviar(x,403,Html.login(s,f.get("correo"),
-                        "El formulario venció. Vuelve a escribir tu contraseña e inténtalo de nuevo."));
-                return;
-            }
-            Cuenta c;
-            try { c=auth.ingresar(f.get("correo"),f.get("clave")); }
-            catch(SQLException e) { enviar(x,503,Html.login(s,f.get("correo"),"No pudimos verificar el ingreso. Revisa la conexión e inténtalo de nuevo.")); return; }
-            if (c == null) {
-                enviar(x,401,Html.login(s,f.get("correo"),auth.mensajeFallo(f.get("correo")))); return;
-            }
-            sesiones.cerrar(s.id()); s=sesiones.crear(c); ponerCookie(x,s.id());
-            redirigir(x,c.temporal() ? "/cuenta/contrasena" : "/"); return;
-        }
-        if(ruta.equals("/ayuda")&&metodo.equals("GET")){enviar(x,200,PaginasAyuda.pagina(s!=null&&s.cuenta()!=null?s:null,evaluaciones.servicio().ayuda().consultar(s==null?null:s.cuenta())));return;}
-        if (s == null || s.cuenta() == null) {
-            // RF-001b, RNF-007: un formulario anónimo vigente no es una sesión cerrada.
-            if (ruta.startsWith("/fotos/")) throw new SecurityException("Acceso denegado.");
-            boolean vencida = s == null && id != null;
-            if (vencida) ponerCookie(x,"");
-            redirigir(x,vencida ? "/login?inactividad=1" : "/login"); return;
-        }
-        if (ruta.equals("/notas/nuevas") && metodo.equals("GET")) {
-            if (s.cuenta().temporal()) throw new SecurityException("Cambia tu contraseña para continuar.");
-            new NotasWeb(reservas.servicio().agenda()).nuevas(x, s);
+            intercambio.getResponseHeaders().set("Allow", "GET, POST");
+            enviar(intercambio, 405, "Método no permitido.");
             return;
         }
-        if (archivo.atender(x, s)) return;
-        if(consultas.atender(x,s))return;
+        if (ruta.equals("/favicon.ico") || ruta.equals("/favicon.svg")) {
+            if (!metodo.equals("GET")) {
+                enviar(intercambio, 405, "Método no permitido.");
+                return;
+            }
+            responder(intercambio, 200, "image/svg+xml; charset=UTF-8", Html.favicon());
+            return;
+        }
+        if (ruta.startsWith("/static/")) {
+            estatico(intercambio, ruta);
+            return;
+        }
+        if (ruta.equals("/nosotros") && metodo.equals("GET")) {
+            redirigir(intercambio, "/login");
+            return;
+        }
+        String id = cookie(intercambio);
+        Sesion sesion = ruta.equals("/notas/nuevas") ? sesiones.consultar(id) : sesiones.obtener(id);
+        if (sesion != null && sesion.cuenta() != null) {
+            Cuenta cuenta2 = auth.actual(sesion.cuenta().id());
+            if (!vigente(sesion.cuenta(), cuenta2)) {
+                sesiones.cerrar(id);
+                sesion = null;
+            }
+        }
+        if (ruta.equals("/login")) {
+            acceso.ingresar(intercambio, sesion);
+            return;
+        }
+        if (ruta.equals("/ayuda") && metodo.equals("GET")) {
+            enviar(intercambio, 200, PaginasAyuda.pagina(sesion != null && sesion.cuenta() != null ? sesion : null,
+                    evaluaciones.servicio().ayuda().consultar(sesion == null ? null : sesion.cuenta())));
+            return;
+        }
+        if (sesion == null || sesion.cuenta() == null) {
+
+            // RF-001b, RNF-007: un formulario anónimo vigente no es una sesión cerrada.
+            if (ruta.startsWith("/fotos/")) throw new SecurityException("Acceso denegado.");
+            boolean vencida = sesion == null && id != null;
+            if (vencida) ponerCookie(intercambio, "");
+            redirigir(intercambio, vencida ? "/login?inactividad=1" : "/login");
+            return;
+        }
+        if (metodo.equals("GET") && agenda.atender(intercambio, sesion, Map.of())) return;
+        if (archivo.atender(intercambio, sesion)) return;
+        if (consultas.atender(intercambio, sesion)) return;
         if (ruta.startsWith("/evaluaciones") || ruta.startsWith("/fotos/")) {
-            Permisos.trabajo(s.cuenta());
-            if (s.cuenta().temporal()) { redirigir(x,"/cuenta/contrasena"); return; }
-            evaluaciones.atender(x,s); return;
+            Permisos.trabajo(sesion.cuenta());
+            if (sesion.cuenta().temporal()) {
+                redirigir(intercambio, "/cuenta/contrasena");
+                return;
+            }
+            evaluaciones.atender(intercambio, sesion);
+            return;
         }
-        Map<String,String> f = metodo.equals("POST") ? formulario(x) : Map.of();
-        if (metodo.equals("POST")) exigirCsrf(s,f);
-        if(ruta.equals("/agenda")&&metodo.equals("GET")){enviar(x,200,PaginasAgenda.pagina(s,reservas.servicio().agenda().consultar(s.cuenta(),consulta(x))));return;}
-        if(ruta.matches("/reservas/[1-9][0-9]*/(nota-administrador|entendido)")&&metodo.equals("POST")){int rid=Integer.parseInt(ruta.split("/")[2]);var agenda=reservas.servicio().agenda();if(ruta.endsWith("/entendido"))agenda.entender(s.cuenta(),rid);else agenda.guardarNota(s.cuenta(),rid,f.get("nota"));redirigir(x,"/reservas/"+rid);return;}
+        Map<String, String> parametros2 = metodo.equals("POST") ? formulario(intercambio) : Map.of();
+        if (metodo.equals("POST")) exigirCsrf(sesion, parametros2);
+        if (agenda.atender(intercambio, sesion, parametros2)) return;
         if (ruta.equals("/logout")) {
-            if (!metodo.equals("POST")) { enviar(x,405,"Usa el botón Cerrar sesión."); return; }
-            sesiones.cerrar(s.id()); ponerCookie(x,""); redirigir(x,"/login"); return;
+            acceso.cerrar(intercambio, sesion);
+            return;
         }
-        if (s.cuenta().temporal() && !ruta.equals("/cuenta/contrasena")) { redirigir(x,"/cuenta/contrasena"); return; }
+        if (sesion.cuenta().temporal() && !ruta.equals("/cuenta/contrasena")) {
+            redirigir(intercambio, "/cuenta/contrasena");
+            return;
+        }
         if (ruta.equals("/cuenta/contrasena")) {
-            if (metodo.equals("GET")) { enviar(x,200,Html.contrasena(s,null)); return; }
-            Cuenta cambiada;
-            try { cambiada=auth.cambiar(s.cuenta(),f.get("actual"),f.get("nueva"),f.get("confirmacion")); }
-            catch (IllegalArgumentException e) { enviar(x,400,Html.contrasena(s,e.getMessage())); return; }
-            catch (SQLException e) { enviar(x,503,Html.contrasena(s,"No pudimos guardar la contraseña. Inténtalo de nuevo.")); return; }
-            sesiones.invalidarCuenta(cambiada.id()); s=sesiones.crear(cambiada); ponerCookie(x,s.id());
-            redirigir(x,"/?contrasena=1"); return;
+            acceso.contrasena(intercambio, sesion, parametros2);
+            return;
         }
-        if (cuenta.atender(x, s, f)) return;
-        if(ruta.equals("/demo/evaluacion")) {
-            Permisos.trabajo(s.cuenta());
-            if(!GaleriaDemo.habilitada()){enviar(x,404,Html.pagina("Demostración no disponible","",s));return;}
-            if(metodo.equals("GET")){enviar(x,200,InicioEvaluacion.paginaPractica(s));return;}
-            var destino=visitas.servicio().practica().abrir(s.cuenta(),f.get("tipo"));
-            redirigir(x,"/evaluaciones/nueva?visita="+destino.visita()+"&puesto="+destino.puesto());return;
+        if (cuenta.atender(intercambio, sesion, parametros2)) return;
+        if (ruta.equals("/demo/evaluacion")) {
+            demo.atender(intercambio, sesion, parametros2);
+            return;
         }
-        if(calificaciones.atender(x,s))return;
-        if(ruta.equals("/sugerencias")||ruta.startsWith("/sugerencias/")){sugerencias.atender(x,s,f);return;}
-        if(ruta.equals("/pendientes")||ruta.startsWith("/pendientes/")){pendientes.atender(x,s,f);return;}
+        if (calificaciones.atender(intercambio, sesion)) return;
+        if (ruta.equals("/sugerencias") || ruta.startsWith("/sugerencias/")) {
+            sugerencias.atender(intercambio, sesion, parametros2);
+            return;
+        }
+        if (ruta.equals("/pendientes") || ruta.startsWith("/pendientes/")) {
+            pendientes.atender(intercambio, sesion, parametros2);
+            return;
+        }
         if (ruta.equals("/usuarios") || ruta.startsWith("/usuarios/")) {
-            Permisos.administrador(s.cuenta());
-            usuarios.atender(x,s,f); return;
+            Permisos.administrador(sesion.cuenta());
+            usuarios.atender(intercambio, sesion, parametros2);
+            return;
         }
-        if (ruta.equals("/empresas") || ruta.startsWith("/empresas/") || ruta.startsWith("/sedes/")
-                || ruta.startsWith("/salones/") || ruta.startsWith("/areas/") || ruta.startsWith("/cargos/")
-                || ruta.startsWith("/puestos/")) {
-            empresas.atender(x, s, f); return;
+        if (ruta.equals("/empresas") || ruta.startsWith("/empresas/") || ruta.startsWith("/sedes/") ||
+                ruta.startsWith("/salones/") || ruta.startsWith("/areas/") || ruta.startsWith("/cargos/") ||
+                ruta.startsWith("/puestos/")) {
+            empresas.atender(intercambio, sesion, parametros2);
+            return;
         }
-        if (ruta.equals("/visitas") || ruta.startsWith("/visitas/") || ruta.matches("/reservas/[1-9][0-9]*/iniciar-visita")) {
-            visitas.atender(x, s, f); return;
+        if (ruta.equals("/visitas") || ruta.startsWith("/visitas/") ||
+                ruta.matches("/reservas/[1-9][0-9]*/iniciar-visita")) {
+            visitas.atender(intercambio, sesion, parametros2);
+            return;
         }
         if (ruta.equals("/reservas") || ruta.startsWith("/reservas/")) {
-            reservas.atender(x, s, f); return;
+            reservas.atender(intercambio, sesion, parametros2);
+            return;
         }
         if (ruta.startsWith("/fotos/")) {
-            Permisos.administrador(s.cuenta()); enviar(x,404,Html.pagina("Foto no disponible","",s)); return;
+            Permisos.administrador(sesion.cuenta());
+            enviar(intercambio, 404, Html.pagina("Foto no disponible", "", sesion));
+            return;
         }
         if (ruta.equals("/") && metodo.equals("GET")) {
-            String aviso = "contrasena=1".equals(x.getRequestURI().getRawQuery()) ? Html.aviso("Contraseña actualizada.",true) : "";
-            Cuenta c = s.cuenta();
-            String nombre = c.nombre().contains(" ") ? c.nombre().substring(0, c.nombre().indexOf(' ')) : c.nombre();
-            // Consultar datos reales para el panel de inicio (RF-013a)
-            var listaReservas = reservas.servicio().listar(c);
-            var listaVisitas = visitas.servicio().listar(c);
-            long enCurso = listaVisitas.stream().filter(v -> v.visita().estado().equals("EN_CURSO")).count();
-            long enCola = listaReservas.stream().filter(r -> r.reserva().estado().equals("EN_COLA")).count();
-            long[] resumen=evaluaciones.servicio().resumen(c);
-            StringBuilder inicio = new StringBuilder(aviso);
-            // Saludo con fecha como en el mock
-            inicio.append("<div class=\"pagehead\"><div><span class=\"eyebrow\">")
-                    .append(Html.fecha(Html.hoy()).toUpperCase(java.util.Locale.ROOT)).append("</span><h1>Hola, ")
-                    .append(Html.escapar(nombre)).append("</h1></div></div>");
-            if(c.rol()!=Cuenta.Rol.USUARIO)inicio.append(InicioEvaluacion.practica(visitas.servicio().practica().enCurso(c)));
-            if(c.rol()!=Cuenta.Rol.ADMINISTRADOR&&this.empresas.servicio().listar(c).isEmpty())inicio.append(Html.aviso("Aún no tienes empresas asignadas. Pídeselas al Administrador.",false));
-            if(c.rol()==Cuenta.Rol.EVALUADOR){var ag=reservas.servicio().agenda();var notas=ag.nuevas(c);if(!notas.isEmpty())inicio.append("<p><a href=\"/reservas/").append(notas.get(0)).append("\">Tienes ").append(notas.size()).append(notas.size()==1?" nota nueva del Administrador</a></p>":" notas nuevas del Administrador</a></p>");var hoy=ag.consultar(c,Map.of());inicio.append("<section class=\"card stack\"><h2>Hoy en tu agenda</h2>");var citasHoy=hoy.citas().stream().filter(t->t.ficha().reserva().fecha().equals(reservas.servicio().hoy())).limit(3).toList();if(citasHoy.isEmpty())inicio.append("<p class=\"muted\">No tienes citas hoy.</p>");else for(var cita:citasHoy)inicio.append(PaginasAgenda.cita(cita));inicio.append("<a class=\"btn\" href=\"/agenda\">Ver mi agenda</a></section>");}
-            // 4 tarjetas KPI como en el mock
-            inicio.append("<div class=\"grid4\" style=\"margin-bottom:24px\">")
-                    .append(kpi("Visitas en curso", String.valueOf(enCurso), null))
-                    .append(kpi("Reservas en cola", String.valueOf(enCola), null))
-                    .append("<a class=\"kpi-enlace\" href=\"/evaluaciones\">").append(kpi("Evaluaciones", String.valueOf(resumen[0]), null)).append("</a>")
-                    .append(kpi("Puestos en rojo", String.valueOf(resumen[1]), "color:var(--rojo)"))
-                    .append("</div>");
-            if (c.rol() == Cuenta.Rol.ADMINISTRADOR) {
-                inicio.append("<div class=\"inicio-acciones\">");
-                inicio.append(accionInicio("/reservas/nueva", "Nueva reserva", "Programa una evaluación.", "M5 7h14v13H5z M8 4v6 M16 4v6 M5 12h14"));
-                inicio.append(accionInicio("/reservas", "Iniciar visita", "Continúa desde una reserva en cola.", "M9 5H5v15h14v-5 M12 4h8v8 M20 4L10 14"));
-                inicio.append(accionInicio("/empresas/nueva", "Nueva empresa", "Registra la empresa y sus sedes.", "M5 21V5h10v16 M15 11h4v10 M9 9h2 M9 13h2 M9 17h2 M3 21h18"));
-                inicio.append("</div>");
-            }
-            // Visitas en curso y reservas recientes como en el mock
-            inicio.append("<div class=\"grid2\"><section class=\"stack\">");
-            if(c.rol()!=Cuenta.Rol.USUARIO){
-                inicio.append("<h3>Semáforo de puestos</h3><div class=\"semaforo\">")
-                    .append(semaforo("VERDE",resumen[2],"Aceptable","/evaluaciones"))
-                    .append(semaforo("AMARILLO",resumen[3],"En observación","/evaluaciones"))
-                    .append(semaforo("ROJO",resumen[1],"Pendiente","/pendientes"));
-                if(resumen[1]+resumen[2]+resumen[3]>0)inicio.append("<div class=\"barra\" aria-hidden=\"true\"><i style=\"flex:").append(resumen[2]).append(";background:var(--verde)\"></i><i style=\"flex:").append(resumen[3]).append(";background:var(--amarillo)\"></i><i style=\"flex:").append(resumen[1]).append(";background:var(--rojo)\"></i></div>");
-                inicio.append("</div>");
-            }
-            if(c.rol()!=Cuenta.Rol.USUARIO)inicio.append(InicioEvaluacion.tarjeta(visitas.servicio().paraEvaluar(c)));
-            else inicio.append("<h3>Visitas en curso</h3>").append(Html.vacio("Aún no hay visitas disponibles.",""));
-            inicio.append("</section><section class=\"stack\"><h3>Reservas</h3>");
-            var pendientes = listaReservas.stream()
-                    .filter(r -> r.reserva().estado().equals("EN_COLA") || r.reserva().estado().equals("ESPERANDO")).toList();
-            if (pendientes.isEmpty()) {
-                inicio.append(Html.vacio("No hay reservas pendientes.",""));
-            } else {
-                for (var r : pendientes) {
-                    inicio.append("<div class=\"card stack\" style=\"gap:10px\"><div class=\"row between\"><div><div>")
-                            .append(Html.escapar(r.empresaNombre())).append("</div><div class=\"muted small\">")
-                            .append(Html.escapar(r.sedeNombre())).append(" · ").append(Html.fecha(r.reserva().fecha()))
-                            .append(" · ").append(r.reserva().inicio()).append("</div></div><span class=\"tag")
-                            .append(r.reserva().estado().equals("EN_COLA") ? " good" : " warn").append("\">")
-                            .append(r.reserva().estado().equals("EN_COLA") ? "En cola" : "Esperando")
-                            .append("</span></div>");
-                    if (r.reserva().descripcion() != null && !r.reserva().descripcion().isBlank()) {
-                        inicio.append("<p class=\"small muted\">").append(Html.escapar(r.reserva().descripcion())).append("</p>");
-                    }
-                    if (r.reserva().estado().equals("EN_COLA") && r.visita() == null) {
-                        inicio.append("<div class=\"row\"><a class=\"btn sm p\" href=\"/reservas/").append(r.reserva().id())
-                                .append("\">Ver reserva</a></div>");
-                    }
-                    inicio.append("</div>");
-                }
-            }
-            inicio.append("</section></div>");
-            enviar(x,200,Html.pagina("Inicio", inicio.toString(), s, false, false)); return;
+            inicio.atender(intercambio, sesion);
+            return;
         }
-        enviar(x,404,Html.pagina("Página no disponible","<a href=\"/\">Volver al inicio</a>",s));
-    }
-
-    private static String accionInicio(String ruta, String titulo, String ayuda, String trazo) {
-        return "<a class=\"card accion-inicio\" href=\"" + ruta + "\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"" + trazo
-                + "\"/></svg><span><strong>" + titulo + "</strong><span class=\"small muted\">" + ayuda + "</span></span></a>";
+        enviar(intercambio, 404, Html.pagina("Página no disponible", "<a href=\"/\">Volver al inicio</a>", sesion));
     }
 
     private static boolean vigente(Cuenta antes, Cuenta ahora) {
-        return ahora != null && ahora.estado() == Estado.ACTIVA && antes.hash().equals(ahora.hash())
-                && antes.rol() == ahora.rol()
-                && antes.temporal() == ahora.temporal();
+        return ahora != null && ahora.estado() == Estado.ACTIVA && antes.hash().equals(ahora.hash()) &&
+                antes.rol() == ahora.rol() && antes.temporal() == ahora.temporal();
     }
 
-    private static void exigirCsrf(Sesion s, Map<String,String> f) {
-        if (!Sesiones.csrfValido(s,f.get("csrf"))) throw new SecurityException("El formulario venció. Recarga la página e inténtalo de nuevo.");
+    private static void exigirCsrf(Sesion sesion, Map<String, String> parametros2) {
+        if (!Sesiones.csrfValido(sesion, parametros2.get("csrf")))
+            throw new SecurityException("El formulario venció. Recarga la página e inténtalo de nuevo.");
     }
 
-    private static String cookie(HttpExchange x) {
-        for (String encabezado : x.getRequestHeaders().getOrDefault("Cookie",List.of())) {
+    private static String cookie(HttpExchange intercambio) {
+        for (String encabezado : intercambio.getRequestHeaders().getOrDefault("Cookie", List.of())) {
             for (String parte : encabezado.split(";")) {
-                String[] par=parte.strip().split("=",2);
-                if (par.length==2 && par[0].equals(COOKIE)) return par[1];
+                String[] par = parte.strip().split("=", 2);
+                if (par.length == 2 && par[0].equals(COOKIE)) return par[1];
             }
         }
         return null;
     }
 
-    static void ponerCookie(HttpExchange x, String valor) {
-        x.getResponseHeaders().add("Set-Cookie",COOKIE+"="+valor+"; Path=/; HttpOnly; SameSite=Strict"
-                + (valor.isEmpty() ? "; Max-Age=0" : "") + (x instanceof HttpsExchange ? "; Secure" : ""));
+    static void ponerCookie(HttpExchange intercambio, String valor) {
+        intercambio.getResponseHeaders().add("Set-Cookie",
+                COOKIE + "=" + valor + "; Path=/; HttpOnly; SameSite=Strict" + (valor.isEmpty() ? "; Max-Age=0" : "") +
+                        (intercambio instanceof HttpsExchange ? "; Secure" : ""));
     }
 
-    /** Lee formularios acotados sin aceptar parámetros duplicados (RNF-004). */
-    public static Map<String,String> formulario(HttpExchange x) throws IOException {
-        String tipo=x.getRequestHeaders().getFirst("Content-Type");
-        if (tipo == null || !tipo.split(";",2)[0].equalsIgnoreCase("application/x-www-form-urlencoded")) {
+    /**
+     * Lee formularios acotados sin aceptar parámetros duplicados (RNF-004).
+     */
+    public static Map<String, String> formulario(HttpExchange intercambio) throws IOException {
+        String tipo = intercambio.getRequestHeaders().getFirst("Content-Type");
+        if (tipo == null || !tipo.split(";", 2)[0].equalsIgnoreCase("application/x-www-form-urlencoded")) {
             throw new IllegalArgumentException("Envía los datos desde el formulario de la página.");
         }
-        String ruta = x.getRequestURI().getPath();
-        int limite = ruta.startsWith("/reservas") || ruta.startsWith("/visitas") || ruta.startsWith("/evaluaciones") ? 262144 : 16384;
-        byte[] bytes=x.getRequestBody().readNBytes(limite + 1);
+        String ruta = intercambio.getRequestURI().getPath();
+        int limite = ruta.startsWith("/reservas") || ruta.startsWith("/visitas") ||
+                ruta.startsWith("/evaluaciones") ? 262144 : 16384;
+        byte[] bytes = intercambio.getRequestBody().readNBytes(limite + 1);
         if (bytes.length > limite) throw new IllegalArgumentException("El formulario es demasiado grande.");
         return parametros(new String(bytes, StandardCharsets.UTF_8));
     }
 
-    /** Lee parámetros de consulta sin aceptar campos duplicados ni direcciones excesivas (RNF-004). */
-    public static Map<String,String> consulta(HttpExchange x) {
-        String texto = x.getRequestURI().getRawQuery();
+    /**
+     * Lee parámetros de consulta sin aceptar campos duplicados ni direcciones excesivas (RNF-004).
+     */
+    public static Map<String, String> consulta(HttpExchange intercambio) {
+        String texto = intercambio.getRequestURI().getRawQuery();
         if (texto == null) return Map.of();
         if (texto.length() > 16384) throw new IllegalArgumentException("La dirección es demasiado larga.");
         return parametros(texto);
     }
 
-    private static Map<String,String> parametros(String texto) {
-        Map<String,String> f=new HashMap<>();
+    private static Map<String, String> parametros(String texto) {
+        Map<String, String> parametros2 = new HashMap<>();
         for (String par : texto.split("&")) {
             if (par.isEmpty()) continue;
-            String[] partes=par.split("=",2);
-            String clave,valor;
+            String[] partes = par.split("=", 2);
+            String clave, valor;
             try {
-                clave=URLDecoder.decode(partes[0],StandardCharsets.UTF_8);
-                valor=URLDecoder.decode(partes.length==2 ? partes[1] : "",StandardCharsets.UTF_8);
+                clave = URLDecoder.decode(partes[0], StandardCharsets.UTF_8);
+                valor = URLDecoder.decode(partes.length == 2 ? partes[1] : "", StandardCharsets.UTF_8);
             } catch (IllegalArgumentException error) {
-                throw new IllegalArgumentException("No pudimos leer los datos del formulario. Recarga la página e inténtalo de nuevo.");
+                throw new IllegalArgumentException(
+                        "No pudimos leer los datos del formulario. Recarga la página e inténtalo de nuevo.");
             }
-            if (f.putIfAbsent(clave,valor)!=null) throw new IllegalArgumentException("El formulario contiene campos repetidos. Recarga la página.");
+            if (parametros2.putIfAbsent(clave, valor) != null)
+                throw new IllegalArgumentException("El formulario contiene campos repetidos. Recarga la página.");
         }
-        return f;
+        return parametros2;
     }
 
-    /** Envía HTML en UTF-8 (RNF-007). */
-    public static void enviar(HttpExchange x, int estado, String html) throws IOException {
-        if(java.util.Set.of(403,404,500).contains(estado)){
-            if(!html.contains("<html"))html=Html.error(estado==403?"Acceso denegado":estado==404?"Página no disponible":"No pudimos abrir esta página",estado==403?"Tu cuenta no tiene acceso a esta página.":estado==404?"No encontramos lo que buscabas. Vuelve al inicio para continuar.":"Inténtalo de nuevo o vuelve al inicio.");
-            else if(!html.contains("Volver al inicio"))html=html.replace("</main>","<div><a class=\"btn p\" href=\"/\">Volver al inicio</a></div></main>");
+    /**
+     * Envía HTML en UTF-8 (RNF-007).
+     */
+    public static void enviar(HttpExchange intercambio, int estado, String html) throws IOException {
+        if (java.util.Set.of(403, 404, 500).contains(estado)) {
+            if (!html.contains("<html")) html = Html.error(estado == 403 ? "Acceso denegado" :
+                            estado == 404 ? "Página no disponible" : "No pudimos abrir esta página",
+                    estado == 403 ? "Tu cuenta no tiene acceso a esta página." :
+                            estado == 404 ? "No encontramos lo que buscabas. Vuelve al inicio para continuar." :
+                            "Inténtalo de " + "nuevo o " + "vuelve al " + "inicio.");
+            else if (!html.contains("Volver al inicio"))
+                html = html.replace("</main>", "<div><a class=\"btn p\" href=\"/\">Volver al inicio</a></div></main>");
         }
-        responder(x, estado, "text/html; charset=UTF-8", html);
+        responder(intercambio, estado, "text/html; charset=UTF-8", html);
     }
 
-    /** Envía una respuesta con el tipo explícito del contenido generado por la aplicación. */
-    public static void responder(HttpExchange x, int estado, String tipo, String contenido) throws IOException {
-        byte[] bytes=contenido.getBytes(StandardCharsets.UTF_8);
-        x.getResponseHeaders().set("Content-Type",tipo);
-        x.sendResponseHeaders(estado,bytes.length);
-        x.getResponseBody().write(bytes);
+    /**
+     * Envía una respuesta con el tipo explícito del contenido generado por la aplicación. RNF-011.
+     */
+    public static void responder(HttpExchange intercambio, int estado, String tipo,
+            String contenido) throws IOException {
+        byte[] bytes = contenido.getBytes(StandardCharsets.UTF_8);
+        intercambio.getResponseHeaders().set("Content-Type", tipo);
+        intercambio.sendResponseHeaders(estado, bytes.length);
+        intercambio.getResponseBody().write(bytes);
     }
 
-    /** Redirige después de un POST para evitar repetir operaciones al recargar (RNF-002). */
-    public static void redirigir(HttpExchange x, String ruta) throws IOException {
-        x.getResponseHeaders().set("Location",ruta); x.sendResponseHeaders(303,-1);
+    /**
+     * Redirige después de un POST para evitar repetir operaciones al recargar (RNF-002).
+     */
+    public static void redirigir(HttpExchange intercambio, String ruta) throws IOException {
+        intercambio.getResponseHeaders().set("Location", ruta);
+        intercambio.sendResponseHeaders(303, -1);
     }
 
-    private static String semaforo(String color,long cantidad,String texto,String ruta){
-        return "<a class=\"s\" href=\""+ruta+"\" data-color=\""+color+"\" data-cantidad=\""+cantidad+"\"><b style=\"color:var(--"+color.toLowerCase(java.util.Locale.ROOT)+")\">"+cantidad+"</b><span>"+Formularios.etiqueta(color)+"<br>"+texto+"</span></a>";
-    }
-
-    private static String kpi(String titulo, String valor, String estilo) {
-        return "<div class=\"card kpi\"><span class=\"eyebrow\">" + Html.escapar(titulo) + "</span><b class=\"num\""
-                + (estilo != null ? " style=\"" + estilo + "\"" : "") + ">" + Html.escapar(valor) + "</b></div>";
-    }
-
-    private static void estatico(HttpExchange x, String ruta) throws IOException {
-        if (!x.getRequestMethod().equals("GET")) { enviar(x,405,"Método no permitido."); return; }
-        if (ruta.contains("..") || !(ruta.endsWith(".css") || ruta.endsWith(".js") || ruta.endsWith(".jpg") || ruta.endsWith(".png"))) {
-            enviar(x,404,"Archivo no disponible."); return;
+    private static void estatico(HttpExchange intercambio, String ruta) throws IOException {
+        if (!intercambio.getRequestMethod().equals("GET")) {
+            enviar(intercambio, 405, "Método no permitido.");
+            return;
         }
-        try (var entrada=Router.class.getResourceAsStream(ruta)) {
-            if (entrada == null) { enviar(x,404,"Archivo no disponible."); return; }
-            String tipo=ruta.endsWith(".css") ? "text/css; charset=UTF-8" : ruta.endsWith(".js") ? "text/javascript; charset=UTF-8"
-                    : ruta.endsWith(".jpg") ? "image/jpeg" : "image/png";
-            byte[] bytes=entrada.readAllBytes();
-            x.getResponseHeaders().set("Content-Type",tipo); x.sendResponseHeaders(200,bytes.length); x.getResponseBody().write(bytes);
+        if (ruta.contains("..") ||
+                !(ruta.endsWith(".css") || ruta.endsWith(".js") || ruta.endsWith(".jpg") || ruta.endsWith(".png"))) {
+            enviar(intercambio, 404, "Archivo no disponible.");
+            return;
+        }
+        try (var entrada = Router.class.getResourceAsStream(ruta)) {
+            if (entrada == null) {
+                enviar(intercambio, 404, "Archivo no disponible.");
+                return;
+            }
+            String tipo = ruta.endsWith(".css") ? "text/css; charset=UTF-8" : ruta.endsWith(
+                    ".js") ? "text/javascript; charset=UTF-8" : ruta.endsWith(".jpg") ? "image/jpeg" : "image/png";
+            byte[] bytes = entrada.readAllBytes();
+            intercambio.getResponseHeaders().set("Content-Type", tipo);
+            intercambio.sendResponseHeaders(200, bytes.length);
+            intercambio.getResponseBody().write(bytes);
         }
     }
 }

@@ -6,6 +6,7 @@ import co.aplomo.db.Sql;
 import co.aplomo.modelo.Cuenta;
 import co.aplomo.seguridad.Contrasenas;
 import co.aplomo.servicio.ColoresAgenda;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -14,9 +15,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/** RF-002/033: seis cuentas ficticias del equipo, sin alterar sus administradores reales. */
+/**
+ * RF-002/033: seis cuentas ficticias del equipo, sin alterar sus administradores reales.
+ */
 final class DemoRoles {
-    private DemoRoles() {}
+    private DemoRoles() {
+    }
 
     static void cargar(Connection conexion, Path fotos, int administrador) throws SQLException, IOException {
         LocalDate presentacion = LocalDate.parse(System.getProperty("aplomo.demo.fecha", "2026-11-27"));
@@ -50,7 +54,8 @@ final class DemoRoles {
         Cuenta existente = cuentas.porCorreo(conexion, correo);
         if (existente != null) {
             if (!existente.nombre().equals(nombre) || existente.rol() != rol) {
-                throw new IllegalArgumentException("Un correo de demostración pertenece a otra cuenta. No se modificó.");
+                throw new IllegalArgumentException(
+                        "Un correo de demostración pertenece a otra cuenta. No se modificó.");
             }
             return existente.id();
         }

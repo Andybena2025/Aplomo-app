@@ -1,12 +1,18 @@
 package co.aplomo.db;
 
 import org.junit.jupiter.api.Test;
+
 import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
-import static org.junit.jupiter.api.Assertions.*;
 
-/** RNF-001: comprobación real de JDBC, solo lectura y sin modificar la base. */
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * RNF-001: comprobación real de JDBC, solo lectura y sin modificar la base.
+ */
 class ConexionTest {
     @Test
     void primeraConexionConCargadorDeHiloWeb() throws Exception {
@@ -23,14 +29,18 @@ class ConexionTest {
         }
     }
 
-    /** RNF-001: inicia JDBC por primera vez en otra JVM, como un hilo HTTP de Maven. */
+    /**
+     * RNF-001: inicia JDBC por primera vez en otra JVM, como un hilo HTTP de Maven.
+     */
     public static class PrimeraConexion {
-        /** Comprueba la primera conexión sin depender de controladores cargados por otras pruebas. */
+
+        /**
+         * Comprueba la primera conexión sin depender de controladores cargados por otras pruebas.
+         */
         public static void main(String[] args) throws Exception {
             Thread.currentThread().setContextClassLoader(ClassLoader.getPlatformClassLoader());
-            try (var conexion = Conexion.obtener();
-                 var consulta = conexion.prepareStatement("SELECT 1");
-                 var filas = consulta.executeQuery()) {
+            try (var conexion = Conexion.obtener(); var consulta = conexion.prepareStatement(
+                    "SELECT 1"); var filas = consulta.executeQuery()) {
                 if (!filas.next() || filas.getInt(1) != 1) {
                     throw new IllegalStateException("La conexión no respondió correctamente.");
                 }
@@ -46,8 +56,8 @@ class ConexionTest {
             assertEquals("MySQL", primera.getMetaData().getDatabaseProductName());
             assertTrue(primera.isValid(3));
             assertTrue(segunda.isValid(3));
-            try (var consulta = primera.prepareStatement("SELECT COUNT(*) FROM valor_tabla_rula");
-                 var filas = consulta.executeQuery()) {
+            try (var consulta = primera.prepareStatement(
+                    "SELECT COUNT(*) FROM valor_tabla_rula"); var filas = consulta.executeQuery()) {
                 assertTrue(filas.next());
                 assertEquals(272, filas.getInt(1));
             }

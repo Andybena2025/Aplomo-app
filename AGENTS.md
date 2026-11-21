@@ -165,4 +165,11 @@ Luego ESPERA el OK de Andy.
   el bloque protegido de POST /evaluaciones/calcular. Comentario obligatorio: código protegido, RNF-010.
   Todo el resto de src/main Java debe cumplir 120 columnas. No modificar esos bloques protegidos.
 
-- Cierre funcional Paso 26: 1035 casos Maven verificados (7 fallos corregidos por ejecución dirigida) y 122 JS. Migración real 449→449 filas, 22 tablas, repetida dos veces con respaldo privado. 30 medidas de pantallas internas sin desborde y login sin desborde; sin capturas. Paso 26B pendiente de ordenar todo Java fuera del código protegido.
+- Cierre funcional Paso 26: 1035 casos Maven verificados (7 fallos corregidos por ejecución dirigida) y 122 JS. Migración real 449→449 filas, 22 tablas, repetida dos veces con respaldo privado. 30 medidas de pantallas internas sin desborde y login sin desborde; sin capturas. Paso 26B completado: 1036 Maven y 122 JS, todos aprobados; 0 líneas largas fuera del código protegido.
+
+- Cierre Paso 26B (21 nov 2026): imports explícitos y nombres internos aclarados, una instrucción por línea,
+  fragmentos de Inicio/Ayuda/Consultas/cabecera separados; nuevos AccesoWeb, InicioWeb, AgendaWeb, DemoWeb y AgendaDao.
+  Prueba LongitudFuentesTest: excluye solo co.aplomo.rula y el bloque delimitado de POST calcular, según Andy.
+  1342→16 líneas >120; las 16 protegidas son idénticas a antes. Suite completa una vez: 1036/1036 Maven,
+  122/122 JS, 0 fallos/errores/omitidas. Sin cambios de SQL, esquema, motor, IA, galería o rutas en este segundo commit.
+  Informe docs/informe_paso26b.md. No hay capturas, descargas ni evidencia nueva.

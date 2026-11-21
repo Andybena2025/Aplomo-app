@@ -37,3 +37,5 @@ por Evaluador (Andrés tiene además la cita en vivo). Se conciliaron los cruces
 registros ni modificar empresas reales. Las seis cuentas nuevas exigen cambio de clave.
 Escenario 26: Andrés 17 citas (10 anteriores, 7 desde el 27/11); Johan 19 (13 anteriores,
 5 futuras activas y 1 cancelada; incluye 3 históricas de 2025); Gabriella 16 (10 anteriores, 6 futuras).
+
+Cierre posterior: Paso 26B aprobado por 1036 Maven y 122 JS; ver informe_paso26b.md.

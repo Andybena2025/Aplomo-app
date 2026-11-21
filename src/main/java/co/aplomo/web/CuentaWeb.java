@@ -6,27 +6,34 @@ import co.aplomo.seguridad.Sesiones.Sesion;
 import co.aplomo.servicio.Autenticacion;
 import co.aplomo.servicio.CuentaPropia;
 import com.sun.net.httpserver.HttpExchange;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-/** RF-001c, RF-002: edición del perfil autenticado, con CSRF verificado por Router. */
+/**
+ * RF-001c, RF-002: edición del perfil autenticado, con CSRF verificado por Router.
+ */
 public final class CuentaWeb {
     private final CuentaPropia perfil;
     private final Autenticacion autenticacion;
     private final Sesiones sesiones;
 
-    /** RNF-011: recibe servicios y sesiones, sin abrir conexiones propias. */
+    /**
+     * RNF-011: recibe servicios y sesiones, sin abrir conexiones propias.
+     */
     public CuentaWeb(CuentaPropia perfil, Autenticacion autenticacion, Sesiones sesiones) {
         this.perfil = perfil;
         this.autenticacion = autenticacion;
         this.sesiones = sesiones;
     }
 
-    /** RF-001c: atiende datos y clave propios; nunca recibe un identificador de otra cuenta. */
-    public boolean atender(HttpExchange intercambio, Sesion sesion, Map<String, String> formulario)
-            throws IOException, SQLException {
+    /**
+     * RF-001c: atiende datos y clave propios; nunca recibe un identificador de otra cuenta.
+     */
+    public boolean atender(HttpExchange intercambio, Sesion sesion,
+            Map<String, String> formulario) throws IOException, SQLException {
         String ruta = intercambio.getRequestURI().getPath();
         if (!ruta.equals("/cuenta") && !ruta.equals("/cuenta/clave")) {
             return false;
@@ -36,11 +43,9 @@ public final class CuentaWeb {
             return true;
         }
         try {
-            Cuenta cuenta = ruta.equals("/cuenta/clave")
-                    ? autenticacion.cambiar(sesion.cuenta(), formulario.get("actual"),
-                            formulario.get("nueva"), formulario.get("confirmacion"))
-                    : perfil.guardar(sesion.cuenta(), formulario.get("nombre"),
-                            formulario.get("telefono"), formulario.get("cargo"));
+            Cuenta cuenta = ruta.equals("/cuenta/clave") ? autenticacion.cambiar(sesion.cuenta(),
+                    formulario.get("actual"), formulario.get("nueva"), formulario.get("confirmacion")) : perfil.guardar(
+                    sesion.cuenta(), formulario.get("nombre"), formulario.get("telefono"), formulario.get("cargo"));
             sesiones.invalidarCuenta(cuenta.id());
             Sesion nueva = sesiones.crear(cuenta);
             Router.ponerCookie(intercambio, nueva.id());
@@ -71,13 +76,13 @@ public final class CuentaWeb {
     }
 
     private static String campo(String nombre, String etiqueta, String valor, int limite) {
-        return "<label class=\"field\">" + etiqueta + "<input class=\"input\" name=\"" + nombre
-                + "\" value=\"" + Html.escapar(valor) + "\" maxlength=\"" + limite + "\" required></label>";
+        return "<label class=\"field\">" + etiqueta + "<input class=\"input\" name=\"" + nombre + "\" value=\"" +
+                Html.escapar(valor) + "\" maxlength=\"" + limite + "\" required></label>";
     }
 
     private static String clave(Sesion sesion) {
         StringBuilder formulario = new StringBuilder(
-                "<form class=\"card stack\" method=\"post\" action=\"/cuenta/clave\"><h2>Contraseña</h2>");
+                "<form class=\"card stack\" method=\"post\" action=\"/cuenta/clave\"><h2>Cont" + "raseña</h2>");
         formulario.append(Html.csrf(sesion));
         for (String[] campo : List.of(new String[]{"actual", "Contraseña actual"},
                 new String[]{"nueva", "Nueva contraseña"}, new String[]{"confirmacion", "Confirmar contraseña"})) {
