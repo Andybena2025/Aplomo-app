@@ -39,7 +39,7 @@ public final class PaginasCalificaciones {
     public static String informe(Sesion s,InformeEmpresa i){
         StringBuilder h=new StringBuilder(encabezado(s,i,true));
         h.append("<p class=\"hint informe-ayuda\">Pulsa Imprimir o guardar PDF. En el diálogo del navegador elige tu impresora o Guardar como PDF.</p>")
-                .append("<div class=\"sheetwrap informe-wrap\"><article class=\"sheet informe-empresa\"><section class=\"informe-portada\"><header class=\"informe-marca\"><b>APLOMO.</b><div>Informe general de la empresa<br>")
+                .append("<div class=\"sheetwrap informe-wrap\"><article class=\"sheet informe-empresa\"><section class=\"informe-portada\"><header class=\"informe-marca\"><b>ALINEO.</b><div>Informe general de la empresa<br>")
                 .append(generado(i)).append("</div></header><h1>").append(escapar(i.empresa().nombre()))
                 .append("</h1><p>NIT ").append(escapar(i.empresa().nit())).append("</p><p>").append(escapar(i.empresa().descripcion())).append("</p>")
                 .append("<p>Contacto: ").append(texto(i.empresa().contacto(),"Sin registrar")).append(" · ").append(texto(i.empresa().telefono(),"Sin teléfono"))
@@ -51,7 +51,7 @@ public final class PaginasCalificaciones {
         h.append("<section class=\"informe-leyenda\"><h2>Cómo leer el riesgo</h2><p>El nivel y la acción están escritos para que el informe se entienda en blanco y negro.</p><ul>");
         for(var r:i.leyenda())h.append("<li>").append(r.minimo()).append(r.minimo()==r.maximo()?"":"–"+r.maximo()).append(" · ")
                 .append(escapar(Formularios.etiqueta(r.color()))).append(" · Nivel ").append(r.nivel()).append(" · ").append(escapar(r.nombre())).append(": ").append(escapar(r.accion())).append("</li>");
-        h.append("</ul></section><footer class=\"foot\">APLOMO. · Ergonomía con precisión · Método RULA (McAtamney y Corlett, 1993)<br>Generado el ")
+        h.append("</ul></section><footer class=\"foot\">ALINEO. · Ergonomía con precisión · Método RULA (McAtamney y Corlett, 1993)<br>Generado el ")
                 .append(Html.fechaHora(i.generado())).append(" · Resultados de visitas Finalizadas.</footer></article></div><script src=\"/static/js/informe.js\" defer></script>");
         return Html.pagina("Informe general",h.toString(),s,false);
     }

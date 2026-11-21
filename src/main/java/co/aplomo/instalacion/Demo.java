@@ -19,7 +19,7 @@ public final class Demo {
     public static void ejecutar(boolean reiniciar) {
         Console terminal=System.console();
         if(terminal==null)throw new IllegalStateException("Abre este script directamente en una terminal para confirmar y escribir la contraseña de forma privada.");
-        terminal.printf("APLOMO · %s de datos de demostración%nBase configurada: %s%n",reiniciar?"Reinicio":"Carga",base(Config.url()));
+        terminal.printf("ALINEO · %s de datos de demostración%nBase configurada: %s%n",reiniciar?"Reinicio":"Carga",base(Config.url()));
         String usuario=terminal.readLine("Usuario administrador de MySQL (Enter = root): ");
         if(usuario==null)throw new IllegalArgumentException("Operación cancelada.");
         usuario=usuario.isBlank()?"root":usuario.trim();
@@ -69,7 +69,7 @@ public final class Demo {
     public static void cargar(Connection con,Path sql,Path fotos)throws IOException,SQLException{
         if(con.getAutoCommit())throw new IllegalArgumentException("La demostración requiere una transacción.");
         Integer admin=Sql.uno(con,"SELECT id_cuenta FROM cuenta WHERE rol='ADMINISTRADOR' AND estado='ACTIVA' AND contrasena_temporal=FALSE ORDER BY id_cuenta LIMIT 1",r->r.getInt(1));
-        if(admin==null)throw new IllegalArgumentException("Primero ingresa como Administrador y cambia la contraseña temporal de APLOMO.");
+        if(admin==null)throw new IllegalArgumentException("Primero ingresa como Administrador y cambia la contraseña temporal de ALINEO.");
         Integer ajenas=Sql.uno(con,"SELECT COUNT(*) FROM reserva r JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa e USING(id_empresa) WHERE r.codigo IN ('DEMO-FIN-01','DEMO-FIN-02','DEMO-COL-01','DEMO-COL-02','DEMO-ESP-01','DEMO-ESP-02','DEMO-LST-E1','DEMO-LST-E2','DEMO-LST-E3') AND NOT ("+EMPRESAS+")",r->r.getInt(1));
         if(ajenas>0)throw new IllegalArgumentException("Hay un código demo en otra empresa. No se cambió nada.");
         String texto=Files.readAllLines(sql,StandardCharsets.UTF_8).stream().filter(l->!l.stripLeading().startsWith("--")).collect(java.util.stream.Collectors.joining("\n"));

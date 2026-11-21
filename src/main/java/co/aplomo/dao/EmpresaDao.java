@@ -63,8 +63,10 @@ public final class EmpresaDao {
     }
 
     /** RF-028: ofrece solamente opciones activas bajo una jerarquía también activa. */
-    public List<Empresa> activas(Connection con) throws SQLException {
-        return Sql.listar(con, "SELECT r.* FROM empresa r WHERE r.activo = TRUE"+co.aplomo.modelo.Demostracion.filtro("r.id_empresa")+" ORDER BY r.nombre, r.id_empresa", EmpresaDao::leer);
+    public List<Empresa> activas(Connection con) throws SQLException {return activas(con,Alcance.exacta(0));}
+    /** RF-002: catálogo activo limitado por cuenta_empresa antes de devolver datos. */
+    public List<Empresa> activas(Connection con,Alcance alcance) throws SQLException {
+        return Sql.listar(con, "SELECT r.* FROM empresa r WHERE r.activo = TRUE AND "+alcance.sql("r.id_empresa")+co.aplomo.modelo.Demostracion.filtro("r.id_empresa")+" ORDER BY r.nombre, r.id_empresa", EmpresaDao::leer,alcance.todas(),alcance.valor());
     }
 
     private static Empresa leer(ResultSet fila) throws SQLException {

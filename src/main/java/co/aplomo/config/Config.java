@@ -8,7 +8,7 @@ import java.util.*;
 /** Configuración local o por entorno; nunca imprime claves. */
 public final class Config {
     private Config(){}
-    public record Datos(String url,String usuario,String clave,int puerto,Path carpetaFotos){@Override public String toString(){return "Configuración de APLOMO (clave oculta)";}}
+    public record Datos(String url,String usuario,String clave,int puerto,Path carpetaFotos){@Override public String toString(){return "Configuración de ALINEO (clave oculta)";}}
     private static final class Actual {static final Datos VALORES=leer(System.getenv(),Path.of("config/db.properties"));}
     /** Env por campo; abre el archivo solo cuando falta alguna variable de conexión. */
     static Datos leer(Map<String,String> entorno,Path archivo){
@@ -22,7 +22,7 @@ public final class Config {
         return new Datos(url,usuario,clave,puerto,Path.of(carpeta));
     }
     private static String valor(Map<String,String> e,Properties p,String variable,String propiedad){String v=e.containsKey(variable)?e.get(variable):p.getProperty(propiedad);if(v==null||v.isBlank())throw new IllegalStateException("Falta configurar "+variable+" o "+propiedad+".");return v;}
-    private static int puerto(String valor){try{int p=Integer.parseInt(valor);if(p>=1&&p<=65535)return p;}catch(NumberFormatException ignored){}throw new IllegalStateException("El puerto de APLOMO debe estar entre 1 y 65535.");}
+    private static int puerto(String valor){try{int p=Integer.parseInt(valor);if(p>=1&&p<=65535)return p;}catch(NumberFormatException ignored){}throw new IllegalStateException("El puerto de ALINEO debe estar entre 1 y 65535.");}
     /** Se conserva la sustitución de las pruebas para no usar la base real. */
     public static String url(){return System.getProperty("aplomo.db.url",Actual.VALORES.url());}
     public static String usuario(){return Actual.VALORES.usuario();}

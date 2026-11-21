@@ -1,4 +1,6 @@
-# APLOMO.
+# ALINEO.
+
+Antes se llamaba APLOMO.; el código interno conserva co.aplomo.
 
 **Ergonomía con precisión.** Sistema web para evaluar posturas en puestos de trabajo con el método **RULA** (Rapid Upper Limb Assessment).
 
@@ -10,7 +12,7 @@ Proyecto Nuclear de Ingeniería de Software, 3.er semestre · Corporación Unive
 
 ## Qué hace
 
-El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los ángulos del cuerpo y APLOMO. calcula el puntaje RULA con su semáforo. Lo que sale en Rojo pasa a **pendientes de arreglo**, el sistema **propone mejoras** y la empresa consulta sus resultados desde su propia cuenta.
+El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los ángulos del cuerpo y ALINEO. calcula el puntaje RULA con su semáforo. Lo que sale en Rojo pasa a **pendientes de arreglo**, el sistema **propone mejoras** y la empresa consulta sus resultados desde su propia cuenta.
 
 | Rol | Qué puede hacer |
 |---|---|
@@ -52,7 +54,8 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 20 | Sugerencia de pies sin buen apoyo desde la foto de perfil | 🟡 20B: umbral 40 %, tres perfiles con MediaPipe real; 949 Maven + 104 JS; revisión de Andy pendiente ([informe](docs/informe_paso20.md)) |
 | 22 | Portada móvil, acciones de tablas y herramienta privada de cuentas | 🟡 965 Maven + 110 JS; tamaños medidos y cuentas por servicio; revisión de Andy pendiente ([informe](docs/informe_paso22.md)) |
 | 23 | Historial de inactivos, navegación Atrás y guía manual | ✅ Implementado y subido; [informe](docs/informe_paso23.md) |
-| 24 | Tres roles, Mi agenda, Mis evaluaciones y notas | 🟡 Pruebas dirigidas aprobadas; suite conjunta pendiente al cerrar Paso 25 ([informe](docs/informe_paso24.md)) |
+| 24 | Tres roles, Mi agenda, Mis evaluaciones y notas | ✅ Implementado y subido; [informe](docs/informe_paso24.md) |
+| 25 | ALINEO., Quiénes somos y Centro de ayuda | ✅ 1022 casos Maven verificados y 119 JS; [informe](docs/informe_paso25.md) |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 
@@ -93,7 +96,7 @@ Al entrar, la app te pide cambiarla (mínimo 8 caracteres, con letras y números
 
 ## Probar la app sin ir a una empresa: fotos de prueba
 
-Si vas a probar APLOMO. y no tienes un puesto de trabajo real a la mano, usa las **fotos de prueba** de la carpeta [`fotos_de_prueba/`](fotos_de_prueba/). Son imágenes **generadas con IA** (no son personas reales) de trabajadores en distintas posturas: de pie, inclinados, con los brazos arriba, levantando peso, etc. Sirven para recorrer la evaluación completa y ver cómo cambian los resultados según la postura.
+Si vas a probar ALINEO. y no tienes un puesto de trabajo real a la mano, usa las **fotos de prueba** de la carpeta [`fotos_de_prueba/`](fotos_de_prueba/). Son imágenes **generadas con IA** (no son personas reales) de trabajadores en distintas posturas: de pie, inclinados, con los brazos arriba, levantando peso, etc. Sirven para recorrer la evaluación completa y ver cómo cambian los resultados según la postura.
 
 - **11 fotos sueltas** de ejemplo (estación de pie, ensamble, bodega, laboratorio).
 - **Galería de 5 posturas** en [`fotos_de_prueba/galeria/`](fotos_de_prueba/galeria/): cada una con **perfil, frente y detalle** del mismo momento.
@@ -124,7 +127,7 @@ Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuent
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**984 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**1022 pruebas aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 
@@ -160,7 +163,7 @@ Abre `.env` y cambia las dos claves de ejemplo por claves distintas. Ese archivo
 docker compose up --build -d
 ```
 
-Abre **http://localhost:8080**. Cuenta inicial: **admin@rula.local**, contraseña temporal **Cambiar2026**; la app exige cambiarla en el primer ingreso. Es el Administrador de APLOMO, no el usuario root de MySQL. Si otra copia de APLOMO está usando 8080, detén esa copia antes de levantar Docker.
+Abre **http://localhost:8080**. Cuenta inicial: **admin@rula.local**, contraseña temporal **Cambiar2026**; la app exige cambiarla en el primer ingreso. Es el Administrador de ALINEO, no el usuario root de MySQL. Si otra copia de ALINEO está usando 8080, detén esa copia antes de levantar Docker.
 
 ```sh
 docker compose logs -f app

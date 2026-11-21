@@ -20,8 +20,8 @@ public final class CalificacionesWeb {
         if(!x.getRequestMethod().equals("GET")){x.getResponseHeaders().set("Allow","GET");Router.enviar(x,405,"Usa la vista de calificaciones o el botón Generar informe.");return true;}
         if(ruta.equals("/calificaciones")){
             String id=Router.consulta(x).getOrDefault("empresa","");
-            if(id.isBlank())Router.enviar(x,200,PaginasCalificaciones.elegir(s,servicio.empresas(s.cuenta())));
-            else Router.enviar(x,200,PaginasCalificaciones.calificaciones(s,servicio.consultar(s.cuenta(),Validacion.entero(id,"empresa",1,Integer.MAX_VALUE))));
+            if(id.isBlank()){var empresas=servicio.empresas(s.cuenta());if(s.cuenta().rol()==Cuenta.Rol.USUARIO&&empresas.size()==1)id=Integer.toString(empresas.get(0).id());else{Router.enviar(x,200,PaginasCalificaciones.elegir(s,empresas));return true;}}
+            Router.enviar(x,200,PaginasCalificaciones.calificaciones(s,servicio.consultar(s.cuenta(),Validacion.entero(id,"empresa",1,Integer.MAX_VALUE))));
         }else if(ruta.matches("/informes/empresa/[1-9][0-9]*")){
             int id=Validacion.entero(ruta.substring("/informes/empresa/".length()),"empresa",1,Integer.MAX_VALUE);
             Router.enviar(x,200,PaginasCalificaciones.informe(s,servicio.informe(s.cuenta(),id)));

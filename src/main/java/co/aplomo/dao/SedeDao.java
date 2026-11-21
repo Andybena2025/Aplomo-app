@@ -44,8 +44,10 @@ public final class SedeDao {
     }
 
     /** RF-028: ofrece solamente opciones activas bajo una jerarquía también activa. */
-    public List<Sede> activas(Connection con) throws SQLException {
-        return Sql.listar(con, "SELECT r.* FROM sede r JOIN empresa e ON e.id_empresa = r.id_empresa WHERE r.activo = TRUE AND e.activo = TRUE"+co.aplomo.modelo.Demostracion.filtro("r.id_empresa")+" ORDER BY r.nombre, r.id_sede", SedeDao::leer);
+    public List<Sede> activas(Connection con) throws SQLException {return activas(con,Alcance.exacta(0));}
+    /** RF-002: catálogo activo limitado por cuenta_empresa antes de devolver datos. */
+    public List<Sede> activas(Connection con,Alcance alcance) throws SQLException {
+        return Sql.listar(con, "SELECT r.* FROM sede r JOIN empresa e ON e.id_empresa = r.id_empresa WHERE r.activo = TRUE AND e.activo = TRUE AND "+alcance.sql("r.id_empresa")+co.aplomo.modelo.Demostracion.filtro("r.id_empresa")+" ORDER BY r.nombre, r.id_sede", SedeDao::leer,alcance.todas(),alcance.valor());
     }
 
     private static Sede leer(ResultSet fila) throws SQLException {

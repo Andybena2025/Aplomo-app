@@ -41,7 +41,7 @@ public final class Visitas {
 
     /** Acceso administrativo a puestos pendientes; no expone visitas en curso al Usuario. */
     public List<ParaEvaluar> paraEvaluar(Cuenta actor) throws SQLException {
-        return tx.ejecutar(con->{administrador(con,actor);return visitas.paraEvaluar(con).stream().filter(f->{try{AccesoDatos.exigirVisita(con,actor,f.visita());return true;}catch(SecurityException ex){return false;}catch(SQLException ex){throw new IllegalStateException(ex);}}).toList();});
+        return tx.ejecutar(con->{var a=administrador(con,actor);return visitas.paraEvaluar(con,AccesoDatos.empresaPermitida(a));});
     }
 
     /** Práctica comparte las transacciones y el reloj, sin usar privilegios de MySQL adicionales. */

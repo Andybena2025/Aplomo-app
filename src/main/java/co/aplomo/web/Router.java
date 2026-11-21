@@ -87,6 +87,7 @@ public final class Router implements HttpHandler {
         }
         if(ruta.equals("/favicon.ico")||ruta.equals("/favicon.svg")){if(!metodo.equals("GET")){enviar(x,405,"Método no permitido.");return;}responder(x,200,"image/svg+xml; charset=UTF-8",Html.favicon());return;}
         if (ruta.startsWith("/static/")) { estatico(x,ruta); return; }
+        if(ruta.equals("/nosotros")&&metodo.equals("GET")){redirigir(x,"/login#nosotros");return;}
         String id = cookie(x);
         Sesion s = sesiones.obtener(id);
         if (s != null && s.cuenta() != null) {
@@ -118,6 +119,7 @@ public final class Router implements HttpHandler {
             sesiones.cerrar(s.id()); s=sesiones.crear(c); ponerCookie(x,s.id());
             redirigir(x,c.temporal() ? "/cuenta/contrasena" : "/"); return;
         }
+        if(ruta.equals("/ayuda")&&metodo.equals("GET")){enviar(x,200,PaginasAyuda.pagina(s!=null&&s.cuenta()!=null?s:null,evaluaciones.servicio().ayuda().consultar(s==null?null:s.cuenta())));return;}
         if (s == null || s.cuenta() == null) {
             // RF-001b, RNF-007: un formulario anónimo vigente no es una sesión cerrada.
             if (ruta.startsWith("/fotos/")) throw new SecurityException("Acceso denegado.");
@@ -194,7 +196,7 @@ public final class Router implements HttpHandler {
                     .append(Html.escapar(nombre)).append("</h1></div></div>");
             if(c.rol()!=Cuenta.Rol.USUARIO)inicio.append(InicioEvaluacion.practica(visitas.servicio().practica().enCurso(c)));
             if(c.rol()!=Cuenta.Rol.ADMINISTRADOR&&this.empresas.servicio().listar(c).isEmpty())inicio.append(Html.aviso("Aún no tienes empresas asignadas. Pídeselas al Administrador.",false));
-            if(c.rol()==Cuenta.Rol.EVALUADOR){var ag=reservas.servicio().agenda();var notas=ag.nuevas(c);if(!notas.isEmpty())inicio.append("<p><a href=\"/reservas/").append(notas.get(0)).append("\">Tienes ").append(notas.size()).append(" notas nuevas del Administrador</a></p>");var hoy=ag.consultar(c,Map.of());inicio.append("<section class=\"card stack\"><h2>Hoy en tu agenda</h2>");var citasHoy=hoy.citas().stream().filter(t->t.ficha().reserva().fecha().equals(reservas.servicio().hoy())).limit(3).toList();if(citasHoy.isEmpty())inicio.append("<p class=\"muted\">No tienes citas hoy.</p>");else for(var cita:citasHoy)inicio.append(PaginasAgenda.cita(cita));inicio.append("<a class=\"btn\" href=\"/agenda\">Ver mi agenda</a></section>");}
+            if(c.rol()==Cuenta.Rol.EVALUADOR){var ag=reservas.servicio().agenda();var notas=ag.nuevas(c);if(!notas.isEmpty())inicio.append("<p><a href=\"/reservas/").append(notas.get(0)).append("\">Tienes ").append(notas.size()).append(notas.size()==1?" nota nueva del Administrador</a></p>":" notas nuevas del Administrador</a></p>");var hoy=ag.consultar(c,Map.of());inicio.append("<section class=\"card stack\"><h2>Hoy en tu agenda</h2>");var citasHoy=hoy.citas().stream().filter(t->t.ficha().reserva().fecha().equals(reservas.servicio().hoy())).limit(3).toList();if(citasHoy.isEmpty())inicio.append("<p class=\"muted\">No tienes citas hoy.</p>");else for(var cita:citasHoy)inicio.append(PaginasAgenda.cita(cita));inicio.append("<a class=\"btn\" href=\"/agenda\">Ver mi agenda</a></section>");}
             // 4 tarjetas KPI como en el mock
             inicio.append("<div class=\"grid4\" style=\"margin-bottom:24px\">")
                     .append(kpi("Visitas en curso", String.valueOf(enCurso), null))

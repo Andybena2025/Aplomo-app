@@ -23,7 +23,7 @@ public final class Agenda {
    LocalDate desde=mes?fecha.withDayOfMonth(1):fecha.with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));LocalDate hasta=mes?desde.plusMonths(1):desde.plusWeeks(1);boolean canceladas=q.getOrDefault("canceladas","").equals("1");
    var al=AccesoDatos.empresaPermitida(a);var bases=new ReservaDao().listar(c,al);List<Cita> citas=new ArrayList<>();
    for(var f:bases){var res=f.reserva();if(res.fecha().isBefore(desde)||!res.fecha().isBefore(hasta)||!canceladas&&res.estado().equals("CANCELADA"))continue;
-    var responsable=Sql.uno(c,"SELECT q.id_cuenta,q.nombre FROM cuenta_empresa ce JOIN cuenta q USING(id_cuenta) WHERE ce.id_empresa=? AND ce.activo=TRUE AND q.rol='EVALUADOR' ORDER BY q.id_cuenta LIMIT 1",rs->Map.entry(rs.getInt(1),rs.getString(2)),f.empresa());Integer id=responsable==null?null:responsable.getKey();
+    var responsable=Sql.uno(c,"SELECT q.id_cuenta,q.nombre FROM cuenta_empresa ce JOIN cuenta q USING(id_cuenta) WHERE ce.id_empresa=? AND ce.activo=TRUE AND q.rol='EVALUADOR' ORDER BY (q.estado='INACTIVA'),q.id_cuenta LIMIT 1",rs->Map.entry(rs.getInt(1),rs.getString(2)),f.empresa());Integer id=responsable==null?null:responsable.getKey();
     if(filtro.equals("SIN_ASIGNAR")&&id!=null||!Set.of("TODOS","SIN_ASIGNAR").contains(filtro)&&!Objects.equals(id,Integer.valueOf(filtro)))continue;
     citas.add(new Cita(f,id,responsable==null?"Sin evaluador asignado":responsable.getValue(),notaEn(c,res.id()),false));
    }

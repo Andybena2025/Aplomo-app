@@ -33,7 +33,7 @@ final class DemoCompleta {
             if(salon==null)salon=Sql.insertar(c,"INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) VALUES (?,?,?,?,?)",sede,"Demostración de resultados","Solo datos ficticios · Paso 17",1,12);
             String codigo=segunda?"DEMO17-E3B":"DEMO-17-E"+i;
             Integer reserva=Sql.uno(c,"SELECT r.id_reserva FROM reserva r JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE codigo=? AND s.id_empresa=?",rs->rs.getInt(1),codigo,empresa);
-            if(reserva==null){if(Sql.<Integer>uno(c,"SELECT COUNT(*) FROM reserva WHERE codigo=?",rs->rs.getInt(1),codigo)>0)throw new IllegalArgumentException("Un código de demostración está en otra empresa.");reserva=Sql.insertar(c,"INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,estado) VALUES (?,?,?,?,?,?,?,?,?)",salon,administrador,codigo,dia,LocalTime.of(9,0),LocalTime.of(11,0),"EVALUACION_INICIAL","DEMO17 · Resultados ficticios para presentar APLOMO","EN_COLA");}
+            if(reserva==null){if(Sql.<Integer>uno(c,"SELECT COUNT(*) FROM reserva WHERE codigo=?",rs->rs.getInt(1),codigo)>0)throw new IllegalArgumentException("Un código de demostración está en otra empresa.");reserva=Sql.insertar(c,"INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,estado) VALUES (?,?,?,?,?,?,?,?,?)",salon,administrador,codigo,dia,LocalTime.of(9,0),LocalTime.of(11,0),"EVALUACION_INICIAL","DEMO17 · Resultados ficticios para presentar ALINEO","EN_COLA");}
             Integer visita=Sql.uno(c,"SELECT id_visita FROM visita WHERE id_reserva=?",rs->rs.getInt(1),reserva);
             if(visita==null)visita=new VisitaDao().iniciar(c,reserva,dia.atTime(9,0));
             boolean abierta="EN_CURSO".equals(Sql.<String>uno(c,"SELECT estado FROM visita WHERE id_visita=?",rs->rs.getString(1),visita));
@@ -55,7 +55,7 @@ final class DemoCompleta {
                     if(pendiente!=null){servicio.pendientes().guardar(actor,pendiente.id(),"DEMO17 · Ajuste de puesto pendiente de comprobar","ALTA",dia.plusDays(7).toString());if(postura==0)servicio.pendientes().arreglar(actor,pendiente.id());}
                 }
             }
-            if(abierta)new Visitas(tx,reloj).finalizar(actor,visita,"DEMO17 · Visita ficticia con resultados calculados por APLOMO.");
+            if(abierta)new Visitas(tx,reloj).finalizar(actor,visita,"DEMO17 · Visita ficticia con resultados calculados por ALINEO.");
             String futuro=segunda?"DEMO17-F3B":"DEMO-17-F"+i;
             if(Sql.<Integer>uno(c,"SELECT COUNT(*) FROM reserva WHERE codigo=?",rs->rs.getInt(1),futuro)==0)Sql.insertar(c,"INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,estado) VALUES (?,?,?,?,?,?,?,?,?)",salon,administrador,futuro,dia.plusDays(21),LocalTime.of(14,0),LocalTime.of(15,0),"SEGUIMIENTO","DEMO17 · Reserva futura ficticia","ESPERANDO");
         }

@@ -64,7 +64,7 @@ Los seis archivos de código/pruebas anteriores, `AGENTS.md` y este informe comp
 
 ## Cómo comprobarlo en la app local
 
-1. Recarga APLOMO y abre Inicio → Probar evaluación. Entra a Probar Planta y después comprueba Probar Oficina.
+1. Recarga ALINEO y abre Inicio → Probar evaluación. Entra a Probar Planta y después comprueba Probar Oficina.
 2. Acepta el consentimiento/permiso de fotos en la práctica, responde contexto y elige un ejemplo de perfil.
 3. Los puntos y ángulos deben aparecer; revísalos antes de seguir. Prueba Detectar puntos otra vez, Cambiar foto y Quitar foto.
 4. Completa la muñeca y las dos posturas; guarda y comprueba que vuelve a la visita. Una foto realmente recortada o de frente sigue pidiendo revisión.

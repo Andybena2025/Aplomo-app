@@ -1,5 +1,5 @@
 /*
- * APLOMO. — Estilo "Obsidian & Ivory"
+ * ALINEO. — Estilo "Obsidian & Ivory"
  * Copiado del mock app (docs/referencia/mock_app/app.src.html)
  * Tokens y componentes segun docs/07_estilo_visual.md
  */
@@ -1252,3 +1252,12 @@ form[data-conversacion] .canvasbox{scroll-margin-top:100px}
 
 .top .wrap{flex-wrap:wrap}.top .nav{min-width:0;flex-wrap:wrap}.top .nav-tab{min-height:44px;display:inline-flex;align-items:center}.top .who{flex-shrink:0}
 @media(max-width:1100px){.top .nav{order:3;flex-basis:100%;justify-content:flex-start;gap:2px}.top .wrap{row-gap:4px}.top .who{margin-left:auto}.top .nav-tab{padding:0 8px}}
+
+/* Paso 25: identidad, presentación pública y ayuda; tokens compartidos. */
+.login-enlaces{display:flex;flex-wrap:wrap;gap:var(--s4);font-size:13px}.login-enlaces a{min-height:44px;display:inline-flex;align-items:center}
+.nosotros{padding-top:var(--s7);padding-bottom:var(--s7);gap:var(--s6);scroll-margin-top:var(--s5)}
+.nosotros h1{max-width:880px}.nosotros .card{height:100%}.nosotros p{margin:0}.nosotros-pasos{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s5)}
+.nosotros-pasos li{display:flex;align-items:center;gap:var(--s3)}.nosotros-pasos span{font-family:var(--serif);font-size:40px}
+.ayuda-temas{gap:var(--s5)}.ayuda-buscador{margin-bottom:var(--s5)}.ayuda-respuesta{padding-top:var(--s3);overflow-wrap:anywhere}.ayuda-respuesta p{margin:0}.ayuda-respuesta ol{padding-left:var(--s5)}
+.ayuda-riesgos{display:grid;gap:var(--s4)}.ayuda-riesgos dd{margin:var(--s2) 0 0}.marca-contacto{font-family:var(--serif);font-size:28px}.ayuda-cabecera{white-space:nowrap}
+@media(max-width:700px){.nosotros .grid2,.nosotros-pasos{grid-template-columns:1fr}.nosotros{padding-top:var(--s6)}.login-enlaces{gap:var(--s3)}.top .who{gap:6px}.top .ayuda-cabecera,.top .who .btn{padding-left:10px;padding-right:10px}}

@@ -1,4 +1,6 @@
-# Instalar y correr APLOMO. en tu computador
+# Instalar y correr ALINEO. en tu computador
+
+Antes se llamaba APLOMO.; el código interno conserva co.aplomo.
 
 Guía para el equipo. La primera vez toma unos **15 minutos**; después, arrancar la app toma segundos.
 
@@ -17,7 +19,7 @@ Abre `.env` y cambia las dos claves de ejemplo por claves distintas. Ese archivo
 docker compose up --build -d
 ```
 
-Abre **http://localhost:8080**. Cuenta inicial: **admin@rula.local**, contraseña temporal **Cambiar2026**; la app exige cambiarla en el primer ingreso. Es el Administrador de APLOMO, no el usuario root de MySQL. Si otra copia de APLOMO está usando 8080, detén esa copia antes de levantar Docker.
+Abre **http://localhost:8080**. Cuenta inicial: **admin@rula.local**, contraseña temporal **Cambiar2026**; la app exige cambiarla en el primer ingreso. Es el Administrador de ALINEO, no el usuario root de MySQL. Si otra copia de ALINEO está usando 8080, detén esa copia antes de levantar Docker.
 
 ```sh
 docker compose logs -f app
@@ -95,7 +97,7 @@ El script:
 
 1. Crea `config/db.properties` con la conexión de ejemplo (este archivo nunca se sube a GitHub).
 2. Te pide la contraseña de **root** de MySQL (en Mac, si nunca le pusiste una, solo presiona Enter).
-3. **Solo la primera vez** crea la base `rula_ergonomia` con las 21 tablas, las tablas RULA, la cuenta del Administrador y el usuario de la app. Si la base ya existe, no la toca.
+3. **Solo la primera vez** crea la base `rula_ergonomia` con las 22 tablas, las tablas RULA, la cuenta del Administrador y el usuario de la app. Si la base ya existe, no la toca.
 4. Carga las 11 reglas de sugerencias (no duplica nada).
 5. Arranca la app.
 
@@ -136,7 +138,7 @@ Para **reiniciar solo las tres empresas DEMO**: Mac `bash scripts/reiniciar_demo
 
 ## Cuentas del equipo
 
-Para crear varias cuentas sin contraseñas en archivos, copia la plantilla privada y sigue [CUENTAS.md](docs/CUENTAS.md). Mac: `bash scripts/crear_cuentas.sh`; Windows: `scripts\crear_cuentas.bat`. Usa un Administrador vigente de APLOMO; las cuentas existentes se conservan.
+Para crear varias cuentas sin contraseñas en archivos, copia la plantilla privada y sigue [CUENTAS.md](docs/CUENTAS.md). Mac: `bash scripts/crear_cuentas.sh`; Windows: `scripts\crear_cuentas.bat`. Usa un Administrador vigente de ALINEO; las cuentas existentes se conservan.
 
 ## Pruebas (opcional)
 
@@ -147,7 +149,7 @@ bash scripts/crear_base_pruebas.sh   # Mac; en Windows usa "Git Bash" con el mis
 ./mvnw test                           # Windows: mvnw.cmd test
 ```
 
-Deben aprobar **984 pruebas**.
+Deben aprobar **1022 pruebas**.
 
 ---
 
@@ -168,3 +170,7 @@ Deben aprobar **984 pruebas**.
 ## Actualizar una instalación existente al Paso 24
 
 Detén la app. En Mac ejecuta `bash scripts/migrar_paso24.sh`; en Windows `scripts\migrar_paso24.bat`, usando el administrador de MySQL. Primero crea un respaldo privado en config/respaldos y luego agrega las asignaciones y notas sin borrar datos. La relación anterior del Usuario se copia automáticamente. Arranca otra vez con el script normal. En bases de pruebas selecciona rula_ergonomia_pruebas antes de aplicar migracion_paso24.sql. No vuelvas a ejecutar el script de instalación sobre una base existente.
+
+## Contacto de soporte (Paso 25)
+
+Copia `config/contacto.properties.ejemplo` a `config/contacto.properties` y reemplaza los datos ficticios por el nombre, cargo, correo, teléfono y WhatsApp autorizados. Para el contacto de Gabriella, usa su nombre completo y el cargo «Administradora principal de ALINEO.»; no se incluyen correo ni teléfono reales en el repositorio. WhatsApp admite el código de país, sin signos o espacios (por ejemplo el valor ficticio de la plantilla). El archivo es privado y está ignorado por Git y Docker; en el servidor se configura localmente en config/. No hace falta reiniciar para leer un cambio. Si falta un dato, esa línea se omite y aparece «Escríbele al Administrador de tu cuenta.».

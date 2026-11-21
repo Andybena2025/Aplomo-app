@@ -1,10 +1,12 @@
-# CLAUDE.md · APLOMO. (software real)
+# CLAUDE.md · ALINEO. (software real)
+
+Antes se llamaba APLOMO.; el código interno conserva co.aplomo.
 
 Lee este archivo completo antes de escribir código. Es la memoria del proyecto: aquí no hay chats anteriores, solo lo que está en este repositorio.
 
 ## Qué estamos construyendo
 
-**APLOMO.** es un sistema web para evaluar posturas en puestos de trabajo con el método **RULA**. Es el **Proyecto Nuclear** de Ingeniería de Software (3.er semestre) de la Corporación Universitaria Empresarial Alexander von Humboldt, periodo 2026-2.
+**ALINEO.** es un sistema web para evaluar posturas en puestos de trabajo con el método **RULA**. Es el **Proyecto Nuclear** de Ingeniería de Software (3.er semestre) de la Corporación Universitaria Empresarial Alexander von Humboldt, periodo 2026-2.
 
 - Equipo: Laura Gabriella Romero Gómez, Johan Andrés Zapata Quintero, Andrés Eduardo Benavides (Andy).
 - Clienta: docente experta en Métodos y Movimientos (Ingeniería Industrial).

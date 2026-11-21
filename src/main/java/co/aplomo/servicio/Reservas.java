@@ -54,8 +54,8 @@ public final class Reservas {
     /** Lee los catálogos activos en tres consultas, evitando opciones bajo padres desactivados. */
     public Catalogo catalogo(Cuenta actor) throws SQLException {
         return tx.ejecutar(con -> {
-            var a=administrador(con, actor);
-            var es=new EmpresaDao().activas(con).stream().filter(e->permitida(con,a,e.id())).toList();var ids=es.stream().map(Empresa::id).toList();var ss=new SedeDao().activas(con).stream().filter(e->ids.contains(e.empresa())).toList();var si=ss.stream().map(Sede::id).toList();return new Catalogo(es,ss,new SalonDao().activos(con).stream().filter(e->si.contains(e.sede())).toList());
+            var a=administrador(con,actor);var alcance=AccesoDatos.empresaPermitida(a);
+            return new Catalogo(new EmpresaDao().activas(con,alcance),new SedeDao().activas(con,alcance),new SalonDao().activos(con,alcance));
         });
     }
 
@@ -155,7 +155,7 @@ public final class Reservas {
         return actual;
     }
 
-    private static boolean permitida(Connection c,Cuenta a,int e){try{AccesoDatos.exigirEmpresa(c,a,e);return true;}catch(SecurityException ex){return false;}catch(SQLException ex){throw new IllegalStateException(ex);}}
+
     private static Ficha exigir(Ficha ficha) {
         if (ficha == null) throw new SecurityException("La reserva no está disponible para tu cuenta.");
         return ficha;

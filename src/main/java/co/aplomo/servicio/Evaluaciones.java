@@ -152,6 +152,9 @@ public final class Evaluaciones {
     /** RF-024: consultas de solo lectura que comparten la transacción autorizada. */
     public Consultas consultas(){return new Consultas(tx);}
 
+    /** Paso 25: ayuda por rol con niveles de la misma base. */
+    public Ayuda ayuda(){return new Ayuda(tx);}
+
     /** RF-025/026: comparte transacciones y fecha de generación con los indicadores y el informe. */
     public Calificaciones calificaciones(){return new Calificaciones(tx,reloj);}
 

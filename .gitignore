@@ -46,3 +46,6 @@ config/cuentas.csv
 
 # Respaldos privados de migración
 config/respaldos/
+
+# Contacto privado de soporte
+config/contacto.properties

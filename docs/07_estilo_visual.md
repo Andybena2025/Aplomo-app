@@ -4,7 +4,7 @@ El docente quiere que el software se vea como el prototipo. Las capturas están 
 
 ## Marca
 
-- Nombre: **APLOMO.** (con punto). Lema: "Ergonomía con precisión".
+- Nombre: **ALINEO.** (con punto). Lema: "Ergonomía con precisión".
 - Logo: la "A" dibujada como un ángulo medido con plomada. Es SVG, está en la función `glyphA()` / `logo()` del mock.
 
 ## Tokens

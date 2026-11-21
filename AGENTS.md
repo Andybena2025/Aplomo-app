@@ -1,10 +1,12 @@
-# AGENTS.md · Reglas de APLOMO. (léelas SIEMPRE antes de trabajar)
+# AGENTS.md · Reglas de ALINEO. (léelas SIEMPRE antes de trabajar)
+
+Antes se llamaba APLOMO.; el código interno conserva co.aplomo.
 
 Este archivo es para cualquier asistente de código (Codex, Claude u otro). Complementa a `CLAUDE.md`; si algo choca, manda lo que diga Andy en el chat.
 
 ## Proyecto
 
-APLOMO. es el software real del Proyecto Nuclear (evaluación ergonómica con el método RULA). Fecha límite del PMV: 27 de noviembre de 2026.
+ALINEO. es el software real del Proyecto Nuclear (evaluación ergonómica con el método RULA). Fecha límite del PMV: 27 de noviembre de 2026.
 
 Fuente de verdad, en este orden:
 1. Lo que Andy dice en el chat.
@@ -150,3 +152,7 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (22 tablas, base `rula
 Luego ESPERA el OK de Andy.
 
 - Paso 24 (21 nov 2026): tres roles, asignaciones múltiples, historial propio, agenda semanal/mensual y notas privadas implementados. Migración aditiva probada dos veces con conteos sin cambios y relación anterior conservada. Pruebas dirigidas y mediciones DOM sin capturas; suite completa reservada para el cierre de los Pasos 23–25. No cambiar motor, POST calcular, IA ni galería. Informe docs/informe_paso24.md.
+
+- Paso 25 (21 nov 2026): marca visible ALINEO. con identificadores internos conservados, Quiénes somos debajo de la portada y /nosotros sin sesión; /ayuda pública y por rol, búsqueda sin tildes y contacto local opcional. Datos de riesgo de MySQL. Cierre: 1022 casos Maven verificados y 119 JS aprobadas; la suite completa corrió una vez, un fallo de calificaciones corregido/reintentado y 53 casos dirigidos de cierre aprobados. 75 medidas finales a 360/390/820/1024/1366 sin desborde, Entrar visible en tres celulares; QA revertida y app normal en 8080. La QA final corrige empates de fecha del historial (ID descendente), autor de la primera bitácora y preferencia del Evaluador activo en agenda cuando hay uno inactivo anterior. No cambia motor, cálculo, IA, galería ni esquema en este paso.
+
+- Cierre de Pasos 23–25: Paso 23 bb5f6eb y Paso 24 37cb05e subidos a origin/main. Paso 25 incluye cierre de filtros históricos propios, catálogos con alcance SQL, preservación de calificaciones automáticas para Usuario de una empresa y Atrás explícito por tipo de página. Contacto real opcional pendiente de archivo local; Windows/iPad físico/otros navegadores no comprobados. Sin capturas, descargas ni cambios de motor/cálculo/IA/galería; esquema solo migrado en Paso 24 con respaldo.

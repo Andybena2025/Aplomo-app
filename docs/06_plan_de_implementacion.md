@@ -6,7 +6,7 @@ Fecha límite del PMV: **27 de noviembre de 2026**. Si el tiempo no alcanza, los
 
 | Paso | Qué se construye | Requisitos | Cómo se prueba |
 |---|---|---|---|
-| 0 | Proyecto Maven, `pom.xml` con las 3 dependencias, `App.java` que abre el puerto 8080 y muestra una página con el estilo del mock. `config/db.properties.ejemplo`. `.gitignore` con `config/db.properties` y `fotos/`. Correr el script SQL en MySQL. | RNF-001, RNF-008 | Abrir http://localhost:8080 y ver la página oscura de APLOMO. En MySQL, `SHOW TABLES` muestra 21 tablas. |
+| 0 | Proyecto Maven, `pom.xml` con las 3 dependencias, `App.java` que abre el puerto 8080 y muestra una página con el estilo del mock. `config/db.properties.ejemplo`. `.gitignore` con `config/db.properties` y `fotos/`. Correr el script SQL en MySQL. | RNF-001, RNF-008 | Abrir http://localhost:8080 y ver la página oscura de ALINEO. En MySQL, `SHOW TABLES` muestra 21 tablas. |
 | 1 | Conexión JDBC + `TablasRula` + `MotorRula` + `MedidorAngulos` con **pruebas unitarias** (todas las combinaciones de las tablas y los casos de `03_metodo_rula.md`). Todavía sin pantallas. | RF-018, RF-019, RF-020, RF-027, RNF-010, RNF-011 | `mvn test` en verde. |
 | 2 | Iniciar sesión, cerrar sesión, cambiar contraseña, contraseña temporal, bloqueo por intentos, cierre a los 30 minutos, permisos por rol. | RF-001a, RF-001b, RF-001c, RF-002, RNF-004 | Entrar con `admin@rula.local` / `Cambiar2026`: obliga a cambiar la contraseña. 5 intentos malos bloquean 15 minutos. |
 | 3 | Usuarios: crear (con contraseña temporal y empresa si es Usuario), editar, activar y desactivar. No desactivar al último Administrador. | RF-003, RF-010 | Crear un Usuario, entrar con él y comprobar que no ve botones de crear. |

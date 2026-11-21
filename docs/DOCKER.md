@@ -1,4 +1,4 @@
-# APLOMO con Docker
+# ALINEO con Docker
 
 Abre Docker Desktop. Trabaja desde la raíz de este repositorio. Prepara un archivo local `.env` usando `.env.ejemplo` como guía, con `MYSQL_ROOT_PASSWORD` y `APLOMO_DB_CLAVE`. Ese archivo se conserva solo en tu computador; no entra a Git ni a la imagen.
 
@@ -16,7 +16,7 @@ Espera a que MySQL termine de prepararse y abre [Iniciar sesión](http://localho
 
 ## Si el puerto está ocupado
 
-Si aparece «port is already allocated» o «address already in use», cierra la app local desde IntelliJ o la terminal. Si la ocupa otra copia de APLOMO en Docker, apágala desde Docker Desktop. Repite el comando para levantar. No necesitas reinstalar MySQL ni borrar bases o volúmenes.
+Si aparece «port is already allocated» o «address already in use», cierra la app local desde IntelliJ o la terminal. Si la ocupa otra copia de ALINEO en Docker, apágala desde Docker Desktop. Repite el comando para levantar. No necesitas reinstalar MySQL ni borrar bases o volúmenes.
 
 ## Dónde quedan los datos
 

@@ -29,7 +29,7 @@ public final class PaginasEmpresas {
                     .append(enlace("/empresas/" + empresa.id(), "Ver empresa", false)).append("</article>");
         }
         if (empresas.isEmpty()) html.append("<p class=\"muted\">Todavía no hay empresas registradas.</p>");
-        return Html.pagina("Empresas", html.append("</div>").toString(), sesion);
+        return Html.pagina("Empresas", html.append("</div>").toString(), sesion,true,false);
     }
 
     /** Muestra la empresa y sus catálogos; el Usuario recibe únicamente enlaces de consulta. */

@@ -24,7 +24,7 @@ public final class PaginasConsultas {
             h.append("<th scope=\"col\">Detalle</th></tr></thead><tbody>");
             for(var fila:pagina.filas()){h.append("<tr data-registro=\"").append(fila.id()).append("\">");for(var col:columnas)celda(h,col.titulo(),celda(fila,col.clave(),s,admin)+(col.clave().equals("numero")&&!fila.valor("acceso_historico").isEmpty()?" <span class=\"tag\">Ya no asignada</span>":""));celda(h,"Detalle",enlace(s.ruta()+"/"+fila.id(),detalle(s),false));h.append("</tr>");}h.append("</tbody></table></div>");
         }
-        return Html.pagina(s.titulo(),h.toString(),sesion,false);
+        return Html.pagina(s.titulo(),h.toString(),sesion,false,false);
     }
     /** Consulta finalizada del Usuario: postura y resultados propios, sin fotos ni acciones de gestión. */
     public static String evaluacion(Sesion s,Detalle d){var e=d.evaluacion();StringBuilder h=new StringBuilder(enlace("/evaluaciones","← Evaluaciones",false)).append("<section class=\"card stack\"><div class=\"row between\"><h2>Puesto ").append(escapar(e.valor("numero"))).append("</h2>").append(riesgo(e)).append("</div><p>").append(ubicacion(e)).append("</p><p>Evaluada por: ").append(escapar(e.valor("evaluador_nombre"))).append("</p><h3>").append(escapar(e.valor("postura"))).append("</h3><p>").append(escapar(e.valor("criterio").equals("MAS_INADECUADA")?"Postura más inadecuada":"Mayor tiempo de exposición")).append(" · ").append(escapar(e.valor("minutos"))).append(" minutos por jornada</p><p class=\"texto-notas\">").append(escapar(e.valor("motivo"))).append("</p><p>").append(fecha(e.valor("fecha"))).append("</p>").append(enlace("/visitas/"+e.valor("visita"),"Ver visita",false)).append("</section><section class=\"stack\"><h2>Análisis guardados</h2>");

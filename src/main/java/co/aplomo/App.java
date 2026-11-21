@@ -9,7 +9,7 @@ import java.net.InetSocketAddress;
 public final class App {
     private App() {}
 
-    /** Inicia APLOMO en el puerto 8080 y registra el control de acceso central (RF-002). */
+    /** Inicia ALINEO en el puerto 8080 y registra el control de acceso central (RF-002). */
     public static void main(String[] args) throws IOException {
         if(args.length==1&&(args[0].equals("--cargar-demo")||args[0].equals("--reiniciar-demo"))){
             co.aplomo.instalacion.Demo.ejecutar(args[0].equals("--reiniciar-demo"));return;
@@ -21,6 +21,6 @@ public final class App {
         servidor.createContext("/",new Router());
         servidor.setExecutor(null);
         servidor.start();
-        System.out.println("APLOMO. corriendo en http://0.0.0.0:"+puerto+" (accesible desde la red local)");
+        System.out.println("ALINEO. corriendo en http://0.0.0.0:"+puerto+" (accesible desde la red local)");
     }
 }

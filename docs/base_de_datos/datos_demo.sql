@@ -9,19 +9,19 @@ START TRANSACTION;
 SET @demo_admin = (SELECT id_cuenta FROM cuenta WHERE rol='ADMINISTRADOR' AND estado='ACTIVA' ORDER BY id_cuenta LIMIT 1);
 
 INSERT INTO empresa (id_administrador,nombre,nit,descripcion,telefono,correo,persona_contacto)
-SELECT @demo_admin,'Ensambles del Quindío S.A.S.','DEMO-APLOMO-E1','Demostración APLOMO. Manufactura de componentes. Información ficticia para presentar el producto.','0000000000','e1@ejemplo.invalid','Contacto de demostración'
+SELECT @demo_admin,'Ensambles del Quindío S.A.S.','DEMO-APLOMO-E1','Demostración ALINEO. Manufactura de componentes. Información ficticia para presentar el producto.','0000000000','e1@ejemplo.invalid','Contacto de demostración'
 WHERE NOT EXISTS (SELECT 1 FROM empresa WHERE nit='DEMO-APLOMO-E1');
 
 SET @e1 = (SELECT id_empresa FROM empresa WHERE nit='DEMO-APLOMO-E1' LIMIT 1);
 
 INSERT INTO empresa (id_administrador,nombre,nit,descripcion,telefono,correo,persona_contacto)
-SELECT @demo_admin,'Muebles Cafeteros S.A.S.','DEMO-APLOMO-E2','Demostración APLOMO. Fabricación de muebles. Información ficticia para presentar el producto.','0000000000','e2@ejemplo.invalid','Contacto de demostración'
+SELECT @demo_admin,'Muebles Cafeteros S.A.S.','DEMO-APLOMO-E2','Demostración ALINEO. Fabricación de muebles. Información ficticia para presentar el producto.','0000000000','e2@ejemplo.invalid','Contacto de demostración'
 WHERE NOT EXISTS (SELECT 1 FROM empresa WHERE nit='DEMO-APLOMO-E2');
 
 SET @e2 = (SELECT id_empresa FROM empresa WHERE nit='DEMO-APLOMO-E2' LIMIT 1);
 
 INSERT INTO empresa (id_administrador,nombre,nit,descripcion,telefono,correo,persona_contacto)
-SELECT @demo_admin,'Corporación Universitaria Empresarial Alexander von Humboldt','DEMO-APLOMO-E3','Demostración APLOMO. Educación superior. Información ficticia para presentar el producto.','0000000000','e3@ejemplo.invalid','Contacto de demostración'
+SELECT @demo_admin,'Corporación Universitaria Empresarial Alexander von Humboldt','DEMO-APLOMO-E3','Demostración ALINEO. Educación superior. Información ficticia para presentar el producto.','0000000000','e3@ejemplo.invalid','Contacto de demostración'
 WHERE NOT EXISTS (SELECT 1 FROM empresa WHERE nit='DEMO-APLOMO-E3');
 
 SET @e3 = (SELECT id_empresa FROM empresa WHERE nit='DEMO-APLOMO-E3' LIMIT 1);
@@ -57,31 +57,31 @@ WHERE NOT EXISTS (SELECT 1 FROM sede WHERE id_empresa=@e3 AND nombre='Sede Anova
 SET @s5 = (SELECT id_sede FROM sede WHERE id_empresa=@e3 AND nombre='Sede Anova (Medicina)' LIMIT 1);
 
 INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos)
-SELECT @s1,'Línea de ensamble A','Salón de demostración APLOMO.',1,12
+SELECT @s1,'Línea de ensamble A','Salón de demostración ALINEO.',1,12
 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s1 AND nombre='Línea de ensamble A');
 
 SET @l1 = (SELECT id_salon FROM salon WHERE id_sede=@s1 AND nombre='Línea de ensamble A' LIMIT 1);
 
 INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos)
-SELECT @s2,'Taller de lijado','Salón de demostración APLOMO.',1,12
+SELECT @s2,'Taller de lijado','Salón de demostración ALINEO.',1,12
 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s2 AND nombre='Taller de lijado');
 
 SET @l2 = (SELECT id_salon FROM salon WHERE id_sede=@s2 AND nombre='Taller de lijado' LIMIT 1);
 
 INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos)
-SELECT @s3,'Laboratorio de Métodos y Movimientos','Salón de demostración APLOMO.',1,12
+SELECT @s3,'Laboratorio de Métodos y Movimientos','Salón de demostración ALINEO.',1,12
 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s3 AND nombre='Laboratorio de Métodos y Movimientos');
 
 SET @l3 = (SELECT id_salon FROM salon WHERE id_sede=@s3 AND nombre='Laboratorio de Métodos y Movimientos' LIMIT 1);
 
 INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos)
-SELECT @s4,'Mantenimiento','Salón de demostración APLOMO.',1,12
+SELECT @s4,'Mantenimiento','Salón de demostración ALINEO.',1,12
 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s4 AND nombre='Mantenimiento');
 
 SET @l4 = (SELECT id_salon FROM salon WHERE id_sede=@s4 AND nombre='Mantenimiento' LIMIT 1);
 
 INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos)
-SELECT @s5,'Laboratorio de simulación clínica','Salón de demostración APLOMO.',1,12
+SELECT @s5,'Laboratorio de simulación clínica','Salón de demostración ALINEO.',1,12
 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s5 AND nombre='Laboratorio de simulación clínica');
 
 SET @l5 = (SELECT id_salon FROM salon WHERE id_sede=@s5 AND nombre='Laboratorio de simulación clínica' LIMIT 1);
@@ -117,25 +117,25 @@ WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@l3 AND numero=3);
 SET @p3 = (SELECT id_puesto FROM puesto_trabajo WHERE id_salon=@l3 AND numero=3 LIMIT 1);
 
 INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,notas,estado)
-SELECT @l1,@demo_admin,'DEMO-COL-01','2026-11-16','09:00','10:00','EVALUACION_INICIAL','Reserva de demostración APLOMO.','Datos ficticios. No representa una visita real.','EN_COLA'
+SELECT @l1,@demo_admin,'DEMO-COL-01','2026-11-16','09:00','10:00','EVALUACION_INICIAL','Reserva de demostración ALINEO.','Datos ficticios. No representa una visita real.','EN_COLA'
 WHERE NOT EXISTS (SELECT 1 FROM reserva WHERE codigo='DEMO-COL-01');
 
 SET @r2 = (SELECT id_reserva FROM reserva WHERE codigo='DEMO-COL-01' LIMIT 1);
 
 INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,notas,estado)
-SELECT @l2,@demo_admin,'DEMO-ESP-01','2026-11-17','14:00','15:00','EVALUACION_INICIAL','Reserva de demostración APLOMO.','Datos ficticios. No representa una visita real.','ESPERANDO'
+SELECT @l2,@demo_admin,'DEMO-ESP-01','2026-11-17','14:00','15:00','EVALUACION_INICIAL','Reserva de demostración ALINEO.','Datos ficticios. No representa una visita real.','ESPERANDO'
 WHERE NOT EXISTS (SELECT 1 FROM reserva WHERE codigo='DEMO-ESP-01');
 
 SET @r3 = (SELECT id_reserva FROM reserva WHERE codigo='DEMO-ESP-01' LIMIT 1);
 
 INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,notas,estado)
-SELECT @l4,@demo_admin,'DEMO-ESP-02','2026-11-18','08:30','09:30','SEGUIMIENTO','Reserva de demostración APLOMO.','Datos ficticios. No representa una visita real.','ESPERANDO'
+SELECT @l4,@demo_admin,'DEMO-ESP-02','2026-11-18','08:30','09:30','SEGUIMIENTO','Reserva de demostración ALINEO.','Datos ficticios. No representa una visita real.','ESPERANDO'
 WHERE NOT EXISTS (SELECT 1 FROM reserva WHERE codigo='DEMO-ESP-02');
 
 SET @r4 = (SELECT id_reserva FROM reserva WHERE codigo='DEMO-ESP-02' LIMIT 1);
 
 INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,notas,estado)
-SELECT @l5,@demo_admin,'DEMO-COL-02','2026-11-19','10:00','11:00','EVALUACION_INICIAL','Reserva de demostración APLOMO.','Datos ficticios. No representa una visita real.','EN_COLA'
+SELECT @l5,@demo_admin,'DEMO-COL-02','2026-11-19','10:00','11:00','EVALUACION_INICIAL','Reserva de demostración ALINEO.','Datos ficticios. No representa una visita real.','EN_COLA'
 WHERE NOT EXISTS (SELECT 1 FROM reserva WHERE codigo='DEMO-COL-02');
 
 SET @r5 = (SELECT id_reserva FROM reserva WHERE codigo='DEMO-COL-02' LIMIT 1);

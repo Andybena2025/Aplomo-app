@@ -1,4 +1,4 @@
-# Documentación para programar APLOMO.
+# Documentación para programar ALINEO.
 
 Esta carpeta es la **foto congelada del diseño aprobado** (Proyecto Nuclear 6.0, 10 de noviembre de 2026), para que quien programe, una persona o Claude en IntelliJ, no tenga que buscar en Notion ni en chats.
 

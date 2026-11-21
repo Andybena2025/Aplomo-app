@@ -1,6 +1,6 @@
-# Rutas HTTP de APLOMO.
+# Rutas HTTP de ALINEO.
 
-Inventario leído del código al terminar los pasos 15-E y 16 (14 nov 2026). La app sirve HTML y formularios; no es una API REST. `App.main` registra un único contexto `createContext("/", new Router())`. `Router.atender` y los manejadores enlazados abajo distribuyen las rutas. Actualizado en el Paso 23 para historial de puestos y filtros administrativos. No hay otra lista central de rutas.
+Inventario leído del código al terminar los pasos 15-E y 16 (14 nov 2026). La app sirve HTML y formularios; no es una API REST. `App.main` registra un único contexto `createContext("/", new Router())`. `Router.atender` y los manejadores enlazados abajo distribuyen las rutas. Actualizado en los Pasos 23–25 para historial, tres roles, agenda y ayuda. No hay otra lista central de rutas.
 
 ## Arranque y administrador inicial
 
@@ -9,11 +9,11 @@ Inventario leído del código al terminar los pasos 15-E y 16 (14 nov 2026). La 
 
 ### Administrador inicial
 
-El script original crea **admin@rula.local**, contraseña temporal **Cambiar2026**. Es la cuenta de superusuario de **APLOMO**, con rol Administrador; no es el administrador `root` de MySQL. Debe cambiar la contraseña al primer ingreso, en `/cuenta/contrasena`. Son datos semilla públicos: después del cambio se usa la contraseña nueva, no la temporal.
+El script original crea **admin@rula.local**, contraseña temporal **Cambiar2026**. Es la cuenta de superusuario de **ALINEO**, con rol Administrador; no es el administrador `root` de MySQL. Debe cambiar la contraseña al primer ingreso, en `/cuenta/contrasena`. Son datos semilla públicos: después del cambio se usa la contraseña nueva, no la temporal.
 
 ## Seguridad y convenciones
 
-- **A** = Administrador vigente; **U** = Usuario vigente, solo su empresa. Los permisos se comprueban en el servidor y en los servicios. A puede gestionar; U solo consulta. Una cuenta temporal debe cambiar su contraseña antes de usar las rutas internas.
+- **A** = Administrador vigente; **E** = Evaluador vigente en sus empresas asignadas; **U** = Usuario vigente en sus empresas asignadas. Los permisos se comprueban en el servidor y en los servicios. A administra todo; E realiza trabajo de evaluación dentro de su alcance; U solo consulta. Una cuenta temporal debe cambiar su contraseña antes de usar las rutas internas.
 - U ve todas sus reservas, incluso Esperando, En cola y Canceladas. Los resultados (visitas, evaluaciones, puntajes, pendientes y sugerencias) solo se muestran si la visita está Finalizada. Una dirección escrita a mano no evita ese filtro. U nunca accede a `/fotos/{foto}`.
 - Todo POST requiere el campo `csrf` de la sesión, incluido el login. Los formularios ordinarios usan `application/x-www-form-urlencoded`; las subidas usan `multipart/form-data`. No se debe enviar un puntaje calculado por el cliente: el servidor calcula lo guardado.
 - Después de **5 intentos fallidos**, bloqueo de **15 minutos** (`Autenticacion`); cierre a los **30 minutos sin actividad** (`Sesiones`). La cookie `APLOMO_SESION` es HttpOnly, SameSite=Strict y Secure cuando la conexión es HTTPS. Cerrar sesión, cambiar contraseña, rol o estado invalida el acceso correspondiente.
@@ -30,16 +30,16 @@ Fuente: [Router.atender](../src/main/java/co/aplomo/web/Router.java), [Autentica
 |---|---|---|---|---|---|
 | GET | `/login` | Entrar; sin sesión | `inactividad=1` opcional | 200 HTML y cookie anónima; con sesión 303 a Inicio o cambio de contraseña | RF-001a, RNF-004/007 |
 | POST | `/login` | Validar acceso; sin sesión | F: `correo`, `clave` | 303 a `/` o `/cuenta/contrasena`; 401 credenciales/bloqueo, 403 formulario vencido | RF-001a, RNF-004 |
-| POST | `/logout` | Salir; A/U, también temporal | F | 303 `/login`, elimina sesión/cookie; GET devuelve 405 | RF-001b |
-| GET | `/cuenta/contrasena` | Formulario; A/U, también temporal | Ninguno | 200 HTML | RF-001c |
-| POST | `/cuenta/contrasena` | Cambiar clave propia; A/U | F: `actual`, `nueva`, `confirmacion` | 303 `/?contrasena=1`, renueva sesión; 400/503 conserva formulario sin clave | RF-001c, RNF-004 |
-| GET | `/` | Inicio con conteos y atajos autorizados; A/U | `contrasena=1` opcional | 200 HTML; práctica y Evaluar ahora solo A | RF-002, RF-013a, RF-020 |
-| GET | `/demo/evaluacion` | Explicar práctica sin escribir; A, modo demo activo | Ninguno | 200 HTML; demo deshabilitado: 404 | Valor agregado sin RF propio; RNF-002 |
-| POST | `/demo/evaluacion` | Crear/reutilizar visita ficticia y abrir recorrido; A, modo demo | F: `tipo=OFICINA` o `PLANTA` | 303 `/evaluaciones/nueva?visita=…&puesto=…`; no borra intentos | Valor agregado; reutiliza RF-013a/014 |
+| POST | `/logout` | Salir; A/E/U, también temporal | F | 303 `/login`, elimina sesión/cookie; GET devuelve 405 | RF-001b |
+| GET | `/cuenta/contrasena` | Formulario; A/E/U, también temporal | Ninguno | 200 HTML | RF-001c |
+| POST | `/cuenta/contrasena` | Cambiar clave propia; A/E/U | F: `actual`, `nueva`, `confirmacion` | 303 `/?contrasena=1`, renueva sesión; 400/503 conserva formulario sin clave | RF-001c, RNF-004 |
+| GET | `/` | Inicio con conteos y atajos autorizados; A/E/U | `contrasena=1` opcional | 200 HTML; práctica y Evaluar ahora solo A | RF-002, RF-013a, RF-020 |
+| GET | `/demo/evaluacion` | Explicar práctica sin escribir; A/E, modo demo activo | Ninguno | 200 HTML; demo deshabilitado: 404 | Valor agregado sin RF propio; RNF-002 |
+| POST | `/demo/evaluacion` | Crear/reutilizar visita ficticia y abrir recorrido; A/E, modo demo | F: `tipo=OFICINA` o `PLANTA` | 303 `/evaluaciones/nueva?visita=…&puesto=…`; no borra intentos | Valor agregado; reutiliza RF-013a/014 |
 
 El modo demo se controla con `-Daplomo.modoDemo=false` (activo por defecto). La práctica escribe solo bajo su empresa ficticia y lo anuncia en la página.
 
-El botón Atrás de cabecera se omite en Inicio y en el cambio **obligatorio** de contraseña de una cuenta temporal. El cambio voluntario conserva Atrás, igual que el resto de páginas que ya lo mostraban. El botón interno `data-atras-evaluacion` se conserva.
+Atrás se omite en las pantallas principales del menú, Agenda/Mi agenda, Mis evaluaciones, Ayuda y cambio obligatorio de contraseña. Los detalles, formularios y cambio voluntario lo conservan. El botón interno `data-atras-evaluacion` se conserva.
 
 ## Consultas comunes
 
@@ -54,10 +54,10 @@ En las siguientes rutas se admiten `q` (hasta 120 caracteres), `orden` (clave de
 | GET | `/cargos` | `empresa`, `cargo`, `estado` | Cargos; RF-007 |
 | GET | `/sedes` | `empresa`, `sede`, `estado` | Sedes; RF-005 |
 | GET | `/salones` | `empresa`, `sede`, `salon`, `estado` | Salones; RF-006 |
-| GET | `/puestos` | `empresa`, `sede`, `salon`, `area`, `cargo`, `numero`, `puntaje`, `color`, `nivel`, `estado`, `puesto`, `registros` (A) | Puestos; RF-008 |
+| GET | `/puestos` | `empresa`, `sede`, `salon`, `area`, `cargo`, `numero`, `puntaje`, `color`, `nivel`, `estado`, `puesto`, `registros` (A/E) | Puestos; RF-008 |
 | GET | `/reservas` | `empresa`, `sede`, `salon`, `desde`, `hasta`, `estado` | Todas las propias para U; RF-011/012 |
-| GET | `/visitas` | `empresa`, `sede`, `salon`, `desde`, `hasta`, `estado`, `registros` (A) | U solo Finalizadas; RF-013b |
-| GET | `/evaluaciones` | `empresa`, `sede`, `salon`, `area`, `cargo`, `numero`, `desde`, `hasta`, `puntaje`, `color`, `nivel`, `estado`, `puesto`, `registros` (A) | U solo Finalizadas; RF-020/021 |
+| GET | `/visitas` | `empresa`, `sede`, `salon`, `desde`, `hasta`, `estado`, `registros` (A/E) | U solo Finalizadas; RF-013b |
+| GET | `/evaluaciones` | `empresa`, `sede`, `salon`, `area`, `cargo`, `numero`, `desde`, `hasta`, `puntaje`, `color`, `nivel`, `estado`, `puesto`, `registros` (A/E) | U solo Finalizadas; RF-020/021 |
 | GET | `/pendientes` | Los de Evaluaciones, estado `ABIERTO` (por defecto) o `ARREGLADO` | Orden adicional `prioridad`, `fecha`, `fecha_limite` (`limite` se admite como alias); RF-022 |
 | GET | `/sugerencias` | Los de Evaluaciones, estado `PENDIENTE`, `EN_PROCESO`, `HECHA` | `evaluacion` abre lista contextual; RF-023b |
 
@@ -81,7 +81,7 @@ Fuente: [UsuariosWeb.atender](../src/main/java/co/aplomo/web/UsuariosWeb.java). 
 
 ## Empresas, sedes, salones, áreas, cargos y puestos
 
-Fuente: [EmpresasWeb.atender/guardar/detalle](../src/main/java/co/aplomo/web/EmpresasWeb.java). GET de detalle: **A/U**, empresa autorizada; escrituras y formularios: **A**. Las listas GET están arriba.
+Fuente: [EmpresasWeb.atender/guardar/detalle](../src/main/java/co/aplomo/web/EmpresasWeb.java). GET de detalle: **A/E/U**, empresa autorizada; escrituras y formularios: **A**. Las listas GET están arriba.
 
 | Método | Ruta | Para qué | Formulario / parámetros | Respuesta | Requisito |
 |---|---|---|---|---|---|
@@ -97,7 +97,7 @@ Fuente: [EmpresasWeb.atender/guardar/detalle](../src/main/java/co/aplomo/web/Emp
 | GET, POST | `/salones/{salon}/puestos/nuevo` | Formulario / guardar puesto | POST F: `numero`, `descripcion`, `tipo`, `ubicacion`, `id_area`, `id_cargo` opcionales | 200 HTML / 303 salón | RF-008/010 |
 | GET | `/areas/{id}` | Resolver área autorizada | ID | 303 empresa | RF-007 |
 | GET | `/cargos/{id}` | Resolver cargo autorizado | ID | 303 empresa | RF-007 |
-| GET | `/puestos/{id}` | A: Historial del puesto, jerarquía/estados, área/cargo y todas sus evaluaciones por fecha e ID descendentes, con semáforo y enlace Ver. U: conserva la redirección autorizada anterior. | ID | A: 200 HTML; U: 303 salón propio; ajeno/inexistente: 403 como antes | RNF-009, RF-028/024/020, RF-002 |
+| GET | `/puestos/{id}` | A/E: Historial del puesto, jerarquía/estados, área/cargo y todas sus evaluaciones por fecha e ID descendentes, con semáforo y enlace Ver. U: conserva la redirección autorizada anterior. | ID | A: 200 HTML; U: 303 salón propio; ajeno/inexistente: 403 como antes | RNF-009, RF-028/024/020, RF-002 |
 | GET, POST | `/{tipo}/{id}/editar` | Formulario / guardar cambios | `tipo=empresas|sedes|salones|areas|cargos|puestos`; F con los campos de creación de ese tipo | 200 HTML / 303 detalle (empresa/sede/salón) o padre (otros) | RF-009a; áreas/cargos RF-007 |
 | POST | `/{tipo}/{id}/activar` | Reactivar registro | Mismos seis tipos; F | 303 padre con aviso | RF-028 |
 | POST | `/{tipo}/{id}/desactivar` | Desactivar, conservar historial | Mismos seis tipos; F | 303 padre con aviso | RF-028, RNF-009 |
@@ -106,22 +106,22 @@ Las tres últimas filas son familias de seis rutas cada una: por ejemplo `/sedes
 
 ## Reservas y visitas
 
-Fuentes: [ReservasWeb](../src/main/java/co/aplomo/web/ReservasWeb.java), [VisitasWeb](../src/main/java/co/aplomo/web/VisitasWeb.java). Consultas **A/U**, alcance propio; gestión **A**.
+Fuentes: [ReservasWeb](../src/main/java/co/aplomo/web/ReservasWeb.java), [VisitasWeb](../src/main/java/co/aplomo/web/VisitasWeb.java). Consultas **A/E/U**, alcance propio; gestión **A**.
 
 | Método | Ruta | Para qué / quién | Formulario / parámetros | Respuesta | Requisito |
 |---|---|---|---|---|---|
-| GET | `/reservas/nueva` | Formulario de reserva; A | `empresa`, `sede`, `salon` opcionales para contexto | 200 HTML | RF-011 |
-| GET | `/reservas/catalogo` | Actualizar selectores autorizados; A | `empresa`, `sede`, `salon` | 200 fragmento HTML | RF-011 |
-| POST | `/reservas/crear-empresa` | Alta en contexto; A | F: `nombre`, `nit` | 200 **application/x-www-form-urlencoded**, `id` y `aviso`; 400/503 mismo formato con aviso | RF-004/010/011 |
-| POST | `/reservas/crear-sede` | Alta en contexto; A | F: `empresa`, `nombre`, `direccion`, `ciudad`, `telefono`, `horario`, `descripcion` | Igual al alta anterior | RF-005/010/011 |
-| POST | `/reservas/crear-salon` | Alta en contexto; A | F: `sede`, `nombre`, `descripcion`, `piso`, `capacidad_puestos` | Igual al alta anterior | RF-006/010/011 |
-| POST | `/reservas` | Guardar reserva; A | F: `empresa`, `sede`, `salon`, `fecha`, `inicio`, `fin`, `categoria`, `descripcion`, `notas` | 303 detalle | RF-011 |
-| GET | `/reservas/{id}` | Detalle, incluso motivo de cancelación; A/U | ID | 200 HTML | RF-011/012/024 |
+| GET | `/reservas/nueva` | Formulario de reserva; A/E | `empresa`, `sede`, `salon` opcionales para contexto | 200 HTML | RF-011 |
+| GET | `/reservas/catalogo` | Actualizar selectores autorizados; A/E | `empresa`, `sede`, `salon` | 200 fragmento HTML | RF-011 |
+| POST | `/reservas/crear-empresa` | Alta en contexto; A/E | F: `nombre`, `nit` | 200 **application/x-www-form-urlencoded**, `id` y `aviso`; 400/503 mismo formato con aviso | RF-004/010/011 |
+| POST | `/reservas/crear-sede` | Alta en contexto; A/E | F: `empresa`, `nombre`, `direccion`, `ciudad`, `telefono`, `horario`, `descripcion` | Igual al alta anterior | RF-005/010/011 |
+| POST | `/reservas/crear-salon` | Alta en contexto; A/E | F: `sede`, `nombre`, `descripcion`, `piso`, `capacidad_puestos` | Igual al alta anterior | RF-006/010/011 |
+| POST | `/reservas` | Guardar reserva; A/E | F: `empresa`, `sede`, `salon`, `fecha`, `inicio`, `fin`, `categoria`, `descripcion`, `notas` | 303 detalle | RF-011 |
+| GET | `/reservas/{id}` | Detalle, incluso motivo de cancelación; A/E/U | ID | 200 HTML | RF-011/012/024 |
 | GET, POST | `/reservas/{id}/editar` | Formulario / actualizar reserva editable; A | Mismos campos de reserva; empresa/sede/salón vienen de la reserva existente | 200 HTML / 303 detalle | RF-009b |
-| POST | `/reservas/{id}/aceptar` | Pasar Esperando a En cola; A | F | 303 detalle | RF-012 |
+| POST | `/reservas/{id}/aceptar` | Pasar Esperando a En cola; A/E | F | 303 detalle | RF-012 |
 | GET, POST | `/reservas/{id}/cancelar` | Formulario / cancelar si no tiene visita; A | POST F: `motivo` obligatorio | 200 HTML / 303 detalle | RF-012, RNF-009 |
-| POST | `/reservas/{reserva}/iniciar-visita` | Iniciar desde En cola; A | F | 303 `/visitas/{id}` | RF-013a |
-| GET | `/visitas/{id}` | Detalle; A/U (U solo Finalizada) | ID | 200 HTML con datos autorizados | RF-013a/013b/024 |
+| POST | `/reservas/{reserva}/iniciar-visita` | Iniciar desde En cola; A/E | F | 303 `/visitas/{id}` | RF-013a |
+| GET | `/visitas/{id}` | Detalle; A/E/U (U solo Finalizada) | ID | 200 HTML con datos autorizados | RF-013a/013b/024 |
 | GET, POST | `/visitas/{id}/finalizar` | Formulario / cerrar visita En curso; A | POST F: `notas` | 200 HTML / 303 detalle; 400 si ya Finalizada | RF-013b |
 
 Las escrituras con validación fallida devuelven 400 HTML; fallo de almacenamiento 503 HTML y conservan campos. Las fechas y horas se validan en el servidor; la hora real de inicio/final no la envía el navegador.
@@ -132,15 +132,15 @@ Fuentes: [EvaluacionesWeb.atender](../src/main/java/co/aplomo/web/EvaluacionesWe
 
 | Método | Ruta | Para qué / quién | Formulario / parámetros | Respuesta | Requisito |
 |---|---|---|---|---|---|
-| GET | `/evaluaciones/nueva` | Abrir recorrido en visita En curso; A | `visita` obligatorio, `puesto` opcional, siempre activo y de esa sede | 200 HTML | RF-014/015/016 |
-| POST | `/evaluaciones` | Guardar contexto, fotos y análisis; A | F multipart, campos descritos debajo | **201 text/plain** con `Location` al detalle, visita o siguiente puesto; 400/403/503 texto claro | RF-014/015/016/021, RNF-005/006 |
-| GET | `/evaluaciones/{evaluacion}` | Ver guardado; A/U | ID, `aviso` opcional | 200 HTML; U solo propia Finalizada y **sin fotos**, mediante ConsultasWeb | RF-020/021/024, RNF-006 |
-| GET | `/evaluaciones/{evaluacion}/analizar` | Añadir análisis con fotos activas existentes; A | ID; visita En curso | 200 HTML con el recorrido | RF-017/021 |
-| POST | `/evaluaciones/{evaluacion}/analisis` | Guardar hasta 20 análisis; A | F: `analisis_0`…`analisis_19`, `destino_guardado` opcional | **201 text/plain** y `Location`; 400/403/503 texto | RF-021, RNF-010 |
-| GET | `/evaluaciones/{evaluacion}/analisis/{analisis}` | Resultado guardado con semáforo y sugerencias; A | Ambos IDs verificados | 200 HTML | RF-020/021/023a |
-| POST | `/evaluaciones/calcular` | Previsualizar segmento o resultado, sin guardar; A | F URL-encoded: `visita` y datos RULA; o `segmento` y sus datos parciales | **200 fragmento HTML**, nunca JSON; 400/403/503 texto | RF-017/018/019/020/027, RNF-010 |
-| POST | `/evaluaciones/{evaluacion}/fotos` | Añadir/cambiar/quitar lógicamente una foto; A, visita En curso | F multipart: `anterior` opcional, un archivo, `vista`, `descripcion`; sin archivo y con `anterior` marca reemplazada | **200 JSON** `{"foto":123,"anterior":45}` (pueden ser `null`); errores de servicio 400/503 texto, permiso 403 | RF-016, RNF-005/006/009 |
-| GET | `/fotos/{foto}` | Leer fotografía privada; solo A, incluso histórica | ID foto, sin ruta física pública | 200 archivo `image/jpeg` o `image/png`, inline y CSP sandbox; no disponible 404; U/sin sesión 403 | RF-016, RNF-006 |
+| GET | `/evaluaciones/nueva` | Abrir recorrido en visita En curso; A/E | `visita` obligatorio, `puesto` opcional, siempre activo y de esa sede | 200 HTML | RF-014/015/016 |
+| POST | `/evaluaciones` | Guardar contexto, fotos y análisis; A/E | F multipart, campos descritos debajo | **201 text/plain** con `Location` al detalle, visita o siguiente puesto; 400/403/503 texto claro | RF-014/015/016/021, RNF-005/006 |
+| GET | `/evaluaciones/{evaluacion}` | Ver guardado; A/E/U | ID, `aviso` opcional | 200 HTML; U solo propia Finalizada y **sin fotos**, mediante ConsultasWeb | RF-020/021/024, RNF-006 |
+| GET | `/evaluaciones/{evaluacion}/analizar` | Añadir análisis con fotos activas existentes; A/E | ID; visita En curso | 200 HTML con el recorrido | RF-017/021 |
+| POST | `/evaluaciones/{evaluacion}/analisis` | Guardar hasta 20 análisis; A/E | F: `analisis_0`…`analisis_19`, `destino_guardado` opcional | **201 text/plain** y `Location`; 400/403/503 texto | RF-021, RNF-010 |
+| GET | `/evaluaciones/{evaluacion}/analisis/{analisis}` | Resultado guardado con semáforo y sugerencias; A/E | Ambos IDs verificados | 200 HTML | RF-020/021/023a |
+| POST | `/evaluaciones/calcular` | Previsualizar segmento o resultado, sin guardar; A/E | F URL-encoded: `visita` y datos RULA; o `segmento` y sus datos parciales | **200 fragmento HTML**, nunca JSON; 400/403/503 texto | RF-017/018/019/020/027, RNF-010 |
+| POST | `/evaluaciones/{evaluacion}/fotos` | Añadir/cambiar/quitar lógicamente una foto; A/E, visita En curso | F multipart: `anterior` opcional, un archivo, `vista`, `descripcion`; sin archivo y con `anterior` marca reemplazada | **200 JSON** `{"foto":123,"anterior":45}` (pueden ser `null`); errores de servicio 400/503 texto, permiso 403 | RF-016, RNF-005/006/009 |
+| GET | `/fotos/{foto}` | Leer fotografía privada; solo A/E, incluso histórica | ID foto, sin ruta física pública | 200 archivo `image/jpeg` o `image/png`, inline y CSP sandbox; no disponible 404; U/sin sesión 403 | RF-016, RNF-006 |
 
 ### Campos de evaluación y fotografías
 
@@ -156,11 +156,11 @@ Fuentes: [EvaluacionesWeb.atender](../src/main/java/co/aplomo/web/EvaluacionesWe
 
 La variante parcial de `/evaluaciones/calcular` añade `segmento` (los cinco anteriores o `GIRO`/`PIERNAS`). Para segmentos angulares: sus campos, lado, dimensiones, `ajustes_confirmados=si` y ajustes de ese segmento; para GIRO/PIERNAS, `respuesta=MEDIO|EXTREMO` o `si|no`. Devuelve un `<span data-parcial>` con medición/puntos del segmento, **sin total final**. El resultado completo puede incluir las seis condiciones para previsualizar sugerencias. Todo puntaje guardado vuelve a calcularse en el servidor con tablas MySQL y NEUTRO=5°; no se altera `POST /evaluaciones/calcular` en este paso.
 
-La detección automática corre en el navegador, no en un endpoint APLOMO: descarga el modelo MediaPipe desde CDN y procesa la foto localmente. Las fotos de ejemplo son recursos estáticos y luego entran por la misma validación de subida.
+La detección automática corre en el navegador, no en un endpoint ALINEO: descarga el modelo MediaPipe desde CDN y procesa la foto localmente. Las fotos de ejemplo son recursos estáticos y luego entran por la misma validación de subida.
 
 ## Pendientes y sugerencias
 
-Fuentes: [PendientesWeb](../src/main/java/co/aplomo/web/PendientesWeb.java), [SugerenciasWeb](../src/main/java/co/aplomo/web/SugerenciasWeb.java). GET de lista en ConsultasWeb. Detalles **A/U** con alcance de empresa/visita Finalizada; acciones y formularios **A**. Escrituras requieren F.
+Fuentes: [PendientesWeb](../src/main/java/co/aplomo/web/PendientesWeb.java), [SugerenciasWeb](../src/main/java/co/aplomo/web/SugerenciasWeb.java). GET de lista en ConsultasWeb. Detalles **A/E/U** con alcance de empresa/visita Finalizada; acciones y formularios **A**. Escrituras requieren F.
 
 | Método | Ruta | Para qué | Parámetros / formulario | Respuesta | Requisito |
 |---|---|---|---|---|---|
@@ -181,7 +181,7 @@ Fuentes: [PendientesWeb](../src/main/java/co/aplomo/web/PendientesWeb.java), [Su
 
 ## Calificaciones e informe de la empresa
 
-Fuente: [CalificacionesWeb.atender](../src/main/java/co/aplomo/web/CalificacionesWeb.java). Solo consulta, **A/U** (U únicamente su empresa), con visitas Finalizadas.
+Fuente: [CalificacionesWeb.atender](../src/main/java/co/aplomo/web/CalificacionesWeb.java). Solo consulta, **A/E/U** (U únicamente sus empresas asignadas), con visitas Finalizadas.
 
 | Método | Ruta | Para qué | Parámetros | Respuesta | Requisito |
 |---|---|---|---|---|---|
@@ -221,9 +221,18 @@ A = Administrador; E = Evaluador en empresa asignada; U = Usuario en empresas as
 
 | Método | Ruta | Permisos | Comportamiento |
 |---|---|---|---|
-| GET | /agenda | A / E | Semana/mes, vista/fecha/evaluador/canceladas; evaluador solo A, incluye inactivos |
-| GET | /mis-evaluaciones | E | Solo autor CREAR de bitácora; conserva histórico sin escritura al retirar empresa |
-| POST | /reservas/{id}/nota-administrador | A | nota máx. 500, CSRF; marca no vista y bitácora EDITAR |
-| POST | /reservas/{id}/entendido | E | Solo su empresa, CSRF; confirma lectura |
+| GET | `/agenda` | A / E | Semana/mes, vista/fecha/evaluador/canceladas; evaluador solo A, incluye inactivos |
+| GET | `/mis-evaluaciones` | E | Solo autor CREAR de bitácora; conserva histórico sin escritura al retirar empresa |
+| POST | `/reservas/{id}/nota-administrador` | A | nota máx. 500, CSRF; marca no vista y bitácora EDITAR |
+| POST | `/reservas/{id}/entendido` | E | Solo su empresa, CSRF; confirma lectura |
 
 Las rutas de crear/editar sedes, salones, áreas, cargos y puestos; crear/editar/aceptar/cancelar reservas; iniciar/finalizar visitas; evaluaciones, fotos y análisis; pendientes y sugerencias; informes y práctica pasan de A a A/E, con alcance en el servidor. POST /evaluaciones/calcular mantiene exactamente su contrato y cálculo; solo la autorización exterior admite E. GET /puestos/{id} historial es A/E; U conserva su redirección propia. Consultas/calificaciones son A/E/U; informes A/E. /usuarios (todos los métodos), crear empresa y activar/desactivar jerarquía siguen solo A. Usuarios pueden tener varias empresas; reservas no exigen Finalizada, resultados sí.
+
+## Paso 25 · Presentación pública y Centro de ayuda
+
+| Método | Ruta | Permisos | Respuesta |
+|---|---|---|---|
+| GET | `/nosotros` | Público | 303 a /login#nosotros, sin crear sesión |
+| GET | `/ayuda` | Público / A / E / U | 200 HTML; visitante solo ingreso/contacto; A todos los temas, E sin cuentas, U 1/2/5/6/8/10 |
+
+El contacto sale de config/contacto.properties, nunca de datos del navegador. Sin el archivo o con campos incompletos aparece el respaldo. El semáforo de Ayuda se consulta en nivel_riesgo. El buscador actúa sobre el contenido que el servidor ya autorizó, sin habilitar temas por JavaScript.

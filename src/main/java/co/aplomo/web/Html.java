@@ -55,8 +55,8 @@ public final class Html {
         int svgH = (int)(altura * 0.78);
         int marginB = (int)(altura * 0.19);
         int marginR = (int)(altura * 0.03);
-        return "<span class=\"lockup\" style=\"font-size:" + altura + "px\" aria-label=\"APLOMO.\">"
-                + String.format(LOGO_SVG, svgH, svgH, marginB, marginR) + "<span>PLOMO.</span></span>";
+        return "<span class=\"lockup\" style=\"font-size:" + altura + "px\" aria-label=\"ALINEO.\">"
+                + String.format(LOGO_SVG, svgH, svgH, marginB, marginR) + "<span>LINEO.</span></span>";
     }
 
     /** "1 reserva", "3 reservas": singular cuando n == 1, plural en otro caso (RNF-007). */
@@ -71,6 +71,7 @@ public final class Html {
 
     /** Escapa texto y atributos para que los datos no se ejecuten como HTML (RNF-004). */
     public static String escapar(String texto) {
+        if(texto!=null)texto=texto.replace("APLOMO · Práctica de evaluación","ALINEO · Práctica de evaluación").replace("Demostración APLOMO.","Demostración ALINEO.").replace("para presentar APLOMO","para presentar ALINEO").replace("calculados por APLOMO.","calculados por ALINEO.");
         return texto == null ? "" : texto.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
                 .replace("\"","&quot;").replace("'","&#39;");
     }
@@ -113,7 +114,12 @@ public final class Html {
 
     /** Presentación con contexto explícito, conservando la cabecera y las autorizaciones existentes. */
     public static String pagina(String titulo, String contenido, Sesion s, String seccion, String acciones) {
-        return pagina(titulo, encabezado(seccion, titulo, acciones) + contenido, s, false);
+        return pagina(titulo,contenido,s,seccion,acciones,true);
+    }
+
+    /** RF-002: distingue listas de detalles sin depender del nombre de la empresa. */
+    public static String pagina(String titulo,String contenido,Sesion s,String seccion,String acciones,boolean atras){
+        return pagina(titulo,encabezado(seccion,titulo,acciones)+contenido,s,false,atras);
     }
 
     private static String seccion(String titulo) {
@@ -141,7 +147,6 @@ public final class Html {
 
     /** Permite que Inicio omita Atrás sin afectar el resto de páginas. */
     public static String pagina(String titulo, String contenido, Sesion s, boolean conPagehead, boolean atras) {
-        atras = atras && !java.util.Set.of("Inicio","Empresas","Reservas","Visitas","Pendientes de arreglo","Evaluaciones","Usuarios","Mi agenda","Agenda","Mis evaluaciones","Ayuda").contains(titulo);
         String cabecera = "";
         if (s != null && s.cuenta() != null) {
             Cuenta c = s.cuenta();
@@ -167,6 +172,7 @@ public final class Html {
                     // Nombre + rol + avatar + Salir (Cambiar contraseña dentro del menú de cuenta)
                     + "<div class=\"who\"><div class=\"meta\" style=\"text-align:right\"><div>"
                     + escapar(c.nombre()) + "</div><div class=\"muted small\">" + escapar(rolTexto) + "</div></div>"
+                    + "<a class=\"btn ayuda-cabecera\" href=\"/ayuda\">Ayuda</a>"
                     + "<a href=\"/cuenta/contrasena\" class=\"avatar\" title=\"Cambiar contraseña\">" + escapar(iniciales) + "</a>"
                     + "<form method=\"post\" action=\"/logout\" style=\"margin:0\">" + csrf(s)
                     + "<button class=\"btn\">Salir</button></form></div>"
@@ -179,7 +185,7 @@ public final class Html {
                 : "";
         return "<!doctype html><html lang=\"es\"><head><meta charset=\"UTF-8\">"
                 + "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">"
-                + "<title>" + escapar(titulo) + " · APLOMO.</title>"
+                + "<title>" + escapar(titulo) + " · ALINEO.</title>"
                 + "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/favicon.svg\">"
                 + "<link href=\"https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&display=swap\" rel=\"stylesheet\">"
                 + "<link rel=\"stylesheet\" href=\"/static/css/aplomo.css\">"
@@ -200,11 +206,11 @@ public final class Html {
     }
 
     private static String pie() {
-        return "<footer class=\"pie\"><div class=\"wrap\"><span class=\"marca\" role=\"img\" aria-label=\"APLOMO.\">"+icono(20)+"<span>PLOMO.</span></span><span class=\"lema\">Ergonomía con precisión · Método RULA</span><span>© 2026 APLOMO</span></div></footer>";
+        return "<footer class=\"pie\"><div class=\"wrap\"><span class=\"marca\" role=\"img\" aria-label=\"ALINEO.\">"+icono(20)+"<span>LINEO.</span></span><span class=\"lema\">Ergonomía con precisión · Método RULA</span><span>© 2026 ALINEO</span></div></footer>";
     }
 
     private static String laterales() {
-        StringBuilder h=new StringBuilder("<div class=\"riel riel-izq\" aria-hidden=\"true\"><span class=\"marca-v\">APLOMO.</span><span class=\"lema-v\">Ergonomía con precisión</span></div><div class=\"deco deco-izq\" aria-hidden=\"true\"><svg viewBox=\"0 0 300 300\"><path class=\"dc-h\" d=\"M20,150 A130,130 0 0 1 280,150\"/><g class=\"dc-h\">");
+        StringBuilder h=new StringBuilder("<div class=\"riel riel-izq\" aria-hidden=\"true\"><span class=\"marca-v\">ALINEO.</span><span class=\"lema-v\">Ergonomía con precisión</span></div><div class=\"deco deco-izq\" aria-hidden=\"true\"><svg viewBox=\"0 0 300 300\"><path class=\"dc-h\" d=\"M20,150 A130,130 0 0 1 280,150\"/><g class=\"dc-h\">");
         for(int a=-90;a<=90;a+=5){double r=a%15==0?116:123,v=Math.toRadians(a);h.append(String.format(java.util.Locale.ROOT,"<line x1=\"%.3f\" y1=\"%.3f\" x2=\"%.3f\" y2=\"%.3f\"/>",150+r*Math.sin(v),150-r*Math.cos(v),150+130*Math.sin(v),150-130*Math.cos(v)));}
         h.append("</g><line class=\"dc-p\" x1=\"150\" y1=\"0\" x2=\"150\" y2=\"300\"/><path class=\"dc-arc\" pathLength=\"1\" d=\"M150,90 A60,60 0 0 1 184.41,100.85\"/><g class=\"dc-aguja\"><line x1=\"150\" y1=\"150\" x2=\"150\" y2=\"34\"/><circle class=\"dc-f\" cx=\"150\" cy=\"34\" r=\"3.2\"/></g><circle class=\"dc-f\" cx=\"150\" cy=\"150\" r=\"4\"/></svg></div><div class=\"deco deco-der\" aria-hidden=\"true\"><svg viewBox=\"0 0 300 380\"><line class=\"dc-p\" x1=\"150\" y1=\"0\" x2=\"150\" y2=\"184\"/><path class=\"dc-h\" d=\"M118.81,336.72 A150,150 0 0 0 181.19,336.72\"/><g class=\"dc-h\">");
         for(int a=-12;a<=12;a+=6){double v=Math.toRadians(a);h.append(String.format(java.util.Locale.ROOT,"<line x1=\"%.3f\" y1=\"%.3f\" x2=\"%.3f\" y2=\"%.3f\"/>",150+150*Math.sin(v),190+150*Math.cos(v),150+158*Math.sin(v),190+158*Math.cos(v)));}

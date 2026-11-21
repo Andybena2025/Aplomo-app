@@ -30,7 +30,7 @@ public final class PaginasUsuarios {
             contenido.append("<tr data-cuenta data-rol=\"").append(c.rol().name()).append("\" data-empresa=\"").append(c.rol()==Rol.ADMINISTRADOR?"independiente":asignadas.getOrDefault(c.id(),List.of()).stream().map(Object::toString).collect(java.util.stream.Collectors.joining(" "))).append("\">")
                     .append("<td data-label=\"Nombre y correo\"><div class=\"cell-value\" data-nombre-correo><b>").append(Html.escapar(c.nombre())).append("</b><div class=\"small muted\">").append(Html.escapar(c.correo())).append("</div></div></td>")
                     .append("<td data-label=\"Rol\"><div class=\"cell-value\">").append(Formularios.etiqueta(c.rol().name())).append("</div></td>")
-                    .append("<td data-label=\"Empresas\"><div class=\"cell-value\">").append(Html.escapar(c.rol()==Rol.ADMINISTRADOR ? "Todas" : asignadas.getOrDefault(c.id(),List.of()).stream().map(id->nombres.getOrDefault(id,"Empresa asignada")).collect(java.util.stream.Collectors.joining(", ")))).append("</div></td>")
+                    .append("<td data-label=\"Empresas\"><div class=\"cell-value\">").append(Html.escapar(c.rol()==Rol.ADMINISTRADOR ? "Todas" : asignadas.getOrDefault(c.id(),List.of()).isEmpty()?"Sin empresas asignadas":asignadas.getOrDefault(c.id(),List.of()).stream().map(id->nombres.getOrDefault(id,"Empresa asignada")).collect(java.util.stream.Collectors.joining(", ")))).append("</div></td>")
                     .append("<td data-label=\"Estado\"><div class=\"cell-value\"><span class=\"").append(claseEstado(c.estado())).append("\">").append(estado(c.estado())).append("</span></div></td>")
                     .append("<td data-label=\"Acciones\"><div class=\"cell-value row\"><a class=\"btn sm\" href=\"/usuarios/").append(c.id()).append("/editar\">Editar</a>")
                     .append("<form method=\"post\" action=\"/usuarios/").append(c.id())
@@ -39,7 +39,7 @@ public final class PaginasUsuarios {
                     .append(c.estado()==Estado.INACTIVA ? "Activar" : "Desactivar").append("</button></form></div></td></tr>");
         }
         contenido.append("</tbody></table></div>").append(Html.vacio("Aún no hay usuarios con estos filtros. Puedes cambiar la búsqueda o crear una cuenta.","<a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a>").replace("class=\"empty marca\"","class=\"empty marca\" data-usuarios-vacios hidden")).append("<script src=\"/static/js/usuarios.js\" defer></script>");
-        return Html.pagina("Usuarios",contenido.toString(),s,"Gestión · Usuarios","<a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a>");
+        return Html.pagina("Usuarios",contenido.toString(),s,"Gestión · Usuarios","<a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a>",false);
     }
 
     private static String dato(String titulo,String valor) { return "<div><dt>"+Html.escapar(titulo)+"</dt><dd>"+Html.escapar(valor)+"</dd></div>"; }
@@ -77,7 +77,7 @@ public final class PaginasUsuarios {
                 .append(nuevo ? "Se exigirá cambiarla al ingresar." : "Deja el campo vacío para conservar la contraseña actual.")
                 .append("</p><div class=\"row\"><button class=\"btn p\">").append(nuevo ? "Crear usuario" : "Guardar cambios")
                 .append("</button><a class=\"btn\" href=\"/usuarios\">Volver a usuarios</a></div></form>");
-        return Html.pagina(nuevo ? "Nuevo usuario" : "Editar usuario",nuevo?Html.conPanel(form.toString(),"Cada empresa, solo lo suyo.","La cuenta de Usuario solo consulta resultados finalizados de su empresa; las evaluaciones las hace el Administrador."):form.toString(),s);
+        return Html.pagina(nuevo ? "Nuevo usuario" : "Editar usuario",nuevo?Html.conPanel(form.toString(),"Cada empresa, solo lo suyo.","El Usuario consulta resultados finalizados de sus empresas; el Evaluador trabaja en las empresas que le asignan."):form.toString(),s);
     }
 
     private static String opcion(String valor,String texto,boolean seleccionada) {

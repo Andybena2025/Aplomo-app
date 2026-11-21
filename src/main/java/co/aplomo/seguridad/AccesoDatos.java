@@ -41,7 +41,7 @@ public final class AccesoDatos {
  }
  /** Lectura histórica excepcional: solo la evaluación creada por este Evaluador (RNF-009). */
  public static boolean propia(Connection c,Cuenta a,int evaluacion)throws SQLException{
-  return a.rol()==Rol.EVALUADOR&&Boolean.TRUE.equals(Sql.uno(c,"SELECT TRUE FROM bitacora WHERE tabla='evaluacion' AND accion='CREAR' AND id_registro=? AND id_cuenta=? LIMIT 1",r->r.getBoolean(1),evaluacion,a.id()));
+  return a.rol()==Rol.EVALUADOR&&java.util.Objects.equals(a.id(),Sql.uno(c,"SELECT id_cuenta FROM bitacora WHERE tabla='evaluacion' AND accion='CREAR' AND id_registro=? ORDER BY id_bitacora LIMIT 1",r->r.getInt(1),evaluacion));
  }
  /** Autoriza lectura histórica propia o escritura dentro del alcance actual. */
  public static void exigirEvaluacion(Connection c,Cuenta a,int id,boolean escritura)throws SQLException{

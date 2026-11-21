@@ -85,6 +85,7 @@ class HttpHistorialInactivosTest extends HttpPrueba {
     }
     @Test void atrasSoloEnDetallesYFormularios()throws Exception{
         for(String ruta:List.of("/","/empresas","/usuarios","/reservas","/visitas","/pendientes","/evaluaciones"))assertFalse(get(ruta).body().contains("aria-label=\"Atrás\""),ruta);for(String ruta:List.of("/puestos/"+e.puesto1,"/cuenta/contrasena","/empresas/"+e.empresaA))assertTrue(get(ruta).body().contains("aria-label=\"Atrás\""),ruta);
+        Sql.actualizar(con,"UPDATE empresa SET nombre=? WHERE id_empresa=?","Empresas",e.empresaA);assertTrue(get("/empresas/"+e.empresaA).body().contains("aria-label=\"Atrás\""));
         dao.contrasena(con,admin,cuenta(admin).hash(),true);cliente=HttpClient.newBuilder().cookieHandler(new CookieManager(null,CookiePolicy.ACCEPT_ALL)).build();entrar(admin);
         String h=get("/cuenta/contrasena").body();assertFalse(h.contains("aria-label=\"Atrás\""));assertTrue(h.contains(">Salir</button>"));
     }

@@ -22,7 +22,7 @@ class Paso17Test extends HttpPrueba {
  }
  @Test void faviconEsPublicoYErroresTienenSalidaSinDetallesTecnicos()throws Exception{
   for(String ruta:List.of("/favicon.ico","/favicon.svg")){var f=get(ruta);assertEquals(200,f.statusCode());assertTrue(f.headers().firstValue("Content-Type").orElse("").startsWith("image/svg+xml"));assertTrue(f.body().contains("plom")||f.body().contains("<svg"));}
-  assertTrue(get("/login").body().contains("Iniciar sesión · APLOMO."));entrar(admin);var f=get("/no-existe");assertEquals(404,f.statusCode());assertTrue(f.body().contains("Volver al inicio"));assertTrue(Html.error("No pudimos abrir esta página","Inténtalo otra vez.").contains("Volver al inicio"));
+  assertTrue(get("/login").body().contains("Iniciar sesión · ALINEO."));entrar(admin);var f=get("/no-existe");assertEquals(404,f.statusCode());assertTrue(f.body().contains("Volver al inicio"));assertTrue(Html.error("No pudimos abrir esta página","Inténtalo otra vez.").contains("Volver al inicio"));
  }
  @Test void cuelloManualMenosSeisConservaCuatroPuntos() {assertEquals(4,co.aplomo.rula.PuntuadorSegmentos.cuello(-6,false,false));}
 }

@@ -33,7 +33,7 @@ public final class PaginasVisitas {
             }
             html.append("</tbody></table></div>");
         }
-        return Html.pagina("Visitas", html.toString(), sesion);
+        return Html.pagina("Visitas", html.toString(), sesion,true,false);
     }
 
     /** Detalla la visita, su horario real y las evaluaciones guardadas. */

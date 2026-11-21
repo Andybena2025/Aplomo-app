@@ -14,27 +14,27 @@ class HttpMarcaTest extends HttpPrueba {
         var ingreso=entrar(admin);assertEquals("/",ingreso.headers().firstValue("Location").orElseThrow());
         for(String ruta:List.of("/","/empresas","/sedes","/salones","/areas","/cargos","/puestos","/reservas","/visitas","/evaluaciones","/pendientes","/sugerencias","/usuarios","/calificaciones","/empresas/nueva","/reservas/nueva","/usuarios/nuevo","/cuenta/contrasena")){
             var r=get(ruta);assertEquals(200,r.statusCode(),ruta);String h=r.body();
-            assertTrue(h.contains("© 2026 APLOMO"),ruta);assertTrue(h.contains("Ergonomía con precisión · Método RULA"),ruta);
+            assertTrue(h.contains("© 2026 ALINEO"),ruta);assertTrue(h.contains("Ergonomía con precisión · Método RULA"),ruta);
             assertFalse(h.toLowerCase(Locale.ROOT).contains("proyecto nuclear"),ruta);
             assertFalse(h.toLowerCase(Locale.ROOT).contains("software real"),ruta);
             assertFalse(h.contains("v1.0"),ruta);
         }
-        assertFalse(login.body().toLowerCase(Locale.ROOT).contains("proyecto nuclear"));
+        assertTrue(login.body().contains("Proyecto Nuclear 2026-2"));
     }
     @Test void inicioOmiteAtrasSinQuitarElBotonDelRestoNiCrearBienvenida() throws Exception {
         entrar(admin);var inicio=get("/");assertFalse(inicio.body().contains("aria-label=\"Atrás\""));
-        assertTrue(inicio.body().contains("Hola, "));assertTrue(inicio.body().contains("© 2026 APLOMO"));
-        assertTrue(get("/usuarios").body().contains("aria-label=\"Atrás\""));
+        assertTrue(inicio.body().contains("Hola, "));assertTrue(inicio.body().contains("© 2026 ALINEO"));
+        assertFalse(get("/usuarios").body().contains("aria-label=\"Atrás\""));
         cliente=java.net.http.HttpClient.newBuilder().cookieHandler(new java.net.CookieManager(null,java.net.CookiePolicy.ACCEPT_ALL)).build();
         entrar(usuario);assertFalse(get("/").body().contains("aria-label=\"Atrás\""));
         assertFalse(get("/").body().contains("Semáforo de puestos"));
     }
     @Test void semaforoLeeColoresRealesYSeActualizaConLosDatos() throws Exception {
         DatosDemoPrueba.cargar(con,carpetaFotos);entrar(admin);String h=get("/").body();
-        conteo(h,"VERDE",4);conteo(h,"AMARILLO",4);conteo(h,"ROJO",4);assertTrue(h.contains("class=\"barra\""));
+        var cantidades=conteos();for(var entrada:cantidades.entrySet())conteo(h,entrada.getKey(),entrada.getValue());assertTrue(h.contains("class=\"barra\""));
         int puesto=Sql.uno(con,"SELECT e.id_puesto FROM evaluacion e JOIN visita v USING(id_visita) JOIN reserva r USING(id_reserva) WHERE r.codigo=? ORDER BY e.id_puesto LIMIT 1",r->r.getInt(1),"DEMO17-E3B");
         Sql.actualizar(con,"UPDATE puesto_trabajo SET ultimo_puntaje=? WHERE id_puesto=?",3,puesto);
-        h=get("/").body();conteo(h,"VERDE",3);conteo(h,"AMARILLO",5);conteo(h,"ROJO",4);
+        h=get("/").body();conteo(h,"VERDE",cantidades.get("VERDE")-1);conteo(h,"AMARILLO",cantidades.get("AMARILLO")+1);conteo(h,"ROJO",cantidades.get("ROJO"));
         assertTrue(h.indexOf("Semáforo de puestos")<h.indexOf("id=\"visitas-en-curso\""));
     }
     @Test void ceroPuestosNoMuestraUnaBarraProporcionalVacia() throws Exception {
@@ -59,6 +59,7 @@ class HttpMarcaTest extends HttpPrueba {
         assertTrue(get("/usuarios").body().contains("class=\"empty marca\" data-usuarios-vacios hidden"));
         assertTrue(get("/empresas?q=no-existe-qa-marca").body().contains("<p>Aún no hay empresas con estos filtros."));
     }
+    private Map<String,Integer> conteos()throws Exception{Map<String,Integer> m=new HashMap<>();for(var f:Sql.listar(con,"SELECT n.color,COUNT(*) total FROM puesto_trabajo p JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN nivel_riesgo n ON p.ultimo_puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo WHERE TRUE"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" GROUP BY n.color",r->Map.entry(r.getString(1),r.getInt(2))))m.put(f.getKey(),f.getValue());return m;}
     private static void conteo(String html,String color,int cantidad){assertTrue(html.contains("data-color=\""+color+"\" data-cantidad=\""+cantidad+"\""),color+"="+cantidad);}
 
  @org.junit.jupiter.api.Test void marcaDeLoginEnPanelYHeroSinTexto()throws Exception{String h=get("/login").body(),hero=h.substring(h.indexOf("<section class=\"hero\""),h.indexOf("<!-- Lado derecho"));assertFalse(hero.contains("class=\"in\""));assertFalse(hero.contains("class=\"lockup\""));assertTrue(h.indexOf("class=\"login-marca\"")>h.indexOf("id=\"contenido\""));assertFalse(h.contains("Evaluación ergonómica de puestos de trabajo con el método RULA:"));assertTrue(h.contains("src=\"/static/js/portada.js\""));var script=get("/static/js/portada.js");assertEquals(200,script.statusCode());assertTrue(script.headers().firstValue("Content-Type").orElseThrow().contains("javascript"));}

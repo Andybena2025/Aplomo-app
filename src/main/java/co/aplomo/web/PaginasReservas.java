@@ -41,7 +41,7 @@ public final class PaginasReservas {
             }
             html.append("</tbody></table></div>");
         }
-        return Html.pagina("Reservas", html.toString(), sesion);
+        return Html.pagina("Reservas", html.toString(), sesion,true,false);
     }
 
     /** Detalla la reserva y muestra solo las transiciones que siguen disponibles. */
@@ -145,6 +145,7 @@ public final class PaginasReservas {
     }
 
     /** Traduce los estados internos a los nombres aprobados de la interfaz. */
+    /** RF-011: estado de reserva con el texto de la interfaz. */
     public static String estado(String valor) {
         return switch (valor) {
             case "ESPERANDO" -> "Esperando"; case "EN_COLA" -> "En cola";
@@ -162,6 +163,7 @@ public final class PaginasReservas {
     }
 
     /** Traduce las categorías de visita sin mostrar códigos del enum. */
+    /** RF-011: tipo de visita en palabras, compartido con Agenda. */
     public static String categoria(String valor) {
         return switch (valor) {
             case "EVALUACION_INICIAL" -> "Evaluación inicial"; case "SEGUIMIENTO" -> "Seguimiento";

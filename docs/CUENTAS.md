@@ -1,12 +1,12 @@
 # Crear cuentas del equipo
 
-La herramienta crea cuentas por el mismo servicio que la pantalla **Usuarios**. No borra, no reactiva ni modifica cuentas existentes. Usa la base configurada para esa instalación. No necesitas el administrador de MySQL: basta la cuenta de conexión habitual de APLOMO y un Administrador vigente de la app.
+La herramienta crea cuentas por el mismo servicio que la pantalla **Usuarios**. No borra, no reactiva ni modifica cuentas existentes. Usa la base configurada para esa instalación. No necesitas el administrador de MySQL: basta la cuenta de conexión habitual de ALINEO y un Administrador vigente de la app.
 
 ## 1. Cambia primero la contraseña del Administrador inicial
 
 1. Abre la app e ingresa con **admin@rula.local** y la contraseña actual de esa instalación.
 2. Si es el primer ingreso, la app abre obligatoriamente **Cambiar contraseña**. Escribe la actual, una nueva y su confirmación.
-3. La nueva debe tener al menos ocho caracteres, una letra y un número; como todas las claves de APLOMO, admite hasta 72 bytes para bcrypt.
+3. La nueva debe tener al menos ocho caracteres, una letra y un número; como todas las claves de ALINEO, admite hasta 72 bytes para bcrypt.
 4. Si ya cambiaste la contraseña, usa la nueva. También puedes abrir **Cambiar contraseña** desde el avatar de la barra superior. Esta herramienta no restablece ni revela la clave del Administrador inicial.
 
 ## 2. Prepara la lista privada
@@ -54,7 +54,7 @@ Windows, en Símbolo del sistema:
 scripts\crear_cuentas.bat
 ```
 
-1. Escribe el correo de un **Administrador activo** de APLOMO y su contraseña actual. La contraseña de ingreso no se ve al escribirla y no se pasa como argumento del comando.
+1. Escribe el correo de un **Administrador activo** de ALINEO y su contraseña actual. La contraseña de ingreso no se ve al escribirla y no se pasa como argumento del comando.
 2. Completa teléfono y cargo de cada cuenta nueva. Las empresas deben existir y estar activas. La herramienta mantiene las mismas validaciones de Usuarios y vuelve a comprobar el permiso al crear.
 3. Al terminar aparece **una sola tabla**. Cada cuenta creada muestra su correo y una contraseña temporal aleatoria de **16 caracteres**, con letras y números, sin 0/O/o ni l/1/I. Cada contraseña se imprime una sola vez, inmediatamente después de crear la cuenta.
 4. Copia las claves desde esa tabla y entrégalas a sus titulares por un medio privado. No uses `>`, `tee`, grabación de sesión o registros de terminal para guardar la salida. La herramienta exige una consola y no escribe contraseñas en archivos ni en registros de la aplicación.
