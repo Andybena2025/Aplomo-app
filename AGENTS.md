@@ -16,7 +16,7 @@ Fuente de verdad, en este orden:
 5. `CLAUDE.md` y el resto de `docs/`.
 6. El mock: `docs/referencia/mock_app/app.src.html` y `docs/referencia/mock_app/capturas/` (referencia visual y de comportamiento).
 
-Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (22 tablas, base `rula_ergonomia`). No cambies la base sin permiso de Andy.
+Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (24 tablas, base `rula_ergonomia`). No cambies la base sin permiso de Andy.
 
 ## Estado (actualízalo al terminar cada paso)
 
@@ -184,8 +184,9 @@ Luego ESPERA el OK de Andy.
 - Decisión de Andy: `empresa.sector VARCHAR(60) NULL` opcional, migración repetible, Script y Diccionario;
   formulario de empresa y Solicitar acceso. Ciudad registrada y sector; sin sector, solo ciudad.
 - Trabajo del 27A se prepara en la copia de trabajo; no confundir los cambios pendientes con lo que ya corre en 8080.
-- Pendiente de respuesta: conservar o desactivar la cuenta inicial admin@rula.local además de las nueve del equipo.
-  No cambiar su contraseña ni desactivarla mientras esa decisión no esté resuelta.
+- Andy resolvió: desactivar admin@rula.local después de verificar los tres Administradores del equipo Activos.
+  No borrar ni cambiar su contraseña; la demo no la reactiva. En una base nueva se crea como respaldo y
+  cargar_demo la deja Inactiva cuando las tres cuentas del equipo están Activas.
 
 
 - Cierre de 27A: sistema visual compartido, tres inicios, listas completas/chips/búsqueda y filtros avanzados sin
@@ -210,3 +211,18 @@ Luego ESPERA el OK de Andy.
   Primer lanzador visual sin URL de pruebas salió sin confirmar; se verificaron cero datos de prueba reales
   y se añadió URL explícita y guardia de catálogo. No tocar motor/cálculo/IA/imágenes. C sigue autorizado.
   Informe docs/informe_paso27.md. Sigue pendiente la decisión sobre la cuenta inicial; se conserva.
+
+
+- Cierre de 27C: solicitud pública con CSRF/validación/límite, avisos de Administradores, aprobación atómica
+  con Usuario temporal y cambio obligatorio, rechazo con motivo, contacto de empresa creada por dueño E
+  Pendiente sin ingreso. Ciudad declarada conservada, sector opcional, sin sedes inventadas. Documentación
+  actualizada e informe completo en docs/informe_paso27.md. Suite completa una vez 1088/1088, más dos casos
+  nuevos posteriores: 1090 distintos verificados; 136/136 JS. Cierre dirigido 12/12 demo y 22/22 acceso.
+  Se corrigió duplicación de avisos al cambiar la cuenta que carga la demo; no cambian motor/cálculo/IA/imágenes.
+  Migración real con respaldo, dos pasadas 23→24 tablas, conteos anteriores conservados; cero solicitudes reales
+  de ensayo. Decisión posterior de Andy: tres Administradores del equipo verificados Activos y cuenta inicial
+  admin@rula.local Inactiva, sin cambiar su contraseña ni borrarla. Exactamente nueve cuentas Activas; demo no
+  la reactiva y segunda carga idéntica. Instalación nueva conserva creación de respaldo y demo lo desactiva.
+  QA pública/aprobación y veinte medidas DOM sin desborde, Entrar visible en los cinco tamaños; ROLLBACK y
+  cero errores de consola. Sin capturas ni descargas. iPad físico/Windows/tres equipos no comprobados.
+  A y B ya subidos; C se entrega con commit/push autorizado al mismo origin/main verificado. Esperar OK de Andy.

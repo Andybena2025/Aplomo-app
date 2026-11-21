@@ -446,3 +446,28 @@ Mes por defecto, colores personales de Evaluador y semana por duración. Un Eval
 crear ni editar una reserva que se cruce con otra no cancelada de cualquiera de sus empresas.
 Las notas del Administrador se consultan cada 15 segundos solo en páginas del Evaluador visible;
 el sondeo no prolonga la sesión. El acuse conserva CSRF. Los colores no se usan para riesgo RULA.
+
+## Extensiones del Paso 27 aprobadas por Andy · 21/11/2026 (propuesta)
+
+Estas extensiones aprobadas sustituyen las restricciones anteriores que se indican; la numeración de
+los 44 requisitos originales y el método RULA se conservan.
+
+- **RF-002 (propuesta):** tres roles. El Usuario puede solicitar visitas solo para salones de sus empresas,
+  consultar sus propias solicitudes y responder una vez por petición de información. No edita reservas
+  aceptadas ni consulta resultados de visitas En curso. Avisos privados por destinatario en los tres roles.
+- **RF-003 (propuesta):** una empresa puede tener varios Evaluadores asignados. Una persona nueva solicita
+  acceso; únicamente el Administrador aprueba o rechaza. Aprobar crea la cuenta Usuario con contraseña
+  temporal y cambio obligatorio al primer ingreso. No existe registro libre ni contraseña en la solicitud.
+- **RF-004/028 (propuesta):** el Evaluador puede crear empresa y queda asignado. El dueño es id_creador;
+  solo él edita/desactiva su empresa y estructura. Otros asignados consultan, reservan y evalúan; A consulta.
+  Solo A transfiere de dueño E Inactivo a otro E Activo, auditado. Sector opcional, VARCHAR(60), sin inferirlo.
+- **RF-011/033 (propuesta):** Admin consulta la agenda y escribe notas; no crea reservas ni inicia visitas.
+  Cada cita identifica su Evaluador. Cruces, colores y notas usan esa identidad, no el primer asignado
+  a la empresa. Solicitudes de Usuario Esperando; aceptar asigna la empresa y pasa a En cola.
+- **RNF-004/005 (propuesta):** formulario público con CSRF, validación, escape y límite de cinco envíos
+  por conexión por hora. Aprobación atómica y auditada, contraseña temporal solo una vez en la respuesta,
+  sin guardarla en claro ni en registros. Enlace de WhatsApp para envío manual y sin comunicación automática.
+
+Decisiones expresas de Andy: propiedad y transferencia indicadas arriba; empresa.sector opcional; ciudad
+real y sector en la lista, y sin sector solo ciudad. La solicitud conserva la ciudad declarada; no crea
+sedes ficticias. La completa el ingeniero cuando registra la estructura real de la empresa.

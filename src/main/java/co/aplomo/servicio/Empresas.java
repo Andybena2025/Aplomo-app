@@ -31,6 +31,14 @@ import java.util.Objects;
  */
 public final class Empresas {
     private final Transacciones tx;
+
+    /**
+     * RF-003 (propuesta): solicitudes con las mismas transacciones de empresa.
+     */
+    public SolicitudesAcceso accesos() {
+        return new SolicitudesAcceso(tx, java.time.Clock.system(co.aplomo.web.Html.ZONA));
+    }
+
     private final EmpresaDao empresas = new EmpresaDao();
     private final SedeDao sedes = new SedeDao();
     private final SalonDao salones = new SalonDao();
@@ -148,6 +156,14 @@ public final class Empresas {
                             acceso.sql("em.id_empresa") + " GROUP BY em.id_empresa",
                     fila -> java.util.Map.entry(fila.getInt(1), fila.getString(2)), acceso.todas(), acceso.valor())) {
                 ciudades.put(fila.getKey(), fila.getValue());
+            }
+            // RF-004: sin sedes todavía, usa únicamente la ciudad declarada y aprobada, nunca la inventa.
+            for (var fila : co.aplomo.db.Sql.listar(conexion,
+                    "SELECT sa.id_empresa,sa.ciudad FROM solicitud_acceso sa JOIN empresa em " +
+                            "ON em.id_empresa=sa.id_empresa WHERE sa.estado='APROBADA' AND " +
+                            acceso.sql("em.id_empresa") + " ORDER BY sa.id_solicitud",
+                    f -> java.util.Map.entry(f.getInt(1), f.getString(2)), acceso.todas(), acceso.valor())) {
+                if (ciudades.getOrDefault(fila.getKey(), "").isBlank()) ciudades.put(fila.getKey(), fila.getValue());
             }
             var equipos = new java.util.HashMap<Integer, java.util.ArrayList<Persona>>();
             for (var fila : co.aplomo.db.Sql.listar(conexion,
@@ -294,53 +310,58 @@ public final class Empresas {
      * Guarda una empresa; el NIT duplicado impide guardar y un nombre similar solo avisa. RNF-011.
      */
     public Guardado guardar(Cuenta actor, Empresa datos) throws SQLException {
-        return tx.ejecutar(con -> {
-            Cuenta administrador = administrador(con, actor);
-            if (datos.id() != 0) {
-                co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, datos.id(), true, false);
+        return tx.ejecutar(con -> guardarEn(con, actor, datos));
+    }
+
+    /**
+     * RF-003/004: misma operación dentro de una aprobación atómica, con reglas y permisos intactos.
+     */
+    Guardado guardarEn(Connection con, Cuenta actor, Empresa datos) throws SQLException {
+
+        Cuenta administrador = administrador(con, actor);
+        if (datos.id() != 0) {
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, datos.id(), true, false);
+        }
+        Empresa anterior = datos.id() == 0 ? null : exigir(empresas.buscar(con, datos.id(), alcance(con, actor), true));
+        Integer creador = anterior == null ? administrador.id() : Objects.requireNonNullElse(anterior.creador(),
+                anterior.administrador());
+        Empresa dato = new Empresa(datos.id(), anterior == null ? administrador.id() : anterior.administrador(),
+                Validacion.texto(datos.nombre(), "nombre", 120),
+                Validacion.texto(datos.nit(), "NIT", 20).replaceAll("\\s+", ""),
+                Validacion.opcional(datos.descripcion(), "descripción", 255),
+                Validacion.opcional(datos.telefono(), "teléfono", 20), Validacion.correo(datos.correo()),
+                Validacion.opcional(datos.contacto(), "persona de contacto", 100),
+                anterior == null || anterior.activo(), creador, Validacion.opcional(datos.sector(), "sector", 60));
+        String aviso = null;
+        for (Empresa otra : empresas.buscarTodos(con, 0, alcance(con, actor))) {
+            if (otra.id() == dato.id()) continue;
+            if (Validacion.nombre(otra.nit()).replaceAll("\\s+", "").equals(Validacion.nombre(dato.nit()))) {
+                throw new IllegalArgumentException(
+                        "El NIT ya pertenece a " + otra.nombre() + (otra.nombre().endsWith(".") ? "" : ".") +
+                                " Edita o reactiva esa empresa.");
             }
-            Empresa anterior =
-                    datos.id() == 0 ? null : exigir(empresas.buscar(con, datos.id(), alcance(con, actor), true));
-            Integer creador = anterior == null ? administrador.id() : Objects.requireNonNullElse(anterior.creador(),
-                    anterior.administrador());
-            Empresa dato = new Empresa(datos.id(), anterior == null ? administrador.id() : anterior.administrador(),
-                    Validacion.texto(datos.nombre(), "nombre", 120),
-                    Validacion.texto(datos.nit(), "NIT", 20).replaceAll("\\s+", ""),
-                    Validacion.opcional(datos.descripcion(), "descripción", 255),
-                    Validacion.opcional(datos.telefono(), "teléfono", 20), Validacion.correo(datos.correo()),
-                    Validacion.opcional(datos.contacto(), "persona de contacto", 100),
-                    anterior == null || anterior.activo(), creador, Validacion.opcional(datos.sector(), "sector", 60));
-            String aviso = null;
-            for (Empresa otra : empresas.buscarTodos(con, 0, alcance(con, actor))) {
-                if (otra.id() == dato.id()) continue;
-                if (Validacion.nombre(otra.nit()).replaceAll("\\s+", "").equals(Validacion.nombre(dato.nit()))) {
-                    throw new IllegalArgumentException(
-                            "El NIT ya pertenece a " + otra.nombre() + (otra.nombre().endsWith(".") ? "" : ".") +
-                                    " Edita o reactiva esa empresa.");
-                }
-                if (Validacion.nombreEmpresa(otra.nombre()).equals(Validacion.nombreEmpresa(dato.nombre()))) {
-                    aviso = "Existe otra empresa con nombre similar: " + otra.nombre() +
-                            (otra.nombre().endsWith(".") ? "" : ".") + " Revisa que sean empresas diferentes.";
-                }
+            if (Validacion.nombreEmpresa(otra.nombre()).equals(Validacion.nombreEmpresa(dato.nombre()))) {
+                aviso = "Existe otra empresa con nombre similar: " + otra.nombre() +
+                        (otra.nombre().endsWith(".") ? "" : ".") + " Revisa que sean empresas diferentes.";
             }
-            try {
-                int id = empresas.guardar(con, dato);
-                if (anterior == null) {
-                    if (administrador.rol() == Cuenta.Rol.EVALUADOR) {
-                        new co.aplomo.dao.CuentaEmpresaDao().sincronizar(con, administrador.id(), administrador.id(),
-                                java.util.stream.Stream.concat(
-                                        new co.aplomo.dao.CuentaEmpresaDao().ids(con, administrador.id()).stream(),
-                                        java.util.stream.Stream.of(id)).distinct().toList(), false);
-                    }
-                    new co.aplomo.dao.BitacoraDao().registrar(con, administrador.id(),
-                            java.time.LocalDateTime.now(java.time.ZoneId.of("America/Bogota")), "empresa", id, "CREAR",
-                            null, "ACTIVA", "Empresa registrada");
+        }
+        try {
+            int id = empresas.guardar(con, dato);
+            if (anterior == null) {
+                if (administrador.rol() == Cuenta.Rol.EVALUADOR) {
+                    new co.aplomo.dao.CuentaEmpresaDao().sincronizar(con, administrador.id(), administrador.id(),
+                            java.util.stream.Stream.concat(
+                                    new co.aplomo.dao.CuentaEmpresaDao().ids(con, administrador.id()).stream(),
+                                    java.util.stream.Stream.of(id)).distinct().toList(), false);
                 }
-                return new Guardado(id, aviso);
-            } catch (SQLIntegrityConstraintViolationException error) {
-                throw new IllegalArgumentException("Ese NIT ya está registrado. Revisa la empresa existente.");
+                new co.aplomo.dao.BitacoraDao().registrar(con, administrador.id(),
+                        java.time.LocalDateTime.now(java.time.ZoneId.of("America/Bogota")), "empresa", id, "CREAR",
+                        null, "ACTIVA", "Empresa registrada");
             }
-        });
+            return new Guardado(id, aviso);
+        } catch (SQLIntegrityConstraintViolationException error) {
+            throw new IllegalArgumentException("Ese NIT ya está registrado. Revisa la empresa existente.");
+        }
     }
 
     /**

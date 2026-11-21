@@ -184,3 +184,77 @@ Se eligió la bitácora para enlazar la respuesta única a su petición, evitand
 5. Como E destinatario, abre la solicitud en Avisos: pide información, llama, acepta o rechaza con motivo.
 6. Como Usuario, responde una sola vez a la petición y verifica el aviso de aceptación o rechazo.
 7. Otro Evaluador asignado puede consultar la cita, pero no recibe su nota ni puede editarla o iniciarla.
+
+
+## 27C · Acceso para empresas nuevas y cierre
+
+La portada enlaza al formulario público. El envío crea solamente una solicitud Pendiente y un aviso
+para cada Administrador activo. Nadie puede ingresar antes de aprobar. La Administradora puede llamar,
+aprobar con ingeniero opcional o rechazar con motivo; no hay envíos automáticos por WhatsApp ni correo.
+Al aprobar se reutilizan las reglas de Empresas y Usuarios dentro de la misma transacción; la clave
+se muestra solo en esa respuesta, tiene 16 caracteres legibles y se guarda únicamente como bcrypt.
+En el camino del Evaluador, crear empresa con persona de contacto pide cargo y ciudad y deja la solicitud
+Pendiente; el dueño sigue siendo el Evaluador. Un correo empresarial sin persona de contacto conserva
+el alta normal y no inventa una cuenta. Sin sedes/salones, Solicitar visita explica que debe prepararlos
+el ingeniero. La ciudad declarada se usa como referencia aprobada hasta registrar las sedes reales.
+
+| Requisito (propuesta aprobada) | Archivo / método | Prueba |
+| --- | --- | --- |
+| RF-003: solicitud pública sin registro libre | SolicitudesAccesoWeb.publica; SolicitudesAcceso.solicitar | HttpAcceso27Test.publicoValidoRecibeConfirmacionSinCrearUsuario |
+| RNF-004: validación, CSRF, escape y límite | SolicitudesAcceso.Datos; LimiteSolicitudes; SolicitudesAccesoWeb | invalidoConservaDatosYCsrfEsObligatorio; sextoEnvioDevuelve429SinCrearOtraSolicitud; limiteAdmiteCincoPorHoraYSeLiberaSinEsperar |
+| RF-002/003: solo A decide | SolicitudesAcceso.administrador/aprobar/rechazar | soloAdministradorPuedeRevisarYDecidirTambienPorDireccionDirecta; usuarioYEvaluadorNoConsultanNiApruebanNiRechazan |
+| RF-001/003: aprobación atómica y contraseña temporal | Usuarios.crearEn; Empresas.guardarEn; SolicitudesAcceso.aprobar | correoDuplicadoRevierteEmpresaYResolucion; aprobarMuestraClaveSoloEnEsaRespuestaYPrimerIngresoExigeCambio |
+| RF-004: sector y ciudad sin sedes inventadas | solicitud_acceso; Empresas.resumen | aprobarCreaEmpresaUsuarioTemporalSectorYCiudadSinInventarSedes |
+| RF-003: contacto de dueño E pendiente | SolicitudesAcceso.guardarEmpresa; EmpresasWeb; PaginasEmpresas | contactoDelDuenoQuedaPendienteSinPoderIngresar; empresaNuevaDelEvaluadorEnviaContactoPendienteSinDarAcceso; correoDeEmpresaSinContactoNoCreaSolicitudDeCuenta |
+| RF-003/005: rechazo conserva historial | SolicitudAccesoDao.resolver; SolicitudesAcceso.rechazar/auditar | rechazarNoCreaNadaYExigeMotivo |
+| Decisión de Andy sobre la cuenta inicial | DemoRoles.desactivarInicial; Demo.cargar; DemoAvisos.cargar | DemoTest.demoDesactivaInicialSoloConTresAdminsActivosYConservaSuClave |
+
+### Comprobaciones finales
+
+- Suite completa final de C: **1088 ejecutadas / 1088 aprobadas / 0 fallos / 0 errores / 0 omitidas**.
+- Andy resolvió después la cuenta inicial. Se agregó un caso de demo y uno de correo empresarial:
+  **1090 casos Maven distintos verificados**, con reejecución de los afectados. Cierre de demo **12/12**;
+  cierre de acceso/privacidad/longitud **22/22**. La prueba detectó y corrigió la duplicación de avisos al
+  cambiar el Administrador registrador; la identidad de la semilla depende de destino y texto, no de quién carga.
+- JavaScript: **136 ejecutadas / 136 aprobadas / 0 fallos**. Nuevo archivo de copia revisado con node --check.
+- P95 lista/guardar/informe: **537,20 / 16,32 / 172,85 ms**.
+- Migración C real con respaldo privado, dos pasadas: **23 → 24 tablas**; las 23 anteriores conservan sus
+  conteos, **solicitud_acceso = 0** en la real. Segundo pase idéntico. Los ocho mensajes anteriores se conservan;
+  no se importaron ocho notas nuevas. Continúan 74 reservas, 69 con ingeniero y cinco sin asignación activa.
+- Decisión final de Andy aplicada: primero se verificaron **3/3 Administradores del equipo Activos**.
+  `admin@rula.local` pasó a Inactiva, con una entrada de bitácora y **contraseña conservada**.
+  **9 cuentas Activas**, 13 filas de cuenta conservadas. Demo cargada dos veces: segundo pase idéntico,
+  8 mensajes, sin reactivar la cuenta inicial ni cambiar las claves existentes.
+- Instalación nueva: el respaldo inicial sigue creándose; cargar_demo lo deja Inactivo cuando los tres
+  Administradores del equipo están Activos. Repetir la carga puede usar el equipo, sin reactivar el respaldo.
+- QA real del navegador integrado, solo base de pruebas y ROLLBACK: solicitud pública → aviso del Admin →
+  aprobación con ingeniero → clave/copia/WhatsApp presentes → nueva consulta sin clave. **0 errores de consola**.
+- Solicitar acceso, revisar y aprobación a **360/390/820/1180/1366**: **0 px** de desborde horizontal en las
+  quince medidas. Login a 360×740, 390×844, 430×932, 820×1180, 1366×768: **0 px**, Entrar visible en las cinco.
+  Sin capturas, evidencia nueva ni descargas, por instrucción de Andy.
+
+### Checklist y lo que no se hizo
+
+- ✅ Tres bloques implementados; suite completa de C en verde y cambios posteriores comprobados por casos afectados.
+- ✅ Pruebas de permisos escribiendo la dirección a mano; CSRF, límite y respuesta única.
+- ✅ Español y estados Aprobada/Rechazada; nueve cuentas activas, sin cambio de contraseñas.
+- ✅ Script, migración, Diccionario TXT/PDF, ENDPOINTS, requisitos marcados propuesta, CUENTAS e instalación.
+- ✅ Motor RULA, bloque protegido de cálculo, deteccion.js e imágenes idénticos a antes del Paso 27.
+- ✅ Ninguna clave privada, fotos ni respaldo entran al commit. No se borraron datos.
+- ❌ No se certifican iPad/iPhone físico, Windows ni tres equipos en la misma red. No se descargaron navegadores.
+- ❌ No se enviaron mensajes por WhatsApp/correo; el enlace requiere revisión y envío manual.
+- Límite público simple: cinco envíos por conexión/hora en memoria; tras un proxy pueden compartir dirección.
+  No se agregaron servicios externos ni nuevos mecanismos de entrega. Resto funcional del encargo: nada pendiente.
+
+### Cómo probarlo
+
+1. En el login abre Solicitar acceso y envía datos de una empresa de práctica.
+2. Como Administrador abre Avisos → Revisar solicitud, o el contador de Inicio.
+3. Aprueba con ingeniero opcional; copia la clave temporal en ese momento. No reaparece al consultar de nuevo.
+4. La persona inicia sesión y debe cambiar la clave; el ingeniero completa sedes, salones y puestos.
+5. Como Evaluador crea una empresa con contacto, correo, cargo y ciudad: el contacto queda Pendiente y no entra.
+6. Intenta abrir solicitudes-acceso como Evaluador o Usuario: Acceso denegado.
+7. En Usuarios verifica las nueve cuentas del equipo Activas y admin@rula.local Inactiva. Cargar demo no la reactiva.
+
+Commits de entrega: 27A `9c0dcfb`; 27B `36ed47c`; 27C «Paso 27C: solicitud de acceso para empresas nuevas».
+Los hashes y confirmación del último push se entregan en la respuesta final; `git log -3 --oneline` los muestra.

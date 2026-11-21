@@ -1,4 +1,4 @@
--- Paso 27A: aditivo e idempotente. Requiere respaldo y administrador de MySQL.
+-- Pasos 27A/B/C: migración aditiva e idempotente. Requiere respaldo y administrador de MySQL.
 SET NAMES utf8mb4;
 SET @existe = (SELECT COUNT(*) FROM information_schema.columns
  WHERE table_schema=DATABASE() AND table_name='empresa' AND column_name='id_creador');
@@ -78,3 +78,28 @@ SELECT r.id_reserva,COALESCE((SELECT b.id_cuenta FROM bitacora b
 FROM reserva r WHERE r.id_evaluador IS NOT NULL AND r.nota_administrador IS NOT NULL
  AND TRIM(r.nota_administrador)<>'' AND NOT EXISTS(SELECT 1 FROM mensaje m
  WHERE m.id_reserva=r.id_reserva AND m.tipo='NOTA_ADMIN' AND m.texto=r.nota_administrador);
+
+-- Paso 27C: solicitudes públicas o remitidas por el dueño Evaluador; no crea cuentas sin aprobación.
+CREATE TABLE IF NOT EXISTS solicitud_acceso (
+ id_solicitud INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ nombre VARCHAR(100) NOT NULL,
+ cargo VARCHAR(80) NOT NULL,
+ correo VARCHAR(120) NOT NULL,
+ telefono VARCHAR(20) NOT NULL,
+ empresa VARCHAR(120) NOT NULL,
+ nit VARCHAR(20) NOT NULL,
+ ciudad VARCHAR(60) NOT NULL,
+ sector VARCHAR(60) NULL,
+ necesidad VARCHAR(500) NULL,
+ estado ENUM('PENDIENTE','APROBADA','RECHAZADA') NOT NULL DEFAULT 'PENDIENTE',
+ creada DATETIME NOT NULL,
+ id_revisor INT NULL,
+ revisada DATETIME NULL,
+ motivo_rechazo VARCHAR(255) NULL,
+ id_empresa INT NULL,
+ id_solicitante INT NULL,
+ CONSTRAINT fk_acceso_revisor FOREIGN KEY(id_revisor) REFERENCES cuenta(id_cuenta),
+ CONSTRAINT fk_acceso_empresa FOREIGN KEY(id_empresa) REFERENCES empresa(id_empresa),
+ CONSTRAINT fk_acceso_solicitante FOREIGN KEY(id_solicitante) REFERENCES cuenta(id_cuenta),
+ INDEX ix_acceso_estado (estado,creada)
+) ENGINE=InnoDB;

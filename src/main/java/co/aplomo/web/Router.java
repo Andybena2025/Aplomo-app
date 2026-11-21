@@ -29,6 +29,7 @@ public final class Router implements HttpHandler {
     private final EmpresasWeb empresas;
     private final ReservasWeb reservas;
     private final AvisosWeb avisos;
+    private final SolicitudesAccesoWeb solicitudesAcceso;
     private final SolicitudesVisitaWeb solicitudesVisita;
     private final VisitasWeb visitas;
     private final EvaluacionesWeb evaluaciones;
@@ -97,6 +98,7 @@ public final class Router implements HttpHandler {
             co.aplomo.servicio.Visitas visitas, co.aplomo.servicio.Evaluaciones evaluaciones) {
         this.agenda = new AgendaWeb(reservas.agenda());
         this.avisos = new AvisosWeb(reservas.avisos());
+        this.solicitudesAcceso = new SolicitudesAccesoWeb(empresas.accesos(), sesiones);
         this.solicitudesVisita = new SolicitudesVisitaWeb(reservas.solicitudes());
         this.demo = new DemoWeb(visitas);
         this.acceso = new AccesoWeb(auth, sesiones);
@@ -176,6 +178,7 @@ public final class Router implements HttpHandler {
                 sesion = null;
             }
         }
+        if (solicitudesAcceso.publica(intercambio, sesion)) return;
         if (ruta.equals("/login")) {
             acceso.ingresar(intercambio, sesion);
             return;
@@ -198,6 +201,7 @@ public final class Router implements HttpHandler {
             redirigir(intercambio, vencida ? "/login?inactividad=1" : "/login");
             return;
         }
+        if (metodo.equals("GET") && solicitudesAcceso.atender(intercambio, sesion, Map.of())) return;
         if (metodo.equals("GET") && avisos.atender(intercambio, sesion, Map.of())) return;
         if (metodo.equals("GET") && solicitudesVisita.atender(intercambio, sesion, Map.of())) return;
         if (metodo.equals("GET") && agenda.atender(intercambio, sesion, Map.of())) return;
@@ -219,6 +223,7 @@ public final class Router implements HttpHandler {
         }
         Map<String, String> parametros2 = metodo.equals("POST") ? formulario(intercambio) : Map.of();
         if (metodo.equals("POST")) exigirCsrf(sesion, parametros2);
+        if (solicitudesAcceso.atender(intercambio, sesion, parametros2)) return;
         if (avisos.atender(intercambio, sesion, parametros2)) return;
         if (solicitudesVisita.atender(intercambio, sesion, parametros2)) return;
         if (agenda.atender(intercambio, sesion, parametros2)) return;

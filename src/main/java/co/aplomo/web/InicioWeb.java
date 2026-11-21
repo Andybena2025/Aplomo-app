@@ -150,7 +150,8 @@ public final class InicioWeb {
                 sinAsignar++;
             }
         }
-        html.append(kpi("Empresas sin evaluador", sinAsignar, "/empresas"))
+        html.append(kpi("Solicitudes de acceso", empresas.accesos().pendientes(cuenta).size(), "/solicitudes-acceso"))
+                .append(kpi("Empresas sin evaluador", sinAsignar, "/empresas"))
                 .append(kpi("Pendientes abiertos", contar(pendientes, "ABIERTO"), "/pendientes?estado=ABIERTO"))
                 .append("</section></div>");
     }

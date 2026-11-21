@@ -16,14 +16,17 @@ public final class MensajeDao {
      */
     public record Mensaje(int id, Integer reserva, int remitente, int destinatario, String tipo, String texto,
                           LocalDateTime creado, boolean leido, String nombre, String rol, String cita, String color,
-                          boolean respondido) {
+                          boolean respondido, Integer solicitudAcceso) {
     }
 
     private static final String SELECT = "SELECT m.*,q.nombre,q.rol,ev.color_agenda," +
             "CONCAT(DATE_FORMAT(r.fecha,'%d/%m/%Y'),' · ',TIME_FORMAT(r.hora_inicio,'%H:%i'),' · '," +
             "e.nombre,' · ',s.nombre,' · ',l.nombre) cita," +
             "EXISTS(SELECT 1 FROM bitacora b WHERE b.tabla='mensaje' AND b.id_registro=m.id_mensaje " +
-            "AND b.accion='EDITAR' AND b.detalle='Respuesta enviada') respondido " +
+            "AND b.accion='EDITAR' AND b.detalle='Respuesta enviada') respondido," +
+            "(SELECT CAST(SUBSTRING(b.detalle,8) AS UNSIGNED) FROM bitacora b WHERE b.tabla='mensaje' " +
+            "AND b.id_registro=m.id_mensaje AND b.accion='CREAR' AND b.detalle LIKE 'ACCESO:%' " +
+            "ORDER BY b.id_bitacora LIMIT 1) solicitud_acceso " +
             "FROM mensaje m JOIN cuenta q ON q.id_cuenta=m.id_remitente " +
             "LEFT JOIN reserva r ON r.id_reserva=m.id_reserva LEFT JOIN salon l ON l.id_salon=r.id_salon " +
             "LEFT JOIN sede s ON s.id_sede=l.id_sede LEFT JOIN empresa e ON e.id_empresa=s.id_empresa " +
@@ -74,6 +77,6 @@ public final class MensajeDao {
                 fila.getInt("id_remitente"), fila.getInt("id_destinatario"), fila.getString("tipo"),
                 fila.getString("texto"), fila.getTimestamp("creado").toLocalDateTime(), fila.getBoolean("leido"),
                 fila.getString("nombre"), fila.getString("rol"), fila.getString("cita"), fila.getString("color_agenda"),
-                fila.getBoolean("respondido"));
+                fila.getBoolean("respondido"), Sql.enteroOpcional(fila, "solicitud_acceso"));
     }
 }

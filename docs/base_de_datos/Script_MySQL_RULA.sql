@@ -1,7 +1,7 @@
 -- =====================================================================
 -- Sistema RULA – Evaluación Ergonómica · Script de base de datos MySQL
 -- Proyecto Nuclear 6.0 · Matriz de requisitos v6 · Fase de Diseño
--- Basado en el Modelo E-R v6 (22 tablas, 3FN) y el Diccionario de datos v6
+-- Basado en el Modelo E-R v6 (24 tablas, extensiones aprobadas hasta Paso 27C) y el Diccionario de datos v6
 -- Motor: MySQL 8.0.16 o superior · InnoDB · utf8mb4 (RNF-001)
 -- utf8mb4_unicode_ci compara sin distinguir mayúsculas ni tildes (RF-010)
 -- Nada se borra: las llaves foráneas usan ON DELETE RESTRICT (RF-028, RNF-009)
@@ -473,4 +473,29 @@ CREATE TABLE IF NOT EXISTS mensaje (
   CONSTRAINT fk_mensaje_reserva FOREIGN KEY (id_reserva) REFERENCES reserva(id_reserva),
   CONSTRAINT fk_mensaje_remitente FOREIGN KEY (id_remitente) REFERENCES cuenta(id_cuenta),
   CONSTRAINT fk_mensaje_destinatario FOREIGN KEY (id_destinatario) REFERENCES cuenta(id_cuenta)
+) ENGINE=InnoDB;
+
+-- Paso 27C: solicitudes públicas o remitidas por el dueño Evaluador; no crea cuentas sin aprobación.
+CREATE TABLE IF NOT EXISTS solicitud_acceso (
+ id_solicitud INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ nombre VARCHAR(100) NOT NULL,
+ cargo VARCHAR(80) NOT NULL,
+ correo VARCHAR(120) NOT NULL,
+ telefono VARCHAR(20) NOT NULL,
+ empresa VARCHAR(120) NOT NULL,
+ nit VARCHAR(20) NOT NULL,
+ ciudad VARCHAR(60) NOT NULL,
+ sector VARCHAR(60) NULL,
+ necesidad VARCHAR(500) NULL,
+ estado ENUM('PENDIENTE','APROBADA','RECHAZADA') NOT NULL DEFAULT 'PENDIENTE',
+ creada DATETIME NOT NULL,
+ id_revisor INT NULL,
+ revisada DATETIME NULL,
+ motivo_rechazo VARCHAR(255) NULL,
+ id_empresa INT NULL,
+ id_solicitante INT NULL,
+ CONSTRAINT fk_acceso_revisor FOREIGN KEY(id_revisor) REFERENCES cuenta(id_cuenta),
+ CONSTRAINT fk_acceso_empresa FOREIGN KEY(id_empresa) REFERENCES empresa(id_empresa),
+ CONSTRAINT fk_acceso_solicitante FOREIGN KEY(id_solicitante) REFERENCES cuenta(id_cuenta),
+ INDEX ix_acceso_estado (estado,creada)
 ) ENGINE=InnoDB;

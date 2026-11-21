@@ -110,3 +110,31 @@ Guion: Gabby abre Agenda como Administradora; Andrés entra como Evaluador y abr
 Andrés recibe el aviso y pulsa Entendido. Johan entra como Usuario de Humboldt y consulta el Archivo:
 ve visitas Finalizadas, sin fotos ni resultados En curso. Archivo también conserva las tres evaluaciones
 de Confecciones Armenia en 2025, hechas por Johan, aunque ya no está asignado a esa empresa.
+
+## Solicitudes de acceso y visitas · Paso 27
+
+1. Empresa nueva: en el login pulsa **Solicitar acceso**, completa contacto, cargo, empresa, NIT, ciudad y
+   sector opcional. No podrá ingresar hasta la aprobación. En el teléfono incluye el código de país si
+   vas a utilizar WhatsApp (por ejemplo +57 para Colombia).
+2. Administrador: abre **Avisos → Revisar solicitud** (o Solicitudes de acceso en Inicio). Puede llamar
+   al contacto, aprobar con ingeniero opcional o rechazar con motivo. No hay correo ni WhatsApp automático.
+3. Al aprobar, **copia la contraseña temporal en ese momento**. Se muestra una sola vez; el enlace de
+   WhatsApp prepara un mensaje con URL, correo y clave para que tú lo revises y envíes. No quedan claves
+   en archivos ni bitácora. Si se pierde, usa el restablecimiento existente de Usuarios.
+4. El contacto ingresa y debe cambiar la clave antes de continuar. Solo ve sus empresas y resultados
+   Finalizados. En Inicio o Reservas puede **Solicitar una visita** y responder información en Avisos.
+5. Evaluador: al crear una empresa con contacto completa también cargo y ciudad. Queda Pendiente para
+   la misma aprobación; el dueño sigue siendo el Evaluador. Sin contacto, solo se crea la empresa.
+6. Para la demo: Administrador envía nota desde Agenda; Evaluador recibe/Entendido. Usuario pide visita;
+   Evaluador pide información; Usuario responde una vez; Evaluador acepta y recibe la empresa asignada.
+
+Límite público: cinco envíos por dirección de conexión en una hora, en memoria; reiniciar el servicio
+reinicia la ventana. No se confía en cabeceras de IP enviadas por el navegador. Detrás de un proxy, varias
+personas pueden compartir esa dirección. El resto de la sesión y los bloqueos de contraseña no cambian.
+
+
+Decisión posterior de Andy (21/11/2026): `admin@rula.local` queda Inactiva al cargar la demo, después de
+verificar que `andres@rula.local`, `johan@rula.local` y `gabby@rula.local` sean Administradores Activos.
+No se borra ni se cambia su contraseña. Cargar otra vez la demo no la reactiva. En instalación nueva se
+sigue creando el respaldo inicial; después del primer cambio de clave y carga demo se usan las nueve
+cuentas del equipo. Cada Administrador del equipo debe cambiar su contraseña temporal en su primer ingreso.

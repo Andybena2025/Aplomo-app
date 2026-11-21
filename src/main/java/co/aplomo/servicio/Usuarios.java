@@ -145,25 +145,31 @@ public final class Usuarios {
      * Crea una cuenta con clave temporal cifrada; los correos existentes no se reutilizan (RF-003, RF-010).
      */
     public int crear(Cuenta actor, Datos datos, String temporal) throws SQLException {
+        return tx.ejecutar(con -> crearEn(con, actor, datos, temporal));
+    }
+
+    /**
+     * RF-003/004: misma operación dentro de una aprobación atómica, con reglas y permisos intactos.
+     */
+    int crearEn(java.sql.Connection con, Cuenta actor, Datos datos, String temporal) throws SQLException {
         Permisos.administrador(actor);
         String hash = Contrasenas.cifrar(temporal);
-        return tx.ejecutar(con -> {
-            dao.bloquearAdministradores(con);
-            autorizar(con, actor);
-            new CuentaEmpresaDao().validar(con, 0, datos.rol(), datos.empresas(), true);
-            duplicados(con, datos.correo(), 0);
-            try {
-                int id = dao.crear(con, datos.nombre(), datos.correo(), datos.telefono(), datos.cargo(), datos.rol(),
-                        datos.empresa(), hash);
-                new CuentaEmpresaDao().sincronizar(con, actor.id(), id, datos.empresas(), false);
-                if (datos.rol() == Rol.EVALUADOR) {
-                    ColoresAgenda.guardar(con, id, ColoresAgenda.elegir(con, id, datos.colorAgenda()));
-                }
-                return id;
-            } catch (SQLIntegrityConstraintViolationException error) {
-                throw new IllegalArgumentException("El correo ya está registrado. Revisa la cuenta existente.");
+
+        dao.bloquearAdministradores(con);
+        autorizar(con, actor);
+        new CuentaEmpresaDao().validar(con, 0, datos.rol(), datos.empresas(), true);
+        duplicados(con, datos.correo(), 0);
+        try {
+            int id = dao.crear(con, datos.nombre(), datos.correo(), datos.telefono(), datos.cargo(), datos.rol(),
+                    datos.empresa(), hash);
+            new CuentaEmpresaDao().sincronizar(con, actor.id(), id, datos.empresas(), false);
+            if (datos.rol() == Rol.EVALUADOR) {
+                ColoresAgenda.guardar(con, id, ColoresAgenda.elegir(con, id, datos.colorAgenda()));
             }
-        });
+            return id;
+        } catch (SQLIntegrityConstraintViolationException error) {
+            throw new IllegalArgumentException("El correo ya está registrado. Revisa la cuenta existente.");
+        }
     }
 
     /**

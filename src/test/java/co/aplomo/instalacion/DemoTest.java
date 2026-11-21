@@ -62,11 +62,9 @@ class DemoTest extends BasePrueba {
                     "OR r.descripcion LIKE 'DEMO%' OR l.nombre LIKE 'DEMO%')", fila -> fila.getInt(1), id);
             assertEquals(0, textosAntiguos, nit);
             int posturasAntiguas = Sql.uno(con, "SELECT COUNT(*) FROM evaluacion e JOIN visita v USING(id_visita) " +
-                            "JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede)" +
-                            " " +
-                            "WHERE s.id_empresa=? AND (e.postura LIKE 'DEMO%' " + "OR e.postura LIKE '%Demostración " +
-                            "ALINEO.%')",
-                    fila -> fila.getInt(1), id);
+                    "JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede)" + " " +
+                    "WHERE s.id_empresa=? AND (e.postura LIKE 'DEMO%' " + "OR e.postura LIKE '%Demostración " +
+                    "ALINEO.%')", fila -> fila.getInt(1), id);
             assertEquals(0, posturasAntiguas, nit);
         }
         assertEquals("Educación",
@@ -237,4 +235,33 @@ class DemoTest extends BasePrueba {
                         "E 'D26%' " + "AND b.codigo LIKE 'D26%' AND a.estado<>'CANCELADA' AND b.estado<>'CANCELADA'",
                 fila -> fila.getInt(1)));
     }
+
+    @Test
+    void demoDesactivaInicialSoloConTresAdminsActivosYConservaSuClave() throws Exception {
+        var existente = dao.porCorreo(con, "admin@rula.local");
+        int inicial =
+                existente == null ? dao.crear(con, "Respaldo inicial", "admin@rula.local", "3005556789", "Instalación",
+                        co.aplomo.modelo.Cuenta.Rol.ADMINISTRADOR, null,
+                        co.aplomo.seguridad.Contrasenas.cifrar(clave)) : existente.id();
+        Sql.actualizar(con, "UPDATE cuenta SET estado='ACTIVA' WHERE id_cuenta=?", inicial);
+        String hash = cuenta(inicial).hash();
+        cargar();
+        assertEquals(co.aplomo.modelo.Cuenta.Estado.INACTIVA, cuenta(inicial).estado());
+        assertEquals(hash, cuenta(inicial).hash());
+        int mensajes = Sql.uno(con, "SELECT COUNT(*) FROM mensaje", f -> f.getInt(1));
+        Sql.actualizar(con, "UPDATE cuenta SET estado='INACTIVA' WHERE id_cuenta=?", admin);
+        cargar();
+        assertEquals(Integer.valueOf(mensajes), Sql.<Integer>uno(con, "SELECT COUNT(*) FROM mensaje", f -> f.getInt(1)));
+        assertEquals(co.aplomo.modelo.Cuenta.Estado.INACTIVA, cuenta(inicial).estado());
+        for (String correo : List.of("andres@rula.local", "johan@rula.local", "gabby@rula.local")) {
+            assertEquals(co.aplomo.modelo.Cuenta.Estado.ACTIVA, dao.porCorreo(con, correo).estado());
+        }
+        int gabby = dao.porCorreo(con, "gabby@rula.local").id();
+        Sql.actualizar(con, "UPDATE cuenta SET estado='INACTIVA' WHERE id_cuenta=?", gabby);
+        Sql.actualizar(con, "UPDATE cuenta SET estado='ACTIVA' WHERE id_cuenta=?", inicial);
+        assertThrows(IllegalArgumentException.class, this::cargar);
+        assertEquals(co.aplomo.modelo.Cuenta.Estado.ACTIVA, cuenta(inicial).estado());
+        assertEquals(hash, cuenta(inicial).hash());
+    }
+
 }

@@ -151,6 +151,14 @@ public final class Demo {
         if (con.getAutoCommit()) throw new IllegalArgumentException("La demostración requiere una transacción.");
         Integer admin = Sql.uno(con, "SELECT id_cuenta FROM cuenta WHERE rol='ADMINISTRADOR' AND estado='ACTIVA' A" +
                 "ND contrasena_temporal=FALSE ORDER BY id_cuenta LIMIT 1", fila -> fila.getInt(1));
+        // Andy: después de cargar la demo la cuenta inicial queda Inactiva; repetir no la reactiva.
+        if (admin == null) admin = Sql.uno(con,
+                "SELECT id_cuenta FROM cuenta WHERE correo='andres@rula.local' AND rol='ADMINISTRADOR' " +
+                        "AND estado='ACTIVA' AND (SELECT COUNT(*) FROM cuenta equipo WHERE equipo.correo " +
+                        "IN ('andres@rula.local','johan@rula.local','gabby@rula.local') " +
+                        "AND equipo.rol='ADMINISTRADOR' AND equipo.estado='ACTIVA')=3 " +
+                        "AND EXISTS(SELECT 1 FROM cuenta inicial WHERE inicial.correo='admin@rula.local' " +
+                        "AND inicial.rol='ADMINISTRADOR' AND inicial.estado='INACTIVA')", fila -> fila.getInt(1));
         if (admin == null) throw new IllegalArgumentException(
                 "Primero ingresa como Administrador y cambia la contraseña temporal de ALINEO.");
         DemoIdentidades.preparar(con, admin);

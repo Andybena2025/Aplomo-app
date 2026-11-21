@@ -278,7 +278,7 @@ class HttpTresRolesTest extends HttpPrueba {
     @Test
     void arranqueCompruebaEsquemaActual() throws Exception {
         assertDoesNotThrow(() -> Esquema.verificar(con));
-        assertEquals(23,
+        assertEquals(24,
                 Sql.<Integer>uno(con, "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE()",
                         rs -> rs.getInt(1)));
     }

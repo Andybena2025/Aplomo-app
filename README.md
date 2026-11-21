@@ -58,7 +58,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 25 | ALINEO., Quiénes somos y Centro de ayuda | ✅ 1022 casos Maven verificados y 119 JS; [informe](docs/informe_paso25.md) |
 | 26 | Calendario, Archivo, Mi cuenta, login compacto y demo del equipo | ✅ 1035 Maven verificados y 122 JS; [informe](docs/informe_paso26.md) |
 | 26B | Código Java ordenado y prueba de 120 columnas con exclusiones explícitas | ✅ 1036 Maven y 122 JS; [informe](docs/informe_paso26b.md) |
-| 27 | Sistema visual completo, propiedad de empresas y demo realista; avisos y solicitudes | 🟡 27A/B: 1072 Maven y 136 JS verificados; avisos y solicitudes de visita; 27C pendiente ([informe](docs/informe_paso27.md)) |
+| 27 | Sistema visual completo, propiedad de empresas y demo realista; avisos y solicitudes | ✅ 27A/B/C: 1090 Maven y 136 JS verificados; sistema visual, avisos y solicitudes; nueve cuentas activas ([informe](docs/informe_paso27.md)) |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 

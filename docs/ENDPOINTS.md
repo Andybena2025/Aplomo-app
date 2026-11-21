@@ -297,3 +297,22 @@ GET `/reservas/horas-libres`: recibe `fecha` y `omitir` según la tabla del Paso
 La bandeja nueva usa `/avisos/nuevos`. Consultar no marca leído. Varias notas idénticas tienen IDs distintos.
 Un E asignado a la empresa consulta otras citas, pero no las edita ni inicia por otro ingeniero.
 Las solicitudes creadas por U solo las ve su propio contacto; las citas legadas de la empresa siguen visibles.
+
+### Paso 27C · solicitud de acceso (propuesta aprobada)
+
+| Método y ruta | Acceso y comportamiento |
+| --- | --- |
+| GET `/solicitar-acceso` | Público. Sesión anónima para CSRF; no registro libre. |
+| POST `/solicitar-acceso` | Público, CSRF y cinco envíos por dirección remota/hora. Campos validados; no crea empresa ni cuenta. HTTP 429 al superar el límite. |
+| GET `/solicitudes-acceso` | A vigente, lista de solicitudes Pendientes. E/U: 403. |
+| GET `/solicitudes-acceso/{id}` | A vigente, contacto y formulario de decisión. |
+| POST `/solicitudes-acceso/{id}/aprobar` | A vigente, CSRF. Empresa + Usuario temporal + asignación opcional + APROBADA, una transacción. Clave solo en esta respuesta. |
+| POST `/solicitudes-acceso/{id}/rechazar` | A vigente, CSRF y motivo obligatorio de hasta 255; conserva solicitud, sin cuenta nueva. |
+
+Al crear una empresa como E con persona de contacto/correo, se solicitan cargo y ciudad del contacto;
+se guarda su solicitud Pendiente en la misma transacción, sin cuenta hasta aprobación. Si E no agrega
+contacto, conserva el alta de empresa sin solicitud. No cambia el dueño al aprobar el contacto.
+El enlace WhatsApp prepara el mensaje para revisión y envío manual; nunca envía automáticamente.
+Las solicitudes se enlazan a mensajes por una entrada CREAR de bitácora `ACCESO:{id}`; no hay credenciales
+ni información de otros destinatarios en el sondeo. El sistema usa una cuenta receptora para la FK de
+remitente de solicitudes externas, y la interfaz lo rotula «Solicitud recibida · Acceso por revisar».

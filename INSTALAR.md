@@ -97,7 +97,7 @@ El script:
 
 1. Crea `config/db.properties` con la conexión de ejemplo (este archivo nunca se sube a GitHub).
 2. Te pide la contraseña de **root** de MySQL (en Mac, si nunca le pusiste una, solo presiona Enter).
-3. **Solo la primera vez** crea la base `rula_ergonomia` con las 23 tablas, las tablas RULA, la cuenta del Administrador y el usuario de la app. Si la base ya existe, no la toca.
+3. **Solo la primera vez** crea la base `rula_ergonomia` con las 24 tablas, las tablas RULA, la cuenta del Administrador y el usuario de la app. Si la base ya existe, no la toca.
 4. Carga las 11 reglas de sugerencias (no duplica nada).
 5. Arranca la app.
 
@@ -209,3 +209,5 @@ Los ejemplos no son datos de contacto reales. Sin WhatsApp configurado, el login
 Paso 27B: vuelve a ejecutar `bash scripts/migrar_paso27.sh` (Mac) o `scripts\migrar_paso27.bat` (Windows)
 antes de arrancar esta versión. Hace respaldo, añade el responsable de la cita y la tabla de avisos,
 sin borrar datos. Es seguro repetirlo. La cuenta de la app conserva SELECT/INSERT/UPDATE, nunca DELETE.
+
+Paso 27C: repite el mismo migrar_paso27 para añadir solicitud_acceso sin borrar datos.

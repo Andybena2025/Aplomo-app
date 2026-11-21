@@ -79,6 +79,12 @@ public final class SolicitudesVisitaWeb {
     private String formulario(Sesion sesion, Map<String, String> datos, String error,
             boolean cruce) throws SQLException {
         var lugares = servicio.lugares(sesion.cuenta());
+        if (lugares.isEmpty()) {
+            return Html.pagina("Solicitar una visita", Html.vacio(
+                    "Tu empresa aún no tiene una sede y un salón disponibles. " +
+                            "Contacta a tu ingeniero para prepararlos.",
+                    "<a class=\"btn\" href=\"/ayuda\">Ver ayuda</a>"), sesion, "Reservas · Solicitud", "");
+        }
         var sedes = lugares.stream().collect(java.util.stream.Collectors.toMap(SolicitudesVisita.Lugar::sede,
                 l -> l.empresaNombre() + " · " + l.sedeNombre(), (a, b) -> a, java.util.LinkedHashMap::new));
         int sede = numero(datos.get("sede"));

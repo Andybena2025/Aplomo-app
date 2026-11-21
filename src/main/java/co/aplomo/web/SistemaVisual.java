@@ -13,6 +13,7 @@ public final class SistemaVisual {
             Map.entry("EN_CURSO", "En curso"), Map.entry("FINALIZADA", "Finalizada"),
             Map.entry("CANCELADA", "Cancelada"), Map.entry("ABIERTO", "Abierto"), Map.entry("EN_PROCESO", "En proceso"),
             Map.entry("ARREGLADO", "Resuelto"), Map.entry("POR_EVALUAR", "Por evaluar"), Map.entry("HECHA", "Resuelto"),
+            Map.entry("APROBADA", "Aprobada"), Map.entry("RECHAZADA", "Rechazada"),
             Map.entry("PENDIENTE", "Pendiente"), Map.entry("BLOQUEADA", "Bloqueada temporalmente"));
 
     private SistemaVisual() {
@@ -24,8 +25,8 @@ public final class SistemaVisual {
     public static String estado(String estado) {
         String valor = estado == null ? "" : estado;
         String clase = switch (valor) {
-            case "ACTIVA", "ACTIVO", "EN_COLA" -> "activa";
-            case "INACTIVA", "INACTIVO", "CANCELADA", "BLOQUEADA" -> "inactiva";
+            case "ACTIVA", "ACTIVO", "EN_COLA", "APROBADA" -> "activa";
+            case "INACTIVA", "INACTIVO", "CANCELADA", "BLOQUEADA", "RECHAZADA" -> "inactiva";
             case "FINALIZADA", "ARREGLADO", "HECHA", "EVALUADO" -> "resuelta";
             case "ESPERANDO", "ABIERTO", "PENDIENTE" -> "esperando";
             default -> "curso";

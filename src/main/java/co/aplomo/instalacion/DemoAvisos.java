@@ -29,10 +29,8 @@ final class DemoAvisos {
                 String texto = leido ? "Gracias por confirmar la visita de la semana pasada." :
                         "Antes de la visita, " + "revisa con el " + "contacto cuáles " + "puestos necesitan " +
                         "atención.";
-                Integer existe = Sql.uno(con, "SELECT id_mensaje FROM mensaje WHERE id_remitente=? " +
-                                "AND id_destinatario=? AND tipo='AVISO' AND texto=? LIMIT 1", f -> f.getInt(1),
-                        administrador,
-                        evaluador, texto);
+                Integer existe = Sql.uno(con, "SELECT id_mensaje FROM mensaje WHERE id_destinatario=? " +
+                                "AND tipo='AVISO' AND texto=? LIMIT 1", f -> f.getInt(1), evaluador, texto);
                 if (existe != null) continue;
                 Integer reserva = Sql.uno(con, "SELECT r.id_reserva FROM reserva r JOIN salon l USING(id_salon) " +
                                 "JOIN sede s USING(id_sede) JOIN empresa e USING(id_empresa) WHERE r.id_evaluador=? " +

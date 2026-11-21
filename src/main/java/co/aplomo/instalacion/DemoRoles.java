@@ -53,6 +53,7 @@ final class DemoRoles {
         DemoPresentacion.citas(conexion, fotos, administrador, empresas, evaluadores, presentacion);
         DemoAvisos.cargar(conexion, administrador, evaluadores);
         HorariosDemo.conciliar(conexion, administrador);
+        desactivarInicial(conexion, administrador);
     }
 
     private static int cuenta(Connection conexion, String nombre, String correo, Cuenta.Rol rol) throws SQLException {
@@ -84,6 +85,26 @@ final class DemoRoles {
             case EVALUADOR -> "Ingeniero(a) Industrial · Evaluador RULA";
             case USUARIO -> nombre.contains("Gabriella") ? "Coordinadora de SST" : "Coordinador de SST";
         };
+    }
+
+    private static void desactivarInicial(Connection con, int responsable) throws SQLException {
+        List<String> correos = List.of("andres@rula.local", "johan@rula.local", "gabby@rula.local");
+        for (String correo : correos) {
+            Cuenta cuenta = new CuentaDao().porCorreo(con, correo);
+            if (cuenta == null || cuenta.rol() != Cuenta.Rol.ADMINISTRADOR || cuenta.estado() != Cuenta.Estado.ACTIVA) {
+                throw new IllegalArgumentException("Las tres cuentas Administrador del equipo deben estar activas " +
+                        "antes de desactivar la cuenta inicial.");
+            }
+        }
+        Cuenta inicial = new CuentaDao().porCorreo(con, "admin@rula.local");
+        if (inicial == null || inicial.estado() == Cuenta.Estado.INACTIVA) return;
+        if (inicial.rol() != Cuenta.Rol.ADMINISTRADOR) {
+            throw new IllegalArgumentException("Revisa el rol de la cuenta inicial antes de cargar la demo.");
+        }
+        Sql.actualizar(con, "UPDATE cuenta SET estado='INACTIVA' WHERE id_cuenta=?", inicial.id());
+        new co.aplomo.dao.BitacoraDao().registrar(con, responsable,
+                java.time.LocalDateTime.now(java.time.ZoneId.of("America/Bogota")), "cuenta", inicial.id(),
+                "DESACTIVAR", inicial.estado().name(), "INACTIVA", "Andy: solo nueve cuentas del equipo activas");
     }
 
     private static void desactivarGenericas(Connection conexion, int administrador) throws SQLException {

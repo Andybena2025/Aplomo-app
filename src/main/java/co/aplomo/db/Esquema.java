@@ -34,7 +34,9 @@ public final class Esquema {
                         "AND table_name='reserva' AND column_name='id_evaluador'", fila -> fila.getInt(1));
         int mensajes = Sql.uno(conexion, "SELECT COUNT(*) FROM information_schema.tables " +
                 "WHERE table_schema=DATABASE() AND table_name='mensaje'", fila -> fila.getInt(1));
-        if (empresa != 2 || responsable != 1 || mensajes != 1) {
+        int solicitudes = Sql.uno(conexion, "SELECT COUNT(*) FROM information_schema.tables " +
+                "WHERE table_schema=DATABASE() AND table_name='solicitud_acceso'", fila -> fila.getInt(1));
+        if (empresa != 2 || responsable != 1 || mensajes != 1 || solicitudes != 1) {
             throw new IllegalStateException("Falta actualizar la base. Ejecuta scripts/migrar_paso27.sh " +
                     "(Mac) o migrar_paso27.bat (Windows).");
         }

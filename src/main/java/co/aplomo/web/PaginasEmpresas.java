@@ -373,6 +373,12 @@ public final class PaginasEmpresas {
         };
         String accion = contexto.id() > 0 ?
                 "/" + contexto.tipo() + "/" + contexto.id() + "/editar" : rutaNueva(contexto.tipo(), contexto.padre());
+        if (contexto.tipo().equals("empresas") && contexto.id() == 0 && sesion.cuenta().rol() == Rol.EVALUADOR) {
+            campos += "<p class=\"hint\">Si añades un contacto, su acceso quedará pendiente de aprobación. " +
+                    "Completa también estos dos campos para solicitarlo.</p>" +
+                    campo(datos, "cargo_contacto", "Cargo del contacto", "text", 80, false) +
+                    campo(datos, "ciudad_contacto", "Ciudad del contacto", "text", 60, false);
+        }
         String titulo = titulo(contexto.tipo(), contexto.id() > 0);
         String contenido = enlace(contexto.volver(), "← Volver", false) + Html.aviso(error, false) +
                 "<form class=\"card stack cuenta-form\" method=\"post\" action=\"" + accion + "\">" +

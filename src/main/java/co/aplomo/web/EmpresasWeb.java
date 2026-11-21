@@ -160,10 +160,11 @@ public final class EmpresasWeb {
     private Empresas.Guardado guardar(Sesion sesion2, Contexto empresa,
             Map<String, String> parametros) throws SQLException {
         return switch (empresa.tipo()) {
-            case "empresas" -> empresas.guardar(sesion2.cuenta(),
+            case "empresas" -> empresas.accesos().guardarEmpresa(sesion2.cuenta(),
                     new Empresa(empresa.id(), 0, parametros.get("nombre"), parametros.get("nit"),
                             parametros.get("descripcion"), parametros.get("telefono"), parametros.get("correo"),
-                            parametros.get("persona_contacto"), true, null, parametros.get("sector")));
+                            parametros.get("persona_contacto"), true, null, parametros.get("sector")),
+                    parametros.get("cargo_contacto"), parametros.get("ciudad_contacto"));
             case "sedes" -> empresas.guardar(sesion2.cuenta(),
                     new Sede(empresa.id(), empresa.padre(), parametros.get("nombre"), parametros.get("direccion"),
                             parametros.get("ciudad"), parametros.get("telefono"), parametros.get("horario"),
