@@ -37,40 +37,6 @@ public final class PaginasReservas {
     /**
      * Lista las reservas ya filtradas por empresa, sin acciones de gestión para Usuario. RNF-011.
      */
-    public static String lista(Sesion sesion, List<Ficha> reservas) {
-        StringBuilder html = new StringBuilder("<div class=\"row between\"><p class=\"muted\">").append(
-                Html.plural(reservas.size(), "reserva")).append("</p>");
-        if (admin(sesion)) html.append(enlace("/reservas/nueva", "Nueva reserva", true));
-        html.append("</div>");
-        if (reservas.isEmpty()) {
-            html.append("<section class=\"card stack\"><h2>Tu agenda de visitas</h2><p class=\"muted" +
-                    "\">Todavía no hay reservas registradas.</p></section>");
-        } else {
-            html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Reserva</th><t" +
-                    "h>Empresa y lugar</th><th>Fecha y horario</th><th>Categoría</th><th>Estado</" +
-                    "th><th>Detalle</th></tr></thead><tbody>");
-            for (Ficha ficha : reservas) {
-                Reserva reserva = ficha.reserva();
-                html.append("<tr><td data-label=\"Reserva\"><div class=\"cell-value\">")
-                        .append(escapar(reserva.codigo()))
-                        .append("</div></td><td data-label=\"Empresa\"><div class=\"cell-value\">")
-                        .append(escapar(ficha.empresaNombre())).append("<br><span class=\"muted small\">")
-                        .append(escapar(ficha.sedeNombre())).append(" · ").append(escapar(ficha.salonNombre()))
-                        .append("</span></div></td><td data-label=\"Fecha\" class=\"num\"><div class=\"cell-v" +
-                                "alue\">").append(Html.fecha(reserva.fecha())).append("<br>")
-                        .append(escapar(reserva.inicio().toString())).append("–")
-                        .append(escapar(reserva.fin().toString()))
-                        .append("</div></td><td data-label=\"Categoría\"><div class=\"cell-value\">")
-                        .append(escapar(categoria(reserva.categoria())))
-                        .append("</div></td><td data-label=\"Estado\"><div class=\"cell-value\"><span class=\"")
-                        .append(claseEstado(reserva.estado())).append("\">").append(escapar(estado(reserva.estado())))
-                        .append("</span></div></td><td><div class=\"cell-value\">")
-                        .append(enlace("/reservas/" + reserva.id(), "Ver reserva", false)).append("</div></td></tr>");
-            }
-            html.append("</tbody></table></div>");
-        }
-        return Html.pagina("Reservas", html.toString(), sesion, true, false);
-    }
 
     /**
      * Detalla la reserva y muestra solo las transiciones que siguen disponibles. RNF-011.

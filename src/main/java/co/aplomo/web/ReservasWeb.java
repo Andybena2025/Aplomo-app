@@ -77,10 +77,6 @@ public final class ReservasWeb {
                     horas.isEmpty() ? "No hay horas libres entre las 8:00 y las 16:00." : horas.toString());
             return;
         }
-        if (ruta.equals("/reservas") && !post) {
-            Router.enviar(intercambio, 200, PaginasReservas.lista(sesion, reservas.listar(sesion.cuenta())));
-            return;
-        }
         if (ruta.equals("/reservas/catalogo") && !post) {
             Permisos.evaluador(sesion.cuenta());
             Router.enviar(intercambio, 200,

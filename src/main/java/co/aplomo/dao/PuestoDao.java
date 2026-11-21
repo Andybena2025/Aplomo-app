@@ -80,7 +80,7 @@ public final class PuestoDao {
                                    "_foto) WHERE f.id_evaluacion=(SELECT MAX(e.id_evaluacion) FROM evaluacion e " +
                                    "JOIN visita v USING(id_visita) WHERE e.id_puesto=r.id_puesto AND v.estado='F" +
                                    "INALIZADA'))" : "r.ultimo_puntaje";
-        return "SELECT r.*," + puntaje +
+        return "SELECT r.*,(SELECT ca.nombre FROM cargo ca WHERE ca.id_cargo=r.id_cargo) cargo_nombre," + puntaje +
                 " puntaje_visible,n.color,n.nivel_oficial_rula FROM puesto_trabajo r LEFT JOI" +
                 "N nivel_riesgo n ON " + puntaje +
                 " BETWEEN n.puntaje_minimo AND n.puntaje_maximo JOIN salon l ON l.id_salon=r." +
@@ -91,6 +91,7 @@ public final class PuestoDao {
         return new Puesto(fila.getInt("id_puesto"), fila.getInt("id_salon"), Sql.enteroOpcional(fila, "id_area"),
                 Sql.enteroOpcional(fila, "id_cargo"), fila.getInt("numero"), fila.getString("descripcion"),
                 fila.getString("tipo"), fila.getString("ubicacion"), Sql.enteroOpcional(fila, "puntaje_visible"),
-                fila.getBoolean("activo"), fila.getString("color"), fila.getInt("nivel_oficial_rula"));
+                fila.getBoolean("activo"), fila.getString("color"), fila.getInt("nivel_oficial_rula"),
+                fila.getString("cargo_nombre"));
     }
 }

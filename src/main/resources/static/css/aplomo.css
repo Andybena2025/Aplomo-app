@@ -1961,3 +1961,86 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
 .solicitar-visita{max-width:720px;margin-inline:auto}
 @media(max-width:700px){.avisos-panel{inset:auto 0 0;height:85dvh;width:100%;border-radius:20px 20px 0 0}
  .notas-vivas{right:16px}.bandeja-boton{width:44px;height:44px}}
+
+/* Paso 28A · Una bandeja cerrada no ocupa ni tapa los rieles. */
+.avisos-panel:not([open]){display:none!important}
+.pill[class*="estado-"]::before,.pill[class*="estado-"]::after{content:none!important}
+.pill.estado-resuelta i{display:none}
+.cal-nota-leida{font-size:13px;line-height:1;flex-shrink:0}
+/* RNF-002: el mismo control de contraseña con teclado, sin envío del formulario. */
+.clave-caja{position:relative;display:block;width:100%}
+.clave-caja .input,.clave-caja input{padding-right:112px;width:100%}
+.clave-mostrar{position:absolute;right:6px;top:50%;transform:translateY(-50%);height:36px;padding:0 10px;
+ background:transparent;color:var(--ivory);border:0;border-radius:8px;cursor:pointer;font:500 13px Inter,sans-serif}
+@media(max-width:720px){.clave-mostrar{min-height:44px}.clave-caja .input{min-height:48px}}
+
+/* Paso 28A · Tablas con columnas, palabras y acciones consistentes. */
+.alineo-table{width:100%;border-collapse:separate;border-spacing:0;table-layout:auto}
+.alineo-table th{font:500 12px Inter,sans-serif;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);
+ padding:14px 16px;text-align:left;white-space:nowrap}
+.alineo-table td{padding:18px 16px;border-bottom:1px solid var(--line);vertical-align:middle;position:static}
+.alineo-table tr[data-registro]{cursor:pointer;box-shadow:inset 4px 0 var(--persona,#C9CCD2)}
+.alineo-table tr[data-registro]:hover{background:#ffffff05}
+.alineo-table [hidden],.trabajo-lista [hidden]{display:none!important}
+.fila-enlace{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;min-width:0}
+.fila-enlace strong{font:500 16px Inter,sans-serif;max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alineo-table small,.fila-enlace small{display:block;color:var(--muted);font-size:13px;line-height:1.5}
+.hora-lista,.fecha-grande{font:30px 'Instrument Serif',serif}
+.persona-lista{display:inline-flex;align-items:center;gap:7px;font-size:13px;white-space:nowrap}
+.persona-lista i{width:7px;height:7px;background:var(--persona);border-radius:50%;flex-shrink:0}
+.riesgo-calmo{display:inline-flex;align-items:baseline;gap:7px;white-space:nowrap}
+.riesgo-calmo b{font:28px 'Instrument Serif',serif;color:inherit}
+.riesgo-calmo span{font:500 13px Inter,sans-serif;color:inherit}
+.riesgo-verde{color:#8FC59A}.riesgo-amarillo{color:#D8C27A}.riesgo-rojo{color:#E08A72}
+.prioridad-alta{color:#E08A72;background:#E08A7212;border-color:#E08A7240}
+.prioridad-media{color:#D8C27A;background:#D8C27A12;border-color:#D8C27A40}
+.prioridad-baja{color:var(--muted);background:#ffffff04}.limite-urgente{color:#E08A72!important}
+.lista-herramientas{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;margin-bottom:16px}
+.lista-herramientas .field{flex:1;max-width:420px;min-width:180px}
+.trabajo-lista .chips{gap:8px;margin-bottom:16px}.trabajo-lista .filtros-extra{margin-bottom:16px}
+.trabajo-lista .filtros-extra .field,.trabajo-lista .filtros-extra select{width:100%;min-width:0}
+.acciones-en-fila{white-space:nowrap}.acciones-en-fila form{display:inline-block;margin:0}
+.proxima-cita{border-left:4px solid var(--persona);margin-bottom:24px}
+.visitas-destacadas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px;margin:24px 0}
+.visita-destacada{border:1px solid #E3CDA066;background:#E3CDA008}
+.visita-destacada progress{width:100%}.trabajo-con-lateral{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.trabajo-con-lateral>div{min-width:0}.panel-agenda{display:none;align-self:start;position:sticky;top:110px}
+.mini-calendario{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;text-align:center}
+.mini-calendario>b{font-size:11px;color:var(--muted)}.mini-calendario>span{border-radius:8px;padding:5px 1px;font-size:12px}
+.mini-calendario .mini-hoy{background:#E3CDA0;color:#0E0E10}.mini-calendario small{display:flex;justify-content:center;gap:3px;min-height:9px}
+.mini-calendario .persona-lista{font-size:0;gap:0}.mini-calendario .persona-lista i{width:4px;height:4px}
+.resumen-riesgo{display:flex;flex-direction:column;gap:7px;min-width:170px}
+.barra-riesgo{display:flex;height:5px;border-radius:5px;overflow:hidden;gap:2px;background:var(--line)}
+.barra-riesgo i{display:block;min-width:0}.barra-riesgo .riesgo-verde{background:#8FC59A}
+.barra-riesgo .riesgo-amarillo{background:#D8C27A}.barra-riesgo .riesgo-rojo{background:#E08A72}
+.leyenda-riesgo{display:flex;gap:8px;flex-wrap:wrap;font-size:11px}.sin-resultados{flex:1;background:var(--line)}
+.calculo-ayuda summary{color:var(--muted);font-size:13px}.calculo-ayuda dl{display:grid;grid-template-columns:auto 1fr;gap:10px 20px}
+@media(min-width:1180px){.top .wrap{flex-wrap:nowrap}.top .nav{flex-wrap:nowrap;gap:12px}.top .nav a{white-space:nowrap}}
+@media(min-width:1280px){.trabajo-con-lateral{grid-template-columns:minmax(0,1fr) 260px}.panel-agenda{display:flex}}
+@media(max-width:720px){.alineo-table .fila-enlace strong{max-width:calc(100vw - 88px)}
+ .alineo-table td{padding:12px 16px}.trabajo-lista .table-scroll{max-width:100%}.hora-lista{font-size:26px}}
+/* RF-024 · Archivo: indicadores y filtros con la misma anchura; cada cifra tiene su nombre. */
+.archivo-indicadores{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:24px 0}
+.archivo-indicadores .card{padding:18px;min-width:0}.archivo-indicadores .card>div{margin-top:10px;font-size:15px}
+.archivo-filtros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:24px 0}
+.archivo-filtros .field,.archivo-filtros select{width:100%;min-width:0}.archivo-identidad .iniciales{font:24px 'Instrument Serif',serif;color:#E3CDA0}
+.cambiar-empresa{position:relative}.cambiar-empresa>a{display:block;padding:10px;background:var(--bg);color:var(--ivory)}
+.archivo-sedes .card h2{font-family:'Instrument Serif',serif}.usuarios-table td:nth-child(2){white-space:nowrap}
+@media(max-width:1100px){.archivo-indicadores{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:720px){.archivo-indicadores{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .archivo-filtros{grid-template-columns:1fr}.archivo-indicadores .card:last-child{grid-column:1/-1}}
+/* RF-024 · Inicio en calma: práctica y riesgo legibles, personas con nombre y color. */
+.practica-fila{gap:16px;margin:20px 0;align-items:center}.practicar-enlace{text-decoration:none;display:flex;
+ align-items:center;flex-wrap:wrap;gap:8px;padding:16px 0;color:var(--ivory)}
+.practicar-enlace span{color:var(--muted);font-size:13px}
+.riesgo-calma>.row>a{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:12px 18px;
+ border:1px solid var(--line2);border-radius:12px;text-decoration:none;font-size:16px;background:#ffffff03}
+.riesgo-calma a[data-color="ROJO"]{color:#E08A72;border-color:#E08A7244}
+.riesgo-calma a[data-color="AMARILLO"]{color:#D8C27A;border-color:#D8C27A44}
+.riesgo-calma a[data-color="VERDE"]{color:#8FC59A;border-color:#8FC59A44}
+
+/* RF-023: el puesto ya está en el contexto de esta evaluación. */
+.sugerencias-contexto table th:first-child,.sugerencias-contexto table td:first-child{display:none}
+/* RNF-002: el ancho mínimo de las columnas se desplaza dentro de su tabla. */
+.table-scroll{display:block;width:100%;max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-x:contain}
+.trabajo-lista,.archivo-lista,.archivo-sedes,main>.wrap{min-width:0;max-width:100%}

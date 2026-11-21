@@ -36,31 +36,6 @@ public final class PaginasConsultas {
         return ListasConsulta.pagina(sesion, pagina, contexto);
     }
 
-    private static String listaAnterior(Sesion sesion, Pagina pagina, Contexto contexto) {
-        var elemento = pagina.seccion();
-        var parametros2 = pagina.filtros();
-        boolean admin = sesion.cuenta().rol() != Cuenta.Rol.USUARIO;
-        String etiqueta = elemento == SeccionConsulta.EMPRESAS ? "Gestión · Empresas" :
-                elemento == SeccionConsulta.RESERVAS ? "Reservas · Consulta" :
-                elemento == SeccionConsulta.PENDIENTES ? "Seguimiento · Pendientes" :
-                "Consultas · " + elemento.titulo();
-        StringBuilder contenido = new StringBuilder(Html.encabezado(etiqueta, elemento.titulo(), admin &&
-                !(sesion.cuenta().rol() == Cuenta.Rol.EVALUADOR && elemento == SeccionConsulta.EMPRESAS) ? accion(
-                elemento, parametros2, contexto) : ""));
-        secciones(elemento, contenido);
-        if (elemento == SeccionConsulta.PENDIENTES)
-            contenido.append("<div class=\"row\">").append(enlace("/sugerencias", "Ver sugerencias", false))
-                    .append("</div>");
-        if (contexto != null) contenido.append(contexto(contexto, pagina.contextoEvaluacion(), admin));
-        contenido.append(filtros(pagina, contexto != null, admin));
-        String contador = contador(pagina);
-        contenido.append("<p class=\"muted consultas-contador\" role=\"status\">").append(contador).append("</p>");
-        if (pagina.filas().isEmpty()) contenido.append(Html.vacio(
-                "Aún no hay " + elemento.titulo().toLowerCase(Locale.forLanguageTag("es")) + " con estos filtros.",
-                admin ? accionVacio(elemento, parametros2, contexto) : ""));
-        else tabla(pagina, sesion, contexto, admin, contenido);
-        return Html.pagina(elemento.titulo(), contenido.toString(), sesion, false, false);
-    }
 
     /**
      * Consulta finalizada del Usuario: postura y resultados propios, sin fotos ni acciones de gestión. RNF-011.
@@ -176,8 +151,8 @@ public final class PaginasConsultas {
         var extras = elemento2.filtros().stream().filter(k -> !Set.of("empresa", "estado", "evaluador").contains(k))
                 .filter(k -> admin || !Set.of("registros", "puesto").contains(k))
                 .filter(k -> !contexto || Set.of("desde", "hasta", "registros").contains(k)).toList();
-        boolean abiertos = extras.stream().anyMatch(
-                k -> !parametros2.getOrDefault(k, "").isEmpty() && !parametros2.get(k).equals("TODOS"));
+        boolean abiertos = extras.stream()
+                .anyMatch(k -> !parametros2.getOrDefault(k, "").isEmpty() && !parametros2.get(k).equals("TODOS"));
         contenido.append("<details class=\"guia filtros-extra\"").append(abiertos ? " open" : "")
                 .append("><summary>Más filtros</summary><div class=\"grid3\">");
         for (String key : extras) contenido.append(filtro(elemento, key));

@@ -73,7 +73,7 @@ class Paso17Test extends HttpPrueba {
         assertFalse(texto.contains("Evaluar ahora"));
         var destino = new Visitas(tx, reloj).practica().abrir(evaluador, "OFICINA");
         texto = get("/").body();
-        assertTrue(texto.contains("Probar evaluación"));
+        assertTrue(texto.contains("Practicar una evaluación"));
         assertTrue(texto.contains("href=\"/demo/evaluacion\""));
         assertEquals(1, texto.split("<h2>Visitas en curso</h2>", -1).length - 1);
         assertFalse(texto.contains("Todos los puestos están evaluados"));

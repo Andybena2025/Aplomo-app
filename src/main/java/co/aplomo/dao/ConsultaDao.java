@@ -48,8 +48,8 @@ public final class ConsultaDao {
             "p.id_area LEFT JOIN cargo ca ON ca.id_cargo=p.id_cargo ";
     private static final String DATOS_LUGAR =
             "s.id_empresa empresa,l.id_sede sede,l.id_salon salon,p.id_area area,p.id_car" +
-                    "go cargo,p.id_puesto puesto,p.numero,em.activo empresa_activa,s.activo sede_" +
-                    "activa,l.activo salon_activo,p.activo puesto_activo,em.nombre empresa_nombre" +
+                    "go cargo,p.id_puesto puesto,p.numero,p.descripcion puesto_descripcion,em.activo empresa_activa,s" +
+                    ".activo sede_" + "activa,l.activo salon_activo,p.activo puesto_activo,em.nombre empresa_nombre" +
                     ",s.nombre sede_nombre,l.nombre salon_nombre,ar.nombre area_nombre,ca.nombre " + "cargo_nombre,";
     private static final String MAXIMO =
             "(SELECT MAX(a.puntaje_final) FROM fotografia f JOIN analisis_rula a ON a.id_" +
@@ -159,7 +159,9 @@ public final class ConsultaDao {
                         ",v.hora_real_inicio fecha,v.hora_real_fin fin,v.notas,v.estado,v.calificacio" +
                         "n_final calificacion,em.activo empresa_activa,s.activo sede_activa,l.activo " +
                         "salon_activo,em.nombre empresa_nombre,s.nombre sede_nombre,l.nombre salon_no" +
-                        "mbre,NULL puntaje";
+                        "mbre,(SELECT MAX(ar.puntaje_final) FROM evaluacion ev JOIN fotografia ft USING" +
+                        "(id_evaluacion) " +
+                        "JOIN analisis_rula ar USING(id_foto) WHERE ev.id_visita=v.id_visita) puntaje";
                 desde = "visita v JOIN reserva r ON r.id_reserva=v.id_reserva JOIN salon l ON l.id_sa" +
                         "lon=r.id_salon JOIN sede s ON s.id_sede=l.id_sede JOIN empresa em ON em.id_e" +
                         "mpresa=s.id_empresa";
@@ -199,6 +201,13 @@ public final class ConsultaDao {
             }
             default -> throw new IllegalArgumentException("Sección no disponible.");
         }
+        if (seccion == SeccionConsulta.PENDIENTES || seccion == SeccionConsulta.SUGERENCIAS) {
+            desde += " JOIN reserva r ON r.id_reserva=v.id_reserva";
+        }
+        select += metadatos(seccion, params);
+        boolean personal = !empresa.todas() && !empresa.finalizadas() && empresa.cuenta() > 0 &&
+                java.util.Set.of(SeccionConsulta.RESERVAS, SeccionConsulta.VISITAS, SeccionConsulta.PENDIENTES)
+                        .contains(seccion);
         String privacidadReserva = seccion == SeccionConsulta.RESERVAS && usuario ?
                 " AND (r.id_administrador=" + empresa.cuenta() +
                 " OR EXISTS(SELECT 1 FROM cuenta autor WHERE autor.id_cuenta=r.id_administrador " +
@@ -206,7 +215,8 @@ public final class ConsultaDao {
         String sql =
                 "SELECT q.*,n.color,n.nivel_oficial_rula nivel FROM (SELECT " + select + " FROM " + desde + " WHERE " +
                         empresa.sql("em.id_empresa") + privacidadReserva +
-                        (puesto > 0 ? "" : co.aplomo.modelo.Demostracion.filtro("em.id_empresa")) + extra + (autor > 0 ?
+                        (puesto > 0 ? "" : co.aplomo.modelo.Demostracion.filtro("em.id_empresa")) + extra +
+                        (personal ? " AND r.id_evaluador=?" : "") + (autor > 0 ?
                         " AND (SELECT b.id_cuenta FROM bitacora b WHERE b.tabla='evaluacion' AND b.ac" +
                         "cion='CREAR' AND b.id_registro=e.id_evaluacion ORDER BY b.id_bitacora LIMIT " + "1)=?" : "") +
                         ") q LEFT JOIN nivel_riesgo n ON q.puntaje BETWEEN n.puntaje_minimo AND n.pun" +
@@ -215,11 +225,46 @@ public final class ConsultaDao {
         params.add(empresa.todas());
         params.add(empresa.valor());
         if (!extra.isEmpty()) params.add(usuario);
+        if (personal) params.add(empresa.cuenta());
         if (autor > 0) params.add(autor);
         params.add(id);
         params.add(id);
         if (puesto > 0) params.add(puesto);
         return Sql.listar(conexion, sql, ConsultaDao::fila, params.toArray());
+    }
+
+    private static String metadatos(SeccionConsulta seccion, List<Object> params) {
+        String persona = "r.id_evaluador";
+        if (seccion == SeccionConsulta.EVALUACIONES) {
+            return ",(SELECT q.color_agenda FROM cuenta q WHERE q.id_cuenta=(SELECT b.id_cuenta " +
+                    "FROM bitacora b WHERE b.tabla='evaluacion' AND b.accion='CREAR' " +
+                    "AND b.id_registro=e.id_evaluacion ORDER BY b.id_bitacora LIMIT 1)) evaluador_color";
+        }
+        if (!java.util.Set.of(SeccionConsulta.RESERVAS, SeccionConsulta.VISITAS, SeccionConsulta.PENDIENTES,
+                SeccionConsulta.SUGERENCIAS).contains(seccion)) return "";
+        String extra = "," + persona + " evaluador,(SELECT q.nombre FROM cuenta q WHERE q.id_cuenta=" + persona +
+                ") evaluador_nombre,(SELECT q.color_agenda FROM cuenta q WHERE q.id_cuenta=" + persona +
+                ") evaluador_color";
+        if (seccion == SeccionConsulta.RESERVAS) {
+            return extra + ",s.direccion,(SELECT q.rol FROM cuenta q WHERE q.id_cuenta=r.id_administrador) " +
+                    "registrador_rol,r.id_administrador registrador";
+        }
+        if (seccion == SeccionConsulta.VISITAS) {
+            return extra + ",(SELECT COUNT(DISTINCT ev.id_puesto) FROM evaluacion ev WHERE ev.id_visita=v.id_visita) " +
+                    "puestos_evaluados,(SELECT COUNT(*) FROM puesto_trabajo pt WHERE pt.id_salon=r.id_salon " +
+                    "AND pt.activo=TRUE) puestos_total,(SELECT MAX(ar.puntaje_final) FROM evaluacion ev " +
+                    "JOIN fotografia ft USING(id_evaluacion) JOIN analisis_rula ar USING(id_foto) " +
+                    "WHERE ev.id_visita=v.id_visita) maximo";
+        }
+        if (seccion == SeccionConsulta.PENDIENTES) {
+            params.add(java.time.LocalDate.now(java.time.ZoneId.of("America/Bogota")));
+            return extra + ",(SELECT COUNT(*) FROM evaluacion ev WHERE ev.id_visita=e.id_visita " +
+                    "AND ev.id_puesto=e.id_puesto) posturas,(SELECT MIN(rp.fecha) FROM reserva rp " +
+                    "JOIN salon lp USING(id_salon) JOIN sede sp USING(id_sede) WHERE sp.id_empresa=s.id_empresa " +
+                    "AND rp.id_evaluador=r.id_evaluador AND rp.fecha>=? " +
+                    "AND rp.estado IN ('ESPERANDO','EN_COLA')) proxima_visita";
+        }
+        return extra;
     }
 
     /**

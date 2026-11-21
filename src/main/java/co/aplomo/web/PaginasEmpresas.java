@@ -59,46 +59,7 @@ public final class PaginasEmpresas {
      */
     public static String listado(Sesion sesion, List<co.aplomo.servicio.Empresas.Resumen> empresas, String aviso,
             Map<String, String> filtros) {
-        String consulta = filtros.getOrDefault("q", "");
-        String normalizada = co.aplomo.servicio.Validacion.nombre(consulta);
-        long coincidencias = empresas.stream().filter(resumen -> co.aplomo.servicio.Validacion.nombre(
-                        resumen.empresa().nombre() + " " + resumen.empresa().nit() + " " + resumen.ciudad())
-                .contains(normalizada)).count();
-        StringBuilder html = new StringBuilder(Html.aviso(aviso, aviso != null));
-        html.append("<section data-lista data-seccion=\"EMPRESAS\"><div class=\"lista-herramientas\">" +
-                "<input type=\"search\" class=\"input\" data-lista-buscar aria-label=\"Buscar empresa\" " +
-                "placeholder=\"Buscar empresa\" value=\"").append(escapar(consulta)).append("\"><div class=\"chips\">");
-        for (String[] filtro : List.of(new String[]{"ACTIVO", "Activas"}, new String[]{"INACTIVO", "Inactivas"},
-                new String[]{"TODOS", "Todas"})) {
-            html.append("<button class=\"chip\" type=\"button\" data-lista-filtro=\"").append(filtro[0])
-                    .append("\" aria-pressed=\"false\">").append(filtro[1]).append("</button>");
-        }
-        html.append("</div></div><p class=\"muted\" data-lista-contador role=\"status\">").append(coincidencias)
-                .append(" resultados</p><div class=\"lista-filas\">");
-        for (var resumen : empresas) {
-            Empresa empresa = resumen.empresa();
-            String lugar = resumen.ciudad();
-            if (empresa.sector() != null && !empresa.sector().isBlank()) {
-                lugar += (lugar.isBlank() ? "" : " · ") + empresa.sector();
-            }
-            html.append("<a class=\"lista-fila empresa-fila\" href=\"/empresas/").append(empresa.id())
-                    .append("\" data-registro data-estado=\"").append(empresa.activo() ? "ACTIVO" : "INACTIVO")
-                    .append("\"><span class=\"lista-identidad\"><strong title=\"").append(escapar(empresa.nombre()))
-                    .append("\">").append(escapar(empresa.nombre())).append("</strong><small class=\"muted\">")
-                    .append(escapar(lugar)).append("</small></span><span class=\"equipo-empresa\">");
-            for (var persona : resumen.equipo()) {
-                String color = persona.color() != null &&
-                        co.aplomo.servicio.ColoresAgenda.PALETA.contains(persona.color()) ? persona.color() : "#C9CCD2";
-                html.append("<span title=\"").append(escapar(persona.nombre()))
-                        .append("\"><i class=\"persona-color\" " + "style=\"--persona:").append(color)
-                        .append("\" aria-hidden=\"true\"></i>").append(escapar(persona.nombre())).append("</span>");
-            }
-            html.append("</span>").append(SistemaVisual.estado(empresa.activo() ? "ACTIVO" : "INACTIVO"))
-                    .append("<span aria-hidden=\"true\">›</span></a>");
-        }
-        html.append("</div><p data-lista-vacia hidden>No hay empresas con estos filtros.</p></section>");
-        String acciones = admin(sesion) ? enlace("/empresas/nueva", "Nueva empresa", true) : "";
-        return Html.pagina("Empresas", html.toString(), sesion, "Gestión · Empresas", acciones, false);
+        return TablaEmpresas.pagina(sesion, empresas, aviso, true, filtros);
     }
 
     /**

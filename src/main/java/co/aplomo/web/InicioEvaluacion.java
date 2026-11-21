@@ -13,9 +13,10 @@ final class InicioEvaluacion {
 
     static String practica(Integer visita) {
         if (!GaleriaDemo.habilitada()) return "";
-        return "<div class=\"practica-fila row\"><a href=\"/demo/evaluacion\">Probar evaluación</a>" +
-                "<span>Ensaya sin sumar resultados</span>" +
-                (visita == null ? "" : "<a href=\"/visitas/" + visita + "\">Continuar práctica</a>") + "</div>";
+        return "<div class=\"practica-fila row\"><a class=\"practicar-enlace\" href=\"/demo/evaluacion\">" +
+                "▶ Practicar una evaluación <span>· No cuenta en tus resultados</span> ›</a>" +
+                (visita == null ? "" : "<a class=\"btn\" href=\"/visitas/" + visita + "\">Continuar práctica</a>") +
+                "</div>";
     }
 
     static String paginaPractica(co.aplomo.seguridad.Sesiones.Sesion sesion) {
@@ -24,7 +25,7 @@ final class InicioEvaluacion {
                         "ón</span><h1>Probar evaluación</h1></div></div><section class=\"card stack\"" +
                         "><p>Elige un puesto para practicar el mismo recorrido de la app.</p><p>Se pr" +
                         "epara una visita En curso en ALINEO · Práctica de evaluación. Los resultados" +
-                        " se guardan como demostración en la base actual; puedes repetir la prueba si" +
+                        " son de práctica y no cuentan en tus resultados. Puedes repetir la prueba si" +
                         "n borrar intentos.</p><form method=\"post\" action=\"/demo/evaluacion\" clas" + "s=\"row\">" +
                         Html.csrf(sesion) +
                         "<button class=\"btn p\" name=\"tipo\" value=\"PLANTA\">Probar Planta</button" +
@@ -49,11 +50,12 @@ final class InicioEvaluacion {
                         .append("\">Ver visita</a><ul class=\"evaluar-puestos\">");
                 anterior = visita2.visita();
             }
-            if (visita2.puesto() != null) contenido.append("<li><div><strong>Puesto ").append(visita2.numero())
-                    .append("</strong><div class=\"muted small\">").append(Html.escapar(visita2.descripcion()))
-                    .append("</div></div><a class=\"btn p\" href=\"/evaluaciones/nueva?visita=")
-                    .append(visita2.visita()).append("&amp;puesto=").append(visita2.puesto())
-                    .append("\">Evaluar</a></li>");
+            if (visita2.puesto() != null)
+                contenido.append("<li><div><strong>").append(Html.escapar(visita2.descripcion()))
+                        .append("</strong><div class=\"muted small\">Puesto ").append(visita2.numero())
+                        .append("</div></div><a class=\"btn p\" href=\"/evaluaciones/nueva?visita=")
+                        .append(visita2.visita()).append("&amp;puesto=").append(visita2.puesto())
+                        .append("\">Evaluar</a></li>");
         }
         return contenido.append("</ul></div></section>").toString();
     }

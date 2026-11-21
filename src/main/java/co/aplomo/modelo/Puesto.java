@@ -4,7 +4,15 @@ package co.aplomo.modelo;
  * RF-004 a RF-010, RF-028: datos persistentes de puesto_trabajo, con estado conservado.
  */
 public record Puesto(int id, int salon, Integer area, Integer cargo, int numero, String descripcion, String tipo,
-                     String ubicacion, Integer puntaje, boolean activo, String color, int nivel) {
+                     String ubicacion, Integer puntaje, boolean activo, String color, int nivel, String cargoNombre) {
+
+    /**
+     * RF-010: compatibilidad con los datos anteriores; el cargo visible es solo presentación.
+     */
+    public Puesto(int id, int salon, Integer area, Integer cargo, int numero, String descripcion, String tipo,
+            String ubicacion, Integer puntaje, boolean activo, String color, int nivel) {
+        this(id, salon, area, cargo, numero, descripcion, tipo, ubicacion, puntaje, activo, color, nivel, null);
+    }
 
     /**
      * Datos editables del puesto; el color y nivel se completan al consultar MySQL (RF-020).

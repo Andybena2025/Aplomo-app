@@ -32,6 +32,28 @@ public final class AvisosWeb {
         if (!ruta.equals("/avisos") && !ruta.startsWith("/avisos/")) return false;
         if (sesion.cuenta().temporal()) throw new SecurityException("Cambia tu contraseña para continuar.");
         boolean post = intercambio.getRequestMethod().equals("POST");
+        if (ruta.equals("/avisos/nuevo")) {
+            var destinataria = servicio.principal(sesion.cuenta());
+            String error = "";
+            if (post) {
+                try {
+                    servicio.escribirPrincipal(sesion.cuenta(), datos.get("texto"));
+                    Router.redirigir(intercambio, "/avisos?enviado=1");
+                    return true;
+                } catch (IllegalArgumentException fallo) {
+                    error = fallo.getMessage();
+                }
+            }
+            String contenido =
+                    "<h2>Mensaje para " + Html.escapar(destinataria.nombre()) + "</h2>" + Html.aviso(error, false) +
+                            "<form method=\"post\" action=\"/avisos/nuevo\" class=\"stack\">" + Html.csrf(sesion) +
+                            Formularios.texto(datos, "texto", "Mensaje", 500, true) +
+                            "<button class=\"btn p\">Enviar mensaje</button></form>";
+            boolean panel = "1".equals(intercambio.getRequestHeaders().getFirst("X-Alineo-Panel"));
+            Router.enviar(intercambio, error.isEmpty() ? 200 : 400,
+                    panel ? contenido : Html.pagina("Nuevo mensaje", contenido, sesion));
+            return true;
+        }
         if (ruta.equals("/avisos/nuevos") && !post) {
             String json = servicio.listar(sesion.cuenta()).stream().filter(m -> !m.leido())
                     .map(m -> "{\"id\":" + m.id() + ",\"tipo\":" + NotasWeb.texto(titulo(m.tipo())) + ",\"texto\":" +

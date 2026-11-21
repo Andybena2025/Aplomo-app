@@ -13,8 +13,8 @@ public final class SistemaVisual {
             Map.entry("EN_CURSO", "En curso"), Map.entry("FINALIZADA", "Finalizada"),
             Map.entry("CANCELADA", "Cancelada"), Map.entry("ABIERTO", "Abierto"), Map.entry("EN_PROCESO", "En proceso"),
             Map.entry("ARREGLADO", "Resuelto"), Map.entry("POR_EVALUAR", "Por evaluar"), Map.entry("HECHA", "Resuelto"),
-            Map.entry("APROBADA", "Aprobada"), Map.entry("RECHAZADA", "Rechazada"),
-            Map.entry("PENDIENTE", "Pendiente"), Map.entry("BLOQUEADA", "Bloqueada temporalmente"));
+            Map.entry("APROBADA", "Aprobada"), Map.entry("RECHAZADA", "Rechazada"), Map.entry("PENDIENTE", "Pendiente"),
+            Map.entry("BLOQUEADA", "Bloqueada temporalmente"));
 
     private SistemaVisual() {
     }
@@ -46,8 +46,8 @@ public final class SistemaVisual {
         if (!java.util.List.of("verde", "amarillo", "rojo").contains(clase)) clase = "";
         String nombre = clase.isEmpty() ? "" : Character.toUpperCase(clase.charAt(0)) + clase.substring(1);
         String etiqueta = puntaje + " · " + nombre + " · Nivel " + nivel;
-        return "<span class=\"riesgo-calmo riesgo-" + clase + "\" aria-label=\"" + Html.escapar(etiqueta) +
-                "\"><i aria-hidden=\"true\"></i><b>" + puntaje + "</b><span>Nivel " + nivel + "</span></span>";
+        return "<span class=\"riesgo-calmo riesgo-" + clase + "\" aria-label=\"" + Html.escapar(etiqueta) + "\"><b>" +
+                puntaje + "</b><span>" + Html.escapar(nombre) + "</span></span>";
     }
 
     /**

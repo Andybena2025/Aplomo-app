@@ -46,9 +46,9 @@ public final class AgendaWeb {
                 Router.redirigir(intercambio, "/reservas/" + rid);
             } else {
                 String nombre = agenda.guardarNota(sesion.cuenta(), rid, parametros.get("nota"));
-                Router.enviar(intercambio, 200, Html.pagina("Nota enviada",
-                        Html.aviso("Nota enviada a " + nombre, true) + "<a class=\"btn\" href=\"/reservas/" + rid +
-                                "\">Ver cita</a>", sesion));
+                String aviso = java.net.URLEncoder.encode("Nota enviada a " + nombre,
+                        java.nio.charset.StandardCharsets.UTF_8);
+                Router.redirigir(intercambio, "/reservas/" + rid + "?aviso=" + aviso);
             }
             return true;
         }

@@ -41,12 +41,12 @@ class HttpHistorialInactivosTest extends HttpPrueba {
     }
 
     private static int filas(String html) {
-        return (int) Pattern.compile("<a\\b(?![^>]*\\bhidden)(?=[^>]*\\bdata-registro=)[^>]*>").matcher(html).results()
+        return (int) Pattern.compile("<tr\\b(?![^>]*\\bhidden)(?=[^>]*\\bdata-registro=)[^>]*>").matcher(html).results()
                 .count();
     }
 
     private static String fila(String texto, int id) {
-        var elemento = Pattern.compile("<a\\b(?=[^>]*data-registro=\"" + id + "\")[^>]*>(.*?)</a>", Pattern.DOTALL)
+        var elemento = Pattern.compile("<tr\\b(?=[^>]*data-registro=\"" + id + "\")[^>]*>(.*?)</tr>", Pattern.DOTALL)
                 .matcher(texto);
         assertTrue(elemento.find());
         return elemento.group(1);
@@ -116,7 +116,7 @@ class HttpHistorialInactivosTest extends HttpPrueba {
         assertEquals(0, filas(get(texto + "&registros=ACTIVOS").body()));
         String texto2 = get(texto).body();
         assertTrue(fila(texto2, escenario.evalVerde).contains(
-                nivel.equals("empresa") || nivel.equals("sede") ? ">Inactiva</span>" : ">Inactivo</span>"));
+                nivel.equals("empresa") || nivel.equals("sede") ? "Inactiva</span>" : "Inactivo</span>"));
         assertTrue(empresas.puesto(cuenta(admin), escenario.puesto3).activo());
     }
 

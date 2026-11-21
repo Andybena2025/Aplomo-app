@@ -53,6 +53,13 @@ public final class AccesoDatos {
         }
 
         /**
+         * RF-002/024: una lista de trabajo del Evaluador muestra solo sus citas.
+         */
+        public int responsableLista() {
+            return !todas && !finalizadas && empresaExacta == null ? cuenta : 0;
+        }
+
+        /**
          * Restricción de un padre interno; no usa cuenta.id_empresa como permiso. RNF-011.
          */
         public static Alcance exacta(int empresa) {

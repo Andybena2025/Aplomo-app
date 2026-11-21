@@ -57,8 +57,6 @@ public final class Calendario {
                 .append(vista.mes() ? "<button type=\"button\" class=\"cal-numero\" aria-label=\"" :
                         "<span " + "class=\"cal" + "-numero\" " + "aria-label=\"").append(Html.fecha(fecha))
                 .append("\">").append(fecha.getDayOfMonth()).append(vista.mes() ? "</button>" : "</span>");
-        if (fecha.isBefore(Html.hoy()))
-            html.append("<span class=\"cal-dia-pasado\" aria-label=\"Día pasado\">✓</span>");
         long avisos = citas.stream().mapToInt(Cita::nuevos).sum();
         if (avisos > 0)
             html.append("<span class=\"cal-aviso\" aria-label=\"Notas nuevas\">").append(avisos).append("</span>");
@@ -97,8 +95,9 @@ public final class Calendario {
                             Math.max(0, inicio) + ";--duracion:" + duracion + "\"";
         }
         String nota = cita.nota() == null || cita.nota().texto() == null ? "" : cita.nota()
-                .vista() ? "<span class=\"sr-only\">Nota leída</span>" : "<i class=\"cal-nota\" title=\"Nota del " +
-                                                                         "Administrador\"></i>";
+                .vista() ? "<span class=\"cal-nota-leida\" title=\"Nota leída\" aria-label=\"Nota leída\">✉</span>" :
+                                                                                "<i class=\"cal-nota\" title=\"Nota " +
+                                                                                "del " + "Administrador\"></i>";
         return "<a class=\"cal-cita color-" + indice + (pasada ? " pasada" : "") + "\" data-evaluador=\"" +
                 cita.evaluador() + "\" href=\"/reservas/" + reserva.id() + "\"" + estilo + "><small>" +
                 reserva.inicio().format(HORA) + "</small><b>" + Html.escapar(cita.ficha().empresaNombre()) + "</b>" +

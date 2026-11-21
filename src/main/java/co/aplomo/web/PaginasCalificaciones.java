@@ -44,8 +44,8 @@ public final class PaginasCalificaciones {
     public static String calificaciones(Sesion sesion, InformeEmpresa i) {
         StringBuilder contenido2 = new StringBuilder(encabezado(sesion, i, false));
         contenido2.append("<section class=\"card stack\"><span class=\"eyebrow\">Calificación general</span>")
-                .append(general(i)).append(cobertura(i)).append("<p class=\"hint\">").append(metodo())
-                .append("</p></section><section class=\"stack calificaciones-sedes\"><h2>Calificacion" +
+                .append(general(i)).append(cobertura(i)).append(ayudaCalculo())
+                .append("</section><section class=\"stack calificaciones-sedes\"><h2>Calificacion" +
                         "es por sede</h2><div class=\"grid2\">");
         for (var sede : i.sedes()) {
             contenido2.append("<article class=\"card stack\"><div class=\"row between\"><h3>")
@@ -135,11 +135,15 @@ public final class PaginasCalificaciones {
     }
 
     private static String metodo() {
-        return "Indicadores del equipo (propuesta), no parte del método RULA; pendientes de " +
-                "validar con la clienta. Puesto: máximo de su última evaluación Finalizada. V" +
-                "isita: promedio guardado de sus puestos. Sede: promedio de visitas con calif" +
-                "icación. General: promedio de las sedes calificadas, mínimo " + Calificaciones.MINIMO_SEDES_GENERAL +
-                ". Para el color se redondea al entero más cercano (propuesta).";
+        return "Puesto: su peor resultado. Visita: promedio de sus puestos. " +
+                "Sede: promedio de sus visitas Finalizadas. General: promedio de las sedes, necesita dos o más.";
+    }
+
+    private static String ayudaCalculo() {
+        return "<details class=\"calculo-ayuda\"><summary>¿Cómo se calcula?</summary><dl>" +
+                "<dt>Puesto</dt><dd>Su peor resultado</dd><dt>Visita</dt><dd>Promedio de sus puestos</dd>" +
+                "<dt>Sede</dt><dd>Promedio de sus visitas</dd><dt>General</dt>" +
+                "<dd>Promedio de las sedes (necesita 2 o más)</dd></dl></details>";
     }
 
     private static String general(InformeEmpresa i) {
@@ -200,8 +204,8 @@ public final class PaginasCalificaciones {
                 "Una reevaluación Verde sustituye al Rojo anterior en estas cifras.</p>");
         tabla(contenido2, List.of("Puesto y ubicación", "Área y cargo", "Postura y fecha", "Resultado y acción"),
                 empresa.puestos().stream().map(empresa3 -> List.of(
-                        "<b>Puesto " + empresa3.numero() + "</b><br>" + escapar(empresa3.salon()) + "<br>" +
-                                escapar(empresa3.descripcion()),
+                        "<b>" + escapar(TextoLista.puesto(empresa3.cargo(), empresa3.descripcion())) + "</b><br>" +
+                                escapar(empresa3.salon()) + " · Puesto " + empresa3.numero(),
                         texto(empresa3.area(), "Sin área") + "<br>" + texto(empresa3.cargo(), "Sin cargo") +
                                 (empresa3.tipoCargo() == null ? "" : "<br>" + etiqueta(empresa3.tipoCargo())),
                         escapar(empresa3.postura()) + "<br>" + Html.fecha(empresa3.fecha()),

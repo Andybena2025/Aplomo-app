@@ -253,9 +253,9 @@ public final class Html {
                 "js/progreso.js\" defer></script><script src=\"/static/js/cuenta.js\" defer><" +
                 "/script><script src=\"/static/js/reservas.js\" defer></script>" +
                 "<script src=\"/static/js/tiempo-colombia.js\" defer></script>" +
-                "<script src=\"/static/js/sistema-visual.js\" defer></script></head><body class=\"alineo rol-" +
-                rolPagina + (enfoque ? " modo-enfoque" : "") + "\">" +
-                "<a class=\"saltar\" href=\"#contenido\">Saltar al contenido</a>" + cabecera +
+                "<script src=\"/static/js/sistema-visual.js\" defer></script><script src=\"/static/js/mostrar-clave" +
+                ".js\" defer></script></head><body class=\"alineo rol-" + rolPagina + (enfoque ? " modo-enfoque" : "") +
+                "\">" + "<a class=\"saltar\" href=\"#contenido\">Saltar al contenido</a>" + cabecera +
                 (cabecera.isEmpty() ? "" : laterales()) + "<main id=\"contenido\" class=\"wrap\" tabindex=\"-1\">" +
                 pagehead + contenido + "</main>" + (cabecera.isEmpty() ? "" : pie()) + "</body></html>";
     }
@@ -401,11 +401,13 @@ public final class Html {
     }
 
     /**
-     * Iniciales del nombre para el avatar circular del mock (máximo 2 letras).
+     * RF-002, RNF-011: iniciales compartidas, sin títulos profesionales, máximo dos letras.
      */
-    private static String iniciales(String nombre) {
+    public static String iniciales(String nombre) {
         if (nombre == null || nombre.isBlank()) return "?";
-        String[] partes = nombre.strip().split("\\s+");
+        String limpio = nombre.strip()
+                .replaceFirst("(?iu)^(?:(?:Ing\\.?|Ingenier[oa]|Dr\\.?|Dra\\.?|Arq\\.?|Lic\\.?)\\s+)+", "");
+        String[] partes = limpio.split("\\s+");
         StringBuilder ini = new StringBuilder();
         for (int i = 0; i < Math.min(2, partes.length); i++) {
             if (!partes[i].isEmpty()) ini.appendCodePoint(partes[i].codePointAt(0));

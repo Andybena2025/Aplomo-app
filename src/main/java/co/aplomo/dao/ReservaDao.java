@@ -46,9 +46,9 @@ public final class ReservaDao {
     public List<Ficha> listar(Connection con, Alcance empresa) throws SQLException {
         return Sql.listar(con, CONTEXTO + " WHERE " + empresa.sql("s.id_empresa") + "" +
                         co.aplomo.modelo.Demostracion.filtro("s.id_empresa") + privacidad(empresa) +
-                        " ORDER BY r.fecha DESC, r.hora_inicio DESC, r.id_reserva DESC", ReservaDao::leer,
-                empresa.todas(),
-                empresa.valor());
+                        " AND (?=0 OR r.id_evaluador=?) ORDER BY r.fecha DESC, r.hora_inicio DESC, r.id_reserva DESC",
+                ReservaDao::leer, empresa.todas(), empresa.valor(), empresa.responsableLista(),
+                empresa.responsableLista());
     }
 
     /**

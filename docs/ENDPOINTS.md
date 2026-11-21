@@ -316,3 +316,12 @@ El enlace WhatsApp prepara el mensaje para revisión y envío manual; nunca env�
 Las solicitudes se enlazan a mensajes por una entrada CREAR de bitácora `ACCESO:{id}`; no hay credenciales
 ni información de otros destinatarios en el sondeo. El sistema usa una cuenta receptora para la FK de
 remitente de solicitudes externas, y la interfaz lo rotula «Solicitud recibida · Acceso por revisar».
+
+### Paso 28A · Mensaje al contacto principal
+
+| Método | Ruta | Alcance y respuesta |
+|---|---|---|
+| GET | `/avisos/nuevo` | Cuenta vigente con sesión; formulario privado dirigido al contacto principal configurado. |
+| POST | `/avisos/nuevo` | Misma cuenta y CSRF; destinatario resuelto en servidor, texto de hasta 500 caracteres. Respuesta HTML o panel de bandeja. |
+
+Guardar una nota de reserva conserva el detalle y muestra confirmación; permisos y sesión siguen vigentes.

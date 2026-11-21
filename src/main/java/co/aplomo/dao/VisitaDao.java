@@ -35,7 +35,14 @@ public final class VisitaDao {
      * Resumen consultable de una evaluación; no contiene rutas de fotografías. RNF-011.
      */
     public record Evaluacion(int id, int puesto, int numero, LocalDate fecha, String postura, Integer puntaje,
-                             String color, int nivel) {
+                             String color, int nivel, String descripcion, String cargo) {
+        /**
+         * RNF-011: compatibilidad de consumidores anteriores, sin inventar nombres.
+         */
+        public Evaluacion(int id, int puesto, int numero, LocalDate fecha, String postura, Integer puntaje,
+                String color, int nivel) {
+            this(id, puesto, numero, fecha, postura, puntaje, color, nivel, "", "");
+        }
     }
 
     /**
@@ -62,18 +69,21 @@ public final class VisitaDao {
      * RF-002/013: puestos pendientes en el alcance vigente, sin consultas por fila.
      */
     public List<ParaEvaluar> paraEvaluar(Connection con, Alcance alcance) throws SQLException {
-        return Sql.listar(con,
-                "SELECT v.id_visita,e.nombre empresa,s.nombre sede,p.id_puesto,p.numero,p.des" + "cripcion " +
+        return Sql.listar(con, "SELECT v.id_visita,e.nombre empresa,s.nombre sede,p.id_puesto,p.numero," +
+                        "CONCAT_WS(' · ',(SELECT ca.nombre FROM cargo ca WHERE ca.id_cargo=p.id_cargo)," +
+                        "p.descripcion) descripcion " +
                         "FROM visita v JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) " +
                         "JOIN sede s USING(id_sede) JOIN empresa e USING(id_empresa) " +
                         "LEFT JOIN puesto_trabajo p ON p.id_salon=l.id_salon AND p.activo=TRUE AND NO" + "T EXISTS " +
-                        "(SELECT 1 FROM evaluacion ev WHERE ev.id_visita=v.id_visita AND ev.id_puesto" +
-                        "=p.id_puesto) " + "WHERE v.estado='EN_CURSO' AND " + alcance.sql("s.id_empresa") +
+                        "(SELECT 1 FROM evaluacion ev WHERE ev.id_visita=v.id_visita AND ev.id_puesto" + "=p" +
+                        ".id_puesto) " +
+                        "WHERE v.estado='EN_CURSO' AND " + alcance.sql("s.id_empresa") +
                         co.aplomo.modelo.Demostracion.filtro("s.id_empresa") +
-                        " ORDER BY e.nombre,s.nombre,v.id_visita,p.numero,p.id_puesto",
+                        " AND (?=0 OR r.id_evaluador=?) ORDER BY e.nombre,s.nombre,v.id_visita,p.numero,p.id_puesto",
                 fila2 -> new ParaEvaluar(fila2.getInt("id_visita"), fila2.getString("empresa"), fila2.getString("sede"),
                         Sql.enteroOpcional(fila2, "id_puesto"), Sql.enteroOpcional(fila2, "numero"),
-                        fila2.getString("descripcion")), alcance.todas(), alcance.valor());
+                        fila2.getString("descripcion")), alcance.todas(), alcance.valor(), alcance.responsableLista(),
+                alcance.responsableLista());
     }
 
     /**
@@ -96,8 +106,9 @@ public final class VisitaDao {
         return Sql.listar(con,
                 CONTEXTO + " WHERE " + empresa.sql("s.id_empresa") + " AND (? = FALSE OR v.estado = 'FINALIZADA')" +
                         co.aplomo.modelo.Demostracion.filtro("s.id_empresa") +
-                        " ORDER BY v.hora_real_inicio DESC, v.id_visita DESC", VisitaDao::leer, empresa.todas(),
-                empresa.valor(), soloFinalizadas);
+                        " AND (?=0 OR r.id_evaluador=?) ORDER BY v.hora_real_inicio DESC, v.id_visita DESC",
+                VisitaDao::leer, empresa.todas(), empresa.valor(), soloFinalizadas, empresa.responsableLista(),
+                empresa.responsableLista());
     }
 
     /**
@@ -139,7 +150,8 @@ public final class VisitaDao {
      * Lee las evaluaciones y el máximo de sus análisis guardados, incluyendo ambos lados del cuerpo. RNF-011.
      */
     public List<Evaluacion> evaluaciones(Connection con, int visita, boolean bloquear) throws SQLException {
-        String consulta = "SELECT e.id_evaluacion, e.id_puesto, p.numero, e.fecha, e.postura, (SELECT n" +
+        String consulta = "SELECT e.id_evaluacion, e.id_puesto, p.numero,p.descripcion," +
+                "(SELECT ca.nombre FROM cargo ca WHERE ca.id_cargo=p.id_cargo) cargo,e.fecha, e.postura, (SELECT n" +
                 ".color FROM nivel_riesgo n WHERE (SELECT MAX(a.puntaje_final) FROM fotografi" +
                 "a f JOIN analisis_rula a USING(id_foto) WHERE f.id_evaluacion=e.id_evaluacio" +
                 "n) BETWEEN n.puntaje_minimo AND n.puntaje_maximo) color, (SELECT n.nivel_ofi" +
@@ -153,7 +165,8 @@ public final class VisitaDao {
         return Sql.listar(con, consulta,
                 fila -> new Evaluacion(fila.getInt("id_evaluacion"), fila.getInt("id_puesto"), fila.getInt("numero"),
                         fila.getDate("fecha").toLocalDate(), fila.getString("postura"),
-                        Sql.enteroOpcional(fila, "puntaje"), fila.getString("color"), fila.getInt("nivel")), visita);
+                        Sql.enteroOpcional(fila, "puntaje"), fila.getString("color"), fila.getInt("nivel"),
+                        fila.getString("descripcion"), fila.getString("cargo")), visita);
     }
 
     /**

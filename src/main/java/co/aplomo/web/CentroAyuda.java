@@ -20,20 +20,21 @@ final class CentroAyuda {
 
     static String pagina(Sesion sesion, Contenido contenido) {
         List<Articulo> articulos = articulos(sesion);
-        StringBuilder html = new StringBuilder("<div class=\"ayuda-layout\"><aside><nav class=\"ayuda-navegacion\" " +
-                "aria-label=\"Temas de ayuda\">");
+        StringBuilder html = new StringBuilder(
+                "<h1>Centro de ayuda</h1><div class=\"ayuda-layout\"><aside><nav class=\"ayuda-navegacion\" " +
+                        "aria-label=\"Temas de ayuda\">");
         for (Articulo articulo : articulos) {
             html.append("<a href=\"#").append(articulo.id()).append("\" data-articulo-enlace>")
                     .append(Html.escapar(articulo.titulo())).append("</a>");
         }
         html.append("</nav>");
-        html.append(contacto(contenido.contacto()));
+        html.append(contacto(contenido.contacto(), sesion));
         html.append("</aside><div>");
         for (Articulo articulo : articulos) {
             html.append("<article class=\"ayuda-articulo\" id=\"").append(articulo.id())
                     .append("\" data-articulo><p class=\"migas\">Centro de ayuda › ")
-                    .append(Html.escapar(articulo.titulo())).append("</p><h1>").append(Html.escapar(articulo.titulo()))
-                    .append("</h1><p class=\"muted\">").append(Html.escapar(articulo.intro())).append("</p><ol>");
+                    .append(Html.escapar(articulo.titulo())).append("</p><h2>").append(Html.escapar(articulo.titulo()))
+                    .append("</h2><p class=\"muted\">").append(Html.escapar(articulo.intro())).append("</p><ol>");
             for (String paso : articulo.pasos()) html.append("<li>").append(paso).append("</li>");
             html.append("</ol>");
             if (articulo.id().equals("resultados") || articulo.id().equals("semaforo")) {
@@ -153,18 +154,23 @@ final class CentroAyuda {
                 "Consulta la respuesta en Avisos y en el estado de la reserva.");
     }
 
-    private static String contacto(Contacto contacto) {
-        StringBuilder html = new StringBuilder("<section class=\"ayuda-contacto\"><h2>Tu administradora</h2>" +
-                "<p>Laura Gabriella Romero</p><p class=\"hint\">Administradora principal de ALINEO.</p>" +
-                "<div class=\"row\">");
+    private static String contacto(Contacto contacto, Sesion sesion) {
+        StringBuilder html = new StringBuilder("<section class=\"ayuda-contacto\"><h2>Tu Administradora</h2>");
+        if (!contacto.nombre().isBlank()) html.append("<p>").append(Html.escapar(contacto.nombre())).append("</p>");
+        if (!contacto.cargo().isBlank())
+            html.append("<p class=\"hint\">").append(Html.escapar(contacto.cargo())).append("</p>");
+        html.append("<div class=\"row\">");
+        if (sesion != null && sesion.cuenta() != null && !contacto.correo().isBlank()) {
+            html.append("<a class=\"btn\" data-lista-avisos href=\"/avisos/nuevo\">Enviarle un mensaje</a>");
+        }
         if (!contacto.whatsapp().isBlank())
             html.append("<a class=\"btn\" href=\"https://wa.me/").append(Html.escapar(contacto.whatsapp()))
                     .append("\" target=\"_blank\" rel=\"noopener\">WhatsApp</a>");
+        String telefono = contacto.telefono().replaceAll("[^+0-9]", "");
+        if (!telefono.isBlank()) html.append("<a class=\"btn\" href=\"tel:").append(telefono).append("\">Llamar</a>");
         if (!contacto.correo().isBlank())
             html.append("<a class=\"btn\" href=\"mailto:").append(Html.escapar(contacto.correo()))
                     .append("\">Correo</a>");
-        html.append("</div>");
-        if (contacto.incompleto()) html.append("<p class=\"hint\">Escríbele al Administrador de tu cuenta.</p>");
-        return html.append("</section>").toString();
+        return html.append("</div></section>").toString();
     }
 }

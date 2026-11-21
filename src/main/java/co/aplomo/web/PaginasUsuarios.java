@@ -29,61 +29,7 @@ public final class PaginasUsuarios {
      */
     public static String lista(Sesion sesion, List<Cuenta> cuentas, List<Opcion> empresas,
             Map<Integer, List<Integer>> asignadas, String aviso) {
-        Map<Integer, String> nombres = new HashMap<>();
-        empresas.forEach(empresa -> nombres.put(empresa.id(), empresa.nombre()));
-        StringBuilder html = new StringBuilder(Html.aviso(aviso, true));
-        html.append("<section data-lista data-seccion=\"USUARIOS\"><div class=\"grid3 usuarios-roles\">");
-        for (Rol rol : Rol.values()) {
-            long cantidad = cuentas.stream().filter(cuenta -> cuenta.rol() == rol && cuenta.estado() != Estado.INACTIVA)
-                    .count();
-            html.append("<button class=\"card usuario-rol\" type=\"button\" data-rol-elegir=\"").append(rol.name())
-                    .append("\" aria-pressed=\"false\"><strong>").append(cantidad).append("</strong><span>")
-                    .append(switch (rol) {
-                        case ADMINISTRADOR -> "Administradores";
-                        case EVALUADOR -> "Evaluadores";
-                        case USUARIO -> "Usuarios";
-                    }).append("</span></button>");
-        }
-        html.append("</div><div class=\"lista-herramientas\"><input class=\"input\" type=\"search\" " +
-                "data-lista-buscar aria-label=\"Buscar por nombre o correo\" placeholder=\"Buscar nombre o correo\">" +
-                "<div class=\"chips\">");
-        for (String[] filtro : List.of(new String[]{"ACTIVA", "Activas"}, new String[]{"INACTIVA", "Inactivas"},
-                new String[]{"TODOS", "Todas"})) {
-            html.append("<button class=\"chip\" type=\"button\" data-lista-filtro=\"").append(filtro[0])
-                    .append("\" aria-pressed=\"false\">").append(filtro[1]).append("</button>");
-        }
-        html.append("</div><label class=\"field\">Empresa<select class=\"input\" data-empresa-usuarios>")
-                .append("<option value=\"\">Todas las empresas</option>");
-        for (Opcion empresa : empresas) {
-            html.append(opcion(Integer.toString(empresa.id()), empresa.nombre(), false));
-        }
-        html.append("</select></label></div><p class=\"muted\" role=\"status\" data-lista-contador></p>")
-                .append("<div class=\"lista-filas usuarios-lista\">");
-        for (Cuenta cuenta : cuentas) {
-            List<Integer> ids = asignadas.getOrDefault(cuenta.id(), List.of());
-            String color = cuenta.colorAgenda() != null && co.aplomo.servicio.ColoresAgenda.PALETA.contains(
-                    cuenta.colorAgenda()) ? cuenta.colorAgenda() : "#C9CCD2";
-            String vinculadas = ids.stream().map(nombres::get).filter(java.util.Objects::nonNull)
-                    .collect(java.util.stream.Collectors.joining(" · "));
-            String empresasCuenta = cuenta.rol() == Rol.ADMINISTRADOR ? "Todas las empresas" : vinculadas;
-            html.append("<a class=\"lista-fila\" href=\"/usuarios/").append(cuenta.id())
-                    .append("/editar\" data-registro data-estado=\"").append(cuenta.estado().name())
-                    .append("\" data-rol=\"").append(cuenta.rol().name()).append("\" data-empresa=\"")
-                    .append(ids.stream().map(Object::toString).collect(java.util.stream.Collectors.joining(" ")))
-                    .append("\"><span class=\"usuario-avatar\" style=\"--persona:").append(color).append("\">")
-                    .append(Html.escapar(cuenta.nombre().substring(0, 1)))
-                    .append("</span><span class=\"lista-identidad\">").append("<strong title=\"")
-                    .append(Html.escapar(cuenta.nombre())).append("\">").append(Html.escapar(cuenta.nombre()))
-                    .append("</strong><small class=\"muted\">").append(Html.escapar(cuenta.correo()))
-                    .append("</small></span><span>").append(Formularios.etiqueta(cuenta.rol().name()))
-                    .append("</span><span class=\"muted\">").append(Html.escapar(empresasCuenta)).append("</span>")
-                    .append(SistemaVisual.estado(cuenta.estado().name()))
-                    .append("<span aria-hidden=\"true\">›</span></a>");
-        }
-        html.append("</div><p data-lista-vacia hidden>No hay cuentas con estos filtros.</p></section>")
-                .append("<script src=\"/static/js/usuarios.js\" defer></script>");
-        return Html.pagina("Usuarios", html.toString(), sesion, "Gestión · Usuarios",
-                "<a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a>", false);
+        return TablaUsuarios.pagina(sesion, cuentas, empresas, asignadas, aviso);
     }
 
     private static String dato(String titulo, String valor) {

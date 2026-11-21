@@ -34,11 +34,11 @@ class HttpPracticaEvaluacionTest extends HttpPrueba {
     void inicioSiempreOfrecePracticaYSuConsultaNoCreaDatos() throws Exception {
         entrar(evaluadorTrabajo().id());
         int antes = cantidad();
-        assertTrue(get("/").body().contains("Probar evaluación"));
+        assertTrue(get("/").body().contains("Practicar una evaluación"));
         String texto = get("/demo/evaluacion").body();
         assertTrue(texto.contains("Probar Planta"));
         assertTrue(texto.contains("Probar Oficina"));
-        assertTrue(texto.contains("base actual"));
+        assertTrue(texto.contains("no cuentan en tus resultados"));
         assertEquals(antes, cantidad());
     }
 
@@ -75,7 +75,7 @@ class HttpPracticaEvaluacionTest extends HttpPrueba {
         var respuesta = abrir("OFICINA");
         assertEquals("/evaluaciones/nueva?visita=" + evaluacion.visita() + "&puesto=" + evaluacion.puesto(),
                 respuesta.headers().firstValue("Location").orElseThrow());
-        assertTrue(get("/").body().contains("Probar evaluación"));
+        assertTrue(get("/").body().contains("Practicar una evaluación"));
         assertEquals(1,
                 Sql.<Integer>uno(con, "SELECT COUNT(*) FROM evaluacion WHERE id_visita=?", fila -> fila.getInt(1),
                         evaluacion.visita()));
@@ -106,7 +106,7 @@ class HttpPracticaEvaluacionTest extends HttpPrueba {
         Sql.actualizar(con, "UPDATE cuenta SET contrasena_temporal=FALSE WHERE id_cuenta=?", usuario);
         entrar(usuario);
         var inicio = get("/");
-        assertFalse(inicio.body().contains("Probar evaluación"));
+        assertFalse(inicio.body().contains("Practicar una evaluación"));
         assertEquals(403, get("/demo/evaluacion").statusCode());
         assertEquals(403, post("/demo/evaluacion", Map.of("csrf", csrf(inicio), "tipo", "PLANTA")).statusCode());
         assertEquals(0, cantidad());
@@ -127,7 +127,7 @@ class HttpPracticaEvaluacionTest extends HttpPrueba {
         String token = csrf(get("/demo/evaluacion")), previo = System.getProperty(GaleriaDemo.BANDERA);
         try {
             System.setProperty(GaleriaDemo.BANDERA, "false");
-            assertFalse(get("/").body().contains("Probar evaluación"));
+            assertFalse(get("/").body().contains("Practicar una evaluación"));
             assertEquals(404, get("/demo/evaluacion").statusCode());
             assertEquals(404, post("/demo/evaluacion", Map.of("csrf", token, "tipo", "PLANTA")).statusCode());
             assertEquals(0, cantidad());

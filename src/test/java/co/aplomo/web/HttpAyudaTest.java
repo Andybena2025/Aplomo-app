@@ -68,7 +68,7 @@ class HttpAyudaTest extends HttpPrueba {
         assertTrue(texto2.contains("id=\"entrar\""));
         assertTrue(texto2.contains("id=\"acerca\""));
         for (int i = 2; i <= 9; i++) assertFalse(texto2.contains("data-tema=\"" + i + "\""));
-        assertTrue(texto2.contains("Escríbele al Administrador de tu cuenta."));
+        assertTrue(texto2.contains("Tu Administradora"));
         assertFalse(texto2.contains("mailto:"));
         assertFalse(texto2.contains("wa.me"));
         assertTrue(respuesta.headers().allValues("Set-Cookie").isEmpty());
@@ -129,7 +129,7 @@ class HttpAyudaTest extends HttpPrueba {
                 "tacto.whatsapp=+57 300 123 4567\n");
         System.setProperty("aplomo.contacto.archivo", archivo.toString());
         String texto2 = get("/ayuda").body();
-        assertTrue(texto2.contains("Laura Gabriella Romero"));
+        assertTrue(texto2.contains("Persona &lt;b&gt;QA&lt;/b&gt;"));
         assertTrue(texto2.contains("mailto:soporte@prueba.invalid"));
         assertTrue(texto2.contains("https://wa.me/573001234567"));
         assertFalse(texto2.contains("Escríbele al Administrador de tu cuenta.</p>"));
@@ -146,9 +146,9 @@ class HttpAyudaTest extends HttpPrueba {
         assertEquals("", elemento.whatsapp());
         System.setProperty("aplomo.contacto.archivo", archivo.toString());
         String texto2 = get("/ayuda").body();
-        assertTrue(texto2.contains("Administradora principal de ALINEO."));
+        assertTrue(texto2.contains("Persona QA"));
         assertFalse(texto2.contains("javascript:"));
-        assertTrue(texto2.contains("Escríbele al Administrador de tu cuenta."));
+        assertTrue(texto2.contains("Tu Administradora"));
     }
 
     @Test
@@ -158,7 +158,7 @@ class HttpAyudaTest extends HttpPrueba {
         System.setProperty("aplomo.contacto.archivo", archivo.toString());
         String texto2 = get("/ayuda").body();
         assertTrue(texto2.contains("mailto:solo@prueba.invalid"));
-        assertTrue(texto2.contains("Escríbele al Administrador de tu cuenta."));
+        assertTrue(texto2.contains("Tu Administradora"));
     }
 
     @Test

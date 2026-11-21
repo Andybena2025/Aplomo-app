@@ -118,13 +118,18 @@ public final class InicioWeb {
                         semana.evaluadores().stream().filter(Agenda.Evaluador::activo).count(),
                         "/usuarios?rol=EVALUADOR&estado=ACTIVA"))
                 .append(kpi("Citas esta semana", semana.citas().size(), "/agenda?vista=semana"))
-                .append(kpi("Pendientes abiertos", contar(pendientes, "ABIERTO"), "/pendientes?estado=ABIERTO"))
-                .append("</div><div class=\"row inicio-acciones\">")
+                .append(kpi("Visitas en curso", contar(filas(cuenta, SeccionConsulta.VISITAS), "EN_CURSO"),
+                        "/visitas?estado=EN_CURSO")).append("</div><div class=\"row inicio-acciones\">")
                 .append(enlace("/empresas/nueva", "Nueva empresa", true))
                 .append(enlace("/usuarios/nuevo", "Nueva cuenta", false))
                 .append(enlace("/usuarios?rol=EVALUADOR", "Asignar evaluador", false))
                 .append(enlace("/calificaciones", "Informe de empresa", false))
                 .append("</div><div class=\"inicio-columnas\"><section class=\"stack\"><h2>Equipo esta semana</h2>");
+        html.append("<div class=\"chips leyenda-personas\" aria-label=\"Evaluadores\">");
+        for (var persona : semana.evaluadores()) {
+            html.append(TextoLista.persona(persona.nombre(), persona.color()));
+        }
+        html.append("</div>");
         LocalDate anterior = null;
         for (Agenda.Cita cita : semana.citas()) {
             Ficha ficha = cita.ficha();
@@ -140,6 +145,7 @@ public final class InicioWeb {
                     .append(Html.escapar(ficha.empresaNombre())).append("\">")
                     .append(Html.escapar(ficha.empresaNombre())).append("</b><small class=\"muted\">")
                     .append(Html.escapar(ficha.sedeNombre() + " · " + ficha.salonNombre())).append("</small></span>")
+                    .append(TextoLista.persona(cita.nombreEvaluador(), cita.color()))
                     .append(SistemaVisual.estado(ficha.reserva().estado())).append("</a>");
         }
         html.append("</section><section class=\"stack\"><h2>Requiere atención</h2>");
@@ -300,7 +306,7 @@ public final class InicioWeb {
             html.append("<a data-color=\"").append(color).append("\" data-cantidad=\"").append(cantidad)
                     .append("\" href=\"/archivo?color=").append(color).append("\"><span class=\"riesgo-punto ")
                     .append(color.toLowerCase(Locale.ROOT)).append("\" aria-hidden=\"true\"></span>").append(cantidad)
-                    .append(" ").append(nombreRiesgo(color)).append(" ›</a>");
+                    .append(" ").append(Formularios.etiqueta(color)).append(" ›</a>");
         }
         html.append("</div></section>");
     }

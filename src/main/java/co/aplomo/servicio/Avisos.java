@@ -29,6 +29,40 @@ public final class Avisos {
     }
 
     /**
+     * RF-002/033: el destinatario principal se resuelve en el servidor desde la configuración privada.
+     */
+    public Cuenta principal(Cuenta actor) throws SQLException {
+        return tx.ejecutar(con -> {
+            AccesoDatos.vigente(con, actor);
+            return principalEn(con);
+        });
+    }
+
+    /**
+     * RF-002/033: cualquier rol vigente escribe solo a la Administradora configurada.
+     */
+    public void escribirPrincipal(Cuenta actor, String texto) throws SQLException {
+        tx.ejecutar(con -> {
+            Cuenta actual = AccesoDatos.vigente(con, actor);
+            Cuenta destino = principalEn(con);
+            dao.enviar(con, null, actual.id(), destino.id(), "AVISO", Validacion.texto(texto, "mensaje", 500),
+                    LocalDateTime.now(reloj));
+            return null;
+        });
+    }
+
+    private static Cuenta principalEn(java.sql.Connection con) throws SQLException {
+        var contacto = co.aplomo.config.Contacto.leer(
+                java.nio.file.Path.of(System.getProperty("aplomo.contacto.archivo", "config/contacto.properties")));
+        Integer id = co.aplomo.db.Sql.uno(con,
+                "SELECT id_cuenta FROM cuenta WHERE rol='ADMINISTRADOR' AND estado='ACTIVA' " +
+                        "AND (correo=? OR (?<>'' AND nombre=?)) ORDER BY (correo=?) DESC,id_cuenta LIMIT 1",
+                f -> f.getInt(1), contacto.correo(), contacto.nombre(), contacto.nombre(), contacto.correo());
+        if (id == null) throw new IllegalArgumentException("No está disponible el contacto de la Administradora.");
+        return new co.aplomo.dao.CuentaDao().porId(con, id, false);
+    }
+
+    /**
      * RF-002: la sesión se renueva en el servidor, nunca se acepta un destinatario del navegador.
      */
     public List<Mensaje> listar(Cuenta actor) throws SQLException {

@@ -226,3 +226,15 @@ Luego ESPERA el OK de Andy.
   QA pública/aprobación y veinte medidas DOM sin desborde, Entrar visible en los cinco tamaños; ROLLBACK y
   cero errores de consola. Sin capturas ni descargas. iPad físico/Windows/tres equipos no comprobados.
   A y B ya subidos; C se entrega con commit/push autorizado al mismo origin/main verificado. Esperar OK de Andy.
+
+
+### Paso 28 en curso
+- Encargo A/B/C autorizado junto, con commit y push tras cada bloque; sin capturas ni carpetas de evidencia,
+  sin migración ni cambios del motor, cálculo protegido, IA o imágenes de evaluación.
+- Respuesta expresa de Andy: Pendientes solo Abiertos / Arreglados / Todos con contador. Quitar En proceso;
+  no cambiar el esquema. Prioridad escrita y riesgo suave con número y palabra sustituyen el Paso 27.
+- Trabajo en copia local trabajo_p24; no confundir con la app normal 8080 hasta sincronizar cada bloque.
+
+- 28A cerrado: 1096 Maven distintos verificados (suite completa una vez y repetición de clases fallidas),
+  138 JS aprobados. Tablas comunes, historial e inactivos conservados; menú una fila >=1180 px, tablas con scroll
+  interno; 0 px de desborde exterior tras corrección. Datos QA revertidos. 28B/C continúan autorizados.

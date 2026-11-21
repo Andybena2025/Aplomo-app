@@ -62,3 +62,11 @@ test('una fila que no cumple el filtro adicional no reaparece al cambiar chips',
   const e = entorno('USUARIOS', [{estado:'ACTIVA',filtroExtra:'false'}, {estado:'ACTIVA',filtroExtra:'true'}]);
   e.elegir('TODOS'); assert.deepEqual(e.filas.map(f => f.hidden), [true,false]);
 });
+
+test('el contador de un chip no se duplica al alternar y buscar', () => {
+  const e = entorno('USUARIOS', [{estado:'ACTIVA',busqueda:'Andrés'}, {estado:'INACTIVA',busqueda:'Johan'}]);
+  e.elegir('TODOS'); e.elegir('ACTIVA'); e.elegir('TODOS');
+  assert.equal(e.chips[2].textContent, 'TODOS · 2');
+  e.buscar.value = 'andres'; e.buscar.eventos.input();
+  assert.equal(e.chips[2].textContent, 'TODOS · 1');
+});

@@ -147,7 +147,8 @@ class HttpConsultasTest extends HttpPrueba {
         var respuesta = get(
                 "/empresas?q=" + URLEncoder.encode("<script>texto</script>", java.nio.charset.StandardCharsets.UTF_8));
         assertEquals(200, respuesta.statusCode());
-        assertTrue(respuesta.body().contains("0 resultados"));
+        assertTrue(respuesta.body().contains("data-lista-contador"));
+        assertTrue(respuesta.body().contains("data-lista-vacia"));
         assertTrue(respuesta.body().contains("&lt;script&gt;texto&lt;/script&gt;"));
         assertFalse(respuesta.body().contains("<script>texto"));
         assertEquals(400, get("/evaluaciones?orden=nombre%3BDELETE").statusCode());
@@ -177,14 +178,14 @@ class HttpConsultasTest extends HttpPrueba {
     }
 
     private static String fila(String texto2, int id) {
-        var elemento = Pattern.compile("<a\\b(?=[^>]*data-registro=\"" + id + "\")[^>]*>(.*?)</a>", Pattern.DOTALL)
+        var elemento = Pattern.compile("<tr\\b(?=[^>]*data-registro=\"" + id + "\")[^>]*>(.*?)</tr>", Pattern.DOTALL)
                 .matcher(texto2);
         assertTrue(elemento.find());
         return elemento.group(1);
     }
 
     private static int contarFilas(String texto2) {
-        return (int) Pattern.compile("<a\\b(?![^>]*\\bhidden)(?=[^>]*\\bdata-registro=)[^>]*>").matcher(texto2)
+        return (int) Pattern.compile("<tr\\b(?![^>]*\\bhidden)(?=[^>]*\\bdata-registro=)[^>]*>").matcher(texto2)
                 .results().count();
     }
 }

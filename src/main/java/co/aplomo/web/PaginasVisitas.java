@@ -90,8 +90,9 @@ public final class PaginasVisitas {
             html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Puesto</th><th" +
                     ">Fecha</th><th>Postura</th><th>Puntaje</th></tr></thead><tbody>");
             for (Evaluacion evaluacion : evaluaciones) {
-                html.append("<tr><td data-label=\"Puesto\"><div class=\"cell-value\">Puesto ")
-                        .append(evaluacion.numero())
+                html.append("<tr><td data-label=\"Puesto\"><div class=\"cell-value\"><strong>")
+                        .append(escapar(TextoLista.puesto(evaluacion.cargo(), evaluacion.descripcion())))
+                        .append("</strong><small>Puesto ").append(evaluacion.numero()).append("</small>")
                         .append("</div></td><td data-label=\"Fecha\"><div class=\"cell-value\">")
                         .append(Html.fecha(evaluacion.fecha()))
                         .append("</div></td><td data-label=\"Postura\"><div class=\"cell-value\">")
@@ -122,9 +123,9 @@ public final class PaginasVisitas {
         for (var elemento : puestos) {
             var evaluacion5 = ultima.get(elemento.id());
             contenido.append("<a class=\"card tour-puesto\" href=\"/evaluaciones/nueva?visita=")
-                    .append(ficha.visita().id()).append("&amp;puesto=").append(elemento.id())
-                    .append("\"><strong>Puesto ").append(elemento.numero()).append("</strong><span>")
-                    .append(escapar(elemento.descripcion())).append("</span><span class=\"tag\">")
+                    .append(ficha.visita().id()).append("&amp;puesto=").append(elemento.id()).append("\"><strong>")
+                    .append(escapar(TextoLista.puesto(elemento.cargoNombre(), elemento.descripcion())))
+                    .append("</strong><span>Puesto ").append(elemento.numero()).append("</span><span class=\"tag\">")
                     .append(evaluacion5 == null ? "○ Pendiente" : "✓ Evaluado").append("</span>");
             if (evaluacion5 == null) contenido.append("<span class=\"btn p\">Evaluar</span>");
             if (evaluacion5 != null) contenido.append(
