@@ -50,29 +50,10 @@ public final class Html {
     }
 
     /**
-     * SVG del ícono A-plomada del logo (identidad visual del mock).
-     */
-    private static final String LOGO_SVG =
-            "<svg width=\"%d\" height=\"%d\" viewBox=\"0 0 100 100\" style=\"margin-botto" +
-                    "m:%dpx;margin-right:%dpx\" aria-hidden=\"true\">" +
-                    "<line x1=\"50\" y1=\"10\" x2=\"16\" y2=\"90\" stroke=\"currentColor\" stroke" +
-                    "-width=\"4\" stroke-linecap=\"round\"/>" +
-                    "<line x1=\"50\" y1=\"10\" x2=\"84\" y2=\"90\" stroke=\"currentColor\" stroke" +
-                    "-width=\"4\" stroke-linecap=\"round\"/>" +
-                    "<path d=\"M31.2,54.2 A48,48 0 0 0 68.8,54.2\" fill=\"none\" stroke=\"current" +
-                    "Color\" stroke-width=\"2.2\" stroke-dasharray=\"3.6 3.6\" opacity=\".85\"/>" +
-                    "<line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"64\" stroke=\"currentColor\" stroke" +
-                    "-width=\"1.6\"/>" +
-                    "<path d=\"M47.84,64 h4.32 v2.16 L55.04,70.48 L50,82.72 L44.96,70.48 L47.84,6" +
-                    "6.16 Z\" fill=\"currentColor\"/>" +
-                    "<circle cx=\"50\" cy=\"10\" r=\"3.6\" fill=\"currentColor\"/></svg>";
-
-    /**
-     * Favicon A con plomada, compartido con el logo de la app (Paso 17). RNF-011.
+     * RNF-002: favicon en champán, con la A y su base graduada.
      */
     public static String favicon() {
-        return icono(64).replace("<svg ", "<svg xmlns=\"http://www.w3.org/2000/svg\" ")
-                .replace("currentColor", "#EDE6D8");
+        return Marca.icono().replace("currentColor", "#E3CDA0").replace("<svg ", "<svg style=\"color:#E3CDA0\" ");
     }
 
     /**
@@ -87,11 +68,8 @@ public final class Html {
      * Logo con ícono y texto como en el mock, a la altura indicada en píxeles. RNF-011.
      */
     public static String logo(int altura) {
-        int svgH = (int) (altura * 0.78);
-        int marginB = (int) (altura * 0.19);
-        int marginR = (int) (altura * 0.03);
-        return "<span class=\"lockup\" style=\"font-size:" + altura + "px\" aria-label=\"ALINEO.\">" +
-                String.format(LOGO_SVG, svgH, svgH, marginB, marginR) + "<span>LINEO.</span></span>";
+        return "<span class=\"marca-completa\" style=\"--marca-alto:" + altura + "px\">" + Marca.logo() +
+                "<span class=\"marca-corta\">" + Marca.icono() + "</span></span>";
     }
 
     /**
@@ -146,9 +124,10 @@ public final class Html {
 
             // Reemplazar solo huecos originales impide interpretar texto del usuario como plantilla.
             String plantilla = new String(entrada.readAllBytes(), StandardCharsets.UTF_8);
-            var patron = java.util.regex.Pattern.compile("\\{\\{(mensaje|csrf|correo|contacto)\\}\\}");
+            var patron = java.util.regex.Pattern.compile("\\{\\{(mensaje|csrf|correo|contacto|logo)\\}\\}");
             var matcher = patron.matcher(plantilla);
             return matcher.replaceAll(elemento -> java.util.regex.Matcher.quoteReplacement(switch (elemento.group(1)) {
+                case "logo" -> Marca.logo();
                 case "mensaje" -> aviso(mensaje, false);
                 case "csrf" -> escapar(sesion2.csrf());
                 case "contacto" -> contactoLogin();
@@ -157,11 +136,30 @@ public final class Html {
         }
     }
 
+    /**
+     * RNF-002: presentación pública con la misma marca y las tres ideas del login, sin sesión.
+     */
+    public static String nosotros() {
+        String contenido = "<section class=\"card stack nosotros-marca\"><div class=\"marca-llegada\">" + Marca.logo() +
+                "</div><span class=\"eyebrow\">Ergonomía con precisión</span>" +
+                "<h1>Quiénes somos</h1><p>Evaluamos posturas de trabajo con el método RULA.</p>" +
+                "<div class=\"login-ideas\"><div><strong>Fotografía el puesto</strong>" +
+                "<small>Una foto por postura</small></div><div><strong>Mide los ángulos</strong>" +
+                "<small>Guiado, sobre la foto</small></div><div><strong>Conoce el riesgo</strong>" +
+                "<small>Semáforo y sugerencias</small></div></div>" +
+                "<a class=\"btn p\" href=\"/login\">Iniciar sesión</a></section>";
+        return pagina("Quiénes somos", contenido, null, false, false);
+    }
+
     private static String notas(Sesion sesion) {
         if (sesion == null || sesion.cuenta() == null || sesion.cuenta().temporal()) return "";
         return "<div data-notas-csrf=\"" + escapar(sesion.csrf()) +
                 "\"></div><dialog class=\"avisos-panel stack\" data-panel-avisos " +
                 "aria-label=\"Avisos\"><div data-contenido-avisos></div></dialog>" +
+                "<dialog class=\"aviso-modal stack\" data-aviso-dialog aria-label=\"Mensaje\">" +
+                "<h2 data-aviso-titulo>Aviso</h2><p data-aviso-texto></p><p class=\"hint\" role=\"alert\" " +
+                "data-aviso-error></p><button class=\"btn p\" type=\"button\" data-aviso-entendido>Entendido</button>" +
+                "<button class=\"btn\" type=\"button\" data-aviso-cerrar>Cerrar</button></dialog>" +
                 "<script src=\"/static/js/notas.js\" defer></script>";
     }
 
@@ -326,8 +324,7 @@ public final class Html {
     }
 
     private static String icono(int altura) {
-        return String.format(LOGO_SVG, altura, altura, 0, 0)
-                .replace(" style=\"margin-bottom:0px;margin-right:0px\"", "");
+        return Marca.icono().replace("<svg ", "<svg width=\"" + altura + "\" height=\"" + altura + "\" ");
     }
 
     /**
@@ -348,49 +345,15 @@ public final class Html {
     }
 
     private static String pie() {
-        return "<footer class=\"pie\"><div class=\"wrap\"><span class=\"marca\" role=\"img\"" +
-                " aria-label=\"ALINEO.\">" + icono(20) +
-                "<span>LINEO.</span></span><span class=\"lema\">Ergonomía con precisión · Mét" +
-                "odo RULA</span><span>© 2026 ALINEO</span></div></footer>";
+        return "<footer class=\"pie\"><div class=\"wrap\"><span class=\"marca\">" + Marca.logo() +
+                "</span><span class=\"lema\">Ergonomía con precisión · Método RULA</span>" +
+                "<span>© 2026 ALINEO</span></div></footer>";
     }
 
     private static String laterales() {
-        StringBuilder contenido2 = new StringBuilder(
-                "<div class=\"riel riel-izq\" aria-hidden=\"true\"><span class=\"marca-v\">AL" +
-                        "INEO.</span><span class=\"lema-v\">Ergonomía con precisión</span></div><div " +
-                        "class=\"deco deco-izq\" aria-hidden=\"true\"><svg viewBox=\"0 0 300 300\"><p" +
-                        "ath class=\"dc-h\" d=\"M20,150 A130,130 0 0 1 280,150\"/><g class=\"dc-h\">");
-        for (int a = -90; a <= 90; a += 5) {
-            double valor2 = a % 15 == 0 ? 116 : 123, valor3 = Math.toRadians(a);
-            contenido2.append(
-                    String.format(java.util.Locale.ROOT, "<line x1=\"%.3f\" y1=\"%.3f\" x2=\"%.3f\" y2=\"%.3f\"/>",
-                            150 + valor2 * Math.sin(valor3), 150 - valor2 * Math.cos(valor3),
-                            150 + 130 * Math.sin(valor3), 150 - 130 * Math.cos(valor3)));
-        }
-        contenido2.append("</g><line class=\"dc-p\" x1=\"150\" y1=\"0\" x2=\"150\" y2=\"300\"/><path cl" +
-                "ass=\"dc-arc\" pathLength=\"1\" d=\"M150,90 A60,60 0 0 1 184.41,100.85\"/><g" +
-                " class=\"dc-aguja\"><line x1=\"150\" y1=\"150\" x2=\"150\" y2=\"34\"/><circl" +
-                "e class=\"dc-f\" cx=\"150\" cy=\"34\" r=\"3.2\"/></g><circle class=\"dc-f\" " +
-                "cx=\"150\" cy=\"150\" r=\"4\"/></svg></div><div class=\"deco deco-der\" aria" +
-                "-hidden=\"true\"><svg viewBox=\"0 0 300 380\"><line class=\"dc-p\" x1=\"150" +
-                "\" y1=\"0\" x2=\"150\" y2=\"184\"/><path class=\"dc-h\" d=\"M118.81,336.72 A" +
-                "150,150 0 0 0 181.19,336.72\"/><g class=\"dc-h\">");
-        for (int a = -12; a <= 12; a += 6) {
-            double valor4 = Math.toRadians(a);
-            contenido2.append(
-                    String.format(java.util.Locale.ROOT, "<line x1=\"%.3f\" y1=\"%.3f\" x2=\"%.3f\" y2=\"%.3f\"/>",
-                            150 + 150 * Math.sin(valor4), 190 + 150 * Math.cos(valor4), 150 + 158 * Math.sin(valor4),
-                            190 + 158 * Math.cos(valor4)));
-        }
-        return contenido2.append("</g><g class=\"dc-logo\" transform=\"translate(50,170) scale(2)\"><line x1=" +
-                "\"50\" y1=\"10\" x2=\"16\" y2=\"90\" stroke-width=\"4\"/><line x1=\"50\" y1=" +
-                "\"10\" x2=\"84\" y2=\"90\" stroke-width=\"4\"/><path d=\"M31.2,54.2 A48,48 0" +
-                " 0 0 68.8,54.2\" stroke-width=\"2.2\" stroke-dasharray=\"3.6 3.6\" opacity=" +
-                "\".85\"/></g><g class=\"dc-plomo\"><g class=\"dc-logo\" transform=\"translat" +
-                "e(50,170) scale(2)\"><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"64\" stroke-wi" +
-                "dth=\"1.6\"/><path class=\"dc-f\" d=\"M47.84,64 h4.32 v2.16 L55.04,70.48 L50" +
-                ",82.72 L44.96,70.48 L47.84,66.16 Z\"/></g></g><circle class=\"dc-f\" cx=\"15" +
-                "0\" cy=\"190\" r=\"7.2\"/></svg></div>").toString();
+        return "<div class=\"riel riel-izq\" aria-hidden=\"true\"><span class=\"marca-v\">" + Marca.logo() +
+                "</span><span class=\"lema-v\">Ergonomía con precisión</span></div>" +
+                "<div class=\"deco deco-der\" aria-hidden=\"true\">" + Marca.lateral() + "</div>";
     }
 
     /**

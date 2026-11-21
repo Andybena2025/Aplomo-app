@@ -17,6 +17,27 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class HttpAvisos27Test extends HttpPrueba {
     @Test
+    void entendidoDesdeLaVentanaDevuelveElContadorSinRedireccionYConservaPrivacidad() throws Exception {
+        int ev = evaluadorTrabajo().id();
+        int id = new co.aplomo.dao.MensajeDao().enviar(con, null, admin, ev, "AVISO", "Solo para el evaluador",
+                LocalDate.of(2026, 11, 10).atStartOfDay());
+        entrar(admin);
+        assertEquals(403, post("/avisos/" + id + "/entendido", Map.of("csrf", csrf(get("/")))).statusCode());
+        post("/logout", Map.of("csrf", csrf(get("/"))));
+        entrar(ev);
+        assertEquals(403, post("/avisos/" + id + "/entendido", Map.of()).statusCode());
+        String token = csrf(get("/"));
+        var peticion = java.net.http.HttpRequest.newBuilder(java.net.URI.create(raiz + "/avisos/" + id + "/entendido"))
+                .header("Content-Type", "application/x-www-form-urlencoded").header("X-Alineo-Panel", "1")
+                .POST(java.net.http.HttpRequest.BodyPublishers.ofString("csrf=" + token)).build();
+        var respuesta = cliente.send(peticion, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, respuesta.statusCode());
+        assertEquals("{\"ok\":true,\"nuevos\":0}", respuesta.body());
+        assertEquals("[]", get("/avisos/nuevos").body());
+        assertTrue(respuesta.headers().allValues("Location").isEmpty());
+    }
+
+    @Test
     void sondeoSinSesionResponde401SinRedireccion() throws Exception {
         assertEquals(401, get("/avisos/nuevos").statusCode());
         assertEquals(401, get("/notas/nuevas").statusCode());

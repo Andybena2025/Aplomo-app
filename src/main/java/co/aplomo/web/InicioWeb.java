@@ -75,9 +75,16 @@ public final class InicioWeb {
                                                                                     .collect(Collectors.joining(" · "));
         String fecha = reservas.hoy().format(DateTimeFormatter.ofPattern("EEEE dd/MM/yyyy", new Locale("es", "CO")));
         html.append("<div class=\"pagehead\"><div><span class=\"eyebrow\">")
-                .append(Html.escapar(fecha.toUpperCase(Locale.ROOT))).append("</span><h1>Hola, ")
-                .append(Html.escapar(trato + nombre)).append("</h1><p class=\"muted\">").append(Html.escapar(subtitulo))
-                .append("</p></div></div>");
+                .append(Html.escapar(fecha.toUpperCase(Locale.ROOT)))
+                .append("</span><div class=\"saludo-linea\"><h1>Hola, ").append(Html.escapar(trato + nombre))
+                .append("</h1>").append(cuenta.rol() == Cuenta.Rol.EVALUADOR ?
+                        "<aside class=\"avisos-saludo\" data-avisos-saludo hidden aria-live=\"polite\">" +
+                        "<button type=\"button\" data-ver-aviso-saludo></button>" +
+                        "<button type=\"button\" data-ocultar-aviso aria-label=\"Ocultar aviso\">×</button></aside>"
+                        : "")
+                .append("</div><p class=\"muted\">").append(Html.escapar(subtitulo))
+                .append("</p></div><div class=\"marca-llegada inicio-marca\">").append(Marca.logo())
+                .append("</div></div>");
     }
 
     private List<Fila> filas(Cuenta cuenta, SeccionConsulta seccion) throws SQLException {
@@ -126,7 +133,7 @@ public final class InicioWeb {
                 .append(enlace("/calificaciones", "Informe de empresa", false))
                 .append("</div><div class=\"inicio-columnas\"><section class=\"stack\"><h2>Equipo esta semana</h2>");
         html.append("<div class=\"chips leyenda-personas\" aria-label=\"Evaluadores\">");
-        for (var persona : semana.evaluadores()) {
+        for (var persona : semana.evaluadores().stream().filter(Agenda.Evaluador::activo).toList()) {
             html.append(TextoLista.persona(persona.nombre(), persona.color()));
         }
         html.append("</div>");

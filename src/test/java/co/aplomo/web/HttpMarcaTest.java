@@ -106,8 +106,8 @@ class HttpMarcaTest extends HttpPrueba {
         assertTrue(texto.contains("class=\"empty marca\""));
         assertTrue(texto.contains("Iniciar desde una reserva"));
         assertTrue(texto.contains("class=\"riel riel-izq\" aria-hidden=\"true\""));
-        assertTrue(texto.contains("viewBox=\"0 0 300 300\""));
-        assertTrue(texto.contains("viewBox=\"0 0 300 380\""));
+        assertTrue(texto.contains("viewBox=\"0 0 352 180\""));
+        assertTrue(texto.contains("viewBox=\"0 0 108 180\""));
         assertFalse(texto.contains("class=\"fondo\""));
         assertTrue(get("/empresas?q=no-existe-qa-marca").body().contains("No hay empresas con estos filtros."));
         assertFalse(get("/empresas?q=no-existe-qa-marca").body().contains("Aplicar filtros"));

@@ -53,10 +53,11 @@ class HttpAyudaTest extends HttpPrueba {
     }
 
     @Test
-    void nosotrosRedirigeSinCrearSesion() throws Exception {
+    void nosotrosTieneMarcaAnimadaSinCrearSesion() throws Exception {
         var respuesta = get("/nosotros");
-        assertEquals(303, respuesta.statusCode());
-        assertEquals("/login", respuesta.headers().firstValue("Location").orElseThrow());
+        assertEquals(200, respuesta.statusCode());
+        assertTrue(respuesta.body().contains("marca-llegada"));
+        assertTrue(respuesta.body().contains("Quiénes somos"));
         assertTrue(respuesta.headers().allValues("Set-Cookie").isEmpty());
     }
 

@@ -1,0 +1,25 @@
+<svg class="logo-alineo" viewBox="0 0 352 180" role="img" aria-label="ALINEO."
+     xmlns="http://www.w3.org/2000/svg">
+  <g class="lg-a" transform="translate(-2.4,44) scale(0.9)">
+    <line x1="50" y1="10" x2="16" y2="90" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+    <line x1="50" y1="10" x2="84" y2="90" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+    <path d="M31.2,54.2 A48,48 0 0 0 68.8,54.2" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-dasharray="3.4 3.4" opacity=".85"/>
+    <line x1="50" y1="10" x2="50" y2="64" stroke="currentColor" stroke-width="1.6"/>
+    <path d="M47.8,64 h4.3 v2.1 L55.0,70.4 L50,82.7 L44.9,70.4 L47.8,66.1 Z" fill="currentColor"/>
+    <circle cx="50" cy="10" r="3.6" fill="currentColor"/>
+  </g>
+  <g class="lg-regla" stroke="currentColor">
+    <line x1="8.4" y1="133" x2="327" y2="133" stroke-width="1"/>
+    <!-- marcas -->
+  </g>
+  <g class="lg-iplomo">
+    <line x1="129.9" y1="33" x2="129.9" y2="155" stroke="currentColor" stroke-width="1" opacity=".85"/>
+    <circle cx="129.9" cy="33" r="2.4" fill="currentColor"/>
+    <path d="M129.9,166 L126.4,158 L128.4,155 L131.4,155 L133.4,158 Z" fill="currentColor"/>
+  </g>
+  <g class="lg-texto" font-family="Instrument Serif, serif" font-size="100" fill="currentColor">
+    <text x="76.2" y="125">L</text><text x="117.5" y="125">I</text><text x="142.4" y="125">N</text>
+    <text x="196.4" y="125">E</text><text x="241.7" y="125">O</text><text x="295.7" y="125">.</text>
+  </g>
+</svg>

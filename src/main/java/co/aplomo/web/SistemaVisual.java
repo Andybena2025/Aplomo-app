@@ -47,7 +47,8 @@ public final class SistemaVisual {
         String nombre = clase.isEmpty() ? "" : Character.toUpperCase(clase.charAt(0)) + clase.substring(1);
         String etiqueta = puntaje + " · " + nombre + " · Nivel " + nivel;
         return "<span class=\"riesgo-calmo riesgo-" + clase + "\" aria-label=\"" + Html.escapar(etiqueta) + "\"><b>" +
-                puntaje + "</b><span>" + Html.escapar(nombre) + "</span></span>";
+                puntaje + "</b><span>" + Html.escapar(nombre) +
+                "</span><span class=\"sr-only nivel-impreso\"> · Nivel " + nivel + "</span></span>";
     }
 
     /**

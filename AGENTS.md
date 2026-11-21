@@ -228,7 +228,7 @@ Luego ESPERA el OK de Andy.
   A y B ya subidos; C se entrega con commit/push autorizado al mismo origin/main verificado. Esperar OK de Andy.
 
 
-### Paso 28 en curso
+### Paso 28 · cierre
 - Encargo A/B/C autorizado junto, con commit y push tras cada bloque; sin capturas ni carpetas de evidencia,
   sin migración ni cambios del motor, cálculo protegido, IA o imágenes de evaluación.
 - Respuesta expresa de Andy: Pendientes solo Abiertos / Arreglados / Todos con contador. Quitar En proceso;
@@ -243,3 +243,15 @@ Luego ESPERA el OK de Andy.
   10 sedes/salones, 40 puestos (16 Verde/14 Amarillo/10 Rojo, 2 con 7), 5 pendientes abiertos y 24 citas del mes.
   Reinicio explícito de las siete identidades marcadas; no ejecutado en real. Suite 1098 casos distintos verificados
   (una ejecución completa y corrección dirigida del informe de demo), 138 JS. 28C sigue autorizado.
+
+- 28C cerrado: logo IV en Marca.logo(), monograma compartido, 92/21 marcas, champán; login con columna
+  completa de 500 px y 0 px de desplazamiento a 1366×768/1440×900/1920×1080. Inicio, login y /nosotros
+  animados; este último responde 200 público sin crear sesión. Avisos: burbuja junto al saludo, modal y acuse
+  JSON con CSRF y contador inmediato. 1101 Maven distintos y 139 JS aprobados; cierre dirigido 120/120.
+  QA temporal revertida; sin capturas/descargas ni cambios de motor, cálculo protegido, IA, fotos o esquema.
+  El reinicio de la demo real queda para Andy con scripts/reiniciar_demo.sh y confirmación escrita.
+  Ver docs/informe_paso28.md para medidas, límites y puntos completos. Tres commits/push autorizados;
+  al entregar, detenerse y esperar revisión de Andy.
+
+- App normal recompilada/reiniciada en 8080: login y /nosotros 200 directos. Observación para despliegue:
+  /salud redirige 303 al login en esta rama; no se modificó fuera del alcance del 28. Demo real no reiniciada.

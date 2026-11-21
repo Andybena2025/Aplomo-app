@@ -58,6 +58,72 @@ en ese esquema y no se añadió. «En proceso» se conserva en Sugerencias.
   ajustada a las dos sedes aprobadas y comprobada de nuevo. 138/138 JS aprobados. Motor recalculado contra
   todos los análisis de Humboldt; mediciones manuales y puntajes A/B/final coinciden.
 
-## 28C
+## 28C · Marca, login y avisos
 
-En curso; se cerrará con el siguiente commit de este mismo encargo.
+| Punto | Resultado |
+|---|---|
+| 1 | SVG IV compartido desde Marca.logo(): A aprobada, I-plomada, regla con 92 marcas; monograma con 21 marcas. Cabecera/pie horizontales; riel izquierdo girado; derecho con plomada y base graduada. Champán #E3CDA0. |
+| 2 | Llegada de 2,5 s en login, Inicio y /nosotros; brillo de 20 s; respiración vertical de 14 s. Movimiento reducido deja el estado final y conserva las transformaciones geométricas de la A. Cabecera/pie estáticos. |
+| 3 | Columna de 500 px con logo completo, lema, separadores, correo, contraseña y Entrar. Foto y dibujo de medición de portada conservados. /nosotros ahora presenta las mismas tres ideas del login, sin crear sesión. |
+| 4 | Burbuja junto al saludo del Evaluador. Desde ella o la bandeja se abre el mensaje en ventana pequeña; Entendido confirma en servidor, cierra y reduce el contador sin recargar. No hay aviso fijo inferior. |
+
+### Mediciones C (sin capturas)
+
+| Ventana | Ancho exterior sobrante | Alto exterior sobrante del login | Logo / columna |
+|---|---:|---:|---|
+| 1366×768 | 0 px | 0 px | 500 / 500 px |
+| 1440×900 | 0 px | 0 px | 500 / 500 px |
+| 1920×1080 | 0 px | 0 px | 500 / 500 px |
+| 390×844 | 0 px | 354 px (contenido inferior y ayuda) | 343 / 343 px disponibles, con márgenes de 16 px |
+
+En celular Entrar termina a 779 px, dentro de los 844 px. En 820×1100 la portada y el formulario se apilan
+con desplazamiento vertical; sin desbordamiento horizontal. No se cambió el encuadre de la foto.
+Menú de Administrador: 1 fila y 0 px de desborde en 1180/1440/1600/1920. Riel visible desde 1400;
+color medido rgb(227,205,160), animación marcaIRespira. Diálogo cerrado: display none.
+Cabecera móvil: monograma de 27 px de ancho, sin animación. Cero errores de consola capturados.
+
+Dos lecturas reales en navegador integrado: burbuja del Evaluador y tarjeta de bandeja del Administrador.
+En ambos: misma URL al terminar, ventana cerrada, contador 0 y oculto. Sin avisos flotantes.
+QA de cuentas/datos ficticios terminada con ROLLBACK confirmado.
+
+### Pruebas y cierre
+
+- Antes del Paso 28: 1090 Maven y 136 JS verificados.
+- A: 1096 Maven y 138 JS; B: 1098 Maven y 138 JS; C: **1101 Maven y 139 JS**, cero fallos/errores/omitidas pendientes.
+- Una suite completa por bloque. Después se repitieron solo las clases afectadas por las regresiones encontradas.
+  En C las cinco aserciones antiguas de marca/diálogos se actualizaron al logo IV y a las ventanas de avisos,
+  manteniendo la prohibición de ventanas de ajustes en la evaluación. Cierre dirigido: 120/120 casos aprobados.
+  La suma de los últimos informes JUnit: 1101 ejecutados, 0 fallos, 0 errores, 0 omitidos.
+- JS nuevo: abrir aviso sin acuse, POST con CSRF al pulsar Entendido, contador/burbuja a cero y cierre sin navegación.
+  HTTP nuevo: destinatario ajeno y falta de CSRF rechazados; lectura propia devuelve JSON con contador.
+- La columna Evaluador también se omitió en Empresas para el Evaluador; las solicitudes conservan sus acciones
+  y las reservas propias solo ofrecen Aceptar. Se mantuvo el nivel escrito al imprimir los riesgos.
+- Comparación de archivos contra 301ba18: motor co.aplomo.rula, bloque protegido de POST /evaluaciones/calcular,
+  deteccion.js e imágenes de evaluación idénticos. Script del esquema y migraciones sin cambios.
+
+### Qué no se hizo y límites
+
+- No se tomaron capturas ni se crearon carpetas de evidencia; no se descargaron navegadores.
+- No se borraron datos reales, cuentas, documentos, imágenes ni historial. No se ejecutó reiniciar_demo en la base real.
+- No se probaron dispositivos iPad/iPhone físicos, Windows ni Chrome/Edge/Firefox instalados; tampoco impresión
+  física ni cambio de preferencia de movimiento en el sistema. La regla CSS de movimiento reducido está configurada.
+- La demo que ya estaba cargada conserva sus datos hasta que Andy ejecute **bash scripts/reiniciar_demo.sh**
+  después de actualizar, con confirmación escrita y administrador de MySQL.
+
+### Archivos principales por bloque
+
+- A: ConsultaDao, ReservaDao/VisitaDao, TablasTrabajo/FilasTrabajo/TextoLista, tablas de Empresas/Usuarios,
+  PaginasArchivo, Html/SistemaVisual, InicioWeb, CentroAyuda, Avisos/AvisosWeb, AgendaWeb, CSS y scripts de filtros/clave.
+- B: Pendientes/PendienteDao, PendientesWeb/PaginasPendientes, ConsultaDao, Demo/DemoCompleta/DemoPresentacion,
+  EstructuraDemo/ResultadosDemo/DemoIdentidades, datos_demo.sql, INSTALAR y pruebas de demo/seguimiento.
+- C: Marca y logo_alineo.svg, Html, Router, InicioWeb, AvisosWeb, SistemaVisual, login.html, aplomo.css,
+  notas.js y pruebas de marca, lectura y regresión. ENDPOINTS, README y este informe actualizados.
+
+✅ Permisos y CSRF conservados · ✅ sin esquema nuevo · ✅ cálculo/IA protegidos · ✅ pruebas en base aparte.
+
+### Aplicación local al entregar
+
+La app normal se recompiló y reinició en 8080 desde el repositorio real. GET /login y GET /nosotros
+responden directamente 200 con el logo IV. No se ejecutó ninguna carga ni reinicio de datos demo.
+Observación ajena al alcance visual: /salud en esta rama responde 303 al login; no se da por validado
+el chequeo de hosting ni el despliegue Railway en el Paso 28.

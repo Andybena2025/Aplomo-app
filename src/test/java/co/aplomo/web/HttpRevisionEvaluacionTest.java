@@ -105,7 +105,8 @@ class HttpRevisionEvaluacionTest extends HttpPrueba {
                 "pies_sin_apoyo", "giro_extremo"))
             assertTrue(texto.contains("data-chip=\"" + texto2 + "\""), texto2);
         assertEquals(3, texto.split("data-muneca=", -1).length - 1);
-        assertFalse(texto.replaceAll("<dialog class=\"avisos-panel[^>]*>[\\s\\S]*?</dialog>", "").contains("<dialog"));
+        assertFalse(texto.replaceAll("<dialog class=\"(?:avisos-panel|aviso-modal)[^>]*>[\\s\\S]*?</dialog>", "")
+                .contains("<dialog"));
         assertFalse(texto.contains("role=\"dialog\""));
         assertFalse(texto.contains(" checked"));
         assertTrue(texto.contains("data-falta"));
@@ -168,7 +169,8 @@ class HttpRevisionEvaluacionTest extends HttpPrueba {
         assertTrue(html.contains("data-continuar=\"" + ev + "\""));
         assertTrue(html.contains("data-revision=\"si\""));
         assertTrue(html.contains("data-criterio=\"MAS_INADECUADA\""));
-        assertFalse(html.replaceAll("<dialog class=\"avisos-panel[^>]*>[\\s\\S]*?</dialog>", "").contains("<dialog"));
+        assertFalse(html.replaceAll("<dialog class=\"(?:avisos-panel|aviso-modal)[^>]*>[\\s\\S]*?</dialog>", "")
+                .contains("<dialog"));
     }
 
     @Test

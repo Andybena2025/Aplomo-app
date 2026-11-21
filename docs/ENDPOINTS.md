@@ -232,7 +232,7 @@ Las rutas de crear/editar sedes, salones, áreas, cargos y puestos; crear/editar
 
 | Método | Ruta | Permisos | Respuesta |
 |---|---|---|---|
-| GET | `/nosotros` | Público | 303 a /login#nosotros, sin crear sesión |
+| GET | `/nosotros` | Público | 200 HTML, marca animada y tres ideas, sin crear sesión |
 | GET | `/ayuda` | Público / A / E / U | 200 HTML; visitante solo ingreso/contacto; A todos los temas, E sin cuentas, U 1/2/5/6/8/10 |
 
 El contacto sale de config/contacto.properties, nunca de datos del navegador. Sin el archivo o con campos incompletos aparece el respaldo. El semáforo de Ayuda se consulta en nivel_riesgo. El buscador actúa sobre el contenido que el servidor ya autorizó, sin habilitar temas por JavaScript.
@@ -251,7 +251,7 @@ El contacto sale de config/contacto.properties, nunca de datos del navegador. Si
 | GET | `/mis-evaluaciones` | 303 hacia Archivo |
 | GET | `/notas/nuevas` | JSON privado del Evaluador: reserva, fecha, hora, empresa, texto; A/U 403 |
 | GET | `/agenda` | Mes por defecto; `vista=semana`, `fecha`, `evaluador` y `canceladas` |
-| GET | `/nosotros` | 303 a `/login`, sin crear sesión |
+| GET | `/nosotros` | 200 HTML público con marca animada, sin crear sesión |
 
 El sondeo de notas no renueva la actividad de sesión. Los acuses mantienen el POST con CSRF existente.
 
@@ -325,3 +325,8 @@ remitente de solicitudes externas, y la interfaz lo rotula «Solicitud recibida 
 | POST | `/avisos/nuevo` | Misma cuenta y CSRF; destinatario resuelto en servidor, texto de hasta 500 caracteres. Respuesta HTML o panel de bandeja. |
 
 Guardar una nota de reserva conserva el detalle y muestra confirmación; permisos y sesión siguen vigentes.
+
+Paso 28C: `GET /static/img/logo_alineo.svg` se sirve como `image/svg+xml`; la marca usada en páginas
+se incorpora en línea desde `Marca.logo()` con las marcas de regla generadas en Java.
+`POST /avisos/{id}/entendido` con `X-Alineo-Panel: 1` y CSRF devuelve 200 JSON con `ok` y `nuevos`;
+sin ese encabezado conserva la redirección de formularios. Solo el destinatario vigente puede confirmar.

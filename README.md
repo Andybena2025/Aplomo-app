@@ -59,8 +59,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 26 | Calendario, Archivo, Mi cuenta, login compacto y demo del equipo | ✅ 1035 Maven verificados y 122 JS; [informe](docs/informe_paso26.md) |
 | 26B | Código Java ordenado y prueba de 120 columnas con exclusiones explícitas | ✅ 1036 Maven y 122 JS; [informe](docs/informe_paso26b.md) |
 | 27 | Sistema visual completo, propiedad de empresas y demo realista; avisos y solicitudes | ✅ 27A/B/C: 1090 Maven y 136 JS verificados; sistema visual, avisos y solicitudes; nueve cuentas activas ([informe](docs/informe_paso27.md)) |
-
-| 28 | Pulido final: listas, demo, identidad y login | 🟡 28A/B: listas y demo planeada; 1098 Maven y 138 JS; C en curso ([informe](docs/informe_paso28.md)) |
+| 28 | Pulido final: listas, demo, identidad y login | ✅ 28A/B/C: listas, demo planeada, logo IV, login y avisos; 1101 Maven y 139 JS verificados ([informe](docs/informe_paso28.md)) |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 
@@ -132,7 +131,7 @@ Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuent
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**1098 pruebas Maven y 138 pruebas JS verificadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**1101 pruebas Maven y 139 pruebas JS verificadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 
@@ -214,7 +213,3 @@ Docente: Ing. Arle Morales Ortiz.
 - Usuario: consulta una o varias empresas asignadas; resultados solo de visitas Finalizadas y nunca fotos. Reservas en todos sus estados, sin editar.
 - `cuenta_empresa` es la fuente de acceso. Quitar una asignación revoca el acceso en la siguiente petición. Una empresa admite un solo Evaluador activo. El historial de evaluaciones creadas por el Evaluador sigue disponible en solo lectura.
 - RF-029 sigue fuera de alcance: no hay registro libre.
-
-Para renovar solo la demo: `bash scripts/reiniciar_demo.sh` (Windows: `scripts\reiniciar_demo.bat`).
-Pide administrador de MySQL y escribir `REINICIAR DEMO`; solo afecta las siete empresas marcadas.
-Conserva cuentas, claves, otras empresas y la práctica; detalles en [INSTALAR.md](INSTALAR.md#demo-planeada--paso-28b).

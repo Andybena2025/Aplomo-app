@@ -69,8 +69,8 @@ final class FilasTrabajo {
                 html.append(td("Empresa y lugar", enlace));
                 persona(html, sesion, f);
                 html.append(td("Estado", SistemaVisual.estado(estado(f))));
-                if (sesion.cuenta().rol() == Rol.EVALUADOR) html.append(
-                        f.valor("estado").equals("ESPERANDO") && true ? acciones(sesion, f) : td("Respuesta", ""));
+                if (sesion.cuenta().rol() == Rol.EVALUADOR)
+                    html.append(f.valor("estado").equals("ESPERANDO") ? acciones(sesion, f) : td("Respuesta", ""));
             }
             case VISITAS -> {
                 html.append(td("Fecha", TextoLista.fecha(f.valor("fecha")))).append(td("Empresa y lugar", enlace))
@@ -126,10 +126,12 @@ final class FilasTrabajo {
     private static String acciones(Sesion sesion, Fila f) {
         boolean solicitud = f.valor("registrador_rol").equals("USUARIO");
         String raiz = (solicitud ? "/solicitudes-visita/" : "/reservas/") + f.id();
-        return "<td class=\"acciones-en-fila\" data-label=\"Respuesta\"><form method=\"post\" action=\"" + raiz +
-                "/aceptar\">" + Html.csrf(sesion) + "<button class=\"btn p\">Aceptar</button></form>" +
+        String extras = solicitud ?
                 "<a class=\"btn\" href=\"" + raiz + "#llamada\">Pedir llamada</a>" + "<a class=\"btn\" href=\"" + raiz +
-                "#informacion\">Pedir datos</a></td>";
+                "#informacion\">Pedir datos</a>" : "";
+        return "<td class=\"acciones-en-fila\" data-label=\"Respuesta\"><form method=\"post\" action=\"" + raiz +
+                "/aceptar\">" + Html.csrf(sesion) + "<button class=\"btn p\">Aceptar</button></form>" + extras +
+                "</td>";
     }
 
     private static String td(String etiqueta, String contenido) {

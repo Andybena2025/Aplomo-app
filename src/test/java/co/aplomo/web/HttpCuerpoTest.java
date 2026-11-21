@@ -138,7 +138,8 @@ class HttpCuerpoTest extends HttpPrueba {
         assertTrue(texto.contains("muestra_perfil.jpg"));
         assertTrue(texto.contains("muestra_frente.jpg"));
         assertTrue(texto.contains("Torcida hacia un lado"));
-        assertFalse(texto.replaceAll("<dialog class=\"avisos-panel[^>]*>[\\s\\S]*?</dialog>", "").contains("<dialog"));
+        assertFalse(texto.replaceAll("<dialog class=\"(?:avisos-panel|aviso-modal)[^>]*>[\\s\\S]*?</dialog>", "")
+                .contains("<dialog"));
         assertFalse(texto.contains("role=\"dialog\""));
         assertTrue(texto.contains("data-error-evaluacion hidden"));
         assertFalse(texto.contains("data-respuesta=\"lado_recorrido\" data-valor=\"AMBOS\""));

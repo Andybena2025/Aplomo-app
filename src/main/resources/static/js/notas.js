@@ -1,4 +1,4 @@
-/* RF-002/033: bandeja de los tres roles; solo Entendido acusa recibo en el servidor. */
+/* RF-002/033: mensajes en ventana local; solo Entendido acusa recibo con CSRF. */
 (function (global) {
   'use strict';
   function procesar(notas, vistas, mostrar) {
@@ -13,10 +13,18 @@
     const campo = doc.querySelector('[data-notas-csrf]');
     if (!campo) return null;
     const panel = doc.querySelector('[data-panel-avisos]');
+    const modal = doc.querySelector('[data-aviso-dialog]');
     const contador = doc.querySelector('[data-contador-avisos]');
-    const vistos = new Set();
-    let ocupado = false;
-    let lanzador;
+    const burbuja = doc.querySelector('[data-avisos-saludo]');
+    let notas = [], actual = null, ocupado = false, guardando = false, oculta = false, lanzador, revision = 0;
+    function pintar(cantidad = notas.length) {
+      if (contador) { contador.hidden = cantidad === 0; contador.textContent = String(cantidad); }
+      if (burbuja) {
+        burbuja.hidden = oculta || cantidad === 0;
+        const boton = burbuja.querySelector?.('[data-ver-aviso-saludo]');
+        if (boton) boton.textContent = `Tienes ${cantidad} ${cantidad === 1 ? 'aviso' : 'avisos'} · Ver ›`;
+      }
+    }
     async function abrir(url = '/avisos') {
       const respuesta = await obtener(url, {credentials: 'same-origin', cache: 'no-store',
         headers: {'X-Alineo-Panel': '1'}});
@@ -25,49 +33,93 @@
       if (!panel.open) panel.showModal();
       panel.querySelector('button')?.focus();
     }
-    doc.addEventListener('click', event => {
-      const boton = event.target.closest('[data-abrir-avisos]');
-      const enlace = event.target.closest('[data-lista-avisos]');
-      if (boton || enlace) {
-        event.preventDefault();
-        lanzador = boton || lanzador;
-        abrir(enlace ? enlace.getAttribute('href') : '/avisos').catch(() => { global.location.href = '/avisos'; });
-      }
-      if (event.target.closest('[data-cerrar-avisos]')) { panel.close(); lanzador?.focus(); }
-    });
-    const mostrar = nota => {
-      let region = doc.querySelector('[data-avisos-notas]');
-      if (!region) {
-        region = doc.createElement('aside');
-        region.className = 'notas-vivas'; region.dataset.avisosNotas = '';
-        region.setAttribute('aria-live', 'polite'); doc.body.append(region);
-      }
-      const aviso = doc.createElement('section'); aviso.className = 'card stack';
-      const titulo = doc.createElement('strong'); titulo.textContent = nota.tipo || 'Aviso nuevo';
-      const texto = doc.createElement('p'); texto.textContent = nota.texto;
-      const boton = doc.createElement('button'); boton.type = 'button'; boton.className = 'btn';
-      boton.textContent = 'Ver avisos'; boton.addEventListener('click', () => abrir());
-      const cerrar = doc.createElement('button'); cerrar.type = 'button'; cerrar.className = 'btn';
-      cerrar.textContent = 'Cerrar'; cerrar.addEventListener('click', () => aviso.remove());
-      aviso.append(titulo, texto, boton, cerrar); region.replaceChildren(aviso);
-    };
-    return async function consultar() {
-      if (doc.hidden || ocupado) return;
-      ocupado = true;
+    function abrirNota(nota) {
+      if (!nota || !modal?.showModal) return;
+      actual = nota;
+      modal.querySelector('[data-aviso-titulo]').textContent = nota.tipo || 'Aviso';
+      modal.querySelector('[data-aviso-texto]').textContent = nota.texto;
+      modal.querySelector('[data-aviso-error]').textContent = '';
+      modal.querySelector('[data-aviso-entendido]').hidden = nota.leido === true;
+      if (!modal.open) modal.showModal();
+      modal.querySelector(nota.leido ? '[data-aviso-cerrar]' : '[data-aviso-entendido]').focus();
+    }
+    async function entender() {
+      if (!actual || guardando) return;
+      const boton = modal.querySelector('[data-aviso-entendido]');
+      guardando = true; boton.disabled = true;
       try {
-        const respuesta = await obtener('/avisos/nuevos', {credentials: 'same-origin', cache: 'no-store'});
+        const cuerpo = new URLSearchParams({csrf: campo.dataset.notasCsrf});
+        const respuesta = await obtener(`/avisos/${actual.id}/entendido`, {method:'POST',
+          credentials:'same-origin', headers:{'Content-Type':'application/x-www-form-urlencoded',
+            'X-Alineo-Panel':'1'}, body:cuerpo.toString()});
+        if (!respuesta.ok) throw new Error('No guardado');
+        const datos = await respuesta.json();
+        notas = notas.filter(nota => String(nota.id) !== String(actual.id));
+        doc.querySelector(`[data-mensaje="${actual.id}"]`)?.remove();
+        pintar(datos.nuevos);
+        revision++; actual = null; modal.close();
+        (lanzador?.isConnected ? lanzador : doc.querySelector('[data-abrir-avisos]'))?.focus();
+      } catch (_) {
+        modal.querySelector('[data-aviso-error]').textContent = 'No pudimos confirmar la lectura. Inténtalo de nuevo.';
+      } finally { guardando = false; boton.disabled = false; }
+    }
+    doc.addEventListener('click', event => {
+      const objetivo = event.target;
+      if (objetivo.closest('[data-aviso-entendido]')) { entender(); return; }
+      if (objetivo.closest('[data-aviso-cerrar]')) { modal.close(); lanzador?.focus(); return; }
+      if (objetivo.closest('[data-ocultar-aviso]')) { oculta = true; pintar(); return; }
+      const saludo = objetivo.closest('[data-ver-aviso-saludo]');
+      const ver = objetivo.closest('[data-ver-mensaje]');
+      const tarjeta = objetivo.closest('[data-mensaje]');
+      if (saludo || ver || tarjeta && !objetivo.closest('a,button,textarea,input,form')) {
+        event.preventDefault(); lanzador = saludo || ver || tarjeta;
+        if (saludo) abrirNota(notas[0]);
+        else {
+          const id = (ver || tarjeta).dataset.verMensaje || tarjeta.dataset.mensaje;
+          const nota = notas.find(n => String(n.id) === id) || {id,
+            tipo: tarjeta.querySelector('h3').textContent,
+            texto: tarjeta.querySelector('[data-texto-mensaje]').textContent,
+            leido:!tarjeta.classList.contains('nuevo')};
+          abrirNota(nota);
+        }
+        return;
+      }
+      const boton = objetivo.closest('[data-abrir-avisos]');
+      const enlace = objetivo.closest('[data-lista-avisos]');
+      if (boton || enlace) {
+        event.preventDefault(); lanzador = boton || enlace;
+        abrir(enlace ? enlace.getAttribute('href') : '/avisos').catch(() => {});
+      }
+      if (objetivo.closest('[data-cerrar-avisos]')) { panel.close(); lanzador?.focus(); }
+    });
+    doc.addEventListener('submit', event => {
+      const form = event.target;
+      const ruta = form.getAttribute('action') || '';
+      if (/^\/avisos\/[1-9][0-9]*\/entendido$/.test(ruta)) {
+        event.preventDefault();
+        const id = ruta.split('/')[2];
+        const nota = notas.find(n => String(n.id) === id);
+        if (nota) { abrirNota(nota); entender(); }
+      }
+    });
+    async function consultar() {
+      if (doc.hidden || ocupado || guardando) return;
+      ocupado = true;
+      const version = revision;
+      try {
+        const respuesta = await obtener('/avisos/nuevos', {credentials:'same-origin', cache:'no-store'});
         if (respuesta.status === 401) {
           if (contador) { contador.hidden = false; contador.textContent = '!'; }
-          procesar([{id: 'sesion-vencida', tipo: 'Sesión cerrada', texto: 'Tu sesión terminó. Vuelve a iniciar sesión.'}], vistos, mostrar);
           return;
         }
         if (!respuesta.ok) return;
-        const notas = await respuesta.json();
-        if (contador) { contador.hidden = !notas.length; contador.textContent = String(notas.length); }
-        procesar(notas, vistos, mostrar);
-      } catch (_) { /* Una desconexión no marca leído ni impide el siguiente intento. */ }
+        const nuevas = await respuesta.json();
+        if (version !== revision) return;
+        notas = nuevas; pintar();
+      } catch (_) { /* No se marca leído ni se bloquea el siguiente intento. */ }
       finally { ocupado = false; }
-    };
+    }
+    return Object.assign(consultar, {abrirNota, entender});
   }
   if (typeof module !== 'undefined') module.exports = {procesar, montar};
   if (global.document) {

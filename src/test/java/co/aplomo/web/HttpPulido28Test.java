@@ -36,6 +36,9 @@ class HttpPulido28Test extends HttpPrueba {
             var respuesta = get(ruta);
             assertEquals(200, respuesta.statusCode(), ruta);
             String html = respuesta.body();
+            if (rol == Cuenta.Rol.EVALUADOR && ruta.equals("/empresas")) {
+                assertFalse(html.contains("<th scope=\"col\">Evaluador(es)</th>"));
+            }
             assertEquals(1, html.split("<h1(?:\\s|>)", -1).length - 1, ruta);
             assertFalse(html.contains("aria-label=\"Atrás\""), ruta);
             String visible = html.replaceAll("(?s)<script.*?</script>|<style.*?</style>", "")

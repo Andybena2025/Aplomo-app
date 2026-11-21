@@ -44,18 +44,19 @@ final class TablaEmpresas {
         if (sesion.cuenta().rol() == Rol.ADMINISTRADOR) html.append(personas(empresas));
         html.append("<p class=\"hint\" data-lista-contador role=\"status\"></p><div class=\"table-scroll\">" +
                 "<table class=\"resp alineo-table\"><thead><tr><th scope=\"col\">Empresa</th>" +
-                "<th scope=\"col\">Evaluador(es)</th><th scope=\"col\">Estado</th>" +
+                (sesion.cuenta().rol() == Rol.EVALUADOR ? "" : "<th scope=\"col\">Evaluador(es)</th>") +
+                "<th scope=\"col\">Estado</th>" +
                 "<th scope=\"col\"><span class=\"sr-only\">Abrir</span></th></tr></thead><tbody>");
         for (Resumen r : empresas.stream()
                 .sorted(java.util.Comparator.comparing(x -> x.empresa().nombre(), String.CASE_INSENSITIVE_ORDER))
                 .toList())
-            html.append(fila(r));
+            html.append(fila(r, sesion.cuenta().rol() != Rol.EVALUADOR));
         html.append(
                 "</tbody></table></div><p data-lista-vacia hidden>No hay empresas con estos filtros.</p></section>");
         return Html.pagina("Empresas", html.toString(), sesion, "Gestión · Empresas", accion, false);
     }
 
-    private static String fila(Resumen r) {
+    private static String fila(Resumen r, boolean mostrarEvaluador) {
         var e = r.empresa();
         String lugar = r.ciudad() +
                 (e.sector() == null || e.sector().isBlank() ? "" : (r.ciudad().isBlank() ? "" : " · ") + e.sector());
@@ -74,7 +75,11 @@ final class TablaEmpresas {
                 .append("</small></a></td><td data-label=\"Evaluador(es)\">");
         if (r.equipo().isEmpty()) html.append("<span class=\"muted\">Sin evaluador</span>");
         for (var persona : r.equipo()) html.append(TextoLista.persona(persona.nombre(), persona.color()));
-        return html.append("</td><td data-label=\"Estado\">")
+        if (!mostrarEvaluador) {
+            int inicio = html.indexOf("<td data-label=\"Evaluador(es)\">");
+            html.delete(inicio, html.length());
+        } else html.append("</td>");
+        return html.append("<td data-label=\"Estado\">")
                 .append(SistemaVisual.estado(e.activo() ? "ACTIVO" : "INACTIVO"))
                 .append("</td><td aria-hidden=\"true\">›</td></tr>").toString();
     }

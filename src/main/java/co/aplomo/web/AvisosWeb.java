@@ -66,7 +66,11 @@ public final class AvisosWeb {
             int id = Integer.parseInt(ruta.split("/")[2]);
             if (ruta.endsWith("entendido")) servicio.entender(sesion.cuenta(), id);
             else servicio.responder(sesion.cuenta(), id, datos.get("texto"));
-            Router.redirigir(intercambio, "/avisos?enviado=1");
+            if (ruta.endsWith("entendido") && "1".equals(intercambio.getRequestHeaders().getFirst("X-Alineo-Panel"))) {
+                long nuevos = servicio.listar(sesion.cuenta()).stream().filter(m -> !m.leido()).count();
+                Router.responder(intercambio, 200, "application/json; charset=UTF-8",
+                        "{\"ok\":true,\"nuevos\":" + nuevos + "}");
+            } else Router.redirigir(intercambio, "/avisos?enviado=1");
             return true;
         }
         if (ruta.equals("/avisos") && !post) {
@@ -105,12 +109,14 @@ public final class AvisosWeb {
                 "<article class=\"aviso-tarjeta stack " + (m.leido() ? "" : "nuevo") + "\" data-mensaje=\"" + m.id() +
                         "\">");
         if (!m.leido()) html.append("<span class=\"eyebrow\">NUEVA</span>");
-        html.append("<h3>").append(titulo(m.tipo())).append("</h3><p class=\"small muted\">")
+        html.append("<h3><button type=\"button\" class=\"aviso-ver\" data-ver-mensaje=\"").append(m.id()).append("\">")
+                .append(titulo(m.tipo())).append("</button></h3><p class=\"small muted\">")
                 .append(m.tipo().equals("SOLICITUD_ACCESO") ? "" : "De ")
                 .append(m.tipo().equals("SOLICITUD_ACCESO") ? "Solicitud recibida" : Html.escapar(m.nombre()))
                 .append(" · ")
                 .append(m.tipo().equals("SOLICITUD_ACCESO") ? "Acceso por revisar" : Formularios.etiqueta(m.rol()))
-                .append(" · ").append(edad(m)).append("</p><p>").append(Html.escapar(m.texto())).append("</p>");
+                .append(" · ").append(edad(m)).append("</p><p data-texto-mensaje>").append(Html.escapar(m.texto()))
+                .append("</p>");
         if (m.solicitudAcceso() != null) {
             html.append("<a class=\"btn\" href=\"/solicitudes-acceso/").append(m.solicitudAcceso())
                     .append("\">Revisar solicitud</a>");
