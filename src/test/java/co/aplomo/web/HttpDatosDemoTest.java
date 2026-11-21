@@ -16,7 +16,7 @@ class HttpDatosDemoTest extends HttpPrueba {
   DatosDemoPrueba.cargar(con,carpetaFotos);var primera=cantidades();DatosDemoPrueba.cargar(con,carpetaFotos);assertEquals(primera,cantidades());
   int universidad=Sql.uno(con,"SELECT id_empresa FROM empresa WHERE nit=?",r->r.getInt(1),"DEMO-APLOMO-E3");
   assertEquals(3,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM sede WHERE id_empresa=?",r->r.getInt(1),universidad));
-  assertEquals(3,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM empresa WHERE nit LIKE 'DEMO-APLOMO-E%'",r->r.getInt(1)));
+  assertEquals(7,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM empresa WHERE nit LIKE 'DEMO-APLOMO-E%'",r->r.getInt(1)));
   var filas=Sql.listar(con,"SELECT a.id_analisis,a.puntaje_a,a.puntaje_b,a.puntaje_final FROM analisis_rula a JOIN fotografia f USING(id_foto) JOIN evaluacion e USING(id_evaluacion) JOIN visita v USING(id_visita) JOIN reserva r USING(id_reserva) WHERE r.codigo=? ORDER BY a.puntaje_final",r->new int[]{r.getInt(1),r.getInt(2),r.getInt(3),r.getInt(4)},"DEMO-17-E3");
   assertEquals(6,filas.size());var tablas=new TablasRula();tablas.cargar(con);var motor=new MotorRula(tablas);
   int[] casos={4,2,8};

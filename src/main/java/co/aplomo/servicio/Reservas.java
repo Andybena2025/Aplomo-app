@@ -72,6 +72,7 @@ public final class Reservas {
             if (lugar == null) throw new IllegalArgumentException("Selecciona un salón existente.");
             if (anterior == null) comprobarSeleccion(con, datos, lugar);
             Reserva reserva = validar(id, salon, responsable.id(), anterior, datos);
+            new co.aplomo.dao.CrucesAgendaDao().comprobar(con, reserva);
             Reserva repetida = reservas.duplicada(con, reserva);
             if (repetida != null) throw new IllegalArgumentException("Ya existe la reserva " + repetida.codigo() + " para ese salón, fecha y hora de inicio.");
             try {

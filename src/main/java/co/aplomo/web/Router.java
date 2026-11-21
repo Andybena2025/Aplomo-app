@@ -26,6 +26,8 @@ public final class Router implements HttpHandler {
     private final SugerenciasWeb sugerencias;
     private final ConsultasWeb consultas;
     private final CalificacionesWeb calificaciones;
+    private final CuentaWeb cuenta;
+    private final ArchivoWeb archivo;
 
     /** Construye las rutas con servicios reales (RNF-011). */
     public Router() { this(new Autenticacion(),new Sesiones()); }
@@ -55,6 +57,8 @@ public final class Router implements HttpHandler {
     public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
                   co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas,
                   co.aplomo.servicio.Visitas visitas, co.aplomo.servicio.Evaluaciones evaluaciones) {
+        this.archivo = new ArchivoWeb(evaluaciones.consultas().archivo());
+        this.cuenta = new CuentaWeb(usuarios.perfil(), auth, sesiones);
         this.auth=auth; this.sesiones=sesiones; this.usuarios=new UsuariosWeb(usuarios,sesiones);
         this.empresas=new EmpresasWeb(empresas);
         this.reservas=new ReservasWeb(reservas, empresas);
@@ -87,9 +91,9 @@ public final class Router implements HttpHandler {
         }
         if(ruta.equals("/favicon.ico")||ruta.equals("/favicon.svg")){if(!metodo.equals("GET")){enviar(x,405,"Método no permitido.");return;}responder(x,200,"image/svg+xml; charset=UTF-8",Html.favicon());return;}
         if (ruta.startsWith("/static/")) { estatico(x,ruta); return; }
-        if(ruta.equals("/nosotros")&&metodo.equals("GET")){redirigir(x,"/login#nosotros");return;}
+        if(ruta.equals("/nosotros")&&metodo.equals("GET")){redirigir(x,"/login");return;}
         String id = cookie(x);
-        Sesion s = sesiones.obtener(id);
+        Sesion s = ruta.equals("/notas/nuevas") ? sesiones.consultar(id) : sesiones.obtener(id);
         if (s != null && s.cuenta() != null) {
             Cuenta c = auth.actual(s.cuenta().id());
             if (!vigente(s.cuenta(),c)) { sesiones.cerrar(id); s=null; }
@@ -114,7 +118,7 @@ public final class Router implements HttpHandler {
             try { c=auth.ingresar(f.get("correo"),f.get("clave")); }
             catch(SQLException e) { enviar(x,503,Html.login(s,f.get("correo"),"No pudimos verificar el ingreso. Revisa la conexión e inténtalo de nuevo.")); return; }
             if (c == null) {
-                enviar(x,401,Html.login(s,f.get("correo"),"Correo o contraseña incorrectos. Revisa los datos o vuelve a intentarlo en 15 minutos.")); return;
+                enviar(x,401,Html.login(s,f.get("correo"),auth.mensajeFallo(f.get("correo")))); return;
             }
             sesiones.cerrar(s.id()); s=sesiones.crear(c); ponerCookie(x,s.id());
             redirigir(x,c.temporal() ? "/cuenta/contrasena" : "/"); return;
@@ -127,6 +131,12 @@ public final class Router implements HttpHandler {
             if (vencida) ponerCookie(x,"");
             redirigir(x,vencida ? "/login?inactividad=1" : "/login"); return;
         }
+        if (ruta.equals("/notas/nuevas") && metodo.equals("GET")) {
+            if (s.cuenta().temporal()) throw new SecurityException("Cambia tu contraseña para continuar.");
+            new NotasWeb(reservas.servicio().agenda()).nuevas(x, s);
+            return;
+        }
+        if (archivo.atender(x, s)) return;
         if(consultas.atender(x,s))return;
         if (ruta.startsWith("/evaluaciones") || ruta.startsWith("/fotos/")) {
             Permisos.trabajo(s.cuenta());
@@ -151,6 +161,7 @@ public final class Router implements HttpHandler {
             sesiones.invalidarCuenta(cambiada.id()); s=sesiones.crear(cambiada); ponerCookie(x,s.id());
             redirigir(x,"/?contrasena=1"); return;
         }
+        if (cuenta.atender(x, s, f)) return;
         if(ruta.equals("/demo/evaluacion")) {
             Permisos.trabajo(s.cuenta());
             if(!GaleriaDemo.habilitada()){enviar(x,404,Html.pagina("Demostración no disponible","",s));return;}
@@ -278,7 +289,7 @@ public final class Router implements HttpHandler {
         return null;
     }
 
-    private static void ponerCookie(HttpExchange x, String valor) {
+    static void ponerCookie(HttpExchange x, String valor) {
         x.getResponseHeaders().add("Set-Cookie",COOKIE+"="+valor+"; Path=/; HttpOnly; SameSite=Strict"
                 + (valor.isEmpty() ? "; Max-Age=0" : "") + (x instanceof HttpsExchange ? "; Secure" : ""));
     }

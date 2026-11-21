@@ -18,6 +18,7 @@ USE rula_ergonomia;
 
 -- cuenta: Cuentas de las personas que entran al sistema. Administrador y Usuario viven en la misma tabla y se distinguen por rol (herencia de Cuenta). (RF-001a, RF-001c, RF-002, RF-003, RNF-004)
 CREATE TABLE cuenta (
+  color_agenda CHAR(7) NULL COMMENT 'Color del Evaluador en Agenda; no representa riesgo RULA.',
   id_cuenta INT NOT NULL AUTO_INCREMENT COMMENT 'Identificador de la cuenta.',
   id_empresa INT NULL COMMENT 'Relación anterior conservada. La fuente de asignaciones es cuenta_empresa.',
   nombre VARCHAR(100) NOT NULL COMMENT 'Nombre de la persona.',

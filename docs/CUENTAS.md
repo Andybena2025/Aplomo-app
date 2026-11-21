@@ -86,11 +86,27 @@ La versión Windows se entrega con los mismos pasos; no se ejecutó en Windows e
 
 CSV: `rol` también admite EVALUADOR; `nit_empresa` admite varios NIT separados por `;`. Para Administrador queda vacío. La herramienta usa el mismo servicio y conserva la regla de un solo Evaluador activo.
 
-| Correo demo | Rol | Qué ve |
-|---|---|---|
-| evaluador1@rula.local | Evaluador | Empresas E1/E2, su agenda y sus evaluaciones |
-| evaluador2@rula.local | Evaluador | Empresa E3, su agenda y sus evaluaciones |
-| usuario1@rula.local | Usuario | E1/E2, reservas y resultados Finalizados, sin fotos |
-| usuario2@rula.local | Usuario | E3, reservas y resultados Finalizados, sin fotos |
+## Presentación · 27/11/2026
 
-La carga demo es explícita, con contraseña inicial de demostración temporal igual al patrón de instalación. No altera las cuentas del equipo. Cambiarla en el primer ingreso.
+| Cuenta | Rol | Empresas y alcance |
+|---|---|---|
+| andres@rula.local | Administrador | Todas; cuentas y asignaciones |
+| johan@rula.local | Administrador | Todas; cuentas y asignaciones |
+| gabby@rula.local | Administradora | Todas; escribe la nota en vivo |
+| andres.evaluador@rula.local | Evaluador · rosado | Humboldt y Muebles Cafeteros |
+| andres.usuario@rula.local | Usuario | Café de Origen Calarcá; solo consulta |
+| johan.evaluador@rula.local | Evaluador · azul | Ensambles del Quindío y Textiles del Eje |
+| johan.usuario@rula.local | Usuario | Humboldt; solo resultados Finalizados |
+| gabriella.evaluadora@rula.local | Evaluadora · lila | Café de Origen Calarcá y Lácteos La Sabana |
+| gabriella.usuaria@rula.local | Usuaria | Ensambles del Quindío; solo consulta |
+
+Las seis cuentas nuevas usan la contraseña temporal de demostración `Cambiar2026` y exigen cambiarla.
+La carga no restablece claves ni modifica los tres administradores existentes. El administrador inicial
+`admin@rula.local` también se conserva, separado de estas nueve cuentas.
+Las cuentas genéricas antiguas quedan inactivas cuando existen; su historial se conserva.
+
+Guion: Gabby abre Agenda como Administradora; Andrés entra como Evaluador y abre la cita del
+27/11/2026 a las 9:00 en Humboldt, Sede Alcázar, Taller de mantenimiento. Gabby escribe una nota;
+Andrés recibe el aviso y pulsa Entendido. Johan entra como Usuario de Humboldt y consulta el Archivo:
+ve visitas Finalizadas, sin fotos ni resultados En curso. Archivo también conserva las tres evaluaciones
+de Confecciones Armenia en 2025, hechas por Johan, aunque ya no está asignado a esa empresa.

@@ -10,7 +10,7 @@ public final class Ayuda {
  /** Público: solo ingreso/contacto; cuentas temporales también reciben solo esa ayuda. */
  public Contenido consultar(Cuenta actor)throws SQLException{
   var contacto=Contacto.leer(Path.of(System.getProperty("aplomo.contacto.archivo","config/contacto.properties")));
-  if(actor==null||actor.temporal())return new Contenido(Set.of(1,10),List.of(),contacto);
-  return tx.ejecutar(c->{var a=AccesoDatos.vigente(c,actor);Set<Integer> temas=switch(a.rol()){case ADMINISTRADOR->Set.of(1,2,3,4,5,6,7,8,9,10);case EVALUADOR->Set.of(1,2,3,4,5,6,7,8,10);case USUARIO->Set.of(1,2,5,6,8,10);};return new Contenido(temas,new CalificacionesDao().riesgos(c),contacto);});
+  if(actor==null||actor.temporal())return new Contenido(Set.of(1,10,13),List.of(),contacto);
+  return tx.ejecutar(c->{var a=AccesoDatos.vigente(c,actor);Set<Integer> temas=switch(a.rol()){case ADMINISTRADOR->Set.of(1,2,3,4,5,6,7,8,9,10,11,12,13);case EVALUADOR->Set.of(1,2,3,4,5,6,7,8,10,11,12,13);case USUARIO->Set.of(1,2,5,6,8,10,12,13);};return new Contenido(temas,new CalificacionesDao().riesgos(c),contacto);});
  }
 }

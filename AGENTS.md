@@ -156,3 +156,13 @@ Luego ESPERA el OK de Andy.
 - Paso 25 (21 nov 2026): marca visible ALINEO. con identificadores internos conservados, Quiénes somos debajo de la portada y /nosotros sin sesión; /ayuda pública y por rol, búsqueda sin tildes y contacto local opcional. Datos de riesgo de MySQL. Cierre: 1022 casos Maven verificados y 119 JS aprobadas; la suite completa corrió una vez, un fallo de calificaciones corregido/reintentado y 53 casos dirigidos de cierre aprobados. 75 medidas finales a 360/390/820/1024/1366 sin desborde, Entrar visible en tres celulares; QA revertida y app normal en 8080. La QA final corrige empates de fecha del historial (ID descendente), autor de la primera bitácora y preferencia del Evaluador activo en agenda cuando hay uno inactivo anterior. No cambia motor, cálculo, IA, galería ni esquema en este paso.
 
 - Cierre de Pasos 23–25: Paso 23 bb5f6eb y Paso 24 37cb05e subidos a origin/main. Paso 25 incluye cierre de filtros históricos propios, catálogos con alcance SQL, preservación de calificaciones automáticas para Usuario de una empresa y Atrás explícito por tipo de página. Contacto real opcional pendiente de archivo local; Windows/iPad físico/otros navegadores no comprobados. Sin capturas, descargas ni cambios de motor/cálculo/IA/galería; esquema solo migrado en Paso 24 con respaldo.
+
+
+- Paso 26 en cierre: títulos champán, login compacto, Mi cuenta, Archivo por rol, calendario mensual/semanal,
+  color_agenda, rechazo de citas cruzadas, avisos privados y demo de presentación. Pruebas y métricas en
+  docs/informe_paso26.md; no capturas ni descargas. Mantener el contacto real en archivo privado.
+- Paso 26B, decisión explícita de Andy (21 nov 2026): la prueba de longitud excluye co.aplomo.rula y
+  el bloque protegido de POST /evaluaciones/calcular. Comentario obligatorio: código protegido, RNF-010.
+  Todo el resto de src/main Java debe cumplir 120 columnas. No modificar esos bloques protegidos.
+
+- Cierre funcional Paso 26: 1035 casos Maven verificados (7 fallos corregidos por ejecución dirigida) y 122 JS. Migración real 449→449 filas, 22 tablas, repetida dos veces con respaldo privado. 30 medidas de pantallas internas sin desborde y login sin desborde; sin capturas. Paso 26B pendiente de ordenar todo Java fuera del código protegido.

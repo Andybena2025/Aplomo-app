@@ -1,4 +1,4 @@
--- Paso 24: Demo.cargar también crea 2 Evaluadores y 2 Usuarios demo, asignaciones, agenda y resultados propios.
+-- Paso 26: Demo.cargar crea seis cuentas del equipo, siete empresas y la agenda de presentación.
 -- Paso 17: estructura ficticia e idempotente. Resultados y fotos se crean con Demo.cargar y el motor real.
 -- No ejecutar este SQL solo para obtener evaluaciones: usar scripts/cargar_demo o el perfil Docker demo.
 
@@ -154,72 +154,72 @@ INSERT INTO sede (id_empresa,nombre,direccion,ciudad,telefono,horario,descripcio
 
 SET @s7=(SELECT id_sede FROM sede WHERE id_empresa=@e2 AND nombre='Oficina administrativa de demostración' LIMIT 1);
 
-INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s1,'DEMO-APLOMO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s1 AND nombre='DEMO-APLOMO · Oficina y planta');
+INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s1,'DEMO-ALINEO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s1 AND nombre='DEMO-ALINEO · Oficina y planta');
 
-SET @listo1=(SELECT id_salon FROM salon WHERE id_sede=@s1 AND nombre='DEMO-APLOMO · Oficina y planta' LIMIT 1);
+SET @listo1=(SELECT id_salon FROM salon WHERE id_sede=@s1 AND nombre='DEMO-ALINEO · Oficina y planta' LIMIT 1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo1,1,'DEMO-APLOMO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo1 AND numero=1);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo1,1,'DEMO-ALINEO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo1 AND numero=1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo1,2,'DEMO-APLOMO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo1 AND numero=2);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo1,2,'DEMO-ALINEO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo1 AND numero=2);
 
-INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s2,'DEMO-APLOMO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s2 AND nombre='DEMO-APLOMO · Oficina y planta');
+INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s2,'DEMO-ALINEO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s2 AND nombre='DEMO-ALINEO · Oficina y planta');
 
-SET @listo2=(SELECT id_salon FROM salon WHERE id_sede=@s2 AND nombre='DEMO-APLOMO · Oficina y planta' LIMIT 1);
+SET @listo2=(SELECT id_salon FROM salon WHERE id_sede=@s2 AND nombre='DEMO-ALINEO · Oficina y planta' LIMIT 1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo2,1,'DEMO-APLOMO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo2 AND numero=1);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo2,1,'DEMO-ALINEO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo2 AND numero=1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo2,2,'DEMO-APLOMO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo2 AND numero=2);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo2,2,'DEMO-ALINEO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo2 AND numero=2);
 
-INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s3,'DEMO-APLOMO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s3 AND nombre='DEMO-APLOMO · Oficina y planta');
+INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s3,'DEMO-ALINEO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s3 AND nombre='DEMO-ALINEO · Oficina y planta');
 
-SET @listo3=(SELECT id_salon FROM salon WHERE id_sede=@s3 AND nombre='DEMO-APLOMO · Oficina y planta' LIMIT 1);
+SET @listo3=(SELECT id_salon FROM salon WHERE id_sede=@s3 AND nombre='DEMO-ALINEO · Oficina y planta' LIMIT 1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo3,1,'DEMO-APLOMO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo3 AND numero=1);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo3,1,'DEMO-ALINEO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo3 AND numero=1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo3,2,'DEMO-APLOMO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo3 AND numero=2);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo3,2,'DEMO-ALINEO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo3 AND numero=2);
 
-INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s4,'DEMO-APLOMO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s4 AND nombre='DEMO-APLOMO · Oficina y planta');
+INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s4,'DEMO-ALINEO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s4 AND nombre='DEMO-ALINEO · Oficina y planta');
 
-SET @listo4=(SELECT id_salon FROM salon WHERE id_sede=@s4 AND nombre='DEMO-APLOMO · Oficina y planta' LIMIT 1);
+SET @listo4=(SELECT id_salon FROM salon WHERE id_sede=@s4 AND nombre='DEMO-ALINEO · Oficina y planta' LIMIT 1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo4,1,'DEMO-APLOMO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo4 AND numero=1);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo4,1,'DEMO-ALINEO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo4 AND numero=1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo4,2,'DEMO-APLOMO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo4 AND numero=2);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo4,2,'DEMO-ALINEO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo4 AND numero=2);
 
-INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s5,'DEMO-APLOMO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s5 AND nombre='DEMO-APLOMO · Oficina y planta');
+INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s5,'DEMO-ALINEO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s5 AND nombre='DEMO-ALINEO · Oficina y planta');
 
-SET @listo5=(SELECT id_salon FROM salon WHERE id_sede=@s5 AND nombre='DEMO-APLOMO · Oficina y planta' LIMIT 1);
+SET @listo5=(SELECT id_salon FROM salon WHERE id_sede=@s5 AND nombre='DEMO-ALINEO · Oficina y planta' LIMIT 1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo5,1,'DEMO-APLOMO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo5 AND numero=1);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo5,1,'DEMO-ALINEO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo5 AND numero=1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo5,2,'DEMO-APLOMO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo5 AND numero=2);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo5,2,'DEMO-ALINEO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo5 AND numero=2);
 
-INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s6,'DEMO-APLOMO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s6 AND nombre='DEMO-APLOMO · Oficina y planta');
+INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s6,'DEMO-ALINEO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s6 AND nombre='DEMO-ALINEO · Oficina y planta');
 
-SET @listo6=(SELECT id_salon FROM salon WHERE id_sede=@s6 AND nombre='DEMO-APLOMO · Oficina y planta' LIMIT 1);
+SET @listo6=(SELECT id_salon FROM salon WHERE id_sede=@s6 AND nombre='DEMO-ALINEO · Oficina y planta' LIMIT 1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo6,1,'DEMO-APLOMO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo6 AND numero=1);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo6,1,'DEMO-ALINEO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo6 AND numero=1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo6,2,'DEMO-APLOMO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo6 AND numero=2);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo6,2,'DEMO-ALINEO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo6 AND numero=2);
 
-INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s7,'DEMO-APLOMO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s7 AND nombre='DEMO-APLOMO · Oficina y planta');
+INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) SELECT @s7,'DEMO-ALINEO · Oficina y planta','Práctica guiada, datos ficticios.',1,2 WHERE NOT EXISTS (SELECT 1 FROM salon WHERE id_sede=@s7 AND nombre='DEMO-ALINEO · Oficina y planta');
 
-SET @listo7=(SELECT id_salon FROM salon WHERE id_sede=@s7 AND nombre='DEMO-APLOMO · Oficina y planta' LIMIT 1);
+SET @listo7=(SELECT id_salon FROM salon WHERE id_sede=@s7 AND nombre='DEMO-ALINEO · Oficina y planta' LIMIT 1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo7,1,'DEMO-APLOMO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo7 AND numero=1);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo7,1,'DEMO-ALINEO · Trabajo en computador','ESCRITORIO','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo7 AND numero=1);
 
-INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo7,2,'DEMO-APLOMO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo7 AND numero=2);
+INSERT INTO puesto_trabajo (id_salon,numero,descripcion,tipo,ubicacion) SELECT @listo7,2,'DEMO-ALINEO · Levantamiento de piezas','MESA','Demostración' WHERE NOT EXISTS (SELECT 1 FROM puesto_trabajo WHERE id_salon=@listo7 AND numero=2);
 
-INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,notas,estado) SELECT @listo1,@demo_admin,'DEMO-LST-E1',CURRENT_DATE(),'08:00','09:00','EVALUACION_INICIAL','DEMO-APLOMO · Lista para evaluar','Práctica ficticia, Oficina y Planta.','EN_COLA' WHERE NOT EXISTS (SELECT 1 FROM reserva WHERE codigo='DEMO-LST-E1');
+INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,notas,estado) SELECT @listo1,@demo_admin,'DEMO-LST-E1',CURRENT_DATE(),'08:00','09:00','EVALUACION_INICIAL','DEMO-ALINEO · Lista para evaluar','Práctica ficticia, Oficina y Planta.','EN_COLA' WHERE NOT EXISTS (SELECT 1 FROM reserva WHERE codigo='DEMO-LST-E1');
 
-INSERT INTO visita (id_reserva,hora_real_inicio,notas,estado) SELECT r.id_reserva,NOW(),'DEMO-APLOMO · Lista para practicar','EN_CURSO' FROM reserva r WHERE r.codigo='DEMO-LST-E1' AND NOT EXISTS (SELECT 1 FROM visita WHERE id_reserva=r.id_reserva);
+INSERT INTO visita (id_reserva,hora_real_inicio,notas,estado) SELECT r.id_reserva,NOW(),'DEMO-ALINEO · Lista para practicar','EN_CURSO' FROM reserva r WHERE r.codigo='DEMO-LST-E1' AND NOT EXISTS (SELECT 1 FROM visita WHERE id_reserva=r.id_reserva);
 
-INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,notas,estado) SELECT @listo2,@demo_admin,'DEMO-LST-E2',CURRENT_DATE(),'08:00','09:00','EVALUACION_INICIAL','DEMO-APLOMO · Lista para evaluar','Práctica ficticia, Oficina y Planta.','EN_COLA' WHERE NOT EXISTS (SELECT 1 FROM reserva WHERE codigo='DEMO-LST-E2');
+INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,notas,estado) SELECT @listo2,@demo_admin,'DEMO-LST-E2',CURRENT_DATE(),'08:00','09:00','EVALUACION_INICIAL','DEMO-ALINEO · Lista para evaluar','Práctica ficticia, Oficina y Planta.','EN_COLA' WHERE NOT EXISTS (SELECT 1 FROM reserva WHERE codigo='DEMO-LST-E2');
 
-INSERT INTO visita (id_reserva,hora_real_inicio,notas,estado) SELECT r.id_reserva,NOW(),'DEMO-APLOMO · Lista para practicar','EN_CURSO' FROM reserva r WHERE r.codigo='DEMO-LST-E2' AND NOT EXISTS (SELECT 1 FROM visita WHERE id_reserva=r.id_reserva);
+INSERT INTO visita (id_reserva,hora_real_inicio,notas,estado) SELECT r.id_reserva,NOW(),'DEMO-ALINEO · Lista para practicar','EN_CURSO' FROM reserva r WHERE r.codigo='DEMO-LST-E2' AND NOT EXISTS (SELECT 1 FROM visita WHERE id_reserva=r.id_reserva);
 
-INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,notas,estado) SELECT @listo3,@demo_admin,'DEMO-LST-E3',CURRENT_DATE(),'08:00','09:00','EVALUACION_INICIAL','DEMO-APLOMO · Lista para evaluar','Práctica ficticia, Oficina y Planta.','EN_COLA' WHERE NOT EXISTS (SELECT 1 FROM reserva WHERE codigo='DEMO-LST-E3');
+INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,notas,estado) SELECT @listo3,@demo_admin,'DEMO-LST-E3',CURRENT_DATE(),'08:00','09:00','EVALUACION_INICIAL','DEMO-ALINEO · Lista para evaluar','Práctica ficticia, Oficina y Planta.','EN_COLA' WHERE NOT EXISTS (SELECT 1 FROM reserva WHERE codigo='DEMO-LST-E3');
 
-INSERT INTO visita (id_reserva,hora_real_inicio,notas,estado) SELECT r.id_reserva,NOW(),'DEMO-APLOMO · Lista para practicar','EN_CURSO' FROM reserva r WHERE r.codigo='DEMO-LST-E3' AND NOT EXISTS (SELECT 1 FROM visita WHERE id_reserva=r.id_reserva);
+INSERT INTO visita (id_reserva,hora_real_inicio,notas,estado) SELECT r.id_reserva,NOW(),'DEMO-ALINEO · Lista para practicar','EN_CURSO' FROM reserva r WHERE r.codigo='DEMO-LST-E3' AND NOT EXISTS (SELECT 1 FROM visita WHERE id_reserva=r.id_reserva);
 
 COMMIT;

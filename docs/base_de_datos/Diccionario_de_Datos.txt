@@ -519,3 +519,9 @@ cuenta.rol ENUM ADMINISTRADOR/EVALUADOR/USUARIO. cuenta.id_empresa se conserva c
 cuenta_empresa: id_cuenta_empresa INT PK AI; id_cuenta INT FK cuenta; id_empresa INT FK empresa; activo BOOLEAN NOT NULL DEFAULT TRUE; fecha_asignacion DATETIME NOT NULL. UNIQUE(id_cuenta,id_empresa); ambas FKs RESTRICT al borrar y actualizar. Máximo un Evaluador activo por empresa validado en servicio bajo bloqueo.
 reserva.nota_administrador VARCHAR(500) NULL; reserva.nota_vista BOOLEAN NOT NULL DEFAULT FALSE. Solo A edita y E asignado confirma.
 empresa.id_administrador y reserva.id_administrador: Cuenta que registró (Administrador o Evaluador).
+
+PASO 26 · cuenta.color_agenda
+CHAR(7), permite NULL. Color personal del Evaluador en Agenda; nunca representa riesgo RULA.
+Paleta: #FF8FB8, #6FA8FF, #B9A7FF, #7FD1E0, #F4B393, #C9CCD2.
+Sin elección se conserva el anterior o se asigna el primero libre; sin colores libres se pide elegir.
+Migración aditiva e idempotente: migracion_paso26.sql. Sin tablas nuevas ni cambios en tablas RULA.

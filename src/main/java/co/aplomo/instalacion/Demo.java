@@ -72,6 +72,7 @@ public final class Demo {
         if(admin==null)throw new IllegalArgumentException("Primero ingresa como Administrador y cambia la contraseña temporal de ALINEO.");
         Integer ajenas=Sql.uno(con,"SELECT COUNT(*) FROM reserva r JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa e USING(id_empresa) WHERE r.codigo IN ('DEMO-FIN-01','DEMO-FIN-02','DEMO-COL-01','DEMO-COL-02','DEMO-ESP-01','DEMO-ESP-02','DEMO-LST-E1','DEMO-LST-E2','DEMO-LST-E3') AND NOT ("+EMPRESAS+")",r->r.getInt(1));
         if(ajenas>0)throw new IllegalArgumentException("Hay un código demo en otra empresa. No se cambió nada.");
+        DemoPresentacion.actualizarMarca(con);
         String texto=Files.readAllLines(sql,StandardCharsets.UTF_8).stream().filter(l->!l.stripLeading().startsWith("--")).collect(java.util.stream.Collectors.joining("\n"));
         for(String parte:texto.split(";")){
             String orden=parte.strip();if(orden.isEmpty()||orden.equalsIgnoreCase("START TRANSACTION")||orden.equalsIgnoreCase("COMMIT"))continue;

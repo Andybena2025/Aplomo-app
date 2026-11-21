@@ -52,6 +52,7 @@ public final class PaginasUsuarios {
         Map<String,String> valores=new HashMap<>();
         if(c!=null) {
             valores.put("nombre",c.nombre()); valores.put("correo",c.correo()); valores.put("telefono",c.telefono()); valores.put("cargo",c.cargo());
+            valores.put("colorAgenda",c.colorAgenda()==null?"":c.colorAgenda());
             valores.put("rol",c.rol().name()); valores.put("empresa",c.empresa()==null ? "" : c.empresa().toString());
         } else valores.put("rol","USUARIO");
         valores.putAll(enviados);
@@ -67,6 +68,14 @@ public final class PaginasUsuarios {
                 .append(opcion("ADMINISTRADOR","Administrador","ADMINISTRADOR".equals(rol)))
                 .append(opcion("EVALUADOR","Evaluador","EVALUADOR".equals(rol))).append(opcion("USUARIO","Usuario","USUARIO".equals(rol))).append("</select></div>")
 ;
+        form.append("<label class=\"field\" data-color-agenda>Color de Agenda")
+                .append("<select class=\"input\" name=\"colorAgenda\"><option value=\"\">Primero libre</option>");
+        String[] nombresColor = {"Rosado", "Azul", "Lila", "Turquesa claro", "Durazno", "Gris perla"};
+        for (int indice = 0; indice < co.aplomo.servicio.ColoresAgenda.PALETA.size(); indice++) {
+            String color = co.aplomo.servicio.ColoresAgenda.PALETA.get(indice);
+            form.append(opcion(color, nombresColor[indice], color.equals(valores.get("colorAgenda"))));
+        }
+        form.append("</select></label>");
         form.append("<p class=\"hint\">Administrador: gestiona todo. Evaluador: trabaja en las empresas asignadas. Usuario: consulta resultados finalizados.</p><fieldset class=\"stack\" data-empresas><legend>Empresas</legend><p class=\"hint\">Usuario: elige al menos una. Evaluador: puede quedar sin empresas. Administrador: ninguna.</p>");
         for(Opcion emp:empresas){boolean elegida="on".equals(valores.get("empresa_"+emp.id()));if(emp.activa()||elegida)form.append("<label class=\"opt\"><input type=\"checkbox\" name=\"empresa_").append(emp.id()).append("\"").append(elegida?" checked":"").append("><span>").append(Html.escapar(emp.nombre()+(emp.activa()?"":" (inactiva)"))).append("</span></label>");}
         form.append("</fieldset>");

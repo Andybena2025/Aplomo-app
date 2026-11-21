@@ -48,7 +48,16 @@ public final class PaginasEmpresas {
                 .append(acciones(sesion, ruta, empresa.activo())).append("</section>");
         String accionesPagina=enlace("/calificaciones?empresa="+empresa.id(),"Ver calificaciones",false);
         if(admin(sesion))accionesPagina+=enlace("/informes/empresa/"+empresa.id(),"Generar informe",true)+enlace("/evaluaciones?empresa="+empresa.id(),"Ver evaluaciones de la empresa",false);
-        if(sesion.cuenta().rol()==Rol.ADMINISTRADOR){html.append("<section class=\"card stack\"><h2>Cuentas de la empresa</h2>");var evaluador=cuentas.stream().filter(q->q.rol()==Rol.EVALUADOR&&q.estado()!=Cuenta.Estado.INACTIVA).findFirst();html.append("<p>Evaluador: ").append(evaluador.map(q->enlace("/usuarios/"+q.id()+"/editar",q.nombre(),false)).orElse("<span class=\"tag\">Sin evaluador asignado</span>")).append("</p><h3>Usuarios</h3>");var usuarios=cuentas.stream().filter(q->q.rol()==Rol.USUARIO).toList();if(usuarios.isEmpty())html.append("<p class=\"muted\">Sin Usuarios asignados.</p>");else for(var q:usuarios)html.append(enlace("/usuarios/"+q.id()+"/editar",q.nombre(),false));html.append("</section>");}
+        if (sesion.cuenta().rol() == Rol.ADMINISTRADOR) {
+            var evaluador = cuentas.stream().filter(cuenta -> cuenta.rol() == Rol.EVALUADOR
+                    && cuenta.estado() != Cuenta.Estado.INACTIVA).findFirst();
+            long usuarios = cuentas.stream().filter(cuenta -> cuenta.rol() == Rol.USUARIO).count();
+            html.append("<p class=\"hint empresa-cuentas\">Evaluador: ")
+                    .append(evaluador.map(cuenta -> "<a href=\"/usuarios/" + cuenta.id() + "/editar\">"
+                            + Html.escapar(cuenta.nombre()) + "</a>").orElse("sin asignar"))
+                    .append(" · <a href=\"/usuarios?empresa=").append(empresa.id())
+                    .append("\">Usuarios: ").append(usuarios).append("</a></p>");
+        }
         html.append(seccion("Sedes", admin(sesion) && empresa.activo() ? ruta + "/sedes/nuevo" : null, "Nueva sede",enlace("/sedes?empresa="+empresa.id(),"Consultar sedes",false)));
         for (Sede sede : sedes) {
             html.append(tarjeta(sede.nombre(), sede.ciudad() + " · " + sede.direccion(), sede.activo(),

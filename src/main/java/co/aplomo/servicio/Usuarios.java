@@ -16,7 +16,12 @@ public final class Usuarios {
     private final EmpresaDao empresas;
 
     /** Datos editables; no incluye ID, estado, intentos ni hash (RF-003). */
-    public record Datos(String nombre, String correo, String telefono, String cargo, Rol rol, Integer empresa, List<Integer> empresas) {
+    public record Datos(String nombre, String correo, String telefono, String cargo, Rol rol, Integer empresa, List<Integer> empresas, String colorAgenda) {
+        /** RF-003: conserva clientes de asignación múltiple con color automático. */
+        public Datos(String nombre, String correo, String telefono, String cargo, Rol rol,
+                     Integer empresa, List<Integer> empresas) {
+            this(nombre, correo, telefono, cargo, rol, empresa, empresas, null);
+        }
         /** Compatibilidad de clientes de una sola empresa; autoriza mediante cuenta_empresa. */
         public Datos(String n,String c,String t,String cargo,Rol r,Integer empresa){this(n,c,t,cargo,r,empresa,empresa==null?List.of():List.of(empresa));}
         /** Valida y normaliza los campos también en el servidor (RNF-004). */
@@ -25,6 +30,7 @@ public final class Usuarios {
             telefono=texto(telefono,20,"teléfono"); cargo=texto(cargo,80,"cargo");
             if(!correo.matches("[^\\s@<>\\\"]+@[^\\s@<>\\\"]+\\.[^\\s@<>\\\"]+")) throw new IllegalArgumentException("Escribe un correo válido.");
             if(rol==null) throw new IllegalArgumentException("Elige un rol válido.");
+            colorAgenda = ColoresAgenda.validar(colorAgenda);
             empresas=empresas==null?List.of():List.copyOf(new TreeSet<>(empresas));
             if(empresas.stream().anyMatch(id->id==null||id<1))throw new IllegalArgumentException("Elige empresas válidas.");
             if(rol==Rol.USUARIO && empresas.isEmpty()) throw new IllegalArgumentException("Elige la empresa del Usuario.");
@@ -42,6 +48,11 @@ public final class Usuarios {
     public Usuarios() { this(new Transacciones(),new CuentaDao(),new EmpresaDao()); }
     /** Recibe conexiones y DAO para verificar operaciones sin confirmar datos de prueba (RNF-011). */
     public Usuarios(Transacciones tx, CuentaDao dao, EmpresaDao empresas) { this.tx=tx; this.dao=dao; this.empresas=empresas; }
+
+    /** RF-001c/003: edición del perfil propio con la misma conexión. */
+    public CuentaPropia perfil() {
+        return new CuentaPropia(tx, java.time.Clock.system(co.aplomo.web.Html.ZONA));
+    }
 
     /** Lista las cuentas solo tras comprobar el permiso actual en MySQL (RF-002, RF-003). */
     public List<Cuenta> listar(Cuenta actor) throws SQLException {
@@ -67,7 +78,11 @@ public final class Usuarios {
         return tx.ejecutar(con -> {
             dao.bloquearAdministradores(con); autorizar(con,actor);
             new CuentaEmpresaDao().validar(con,0,datos.rol(),datos.empresas(),true); duplicados(con,datos.correo(),0);
-            try { int id=dao.crear(con,datos.nombre(),datos.correo(),datos.telefono(),datos.cargo(),datos.rol(),datos.empresa(),hash);new CuentaEmpresaDao().sincronizar(con,actor.id(),id,datos.empresas(),false);return id; }
+            try { int id=dao.crear(con,datos.nombre(),datos.correo(),datos.telefono(),datos.cargo(),datos.rol(),datos.empresa(),hash);new CuentaEmpresaDao().sincronizar(con,actor.id(),id,datos.empresas(),false);
+                if(datos.rol()==Rol.EVALUADOR) {
+                    ColoresAgenda.guardar(con,id,ColoresAgenda.elegir(con,id,datos.colorAgenda()));
+                }
+                return id; }
             catch(SQLIntegrityConstraintViolationException e) { throw new IllegalArgumentException("El correo ya está registrado. Revisa la cuenta existente."); }
         });
     }
@@ -84,6 +99,9 @@ public final class Usuarios {
             try { dao.editar(con,id,datos.nombre(),datos.correo(),datos.telefono(),datos.cargo(),datos.rol(),datos.empresa()); }
             catch(SQLIntegrityConstraintViolationException e) { throw new IllegalArgumentException("El correo ya está registrado. Revisa la cuenta existente."); }
             new CuentaEmpresaDao().sincronizar(con,actor.id(),id,datos.empresas(),anterior.rol()!=datos.rol());
+            if(datos.rol()==Rol.EVALUADOR) {
+                ColoresAgenda.guardar(con,id,ColoresAgenda.elegir(con,id,datos.colorAgenda()));
+            }
             if(hash!=null) dao.contrasena(con,id,hash,true);
             return null;
         });

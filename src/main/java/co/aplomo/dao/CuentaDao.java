@@ -93,6 +93,6 @@ public class CuentaDao {
         return new Cuenta(rs.getInt("id_cuenta"),idEmpresa,rs.getString("nombre"),rs.getString("correo"),
                 rs.getString("telefono"),rs.getString("cargo"),rs.getString("contrasena_hash"),
                 rs.getBoolean("contrasena_temporal"),rs.getInt("intentos_fallidos"),hasta == null ? null : hasta.toLocalDateTime(),
-                Estado.valueOf(rs.getString("estado")),Rol.valueOf(rs.getString("rol")));
+                Estado.valueOf(rs.getString("estado")),Rol.valueOf(rs.getString("rol")),rs.getString("color_agenda"));
     }
 }

@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/aplomo.css">
 </head>
-<body>
+<body class="login-nuevo">
     <a class="saltar" href="#contenido">Saltar al contenido</a>
     <div class="login">
         <!-- Lado izquierdo: foto de portada con dibujo de medicion -->
@@ -85,23 +85,28 @@
                            autocomplete="current-password" required></div>
                 <button class="btn p" type="submit" style="width:100%">Entrar</button>
             </form>
-            <div class="login-enlaces"><a href="#nosotros" data-conoce>Conoce ALINEO. ↓</a><a href="/ayuda">¿Necesitas ayuda?</a></div>
 </div>
+            <section class="login-nosotros" aria-labelledby="nosotros-titulo">
+                <span class="eyebrow">Quiénes somos</span>
+                <h3 id="nosotros-titulo">Evaluamos posturas de trabajo con el método RULA.</h3>
+                <div class="login-ideas">
+                    <div><svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 7h5l2-3h4l2 3h5v13H3z M8 13a4 4 0 1 0 8 0a4 4 0 1 0-8 0"/></svg>
+                        <strong>Fotografía el puesto</strong><small>Una foto por postura</small></div>
+                    <div><svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 3v17h17 M4 20L19 6 M4 13a7 7 0 0 1 7 7"/></svg>
+                        <strong>Mide los ángulos</strong><small>Guiado, sobre la foto</small></div>
+                    <div><svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M8 3h8v18H8z M11 6h2 M11 12h2 M11 18h2"/></svg>
+                        <strong>Conoce el riesgo</strong><small>Semáforo y sugerencias</small></div>
+                </div>
+            </section>
+            <footer class="login-pie"><span>© 2026 ALINEO</span>
+                <a href="{{contacto}}">¿Necesitas ayuda? Escríbenos por WhatsApp</a></footer>
         </section>
     </div>
-    <section id="nosotros" class="wrap stack nosotros" aria-labelledby="nosotros-titulo" tabindex="-1">
-        <div><span class="eyebrow">Quiénes somos</span><h1 id="nosotros-titulo">Ergonomía con precisión, en cada puesto de trabajo.</h1></div>
-        <div class="grid2">
-            <article class="card stack"><h2>Qué es ALINEO.</h2><p>ALINEO. es un sistema web para evaluar posturas en los puestos de trabajo con el método RULA. Acompaña al Ingeniero Industrial durante toda la visita: desde la reserva y las fotos del puesto hasta el puntaje, el semáforo de riesgo, las sugerencias y el informe para la empresa.</p></article>
-            <article class="card stack"><h2>Qué hacemos</h2><p>Ayudamos a que cada evaluación sea clara, ordenada y fácil de repetir. La app guía paso a paso al evaluador, mide los ángulos sobre la foto, calcula el puntaje con las tablas oficiales de RULA y guarda todo con fecha, hora y responsable. La empresa puede consultar sus resultados cuando los necesite.</p></article>
-            <article class="card stack"><h2>Por qué importa</h2><p>Una mala postura repetida todos los días termina en dolor de espalda, cuello, hombros o muñecas. Los desórdenes musculoesqueléticos están entre las enfermedades laborales más comunes, y casi siempre se pueden prevenir si el riesgo se detecta a tiempo. Medir con un método reconocido convierte "me duele" en datos que la empresa puede usar para mejorar el puesto, cuidar a su gente y cumplir con su Sistema de Gestión de Seguridad y Salud en el Trabajo.</p></article>
-            <article class="card stack"><h2>Quiénes lo hacemos</h2><p>Somos estudiantes de Ingeniería de Software de la Corporación Universitaria Empresarial Alexander von Humboldt: Laura Gabriella Romero Gómez, Johan Andrés Zapata Quintero y Andrés Eduardo Benavides. ALINEO. es nuestro Proyecto Nuclear 2026-2, construido junto a una docente experta en Métodos y Movimientos.</p></article>
-        </div>
-        <ol class="nosotros-pasos"><li><span>1</span> Fotografía el puesto</li><li><span>2</span> Mide la postura</li><li><span>3</span> Conoce el riesgo y cómo mejorarlo</li></ol>
-        <div><a class="btn" href="#correo" data-volver-login>↑ Volver a iniciar sesión</a></div>
-    </section>
-    <script src="/static/js/nosotros.js" defer></script>
     <script src="/static/js/portada.js" defer></script>
-<script src="/static/js/progreso.js" defer></script><script src="/static/js/cuenta.js" defer></script>
+    <script src="/static/js/progreso.js" defer></script>
+    <script src="/static/js/cuenta.js" defer></script>
 </body>
 </html>

@@ -439,3 +439,10 @@ La matriz de Notion todavía tiene dos filas de la versión 4 (RNF-011 "Cierre d
 ### RF-033 · Consultar mi agenda (propuesta, cambio Paso 24)
 
 Evaluador: semana y mes de sus empresas, notas privadas del Administrador y acuse; Administrador: agenda global de solo lectura, filtro por Evaluador y notas. Cruces informativos, semana de lunes a domingo, hora de Bogotá. Usuario sin acceso.
+
+
+### RF-033 · Ajuste Paso 26 (propuesta aprobada por Andy)
+Mes por defecto, colores personales de Evaluador y semana por duración. Un Evaluador activo no puede
+crear ni editar una reserva que se cruce con otra no cancelada de cualquiera de sus empresas.
+Las notas del Administrador se consultan cada 15 segundos solo en páginas del Evaluador visible;
+el sondeo no prolonga la sesión. El acuse conserva CSRF. Los colores no se usan para riesgo RULA.

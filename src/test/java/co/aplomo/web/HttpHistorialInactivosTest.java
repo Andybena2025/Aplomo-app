@@ -81,7 +81,7 @@ class HttpHistorialInactivosTest extends HttpPrueba {
         empresas.estadoEmpresa(cuenta(admin),e.empresaA,false);usuario();
         String h=get("/evaluaciones").body();assertFalse(h.contains("name=\"registros\""));assertFalse(h.contains("(inactiva)"));assertTrue(h.contains("data-registro=\""+e.evalVerde+"\""));assertFalse(h.contains("data-registro=\""+e.evalAbierta+"\""));
         assertEquals(403,get("/evaluaciones?registros=INACTIVOS").statusCode());assertEquals(403,get("/evaluaciones?puesto="+e.puestoB).statusCode());assertEquals(403,get("/puestos/"+e.puestoB).statusCode());assertEquals(403,get("/evaluaciones/"+e.evalAbierta).statusCode());
-        var propio=get("/puestos/"+e.puesto1);assertEquals(303,propio.statusCode());assertEquals("/salones/"+e.salonA,propio.headers().firstValue("Location").orElseThrow());assertFalse(get("/empresas/"+e.empresaA).body().contains("Su historial se conserva y se puede consultar aquí."));
+        var propio=get("/puestos/"+e.puesto1);assertEquals(200,propio.statusCode());assertFalse(propio.body().contains("/evaluaciones/"+e.evalAbierta+"\""));assertFalse(get("/empresas/"+e.empresaA).body().contains("Su historial se conserva y se puede consultar aquí."));
     }
     @Test void atrasSoloEnDetallesYFormularios()throws Exception{
         for(String ruta:List.of("/","/empresas","/usuarios","/reservas","/visitas","/pendientes","/evaluaciones"))assertFalse(get(ruta).body().contains("aria-label=\"Atrás\""),ruta);for(String ruta:List.of("/puestos/"+e.puesto1,"/cuenta/contrasena","/empresas/"+e.empresaA))assertTrue(get(ruta).body().contains("aria-label=\"Atrás\""),ruta);

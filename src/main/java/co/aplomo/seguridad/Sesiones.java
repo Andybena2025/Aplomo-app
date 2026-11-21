@@ -41,6 +41,16 @@ public final class Sesiones {
         return actualizada;
     }
 
+    /** RF-001b: la consulta automática no cuenta como actividad del evaluador. */
+    public synchronized Sesion consultar(String id) {
+        Sesion sesion = sesiones.get(id);
+        if (sesion != null && !reloj.instant().isBefore(sesion.ultimoAcceso().plus(INACTIVIDAD))) {
+            sesiones.remove(id);
+            return null;
+        }
+        return sesion;
+    }
+
     /** Cierra la sesión; una cookie antigua ya no abre rutas internas (RF-001b). */
     public synchronized void cerrar(String id) { sesiones.remove(id); }
 

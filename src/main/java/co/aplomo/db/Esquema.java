@@ -9,6 +9,14 @@ public final class Esquema {
   int tabla=Sql.uno(c,"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='cuenta_empresa'",r->r.getInt(1));
   String rol=Sql.uno(c,"SELECT column_type FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='cuenta' AND column_name='rol'",r->r.getString(1));
   int notas=Sql.uno(c,"SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='reserva' AND column_name IN ('nota_administrador','nota_vista')",r->r.getInt(1));
+  int color = Sql.uno(c,
+          "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() "
+                  + "AND table_name='cuenta' AND column_name='color_agenda'",
+          fila -> fila.getInt(1));
+  if (color != 1) {
+      throw new IllegalStateException("Falta actualizar la base de datos. Corre "
+              + "scripts/migrar_paso26.sh (Mac) o migrar_paso26.bat (Windows).");
+  }
   if(tabla!=1||rol==null||!rol.contains("'EVALUADOR'")||notas!=2)throw new IllegalStateException(FALTA);
  }
 }

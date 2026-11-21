@@ -19,6 +19,8 @@
     document.querySelector('[data-contador-usuarios]').textContent = `${cantidad} ${cantidad === 1 ? 'cuenta registrada' : 'cuentas registradas'}`;
     document.querySelector('[data-usuarios-vacios]').hidden = cantidad !== 0;
   };
+  empresa.value = new URLSearchParams(location.search).get('empresa') || '';
+  actualizar();
   form.addEventListener('submit', evento => { evento.preventDefault(); actualizar(); });
   buscar.addEventListener('input', actualizar);
   rol.addEventListener('change', actualizar);

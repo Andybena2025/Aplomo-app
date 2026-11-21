@@ -1,33 +1,63 @@
 package co.aplomo.web;
-import co.aplomo.servicio.Agenda.*;import co.aplomo.seguridad.Sesiones.Sesion;import co.aplomo.modelo.Cuenta.Rol;import java.time.*;import java.time.format.*;import java.util.*;import static co.aplomo.web.Html.escapar;
-/** RF-033 (propuesta), RNF-002/007: calendario sin dependencias, adaptable y accesible. */
+
+import co.aplomo.modelo.Cuenta.Rol;
+import static co.aplomo.web.Html.escapar;
+import co.aplomo.seguridad.Sesiones.Sesion;
+import co.aplomo.servicio.Agenda.Cita;
+import co.aplomo.servicio.Agenda.Nota;
+import co.aplomo.servicio.Agenda.Vista;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+/** RF-033, RNF-002: calendario de un vistazo, con colores ajenos al riesgo RULA. */
 public final class PaginasAgenda {
- private PaginasAgenda(){}
- private static final Locale ES=Locale.forLanguageTag("es-CO");
- /** Calendario semanal o mensual de solo lectura, con alta reservada al Evaluador. */
- public static String pagina(Sesion s,Vista v){
-  String nombre=s.cuenta().rol()==Rol.ADMINISTRADOR?"Agenda":"Mi agenda";StringBuilder h=new StringBuilder(Html.encabezado("Visitas · "+nombre,nombre,s.cuenta().rol()==Rol.EVALUADOR?"<a class=\"btn p\" href=\"/reservas/nueva?fecha="+v.fecha()+"\">Nueva reserva</a>":""));
-  h.append("<p class=\"muted\">Tus visitas programadas, organizadas por fecha.</p><section class=\"card stack\"><div class=\"row between\"><h2>").append(titulo(v)).append("</h2><nav class=\"row\" aria-label=\"Fechas de agenda\">");
-  h.append(link(v,v.mes()?v.fecha().minusMonths(1):v.fecha().minusWeeks(1),v.mes(),"‹ Anterior")).append(link(v,Html.hoy(),v.mes(),"Hoy")).append(link(v,v.mes()?v.fecha().plusMonths(1):v.fecha().plusWeeks(1),v.mes(),"Siguiente ›")).append("</nav></div><div class=\"row\">").append(link(v,v.fecha(),false,"Semana")).append(link(v,v.fecha(),true,"Mes")).append("</div><form method=\"get\" class=\"row\"><input type=\"hidden\" name=\"vista\" value=\"").append(v.mes()?"mes":"semana").append("\"><input type=\"hidden\" name=\"fecha\" value=\"").append(v.fecha()).append("\">");
-  if(s.cuenta().rol()==Rol.ADMINISTRADOR){h.append("<div class=\"field\"><label for=\"agenda-evaluador\">Evaluador</label><select class=\"input\" id=\"agenda-evaluador\" name=\"evaluador\">").append(opcion("TODOS","Todos",v.filtro())).append(opcion("SIN_ASIGNAR","Sin evaluador asignado",v.filtro()));for(var e:v.evaluadores())h.append(opcion(""+e.id(),e.nombre()+(e.activo()?"":" (inactivo)"),v.filtro()));h.append("</select></div>");}
-  h.append("<label class=\"opt\"><input type=\"checkbox\" name=\"canceladas\" value=\"1\"").append(v.canceladas()?" checked":"").append(">Mostrar canceladas</label><button class=\"btn\">Aplicar filtros</button></form></section>");
-  LocalDate primero=v.mes()?v.desde().with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)):v.desde();LocalDate fin=v.mes()?v.hasta().minusDays(1).with(java.time.temporal.TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).plusDays(1):v.hasta();
-  h.append("<div class=\"agenda-grid ").append(v.mes()?"agenda-mes":"agenda-semana").append("\">");
-  for(LocalDate d=primero;d.isBefore(fin);d=d.plusDays(1)){final LocalDate dia=d;var citas=v.citas().stream().filter(c->c.ficha().reserva().fecha().equals(dia)).toList();h.append("<section class=\"card stack agenda-dia").append(d.equals(Html.hoy())?" agenda-hoy":"").append("\"><h3>").append(escapar(d.format(DateTimeFormatter.ofPattern("EEE d",ES)))).append("</h3>");
-   if(v.mes()){h.append("<a class=\"agenda-conteo\" href=\"").append(url(v,d,false)).append("\">").append(Html.plural(citas.size(),"cita")).append("</a><div class=\"agenda-mini\">");for(var c:citas.stream().limit(3).toList())h.append("<a href=\"/reservas/").append(c.ficha().reserva().id()).append("\">").append(escapar(c.ficha().reserva().inicio()+" · "+c.ficha().empresaNombre())).append("</a>");if(citas.size()>3)h.append("<a href=\"").append(url(v,d,false)).append("\">+").append(citas.size()-3).append(" más</a>");h.append("</div>");}
-   else if(citas.isEmpty())h.append("<p class=\"hint\">Sin citas</p>");else for(var c:citas)h.append(cita(c));h.append("</section>");
-  }
-  h.append("</div>");if(v.citas().isEmpty())h.append(Html.vacio(v.mes()?"Aún no tienes citas este mes.":"Aún no tienes citas esta semana.",link(v,v.mes()?v.fecha().plusMonths(1):v.fecha().plusWeeks(1),v.mes(),v.mes()?"Ver el próximo mes":"Ver la próxima semana")));
-  return Html.pagina(nombre,h.toString(),s,false,false);
- }
- /** Tarjeta enlazada de una cita, con cruce y nota sin revelar su texto en la agenda. */
- public static String cita(Cita c){var f=c.ficha();var r=f.reserva();return "<a class=\"agenda-cita stack\" href=\"/reservas/"+r.id()+"\"><b>"+r.inicio()+"–"+r.fin()+"</b><span>"+escapar(f.empresaNombre()+" · "+f.sedeNombre()+" · "+f.salonNombre())+"</span><span class=\"small\">"+escapar(r.codigo()+" · "+PaginasReservas.categoria(r.categoria()))+"</span><span class=\"tag\">"+escapar(PaginasReservas.estado(r.estado()))+"</span>"+("EN_CURSO".equals(f.estadoVisita())?"<span class=\"hint\">Visita en curso</span>":"")+(c.cruce()?"<span class=\"banner\">Se cruza con otra cita</span>":"")+(c.nota()!=null&&c.nota().texto()!=null?(c.nota().vista()?"<span class=\"hint\">Nota leída</span>":"<span class=\"tag warn\">Nota del Administrador</span>"):"")+"</a>";}
+    private PaginasAgenda() {}
+
+    /** RF-033: compone cabecera, cuadrícula y panel según el rol autorizado. */
+    public static String pagina(Sesion sesion, Vista vista) {
+        String etiqueta = sesion.cuenta().rol() == Rol.ADMINISTRADOR
+                ? "Agenda · Todos los evaluadores" : "Mi agenda";
+        String titulo = vista.fecha().format(DateTimeFormatter.ofPattern("MMMM yyyy", Locale.forLanguageTag("es-CO")));
+        titulo = Character.toUpperCase(titulo.charAt(0)) + titulo.substring(1);
+        String accion = sesion.cuenta().rol() == Rol.EVALUADOR
+                ? "<a class=\"btn p\" href=\"/reservas/nueva\">Nueva reserva</a>" : "";
+        StringBuilder pagina = new StringBuilder(Html.encabezado(etiqueta, titulo, accion));
+        pagina.append(controles(vista)).append("<div class=\"calendario-layout\"><section>")
+                .append(Calendario.cuadricula(vista)).append("</section>")
+                .append(Calendario.panel(sesion, vista)).append("</div>")
+                .append("<script src=\"/static/js/agenda.js\" defer></script>");
+        return Html.pagina(etiqueta, pagina.toString(), sesion, false, false);
+    }
+
+    private static String controles(Vista vista) {
+        LocalDate anterior = vista.mes() ? vista.fecha().minusMonths(1) : vista.fecha().minusWeeks(1);
+        LocalDate siguiente = vista.mes() ? vista.fecha().plusMonths(1) : vista.fecha().plusWeeks(1);
+        return "<nav class=\"calendario-controles\" aria-label=\"Fechas de agenda\">"
+                + link(vista, anterior, vista.mes(), "‹") + link(vista, Html.hoy(), vista.mes(), "Hoy")
+                + link(vista, siguiente, vista.mes(), "›") + "<div class=\"segmentado\">"
+                + link(vista, vista.fecha(), false, "Semana") + link(vista, vista.fecha(), true, "Mes")
+                + "</div></nav>";
+    }
+
+    /** RF-033: URL conserva el filtro elegido al navegar entre fechas. */
+    public static String url(Vista vista, LocalDate fecha, boolean mes) {
+        return "/agenda?vista=" + (mes ? "mes" : "semana") + "&amp;fecha=" + fecha
+                + (vista.evaluadores().isEmpty() ? "" : "&amp;evaluador=" + Html.escapar(vista.filtro()))
+                + (vista.canceladas() ? "&amp;canceladas=1" : "");
+    }
+
+    private static String link(Vista vista, LocalDate fecha, boolean mes, String texto) {
+        return "<a class=\"btn\" href=\"" + url(vista, fecha, mes) + "\">" + texto + "</a>";
+    }
+
+    /** RF-033: tarjeta reutilizada en Inicio; mantiene la nota privada sin publicar su texto. */
+    public static String cita(Cita cita) {
+        return Calendario.pildora(cita, false);
+    }
  /** Nota editable por Administrador; el Evaluador solo confirma su lectura. */
  public static String nota(Sesion s,int reserva,Nota n){if(s.cuenta().rol()==Rol.USUARIO)return "";if(s.cuenta().rol()==Rol.ADMINISTRADOR)return "<section class=\"card stack\"><h2>Nota para el evaluador</h2><form method=\"post\" action=\"/reservas/"+reserva+"/nota-administrador\" class=\"stack\">"+Html.csrf(s)+"<div class=\"field\"><label for=\"nota-administrador\">Nota para el evaluador</label><textarea class=\"input\" id=\"nota-administrador\" name=\"nota\" maxlength=\"500\">"+escapar(n==null?"":n.texto())+"</textarea></div><button class=\"btn\">Guardar nota</button></form></section>";
   if(n==null||n.texto()==null)return "";return "<section class=\"aviso stack\"><h2>Nota del Administrador</h2><p class=\"texto-notas\">"+escapar(n.texto())+"</p>"+(n.vista()?"<span class=\"hint\">Nota leída</span>":"<form method=\"post\" action=\"/reservas/"+reserva+"/entendido\">"+Html.csrf(s)+"<button class=\"btn\">Entendido</button></form>")+"</section>";
  }
- private static String titulo(Vista v){if(v.mes()){String t=v.fecha().format(DateTimeFormatter.ofPattern("MMMM 'de' yyyy",ES));return Character.toUpperCase(t.charAt(0))+t.substring(1);}if(v.desde().getMonth()==v.hasta().minusDays(1).getMonth()&&v.desde().getYear()==v.hasta().minusDays(1).getYear())return "Semana del "+v.desde().getDayOfMonth()+" al "+v.hasta().minusDays(1).format(DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy",ES));return "Semana del "+v.desde().format(DateTimeFormatter.ofPattern("d 'de' MMMM",ES))+" al "+v.hasta().minusDays(1).format(DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy",ES));}
- private static String opcion(String id,String texto,String elegido){return "<option value=\""+id+"\""+(id.equals(elegido)?" selected":"")+">"+escapar(texto)+"</option>";}
- private static String url(Vista v,LocalDate d,boolean mes){return "/agenda?vista="+(mes?"mes":"semana")+"&amp;fecha="+d+(v.evaluadores().isEmpty()?"":"&amp;evaluador="+v.filtro())+(v.canceladas()?"&amp;canceladas=1":"");}
- private static String link(Vista v,LocalDate d,boolean mes,String texto){String u=url(v,d,mes);if(v.evaluadores().isEmpty())u=u.replace("&amp;evaluador="+v.filtro(),"");return "<a class=\"btn\" href=\""+u+"\">"+texto+"</a>";}
+
 }

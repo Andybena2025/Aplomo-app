@@ -174,3 +174,19 @@ Detén la app. En Mac ejecuta `bash scripts/migrar_paso24.sh`; en Windows `scrip
 ## Contacto de soporte (Paso 25)
 
 Copia `config/contacto.properties.ejemplo` a `config/contacto.properties` y reemplaza los datos ficticios por el nombre, cargo, correo, teléfono y WhatsApp autorizados. Para el contacto de Gabriella, usa su nombre completo y el cargo «Administradora principal de ALINEO.»; no se incluyen correo ni teléfono reales en el repositorio. WhatsApp admite el código de país, sin signos o espacios (por ejemplo el valor ficticio de la plantilla). El archivo es privado y está ignorado por Git y Docker; en el servidor se configura localmente en config/. No hace falta reiniciar para leer un cambio. Si falta un dato, esa línea se omite y aparece «Escríbele al Administrador de tu cuenta.».
+
+
+## Actualización Paso 26
+
+1. Detén la app y ejecuta `bash scripts/migrar_paso26.sh` (Windows: `scripts\migrar_paso26.bat`).
+   Pide el administrador de MySQL y guarda primero un respaldo privado en `config/respaldos/`.
+   Solo agrega `cuenta.color_agenda CHAR(7) NULL`; repetirlo no duplica columnas ni datos.
+2. Inicia normalmente. Si falta la columna, el arranque indica que debes ejecutar la migración.
+3. La demo es voluntaria: `bash scripts/cargar_demo.sh 2026-11-27` o
+   `scripts\cargar_demo.bat 2026-11-27`. Sin fecha usa el 27/11/2026.
+   Repetir la misma fecha conserva cuentas, claves e intentos existentes y no duplica citas.
+   Las claves de demostración son temporales; las de los tres administradores del equipo no cambian.
+
+El contacto empresarial se configura solo en el archivo privado `config/contacto.properties`:
+`contacto.empresa.correo`, `contacto.empresa.telefono` y `contacto.whatsapp`.
+Los ejemplos no son datos de contacto reales. Sin WhatsApp configurado, el login dirige a Ayuda.

@@ -4,3 +4,7 @@ contacto.cargo=Responsable de ejemplo
 contacto.correo=correo@ejemplo.com
 contacto.telefono=+57 300 000 0000
 contacto.whatsapp=573000000000
+
+# Correo y teléfono de la empresa; sustituye los ejemplos por datos reales.
+contacto.empresa.correo=contacto@alineo.co
+contacto.empresa.telefono=+57 606 000 0000

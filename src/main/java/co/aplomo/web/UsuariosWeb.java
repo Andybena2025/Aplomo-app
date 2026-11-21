@@ -75,6 +75,6 @@ public final class UsuariosWeb {
         catch(IllegalArgumentException e) { throw new IllegalArgumentException("Elige un rol válido."); }
         Integer empresa=null;
         if(!f.getOrDefault("empresa","").isBlank()) empresa=id(f.get("empresa"));
-        return new Usuarios.Datos(f.get("nombre"),f.get("correo"),f.get("telefono"),f.get("cargo"),rol,empresa, f.keySet().stream().filter(k->k.startsWith("empresa_")&&f.get(k).equals("on")).map(k->id(k.substring(8))).toList().isEmpty()?(empresa==null?java.util.List.of():java.util.List.of(empresa)):f.keySet().stream().filter(k->k.startsWith("empresa_")&&f.get(k).equals("on")).map(k->id(k.substring(8))).toList());
+        return new Usuarios.Datos(f.get("nombre"),f.get("correo"),f.get("telefono"),f.get("cargo"),rol,empresa, f.keySet().stream().filter(k->k.startsWith("empresa_")&&f.get(k).equals("on")).map(k->id(k.substring(8))).toList().isEmpty()?(empresa==null?java.util.List.of():java.util.List.of(empresa)):f.keySet().stream().filter(k->k.startsWith("empresa_")&&f.get(k).equals("on")).map(k->id(k.substring(8))).toList(),f.get("colorAgenda"));
     }
 }

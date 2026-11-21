@@ -19,7 +19,7 @@ class HttpMarcaTest extends HttpPrueba {
             assertFalse(h.toLowerCase(Locale.ROOT).contains("software real"),ruta);
             assertFalse(h.contains("v1.0"),ruta);
         }
-        assertTrue(login.body().contains("Proyecto Nuclear 2026-2"));
+        assertFalse(login.body().contains("Proyecto Nuclear 2026-2"));
     }
     @Test void inicioOmiteAtrasSinQuitarElBotonDelRestoNiCrearBienvenida() throws Exception {
         entrar(admin);var inicio=get("/");assertFalse(inicio.body().contains("aria-label=\"Atrás\""));

@@ -18,7 +18,7 @@ class HttpPendientesTest extends HttpPrueba {
         var editar=get("/pendientes/"+pendiente+"/editar");assertEquals(200,editar.statusCode());
         var f=new HashMap<>(Map.of("csrf",csrf(editar),"descripcion","<script>inocuo</script>\nAjustar mesa","prioridad","ALTA","fecha","2026-11-25","puntaje","1","estado","ARREGLADO"));
         assertEquals(303,post("/pendientes/"+pendiente,f).statusCode());var p=evals.pendientes().consultar(cuenta(admin),pendiente).pendiente();assertEquals(6,p.puntaje());assertEquals("ABIERTO",p.estado());
-        var detalle=get("/pendientes/"+pendiente);assertTrue(detalle.body().contains("&lt;script&gt;inocuo&lt;/script&gt;"));assertFalse(detalle.body().contains("<script>inocuo"));assertTrue(detalle.body().contains("25 nov 2026"));
+        var detalle=get("/pendientes/"+pendiente);assertTrue(detalle.body().contains("&lt;script&gt;inocuo&lt;/script&gt;"));assertFalse(detalle.body().contains("<script>inocuo"));assertTrue(detalle.body().contains("25/11/2026"));
         assertFalse(detalle.body().contains("/fotos/"));assertTrue(get("/pendientes?estado=TODOS&orden=limite").body().contains("Ver pendiente"));
     }
     @Test void arregladoSoloPorPostConCsrfYUnaSolaAuditoria()throws Exception{

@@ -17,6 +17,38 @@ public final class Autenticacion {
     private final Transacciones tx;
     private final CuentaDao dao;
     private final Clock reloj;
+    private final java.util.Map<String, IntentosVisibles> intentosVisibles = new java.util.HashMap<>();
+    private record IntentosVisibles(int cantidad, Instant ultimo) {}
+
+    /** RF-001a, RNF-004: mismo aviso para correos existentes y desconocidos. */
+    public synchronized String mensajeFallo(String correo) {
+        String clave = correo == null ? "" : correo.strip().toLowerCase(Locale.ROOT);
+        IntentosVisibles anterior = intentosVisibles.get(clave);
+        int cantidad = anterior == null ? 1 : anterior.cantidad();
+        if (cantidad >= MAX_INTENTOS) {
+            return "Por seguridad, tu cuenta quedó bloqueada 15 minutos.";
+        }
+        String mensaje = "Correo o contraseña incorrectos.";
+        return cantidad >= 3 ? mensaje + (cantidad == 4 ? " Te queda 1 intento."
+                : " Te quedan " + (MAX_INTENTOS - cantidad) + " intentos.") : mensaje;
+    }
+
+    private synchronized void registrarResultado(String correo, boolean correcto) {
+        Instant ahora = reloj.instant();
+        intentosVisibles.values().removeIf(intento -> !ahora.isBefore(intento.ultimo().plus(BLOQUEO)));
+        if (correcto) {
+            intentosVisibles.remove(correo);
+            return;
+        }
+        IntentosVisibles anterior = intentosVisibles.get(correo);
+        if (intentosVisibles.size() >= 10000 && anterior == null) {
+            intentosVisibles.clear();
+        }
+        int cantidad = anterior == null ? 1 : Math.min(MAX_INTENTOS, anterior.cantidad() + 1);
+        Instant inicio = cantidad == MAX_INTENTOS && anterior != null && anterior.cantidad() == MAX_INTENTOS
+                ? anterior.ultimo() : ahora;
+        intentosVisibles.put(correo, new IntentosVisibles(cantidad, inicio));
+    }
 
     /** Usa MySQL y la hora local del servidor para el bloqueo (RF-001a). */
     public Autenticacion() { this(new Transacciones(),new CuentaDao(),Clock.systemDefaultZone()); }
@@ -26,7 +58,7 @@ public final class Autenticacion {
     /** Devuelve la cuenta o null con el mismo resultado para correo, clave o estado incorrectos. */
     public Cuenta ingresar(String correo, String clave) throws SQLException {
         String normalizado = correo == null ? "" : correo.strip().toLowerCase(Locale.ROOT);
-        return tx.ejecutar(con -> {
+        Cuenta resultado = tx.ejecutar(con -> {
             Cuenta c = dao.porCorreo(con,normalizado);
             if (c == null) { Contrasenas.verificar(clave,HASH_FICTICIO); return null; }
             var ahora = LocalDateTime.now(reloj);
@@ -44,6 +76,8 @@ public final class Autenticacion {
             dao.acceso(con,c.id(),0,null,Estado.ACTIVA);
             return dao.porId(con,c.id(),false);
         });
+        registrarResultado(normalizado, resultado != null);
+        return resultado;
     }
 
     /** Relee el estado y los permisos vigentes para cada petición autenticada (RF-002). */

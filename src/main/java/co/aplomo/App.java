@@ -11,7 +11,8 @@ public final class App {
 
     /** Inicia ALINEO en el puerto 8080 y registra el control de acceso central (RF-002). */
     public static void main(String[] args) throws IOException {
-        if(args.length==1&&(args[0].equals("--cargar-demo")||args[0].equals("--reiniciar-demo"))){
+        if((args.length==1||args.length==2)&&(args[0].equals("--cargar-demo")||args[0].equals("--reiniciar-demo"))){
+            if(args.length==2)System.setProperty("aplomo.demo.fecha",java.time.LocalDate.parse(args[1]).toString());
             co.aplomo.instalacion.Demo.ejecutar(args[0].equals("--reiniciar-demo"));return;
         }
         if(args.length==1&&args[0].equals("--cargar-demo-entorno")){co.aplomo.instalacion.Demo.ejecutarEntorno();return;}

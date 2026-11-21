@@ -28,7 +28,7 @@ class DemoTest extends BasePrueba {
         }
     }
     @Test void demoCompletaTieneTresColoresDosPosturasYEsIdempotente()throws Exception{
-        int cuentas=Sql.uno(con,"SELECT COUNT(*) FROM cuenta",x->x.getInt(1));cargar();int antes=Sql.uno(con,"SELECT COUNT(*) FROM evaluacion",x->x.getInt(1));cargar();assertEquals(antes,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM evaluacion",x->x.getInt(1)));assertEquals(cuentas+4,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM cuenta",x->x.getInt(1)));
+        int cuentas=Sql.uno(con,"SELECT COUNT(*) FROM cuenta",x->x.getInt(1));cargar();int antes=Sql.uno(con,"SELECT COUNT(*) FROM evaluacion",x->x.getInt(1));cargar();assertEquals(antes,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM evaluacion",x->x.getInt(1)));assertEquals(cuentas+6,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM cuenta",x->x.getInt(1)));
         for(int i=1;i<=3;i++){String nit="DEMO-APLOMO-E"+i;var colores=Sql.listar(con,"SELECT DISTINCT n.color FROM analisis_rula a JOIN fotografia f USING(id_foto) JOIN evaluacion e USING(id_evaluacion) JOIN puesto_trabajo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa em USING(id_empresa) JOIN nivel_riesgo n USING(id_nivel) WHERE em.nit=?",x->x.getString(1),nit);assertTrue(colores.containsAll(List.of("VERDE","AMARILLO","ROJO")),colores.toString());assertTrue(Sql.<Integer>uno(con,"SELECT COUNT(*) FROM visita v JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa em USING(id_empresa) WHERE em.nit=? AND v.estado='FINALIZADA' AND v.calificacion_final IS NOT NULL",x->x.getInt(1),nit)>0);}
         int dobles=Sql.uno(con,"SELECT COUNT(*) FROM (SELECT p.id_puesto FROM evaluacion e JOIN puesto_trabajo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa em USING(id_empresa) WHERE em.nit IN ('DEMO-APLOMO-E1','DEMO-APLOMO-E2','DEMO-APLOMO-E3') GROUP BY p.id_puesto HAVING COUNT(DISTINCT e.criterio)=2) q",x->x.getInt(1));assertTrue(dobles>=3);assertTrue(Files.list(archivos).count()>=18);
     }
@@ -68,7 +68,35 @@ class DemoTest extends BasePrueba {
     @Test void rolesDemoAsignacionesNotasYResultadosPropiosNoSeDuplican()throws Exception{
         cargar();var ce=new co.aplomo.dao.CuentaEmpresaDao();var consultas=new co.aplomo.servicio.Consultas(tx);
         int total=Sql.uno(con,"SELECT COUNT(*) FROM cuenta_empresa",r->r.getInt(1));cargar();assertEquals(total,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM cuenta_empresa",r->r.getInt(1)));
-        for(int n=1;n<=2;n++){var evaluador=dao.porCorreo(con,"evaluador"+n+"@rula.local");assertEquals(co.aplomo.modelo.Cuenta.Rol.EVALUADOR,evaluador.rol());assertTrue(evaluador.temporal());assertTrue(co.aplomo.seguridad.Contrasenas.verificar("Cambiar2026",evaluador.hash()));assertEquals(n==1?2:1,ce.ids(con,evaluador.id()).size());dao.contrasena(con,evaluador.id(),evaluador.hash(),false);assertFalse(consultas.propias(cuenta(evaluador.id()),java.util.Map.of()).filas().isEmpty());var usuarioDemo=dao.porCorreo(con,"usuario"+n+"@rula.local");assertEquals(n==1?2:1,ce.ids(con,usuarioDemo.id()).size());}
-        assertTrue(Sql.<Integer>uno(con,"SELECT COUNT(*) FROM reserva WHERE codigo LIKE 'DEMO24-%' AND nota_administrador IS NOT NULL AND nota_vista=FALSE",r->r.getInt(1))>0);
+        for(String prefijo:List.of("andres", "johan", "gabriella")) {
+            String correo=prefijo+(prefijo.equals("gabriella")?".evaluadora@rula.local":".evaluador@rula.local");
+            var evaluador=dao.porCorreo(con,correo);
+            assertEquals(co.aplomo.modelo.Cuenta.Rol.EVALUADOR,evaluador.rol());
+            assertTrue(evaluador.temporal());
+            assertTrue(co.aplomo.seguridad.Contrasenas.verificar("Cambiar2026",evaluador.hash()));
+            assertEquals(2,ce.ids(con,evaluador.id()).size());
+            dao.contrasena(con,evaluador.id(),evaluador.hash(),false);
+            assertFalse(consultas.propias(cuenta(evaluador.id()),java.util.Map.of()).filas().isEmpty());
+        }
+        assertEquals(1,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM reserva WHERE codigo='V2620261127' "
+                +"AND nota_administrador IS NULL AND estado='EN_COLA'",fila->fila.getInt(1)));
+        assertEquals(0,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM cuenta_empresa e JOIN cuenta_empresa u "
+                +"ON e.id_empresa=u.id_empresa JOIN cuenta ce ON ce.id_cuenta=e.id_cuenta "
+                +"JOIN cuenta cu ON cu.id_cuenta=u.id_cuenta WHERE e.activo=TRUE AND u.activo=TRUE "
+                +"AND ce.rol='EVALUADOR' AND cu.rol='USUARIO' "
+                +"AND SUBSTRING_INDEX(ce.correo,'.',1)=SUBSTRING_INDEX(cu.correo,'.',1)",fila->fila.getInt(1)));
+        assertEquals(0,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM reserva a JOIN salon la ON la.id_salon=a.id_salon "
+                +"JOIN sede sa ON sa.id_sede=la.id_sede JOIN cuenta_empresa ca ON ca.id_empresa=sa.id_empresa "
+                +"AND ca.activo=TRUE JOIN cuenta qa ON qa.id_cuenta=ca.id_cuenta AND qa.rol='EVALUADOR' "
+                +"AND qa.estado='ACTIVA' JOIN cuenta_empresa cb ON cb.id_cuenta=ca.id_cuenta AND cb.activo=TRUE "
+                +"JOIN sede sb ON sb.id_empresa=cb.id_empresa JOIN salon lb ON lb.id_sede=sb.id_sede "
+                +"JOIN reserva b ON b.id_salon=lb.id_salon AND b.id_reserva>a.id_reserva AND b.fecha=a.fecha "
+                +"AND b.hora_inicio<a.hora_fin AND b.hora_fin>a.hora_inicio "
+                +"WHERE a.estado<>'CANCELADA' AND b.estado<>'CANCELADA'",fila->fila.getInt(1)));
+        assertEquals(0,Sql.<Integer>uno(con,"SELECT COUNT(*) FROM reserva a JOIN reserva b "
+                +"ON a.id_administrador=b.id_administrador AND a.fecha=b.fecha AND a.id_reserva<b.id_reserva "
+                +"AND a.hora_inicio<b.hora_fin AND b.hora_inicio<a.hora_fin WHERE a.codigo LIKE 'D26%' "
+                +"AND b.codigo LIKE 'D26%' AND a.estado<>'CANCELADA' AND b.estado<>'CANCELADA'",fila->fila.getInt(1)));
+
     }
 }

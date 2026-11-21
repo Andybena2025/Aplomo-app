@@ -1,23 +1,72 @@
 package co.aplomo.instalacion;
-import co.aplomo.dao.*;import co.aplomo.db.*;import co.aplomo.modelo.*;import co.aplomo.seguridad.Contrasenas;import co.aplomo.servicio.*;import java.sql.*;import java.time.*;import java.nio.file.*;import java.util.*;import java.io.*;
-/** Paso 24: cuentas y citas ficticias, carga explícita e idempotente. Nunca modifica cuentas del equipo. */
+
+import co.aplomo.dao.CuentaDao;
+import co.aplomo.dao.CuentaEmpresaDao;
+import co.aplomo.db.Sql;
+import co.aplomo.modelo.Cuenta;
+import co.aplomo.seguridad.Contrasenas;
+import co.aplomo.servicio.ColoresAgenda;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+/** RF-002/033: seis cuentas ficticias del equipo, sin alterar sus administradores reales. */
 final class DemoRoles {
- private DemoRoles(){}
- static void cargar(Connection c,Path fotos,int admin)throws SQLException,IOException{
-  var cuentas=new CuentaDao();var ce=new CuentaEmpresaDao();int[] empresas=new int[3];for(int i=0;i<3;i++){Integer id=Sql.uno(c,"SELECT id_empresa FROM empresa WHERE nit=?",r->r.getInt(1),"DEMO-APLOMO-E"+(i+1));if(id==null)throw new IllegalArgumentException("Faltan empresas de demostración.");empresas[i]=id;}
-  List<Integer> evaluadores=new ArrayList<>();for(int i=1;i<=4;i++){boolean evaluador=i<=2;int n=evaluador?i:i-2;String correo=(evaluador?"evaluador":"usuario")+n+"@rula.local";String nombre=evaluador?(n==1?"Evaluadora Demo Uno":"Evaluador Demo Dos"):"Usuario Demo "+(n==1?"Uno":"Dos");var rol=evaluador?Cuenta.Rol.EVALUADOR:Cuenta.Rol.USUARIO;var existente=cuentas.porCorreo(c,correo);int id;
-   if(existente!=null){if(!existente.nombre().equals(nombre)||existente.rol()!=rol)throw new IllegalArgumentException("Un correo de demostración ya pertenece a otra cuenta. No se cambió esa cuenta.");id=existente.id();}
-   else id=cuentas.crear(c,nombre,correo,"0000000000","Demostración",rol,null,Contrasenas.cifrar("Cambiar2026"));
-   var asignadas=n==1?List.of(empresas[0],empresas[1]):List.of(empresas[2]);ce.validar(c,id,rol,asignadas,existente==null||existente.estado()!=Cuenta.Estado.INACTIVA);ce.sincronizar(c,admin,id,asignadas,false);if(evaluador)evaluadores.add(id);
-  }
-  var hoy=LocalDate.now(ZoneId.of("America/Bogota"));var lunes=hoy.with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));var reloj=Clock.fixed(Instant.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS),ZoneId.of("America/Bogota"));
-  for(int i=0;i<3;i++){int responsable=evaluadores.get(i<2?0:1);int salon=Sql.uno(c,"SELECT l.id_salon FROM salon l JOIN sede s USING(id_sede) WHERE s.id_empresa=? AND l.activo=TRUE AND EXISTS(SELECT 1 FROM puesto_trabajo p WHERE p.id_salon=l.id_salon AND p.activo=TRUE) ORDER BY l.id_salon LIMIT 1",r->r.getInt(1),empresas[i]);
-   for(int semana=0;semana<2;semana++){String codigo="DEMO24-"+(i+1)+"-"+semana;LocalDate fecha=lunes.plusWeeks(semana).plusDays(2);if(Sql.<Integer>uno(c,"SELECT COUNT(*) FROM reserva WHERE codigo=?",r->r.getInt(1),codigo)==0)Sql.insertar(c,"INSERT INTO reserva(id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,estado,nota_administrador) VALUES(?,?,?,?,?,?,?,?,?,?)",salon,responsable,codigo,fecha,LocalTime.of(9,i==1?30:0),LocalTime.of(11,0),"SEGUIMIENTO","DEMO24 · Cita de agenda","EN_COLA",i==0&&semana==0?"Revisa los apoyos del puesto durante esta visita.":null);}
-   String codigo="D24-RES-"+(i+1);Integer res=Sql.uno(c,"SELECT id_reserva FROM reserva WHERE codigo=?",r->r.getInt(1),codigo);if(res!=null)continue;
-   int reserva=Sql.insertar(c,"INSERT INTO reserva(id_salon,id_administrador,codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,estado) VALUES(?,?,?,?,?,?,?,?,?)",salon,responsable,codigo,hoy,LocalTime.of(21,0),LocalTime.of(22,0),"EVALUACION_INICIAL","DEMO24 · Evaluación del Evaluador","EN_COLA");int visita=new VisitaDao().iniciar(c,reserva,LocalDateTime.now(reloj));int puesto=Sql.uno(c,"SELECT id_puesto FROM puesto_trabajo WHERE id_salon=? AND activo=TRUE ORDER BY numero LIMIT 1",r->r.getInt(1),salon);
-   var original=cuentas.porId(c,responsable,false);if(original.estado()!=Cuenta.Estado.ACTIVA)continue;boolean temporal=original.temporal();if(temporal)cuentas.contrasena(c,responsable,original.hash(),false);
-   try{var actor=cuentas.porId(c,responsable,false);var tx=new Transacciones(()->DemoCompleta.sinConfirmar(c));var ev=new Evaluaciones(tx,reloj,new Fotos(fotos),new BitacoraDao());byte[] bytes;try(var in=DemoRoles.class.getResourceAsStream("/static/img/demo/08_laboratorio_buena_postura_perfil.jpg")){bytes=in.readAllBytes();}ev.guardar(actor,visita,new Evaluaciones.Datos(puesto,"DEMO24 · Postura revisada","MAS_INADECUADA","",120,false,false,false,false,false,false,"Caso ficticio para consultar Mis evaluaciones.",true,false),List.of(new Fotos.Entrada(bytes,"PERFIL","Muestra ficticia; no es una valoración real.")),List.of(new Analisis.Solicitud(0,DemoCompleta.entrada(i%3))));new Visitas(tx,reloj).finalizar(actor,visita,"DEMO24 · Resultado de práctica del Evaluador");}
-   finally{if(temporal)cuentas.contrasena(c,responsable,original.hash(),true);}
-  }
- }
+    private DemoRoles() {}
+
+    static void cargar(Connection conexion, Path fotos, int administrador) throws SQLException, IOException {
+        LocalDate presentacion = LocalDate.parse(System.getProperty("aplomo.demo.fecha", "2026-11-27"));
+        List<Integer> empresas = DemoPresentacion.empresas(conexion, administrador);
+        desactivarGenericas(conexion, administrador);
+        List<Integer> evaluadores = new ArrayList<>();
+        String[] nombres = {"Andrés Benavides", "Johan Zapata", "Laura Gabriella Romero"};
+        String[] correos = {"andres", "johan", "gabriella"};
+        int[][] asignaciones = {{2, 1}, {0, 3}, {4, 5}};
+        int[] empresasUsuario = {4, 2, 0};
+        for (int indice = 0; indice < nombres.length; indice++) {
+            String sufijo = indice == 2 ? ".evaluadora@rula.local" : ".evaluador@rula.local";
+            int evaluador = cuenta(conexion, nombres[indice], correos[indice] + sufijo, Cuenta.Rol.EVALUADOR);
+            List<Integer> elegidas = List.of(empresas.get(asignaciones[indice][0]),
+                    empresas.get(asignaciones[indice][1]));
+            new CuentaEmpresaDao().validar(conexion, evaluador, Cuenta.Rol.EVALUADOR, elegidas, true);
+            new CuentaEmpresaDao().sincronizar(conexion, administrador, evaluador, elegidas, false);
+            ColoresAgenda.guardar(conexion, evaluador, ColoresAgenda.PALETA.get(indice));
+            evaluadores.add(evaluador);
+            String usuario = correos[indice] + (indice == 2 ? ".usuaria@rula.local" : ".usuario@rula.local");
+            int cuenta = cuenta(conexion, nombres[indice], usuario, Cuenta.Rol.USUARIO);
+            new CuentaEmpresaDao().sincronizar(conexion, administrador, cuenta,
+                    List.of(empresas.get(empresasUsuario[indice])), false);
+        }
+        DemoPresentacion.citas(conexion, fotos, administrador, empresas, evaluadores, presentacion);
+        HorariosDemo.conciliar(conexion, administrador);
+    }
+
+    private static int cuenta(Connection conexion, String nombre, String correo, Cuenta.Rol rol) throws SQLException {
+        CuentaDao cuentas = new CuentaDao();
+        Cuenta existente = cuentas.porCorreo(conexion, correo);
+        if (existente != null) {
+            if (!existente.nombre().equals(nombre) || existente.rol() != rol) {
+                throw new IllegalArgumentException("Un correo de demostración pertenece a otra cuenta. No se modificó.");
+            }
+            return existente.id();
+        }
+        return cuentas.crear(conexion, nombre, correo, "0000000000", "Demostración", rol, null,
+                Contrasenas.cifrar("Cambiar2026"));
+    }
+
+    private static void desactivarGenericas(Connection conexion, int administrador) throws SQLException {
+        for (String correo : List.of("evaluador1", "evaluador2", "usuario1", "usuario2")) {
+            Cuenta cuenta = new CuentaDao().porCorreo(conexion, correo + "@rula.local");
+            if (cuenta == null) continue;
+            if (!cuenta.cargo().equals("Demostración") || cuenta.rol() == Cuenta.Rol.ADMINISTRADOR) {
+                throw new IllegalArgumentException("Una cuenta genérica ya tiene otro uso. No se cambió.");
+            }
+            Sql.actualizar(conexion, "UPDATE cuenta SET estado='INACTIVA' WHERE id_cuenta=?", cuenta.id());
+            new CuentaEmpresaDao().sincronizar(conexion, administrador, cuenta.id(), List.of(), false);
+        }
+    }
 }

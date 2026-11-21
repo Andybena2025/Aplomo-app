@@ -236,3 +236,21 @@ Las rutas de crear/editar sedes, salones, áreas, cargos y puestos; crear/editar
 | GET | `/ayuda` | Público / A / E / U | 200 HTML; visitante solo ingreso/contacto; A todos los temas, E sin cuentas, U 1/2/5/6/8/10 |
 
 El contacto sale de config/contacto.properties, nunca de datos del navegador. Sin el archivo o con campos incompletos aparece el respaldo. El semáforo de Ayuda se consulta en nivel_riesgo. El buscador actúa sobre el contenido que el servidor ya autorizó, sin habilitar temas por JavaScript.
+
+
+## Paso 26 · perfil, Archivo y calendario
+
+| Método | Ruta | Permiso y comportamiento |
+|---|---|---|
+| GET | `/cuenta` | Titular vigente; correo, rol y empresas de solo lectura |
+| POST | `/cuenta` | Sus datos personales; CSRF y bitácora EDITAR |
+| POST | `/cuenta/clave` | Clave actual y confirmación; rota sesiones |
+| GET | `/archivo` | Empresas con historial dentro del alcance de cada rol |
+| GET | `/archivo?empresa={id}` | Árbol sede/salón/puesto; Evaluador solo autoría propia |
+| GET | `/puestos/{id}` | Línea de tiempo autorizada; conserva gestión cuando no hay historial |
+| GET | `/mis-evaluaciones` | 303 hacia Archivo |
+| GET | `/notas/nuevas` | JSON privado del Evaluador: reserva, fecha, hora, empresa, texto; A/U 403 |
+| GET | `/agenda` | Mes por defecto; `vista=semana`, `fecha`, `evaluador` y `canceladas` |
+| GET | `/nosotros` | 303 a `/login`, sin crear sesión |
+
+El sondeo de notas no renueva la actividad de sesión. Los acuses mantienen el POST con CSRF existente.

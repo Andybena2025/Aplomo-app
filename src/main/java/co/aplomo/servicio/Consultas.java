@@ -9,6 +9,10 @@ public final class Consultas {
     public record Detalle(Fila evaluacion,List<AnalisisDao.Resumen> analisis) {}
     private final Transacciones tx;private final ConsultaDao dao=new ConsultaDao();
     /** Comparte la fuente transaccional con la aplicación y sus pruebas reversibles. */ public Consultas(Transacciones tx){this.tx=tx;}
+    /** RF-024: archivo comparte la conexión y el alcance de estas consultas. */
+    public Archivo archivo() {
+        return new Archivo(tx);
+    }
     /** Consulta y filtra solo los datos permitidos para la cuenta vigente. */
     public Pagina listar(Cuenta actor,SeccionConsulta seccion,Map<String,String> peticion)throws SQLException{
         return tx.ejecutar(c->{var a=AccesoDatos.vigente(c,actor);var empresa=AccesoDatos.empresaPermitida(a);boolean usuario=a.rol()==Cuenta.Rol.USUARIO;var catalogos=new HashMap<>(dao.catalogos(c,empresa,!usuario));if(a.rol()!=Cuenta.Rol.ADMINISTRADOR)catalogos.remove("evaluador");else{var opciones=new ArrayList<>(catalogos.get("evaluador"));opciones.add(new Opcion(-1,0,0,"Sin registro"));catalogos.put("evaluador",opciones);}var riesgos=dao.riesgos(c);if(usuario&&peticion.containsKey("registros"))throw new SecurityException("Acceso denegado. El filtro Registros requiere una cuenta de Administrador.");Map<String,String> filtros=validar(seccion,peticion,catalogos,riesgos);

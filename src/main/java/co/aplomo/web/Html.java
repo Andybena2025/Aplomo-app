@@ -23,13 +23,13 @@ public final class Html {
     /** Formato "20 nov 2026" como en el mock (RNF-007). */
     public static String fecha(LocalDate fecha) {
         if (fecha == null) return "";
-        return fecha.getDayOfMonth() + " " + MESES[fecha.getMonthValue() - 1] + " " + fecha.getYear();
+        return fecha.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
     /** Formato "20 nov 2026 14:00" para marcas de tiempo (RNF-007). */
     public static String fechaHora(LocalDateTime valor) {
         if (valor == null) return "—";
-        return fecha(valor.toLocalDate()) + " " + String.format("%02d:%02d", valor.getHour(), valor.getMinute());
+        return fecha(valor.toLocalDate()) + " " + String.format("%d:%02d", valor.getHour(), valor.getMinute());
     }
 
     /** Hoy en la zona horaria del sistema (RNF-007). */
@@ -61,7 +61,13 @@ public final class Html {
 
     /** "1 reserva", "3 reservas": singular cuando n == 1, plural en otro caso (RNF-007). */
     public static String plural(int n, String singular) {
-        return n + " " + (n == 1 ? singular : singular + "s");
+        String plural = switch (singular) {
+            case "evaluación" -> "evaluaciones";
+            case "evaluador" -> "evaluadores";
+            case "salón" -> "salones";
+            default -> singular + "s";
+        };
+        return n + " " + (n == 1 ? singular : plural);
     }
 
     /** Evita doble punto cuando un nombre ya termina en punto, como "S.A.S." (RNF-007). */
@@ -90,14 +96,28 @@ public final class Html {
             if (entrada == null) throw new IOException("No está disponible la página de ingreso.");
             // Reemplazar solo huecos originales impide interpretar texto del usuario como plantilla.
             String plantilla = new String(entrada.readAllBytes(),StandardCharsets.UTF_8);
-            var patron = java.util.regex.Pattern.compile("\\{\\{(mensaje|csrf|correo)\\}\\}");
+            var patron = java.util.regex.Pattern.compile("\\{\\{(mensaje|csrf|correo|contacto)\\}\\}");
             var matcher = patron.matcher(plantilla);
             return matcher.replaceAll(m -> java.util.regex.Matcher.quoteReplacement(switch (m.group(1)) {
                 case "mensaje" -> aviso(mensaje,false);
                 case "csrf" -> escapar(s.csrf());
+                case "contacto" -> contactoLogin();
                 default -> escapar(correo);
             }));
         }
+    }
+
+    private static String notas(Sesion sesion) {
+        if (sesion == null || sesion.cuenta() == null || sesion.cuenta().temporal()
+                || sesion.cuenta().rol() != Rol.EVALUADOR) return "";
+        return "<div data-notas-csrf=\"" + escapar(sesion.csrf()) + "\"></div>"
+                + "<script src=\"/static/js/notas.js\" defer></script>";
+    }
+
+    private static String contactoLogin() {
+        var contacto = co.aplomo.config.Contacto.leer(java.nio.file.Path.of(
+                System.getProperty("aplomo.contacto.archivo", "config/contacto.properties")));
+        return contacto.whatsapp().isBlank() ? "/ayuda" : "https://wa.me/" + contacto.whatsapp();
     }
 
     /** Genera una página con cabecera igual al mock: atrás, logo, pestañas, nombre+avatar, salir (RF-002). */
@@ -147,6 +167,7 @@ public final class Html {
 
     /** Permite que Inicio omita Atrás sin afectar el resto de páginas. */
     public static String pagina(String titulo, String contenido, Sesion s, boolean conPagehead, boolean atras) {
+        contenido += notas(s);
         String cabecera = "";
         if (s != null && s.cuenta() != null) {
             Cuenta c = s.cuenta();
@@ -154,8 +175,8 @@ public final class Html {
             String rolTexto = Formularios.etiqueta(c.rol().name());
             // Pestañas de texto con la activa resaltada, como en el mock
             String[][] tabs = c.rol() == Rol.ADMINISTRADOR
-                    ? new String[][]{{"Inicio","/"}, {"Agenda","/agenda"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Pendientes","/pendientes"}, {"Usuarios","/usuarios"}}
-                    : c.rol()==Rol.EVALUADOR?new String[][]{{"Inicio","/"},{"Mi agenda","/agenda"},{"Mis evaluaciones","/mis-evaluaciones"},{"Empresas","/empresas"},{"Reservas","/reservas"},{"Visitas","/visitas"},{"Pendientes","/pendientes"}} : new String[][]{{"Inicio","/"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Pendientes","/pendientes"}};
+                    ? new String[][]{{"Inicio","/"}, {"Agenda","/agenda"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Pendientes","/pendientes"}, {"Usuarios","/usuarios"},{"Archivo","/archivo"}}
+                    : c.rol()==Rol.EVALUADOR?new String[][]{{"Inicio","/"},{"Mi agenda","/agenda"},{"Empresas","/empresas"},{"Reservas","/reservas"},{"Visitas","/visitas"},{"Pendientes","/pendientes"},{"Archivo","/archivo"}} : new String[][]{{"Inicio","/"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Pendientes","/pendientes"},{"Archivo","/archivo"}};
             StringBuilder nav = new StringBuilder();
             if (!c.temporal()) {
                 for (String[] tab : tabs) {
@@ -173,7 +194,7 @@ public final class Html {
                     + "<div class=\"who\"><div class=\"meta\" style=\"text-align:right\"><div>"
                     + escapar(c.nombre()) + "</div><div class=\"muted small\">" + escapar(rolTexto) + "</div></div>"
                     + "<a class=\"btn ayuda-cabecera\" href=\"/ayuda\">Ayuda</a>"
-                    + "<a href=\"/cuenta/contrasena\" class=\"avatar\" title=\"Cambiar contraseña\">" + escapar(iniciales) + "</a>"
+                    + "<a href=\"/cuenta\" class=\"avatar\" title=\"Mi cuenta\">" + escapar(iniciales) + "</a>"
                     + "<form method=\"post\" action=\"/logout\" style=\"margin:0\">" + csrf(s)
                     + "<button class=\"btn\">Salir</button></form></div>"
                     + "</div></header>";
@@ -190,7 +211,7 @@ public final class Html {
                 + "<link href=\"https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&display=swap\" rel=\"stylesheet\">"
                 + "<link rel=\"stylesheet\" href=\"/static/css/aplomo.css\">"
                 + "<script src=\"/static/js/interfaz.js\" defer></script><script src=\"/static/js/progreso.js\" defer></script><script src=\"/static/js/cuenta.js\" defer></script><script src=\"/static/js/reservas.js\" defer></script></head><body>" + "<a class=\"saltar\" href=\"#contenido\">Saltar al contenido</a>" + cabecera + (cabecera.isEmpty()?"":laterales())
-                + "<main id=\"contenido\" class=\"wrap\" tabindex=\"-1\">" + pagehead + contenido + "</main>" + (cabecera.isEmpty()?"":pie()) + "</body></html>";
+                + "<main id=\"contenido\" class=\"wrap\" tabindex=\"-1\">" + pagehead + contenido + "</main>" + (cabecera.isEmpty()?"":pie()) + notas(s) + "</body></html>";
     }
 
     private static String icono(int altura) { return String.format(LOGO_SVG,altura,altura,0,0).replace(" style=\"margin-bottom:0px;margin-right:0px\"",""); }
