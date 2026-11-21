@@ -53,7 +53,7 @@ public abstract class BasePrueba {
             ps.setObject(1,empresa); ps.setString(2,"Prueba <script>sin ejecutar</script>");
             ps.setString(3,UUID.randomUUID()+"@prueba.invalid"); ps.setString(4,"123"); ps.setString(5,"Pruebas");
             ps.setString(6,hash); ps.setBoolean(7,temporal); ps.setString(8,rol); ps.executeUpdate();
-            try (var rs=ps.getGeneratedKeys()) { rs.next(); return rs.getInt(1); }
+            try (var rs=ps.getGeneratedKeys()) { rs.next(); int id=rs.getInt(1);if(empresa!=null&&rol.equals("USUARIO"))Sql.insertar(con,"INSERT INTO cuenta_empresa(id_cuenta,id_empresa,fecha_asignacion) VALUES (?,?,NOW())",id,empresa);return id; }
         }
     }
 

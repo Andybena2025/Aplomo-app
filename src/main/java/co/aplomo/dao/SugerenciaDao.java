@@ -1,4 +1,5 @@
 package co.aplomo.dao;
+import co.aplomo.seguridad.AccesoDatos.Alcance;
 import co.aplomo.db.Sql;import co.aplomo.modelo.Sugerencia;import java.sql.*;import java.util.*;
 /** RF-023a/b, RF-002: reglas y sugerencias parametrizadas, sin eliminar registros ni exponer fotos. */
 public final class SugerenciaDao {
@@ -12,9 +13,10 @@ public final class SugerenciaDao {
     /** Crea el acceso a sugerencias con JDBC (RNF-011). */
     public SugerenciaDao() {}
     /** Consulta el alcance y, al cambiar, bloquea primero la evaluación para serializar sus sugerencias. */
-    public Contexto contexto(Connection c,int id,int empresa,boolean finalizadas,boolean bloquear)throws SQLException {
+    public Contexto contexto(Connection c,int id,int empresa,boolean finalizadas,boolean bloquear)throws SQLException{return contexto(c,id,Alcance.exacta(empresa),finalizadas,bloquear);}
+    public Contexto contexto(Connection c,int id,Alcance empresa,boolean finalizadas,boolean bloquear)throws SQLException {
         if(bloquear)Sql.uno(c,"SELECT id_evaluacion FROM evaluacion WHERE id_evaluacion=? FOR UPDATE",r->r.getInt(1),id);
-        var contexto=Sql.uno(c,CONTEXTO+" WHERE e.id_evaluacion=? AND (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA')",SugerenciaDao::contexto,id,empresa,empresa,finalizadas);
+        var contexto=Sql.uno(c,CONTEXTO+" WHERE e.id_evaluacion=? AND "+empresa.sql("s.id_empresa")+" AND (?=FALSE OR v.estado='FINALIZADA')",SugerenciaDao::contexto,id,empresa.todas(),empresa.valor(),finalizadas);
         if(!bloquear||contexto==null)return contexto;
         var resultado=Sql.uno(c,"SELECT a.puntaje_final,a.id_nivel FROM analisis_rula a WHERE a.id_foto IN (SELECT id_foto FROM fotografia WHERE id_evaluacion=?) ORDER BY a.puntaje_final DESC,a.id_analisis DESC LIMIT 1 FOR UPDATE",r->new int[]{r.getInt(1),r.getInt(2)},id);
         if(resultado==null)return contexto;
@@ -22,8 +24,10 @@ public final class SugerenciaDao {
         var e=contexto;return new Contexto(e.evaluacion(),e.puesto(),e.numero(),e.visita(),e.empresa(),e.sede(),e.salon(),e.empresaNombre(),e.sedeNombre(),e.salonNombre(),e.postura(),resultado[0],nivel[0],Integer.parseInt(nivel[1]));
     }
     /** Lista solo sugerencias activas dentro del alcance; evaluación cero significa todas. */
-    public List<Ficha> listar(Connection c,int empresa,boolean finalizadas,int evaluacion)throws SQLException {
-        var contextos=Sql.listar(c,CONTEXTO+(evaluacion==0?" WHERE TRUE"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" AND":" WHERE")+" (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA') AND (?=0 OR e.id_evaluacion=?) ORDER BY e.id_evaluacion DESC",SugerenciaDao::contexto,empresa,empresa,finalizadas,evaluacion,evaluacion);
+    public List<Ficha> listar(Connection c,int empresa,boolean finalizadas,int evaluacion)throws SQLException {return listar(c,Alcance.exacta(empresa),finalizadas,evaluacion);}
+    /** RF-002: consulta parametrizada en el alcance vigente. */
+    public List<Ficha> listar(Connection c,Alcance empresa,boolean finalizadas,int evaluacion)throws SQLException {
+        var contextos=Sql.listar(c,CONTEXTO+(evaluacion==0?" WHERE TRUE"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" AND":" WHERE")+" "+empresa.sql("s.id_empresa")+" AND (?=FALSE OR v.estado='FINALIZADA') AND (?=0 OR e.id_evaluacion=?) ORDER BY e.id_evaluacion DESC",SugerenciaDao::contexto,empresa.todas(),empresa.valor(),finalizadas,evaluacion,evaluacion);
         List<Ficha> salida=new ArrayList<>();for(var e:contextos)for(var s:porEvaluacion(c,e.evaluacion(),true))salida.add(new Ficha(s,e));return List.copyOf(salida);
     }
     /** Lee una fila; el servicio comprueba después su empresa y visita. */

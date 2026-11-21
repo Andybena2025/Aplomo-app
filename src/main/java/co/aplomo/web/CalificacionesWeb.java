@@ -19,7 +19,7 @@ public final class CalificacionesWeb {
         if(!ruta.equals("/calificaciones")&&!ruta.startsWith("/informes/"))return false;
         if(!x.getRequestMethod().equals("GET")){x.getResponseHeaders().set("Allow","GET");Router.enviar(x,405,"Usa la vista de calificaciones o el botón Generar informe.");return true;}
         if(ruta.equals("/calificaciones")){
-            String id=Router.consulta(x).getOrDefault("empresa",s.cuenta().rol()==Cuenta.Rol.USUARIO?String.valueOf(s.cuenta().empresa()):"");
+            String id=Router.consulta(x).getOrDefault("empresa","");
             if(id.isBlank())Router.enviar(x,200,PaginasCalificaciones.elegir(s,servicio.empresas(s.cuenta())));
             else Router.enviar(x,200,PaginasCalificaciones.calificaciones(s,servicio.consultar(s.cuenta(),Validacion.entero(id,"empresa",1,Integer.MAX_VALUE))));
         }else if(ruta.matches("/informes/empresa/[1-9][0-9]*")){

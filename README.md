@@ -14,8 +14,9 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 
 | Rol | Qué puede hacer |
 |---|---|
-| **Administrador** (Ingeniero Industrial) | Todo: cuentas, empresas, sedes, salones y puestos; reservas y visitas; evaluaciones con fotos, ángulos y puntaje RULA; pendientes; sugerencias; reevaluaciones; consultas. |
-| **Usuario** (contacto de la empresa) | Inicia sesión, cambia su contraseña y **consulta** los datos de **su** empresa: reservas, resultados de visitas finalizadas, pendientes y sugerencias. Sin botones de crear ni editar, y nunca ve fotos. |
+| **Evaluador** (Ingeniero Industrial) | Trabajo de evaluación en las empresas asignadas, Mi agenda y Mis evaluaciones; sin crear empresas ni activar/desactivar. |
+| **Administrador** (maestro) | Todo: cuentas, empresas, sedes, salones y puestos; reservas y visitas; evaluaciones con fotos, ángulos y puntaje RULA; pendientes; sugerencias; reevaluaciones; consultas. |
+| **Usuario** (contacto de la empresa) | Inicia sesión, cambia su contraseña y **consulta** los datos de **sus empresas asignadas**: reservas, resultados de visitas finalizadas, pendientes y sugerencias. Sin botones de crear ni editar, y nunca ve fotos. |
 
 <p>
   <img src="docs/evidencia_paso8/inicio.jpg" alt="Inicio del Administrador" width="49%">
@@ -50,7 +51,8 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 19 | Docker: semillas, acceso, foto persistente, entorno y PORT | 🟡 Verificado; 948 Maven + 87 JS; revisión de Andy pendiente ([informe](docs/informe_paso19.md)) |
 | 20 | Sugerencia de pies sin buen apoyo desde la foto de perfil | 🟡 20B: umbral 40 %, tres perfiles con MediaPipe real; 949 Maven + 104 JS; revisión de Andy pendiente ([informe](docs/informe_paso20.md)) |
 | 22 | Portada móvil, acciones de tablas y herramienta privada de cuentas | 🟡 965 Maven + 110 JS; tamaños medidos y cuentas por servicio; revisión de Andy pendiente ([informe](docs/informe_paso22.md)) |
-| 23 | Historial de inactivos, navegación Atrás y guía manual | 🟡 984 Maven + 114 JS; historial/permisos y 40 medidas comprobados; revisión de Andy pendiente ([informe](docs/informe_paso23.md)) |
+| 23 | Historial de inactivos, navegación Atrás y guía manual | ✅ Implementado y subido; [informe](docs/informe_paso23.md) |
+| 24 | Tres roles, Mi agenda, Mis evaluaciones y notas | 🟡 Pruebas dirigidas aprobadas; suite conjunta pendiente al cerrar Paso 25 ([informe](docs/informe_paso24.md)) |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 
@@ -107,7 +109,7 @@ La tabla de qué muestra cada foto y qué debería notar el evaluador está en [
 Sin frameworks, como lo pide la guía del proyecto.
 
 - **Java 17+** con el servidor HTTP del JDK (`com.sun.net.httpserver`)
-- **MySQL 8** con JDBC y `PreparedStatement` (21 tablas, 3FN; tablas RULA y semáforo leídos de la base)
+- **MySQL 8** con JDBC y `PreparedStatement` (22 tablas, 3FN; tablas RULA y semáforo leídos de la base)
 - **jBCrypt** para contraseñas (costo 10) · **JUnit 5** para pruebas
 - **HTML, CSS y JavaScript puro**, con el estilo "Obsidian & Ivory" del prototipo
 - **Maven** (incluido con `./mvnw`, no hace falta instalarlo)
@@ -180,7 +182,7 @@ Primero inicia sesión y cambia la contraseña temporal del Administrador. Despu
 docker compose --profile demo run --build --rm demo
 ```
 
-La carga es voluntaria e idempotente: tres empresas ficticias, tres colores, doce puestos con dos posturas, fotos, pendientes, sugerencias, visitas Finalizadas y reservas futuras. No crea cuentas, no cambia contraseñas ni configuración. Las fotos se conservan en el volumen de la app. La empresa de práctica rápida es independiente y queda fuera de los contadores y consultas normales.
+La carga es voluntaria e idempotente: tres empresas ficticias, tres colores, doce puestos con dos posturas, fotos, pendientes, sugerencias, visitas Finalizadas y reservas futuras. Crea cuatro cuentas demo con contraseña temporal sin modificar cuentas existentes ni configuración. Las fotos se conservan en el volumen de la app. La empresa de práctica rápida es independiente y queda fuera de los contadores y consultas normales.
 
 
 ## Equipo
@@ -196,3 +198,11 @@ Docente: Ing. Arle Morales Ortiz.
 ## Licencia
 
 [MIT](LICENSE)
+
+## Tres roles · cambio Paso 24 (propuesta, Andy, 20 nov 2026)
+
+- Administrador maestro: todas las empresas; único que crea empresas, administra cuentas, asigna empresas y activa/desactiva catálogos.
+- Evaluador: trabajo completo en sus empresas asignadas (también historial inactivo), sin crear empresas ni activar/desactivar registros. Mi agenda y Mis evaluaciones; práctica privada.
+- Usuario: consulta una o varias empresas asignadas; resultados solo de visitas Finalizadas y nunca fotos. Reservas en todos sus estados, sin editar.
+- `cuenta_empresa` es la fuente de acceso. Quitar una asignación revoca el acceso en la siguiente petición. Una empresa admite un solo Evaluador activo. El historial de evaluaciones creadas por el Evaluador sigue disponible en solo lectura.
+- RF-029 sigue fuera de alcance: no hay registro libre.

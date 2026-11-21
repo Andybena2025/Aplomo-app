@@ -1241,3 +1241,14 @@ form[data-conversacion] .canvasbox{scroll-margin-top:100px}
  form[data-conversacion] .campo-dos-columnas:has(>[data-guia-manual]:not([hidden]))>:is(.campo-imagen,.campo-panel),form[data-conversacion] .campo-dos-columnas>[data-guia-manual]{grid-column:1;grid-row:auto;margin-top:0}
 }
 @media(prefers-reduced-motion:reduce){.manual-pulso{animation:none!important}}
+
+/* RF-033: agenda de siete días; componentes con tokens actuales. */
+.agenda-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--s2);margin-top:var(--s5)}
+.agenda-dia{min-width:0;padding:var(--s3);gap:var(--s3)}.agenda-dia h3{font-family:Inter,sans-serif;font-size:14px}
+.agenda-hoy{border-color:var(--line2)}.agenda-cita{padding:var(--s3);border:1px solid var(--line2);border-radius:12px;text-decoration:none;overflow-wrap:anywhere;font-size:13px;gap:var(--s2)}
+.agenda-cita:focus-visible{outline:2px solid var(--ivory);outline-offset:3px}.agenda-cita .tag{white-space:normal}.agenda-mini{display:grid;gap:var(--s2);font-size:12px;overflow-wrap:anywhere}.agenda-conteo{display:none;min-height:44px;align-items:center}
+@media(max-width:1024px){.agenda-semana{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:820px){.agenda-semana{grid-template-columns:1fr}.agenda-mes .agenda-mini{display:none}.agenda-mes .agenda-conteo{display:flex}.agenda-mes{gap:4px}.agenda-mes .agenda-dia{padding:4px}.agenda-mes h3{font-size:11px}.agenda-conteo{font-size:11px}}
+
+.top .wrap{flex-wrap:wrap}.top .nav{min-width:0;flex-wrap:wrap}.top .nav-tab{min-height:44px;display:inline-flex;align-items:center}.top .who{flex-shrink:0}
+@media(max-width:1100px){.top .nav{order:3;flex-basis:100%;justify-content:flex-start;gap:2px}.top .wrap{row-gap:4px}.top .who{margin-left:auto}.top .nav-tab{padding:0 8px}}

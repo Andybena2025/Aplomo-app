@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 public record Cuenta(int id, Integer empresa, String nombre, String correo, String telefono, String cargo,
                      String hash, boolean temporal, int intentos, LocalDateTime bloqueadoHasta,
                      Estado estado, Rol rol) {
-    /** Roles aprobados; no existe registro libre ni rol Evaluador (RF-002). */
-    public enum Rol { ADMINISTRADOR, USUARIO }
+    /** Roles del Paso 24; no existe registro libre (RF-002). */
+    public enum Rol { ADMINISTRADOR, EVALUADOR, USUARIO }
     /** Estado de acceso; el bloqueo temporal conserva su fecha de vencimiento (RF-001a). */
     public enum Estado { ACTIVA, INACTIVA, BLOQUEADA }
 

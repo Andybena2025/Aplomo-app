@@ -14,7 +14,7 @@ Lee este archivo completo antes de escribir código. Es la memoria del proyecto:
 ## Fuente de verdad (en este orden)
 
 1. `docs/02_requisitos_v6.md`: los **44 requisitos** (33 RF + 11 RNF) de Notion "Proyecto Nuclear 6.0".
-2. `docs/base_de_datos/Script_MySQL_RULA.sql` + `Diccionario_de_Datos.txt`: la base de datos **ya diseñada** (21 tablas, 3FN). Úsala tal cual. Si necesitas cambiarla, pregunta primero y explica por qué.
+2. `docs/base_de_datos/Script_MySQL_RULA.sql` + `Diccionario_de_Datos.txt`: la base de datos **ya diseñada** (22 tablas, 3FN). Úsala tal cual. Si necesitas cambiarla, pregunta primero y explica por qué.
 3. `docs/diagramas/`: casos de uso aprobados (CU5-01 a CU5-29), clases, objetos, dominio, actividades, estados, secuencia y E-R. La especificación de los casos de uso también está en texto: `Especificacion_Casos_de_Uso_completa.txt`.
 4. `docs/03_metodo_rula.md`: reglas exactas del cálculo.
 5. `docs/referencia/mock_app/`: el **prototipo (mock app)** que ya se presentó. Es la referencia **visual y de flujo**, no de reglas (ver diferencias abajo).
@@ -28,9 +28,15 @@ Lee este archivo completo antes de escribir código. Es la memoria del proyecto:
   - HTML, CSS y JavaScript puro;
   - **Maven** solo para las dependencias: `mysql-connector-j`, `jbcrypt` (org.mindrot) y `junit-jupiter` para las pruebas.
 - **Es una página web** (RNF-008: Chrome, Edge y Firefox), no una app de escritorio.
-- **Dos roles** (casos de uso aprobados):
-  - **Administrador**: el Ingeniero Industrial independiente. Hace todo: cuentas, empresas, reservas, visitas, evaluaciones, pendientes, sugerencias e informe.
-  - **Usuario**: el contacto de la empresa. Solo inicia sesión, cierra sesión, cambia su contraseña y consulta, busca y filtra los datos de **su propia empresa**, sin botones de crear ni editar.
+
+## Tres roles · cambio Paso 24 (propuesta, Andy, 20 nov 2026)
+
+- Administrador maestro: todas las empresas; único que crea empresas, administra cuentas, asigna empresas y activa/desactiva catálogos.
+- Evaluador: trabajo completo en sus empresas asignadas (también historial inactivo), sin crear empresas ni activar/desactivar registros. Mi agenda y Mis evaluaciones; práctica privada.
+- Usuario: consulta una o varias empresas asignadas; resultados solo de visitas Finalizadas y nunca fotos. Reservas en todos sus estados, sin editar.
+- `cuenta_empresa` es la fuente de acceso. Quitar una asignación revoca el acceso en la siguiente petición. Una empresa admite un solo Evaluador activo. El historial de evaluaciones creadas por el Evaluador sigue disponible en solo lectura.
+- RF-029 sigue fuera de alcance: no hay registro libre.
+
 - Los **permisos se revisan en el servidor** en cada petición, no solo escondiendo botones (RF-002).
 - **Nada se borra.** Se desactiva o se cancela (RF-028, RNF-009). El usuario de MySQL de la app no tiene permiso DELETE.
 - Contraseñas con **bcrypt, costo ≥ 10**; mínimo 8 caracteres, con al menos una letra y un número (RNF-004).
@@ -47,7 +53,7 @@ El mock app se hizo antes de que se aprobara el modelo final. **Copia su aspecto
 
 | Tema | Mock app (no copiar) | Software real (hacer así) |
 |---|---|---|
-| Roles | Administrador, Evaluador y Usuario | Solo **Administrador** y **Usuario** |
+| Roles | Administrador, Evaluador y Usuario | Administrador, Evaluador y Usuario; asignación por el Administrador |
 | Ingreso | Sin contraseña, botones "Entrar como" | Correo + contraseña bcrypt, bloqueo tras 5 intentos por 15 min, contraseña temporal, cierre a los 30 min sin actividad |
 | Datos | En el navegador (localStorage) | En MySQL |
 | Puntos del cuerpo | La IA (MediaPipe) los pone sola | El Administrador marca 3 puntos por ángulo y puede moverlos o escribir el ángulo a mano (RF-017). La IA es opcional y va al final, si sobra tiempo |
@@ -58,7 +64,7 @@ El mock app se hizo antes de que se aprobara el modelo final. **Copia su aspecto
 
 ## Fuera de alcance (no programar)
 
-RF-029, RF-030, RF-031 y RF-032 (marcados "Visión futura"). Rol Evaluador. Registro libre de cuentas. Las filas viejas RNF-011 "Cierre de sesión por inactividad" y RNF-012 "Capacidad de almacenamiento" de la versión 4.
+RF-029, RF-030, RF-031 y RF-032 (marcados "Visión futura"). Registro libre de cuentas. Las filas viejas RNF-011 "Cierre de sesión por inactividad" y RNF-012 "Capacidad de almacenamiento" de la versión 4.
 
 ## Cómo trabajar
 

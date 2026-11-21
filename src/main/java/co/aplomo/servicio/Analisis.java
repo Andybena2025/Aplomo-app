@@ -22,11 +22,11 @@ public final class Analisis {
     }
     /** Calcula una vista previa autorizada, sin guardar ni aceptar puntajes del navegador. */
     public MotorRula.Calculo previsualizar(Cuenta actor,int visita,MotorRula.Entrada entrada) throws SQLException {
-        return tx.ejecutar(c->{admin(c,actor);abierta(c,visita,false);tablas.cargar(c);return new MotorRula(tablas).calcular(entrada);});
+        return tx.ejecutar(c->{admin(c,actor);abierta(c,actor,visita,false);tablas.cargar(c);return new MotorRula(tablas).calcular(entrada);});
     }
     /** Autoriza una vista previa parcial sin completar respuestas desconocidas ni calcular un total. */
     public void autorizarParcial(Cuenta actor,int visita) throws SQLException {
-        tx.ejecutar(c->{admin(c,actor);abierta(c,visita,false);return null;});
+        tx.ejecutar(c->{admin(c,actor);abierta(c,actor,visita,false);return null;});
     }
     /** Inserta un análisis dentro de la transacción de una evaluación, usando las dimensiones reales de su foto. */
     int guardarEnTransaccion(Connection c,Cuenta actor,int foto,MotorRula.Entrada entrada) throws SQLException,IOException {
@@ -47,9 +47,9 @@ public final class Analisis {
     public void guardar(Cuenta actor,int evaluacion,List<Solicitud> solicitudes) throws SQLException,IOException {
         try {
             tx.ejecutar(c->{
-                Cuenta responsable=admin(c,actor);var e=new EvaluacionDao().consultar(c,evaluacion);
+                Cuenta responsable=admin(c,actor);AccesoDatos.exigirEvaluacion(c,actor,evaluacion,true);var e=new EvaluacionDao().consultar(c,evaluacion);
                 if(e==null)throw new SecurityException("La evaluación no está disponible.");
-                var previa=abierta(c,e.visita(),false);new ReservaDao().buscar(c,previa.visita().reserva(),0,true);abierta(c,e.visita(),true);
+                var previa=abierta(c,actor,e.visita(),false);new ReservaDao().buscar(c,previa.visita().reserva(),0,true);abierta(c,actor,e.visita(),true);
                 new PuestoDao().buscar(c,e.puesto(),0,true);
                 if(solicitudes==null||solicitudes.isEmpty()||solicitudes.size()>20)throw new IllegalArgumentException("Completa al menos una foto y guarda hasta veinte análisis a la vez.");
                 Set<String> vistas=new HashSet<>();
@@ -66,17 +66,17 @@ public final class Analisis {
     }
     /** Consulta el historial administrativo sin entregar fotos a un Usuario. */
     public List<AnalisisDao.Resumen> listar(Cuenta actor,int evaluacion) throws SQLException {
-        return tx.ejecutar(c->{admin(c,actor);return dao.listar(c,evaluacion);});
+        return tx.ejecutar(c->{admin(c,actor);AccesoDatos.exigirEvaluacion(c,actor,evaluacion,false);return dao.listar(c,evaluacion);});
     }
     /** Resultado histórico autorizado, con fecha y responsable (RF-021, RNF-005). */
     public record Guardado(AnalisisDao.Ficha ficha,MotorRula.Calculo calculo) {}
     /** Abre el resultado guardado sin repetir ni reemplazar un análisis. */
     public Guardado consultar(Cuenta actor,int evaluacion,int analisis) throws SQLException {
-        return tx.ejecutar(c->{admin(c,actor);var f=dao.consultar(c,analisis);if(f==null||f.evaluacion()!=evaluacion)throw new SecurityException("El análisis no está disponible.");tablas.cargar(c);return new Guardado(f,new MotorRula(tablas).restaurar(f.entrada(),dao.mediciones(c,analisis),f.puntajeA(),f.puntajeB(),f.fin()));});
+        return tx.ejecutar(c->{admin(c,actor);AccesoDatos.exigirEvaluacion(c,actor,evaluacion,false);var f=dao.consultar(c,analisis);if(f==null||f.evaluacion()!=evaluacion)throw new SecurityException("El análisis no está disponible.");tablas.cargar(c);return new Guardado(f,new MotorRula(tablas).restaurar(f.entrada(),dao.mediciones(c,analisis),f.puntajeA(),f.puntajeB(),f.fin()));});
     }
-    private static Cuenta admin(Connection c,Cuenta a)throws SQLException{var actual=AccesoDatos.vigente(c,a);Permisos.administrador(actual);return actual;}
-    private static VisitaDao.Ficha abierta(Connection c,int visita,boolean bloquear)throws SQLException{
-        var f=new VisitaDao().buscar(c,visita,0,false,bloquear);if(f==null)throw new SecurityException("La visita no está disponible.");
+    private static Cuenta admin(Connection c,Cuenta a)throws SQLException{var actual=AccesoDatos.vigente(c,a);Permisos.trabajo(actual);return actual;}
+    private static VisitaDao.Ficha abierta(Connection c,Cuenta actor,int visita,boolean bloquear)throws SQLException{
+        AccesoDatos.exigirVisita(c,actor,visita);var f=new VisitaDao().buscar(c,visita,0,false,bloquear);if(f==null)throw new SecurityException("La visita no está disponible.");
         if(!f.visita().estado().equals("EN_CURSO"))throw new IllegalArgumentException("La visita ya está finalizada. Sus análisis se conservan sin cambios.");return f;
     }
 }

@@ -15,6 +15,7 @@ public final class App {
             co.aplomo.instalacion.Demo.ejecutar(args[0].equals("--reiniciar-demo"));return;
         }
         if(args.length==1&&args[0].equals("--cargar-demo-entorno")){co.aplomo.instalacion.Demo.ejecutarEntorno();return;}
+        try(var c=co.aplomo.db.Conexion.obtener()){co.aplomo.db.Esquema.verificar(c);}catch(java.sql.SQLException e){throw new IllegalStateException("No pudimos conectar con la base de datos. Revisa MySQL y la configuración.");}
         int puerto=co.aplomo.config.Config.puerto();
         HttpServer servidor=HttpServer.create(new InetSocketAddress("0.0.0.0",puerto),0);
         servidor.createContext("/",new Router());

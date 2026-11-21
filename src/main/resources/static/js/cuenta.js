@@ -40,3 +40,7 @@ if (rol && empresa) {
   rol.addEventListener('change', actualizarEmpresa);
   actualizarEmpresa();
 }
+
+// RF-003: el rol maestro no recibe asignaciones; el servidor vuelve a validarlo.
+const grupoEmpresas=document.querySelector('[data-empresas]');
+if(rol&&grupoEmpresas){const actualizar=()=>{const oculta=rol.value==='ADMINISTRADOR';grupoEmpresas.hidden=oculta;grupoEmpresas.querySelectorAll('input').forEach(i=>{i.disabled=oculta;});};rol.addEventListener('change',actualizar);actualizar();}

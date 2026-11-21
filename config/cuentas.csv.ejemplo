@@ -1,3 +1,4 @@
 nombre,correo,rol,nit_empresa
 Nombre del administrador,admin.equipo@example.invalid,ADMINISTRADOR,
 Nombre del compañero,usuario.equipo@example.invalid,USUARIO,NIT-DE-LA-EMPRESA
+Evaluador de ejemplo,evaluador@ejemplo.com,EVALUADOR,NIT-EJEMPLO-1;NIT-EJEMPLO-2

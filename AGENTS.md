@@ -14,7 +14,7 @@ Fuente de verdad, en este orden:
 5. `CLAUDE.md` y el resto de `docs/`.
 6. El mock: `docs/referencia/mock_app/app.src.html` y `docs/referencia/mock_app/capturas/` (referencia visual y de comportamiento).
 
-Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula_ergonomia`). No cambies la base sin permiso de Andy.
+Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (22 tablas, base `rula_ergonomia`). No cambies la base sin permiso de Andy.
 
 ## Estado (actualízalo al terminar cada paso)
 
@@ -91,7 +91,7 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 2. **Se ve y se comporta IGUAL al mock:** colores, letras, barra superior, botones, tarjetas, etiquetas de estado con color, fechas "20 nov 2026", animaciones y textos con tildes. Si dudas, copia el HTML/CSS/JS del mock y adáptalo. No inventes diseños.
 3. **Funciona sin deslizar de lado** en 390 px (celular), 810 px (iPad vertical), 1080 px (iPad horizontal), 1366 px (laptop) y 1920 px (escritorio), con mouse y con el dedo. Botones de al menos 44 px en celular.
 4. **RULA:** tolerancia NEUTRO = 5° del mock (muñeca ≤5° = 1, tronco ≤5° = 1, cuello y tronco con ≤5° hacia atrás = flexión). El cálculo vive solo en `MotorRula` / `PuntuadorSegmentos` / `MedidorAngulos` / `TablasRula`; las tablas se leen de MySQL. Lo que se guarda lo calcula el servidor.
-5. **Roles:** Administrador (hace todo) y Usuario (solo consulta su empresa; nunca ve fotos ni botones de crear o editar). Los permisos se revisan en el servidor, no solo escondiendo botones.
+5. **Roles (Paso 24):** Administrador maestro; Evaluador trabaja en empresas asignadas sin crear empresas ni activar/desactivar; Usuario consulta sus empresas, resultados Finalizados y sin fotos. Alcance en cuenta_empresa; permisos en rutas y servicios.
 6. **Seguridad:** `PreparedStatement` siempre, HTML escapado, CSRF en cada POST, bcrypt, fotos con nombre aleatorio en `fotos/` (en `.gitignore`), nunca subir `config/db.properties`.
 7. **Tecnologías:** solo Java 17+, HttpServer del JDK, JDBC, MySQL, jBCrypt, JUnit 5, HTML/CSS/JS puro. Sin frameworks ni librerías nuevas.
 8. **Pruebas** en la base `rula_ergonomia_pruebas`, nunca en la real. Todo en `America/Bogota`.
@@ -148,3 +148,5 @@ Base de datos: `docs/base_de_datos/Script_MySQL_RULA.sql` (21 tablas, base `rula
 7. Actualiza la sección "Estado" de este archivo.
 
 Luego ESPERA el OK de Andy.
+
+- Paso 24 (21 nov 2026): tres roles, asignaciones múltiples, historial propio, agenda semanal/mensual y notas privadas implementados. Migración aditiva probada dos veces con conteos sin cambios y relación anterior conservada. Pruebas dirigidas y mediciones DOM sin capturas; suite completa reservada para el cierre de los Pasos 23–25. No cambiar motor, POST calcular, IA ni galería. Informe docs/informe_paso24.md.

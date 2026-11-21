@@ -1,4 +1,5 @@
 package co.aplomo.dao;
+import co.aplomo.seguridad.AccesoDatos.Alcance;
 
 import co.aplomo.db.Sql;
 import co.aplomo.modelo.Reserva;
@@ -20,15 +21,19 @@ public final class ReservaDao {
     public ReservaDao() {}
 
     /** Lista reservas de todas las empresas para Administrador o únicamente de la empresa permitida. */
-    public List<Ficha> listar(Connection con, int empresa) throws SQLException {
-        return Sql.listar(con, CONTEXTO + " WHERE (? = 0 OR s.id_empresa = ?)"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" ORDER BY r.fecha DESC, r.hora_inicio DESC, r.id_reserva DESC",
-                ReservaDao::leer, empresa, empresa);
+    public List<Ficha> listar(Connection con, int empresa) throws SQLException {return listar(con,Alcance.exacta(empresa));}
+    /** RF-002: consulta parametrizada en el alcance vigente. */
+    public List<Ficha> listar(Connection con, Alcance empresa) throws SQLException {
+        return Sql.listar(con, CONTEXTO + " WHERE "+empresa.sql("s.id_empresa")+""+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" ORDER BY r.fecha DESC, r.hora_inicio DESC, r.id_reserva DESC",
+                ReservaDao::leer, empresa.todas(),empresa.valor());
     }
 
     /** Consulta y opcionalmente bloquea la reserva, siempre dentro del alcance autorizado. */
-    public Ficha buscar(Connection con, int id, int empresa, boolean bloquear) throws SQLException {
-        return Sql.uno(con, CONTEXTO + " WHERE r.id_reserva = ? AND (? = 0 OR s.id_empresa = ?)" + (bloquear ? " FOR UPDATE" : ""),
-                ReservaDao::leer, id, empresa, empresa);
+    public Ficha buscar(Connection con, int id, int empresa, boolean bloquear) throws SQLException {return buscar(con,id,Alcance.exacta(empresa),bloquear);}
+    /** RF-002: consulta parametrizada en el alcance vigente. */
+    public Ficha buscar(Connection con, int id, Alcance empresa, boolean bloquear) throws SQLException {
+        return Sql.uno(con, CONTEXTO + " WHERE r.id_reserva = ? AND "+empresa.sql("s.id_empresa")+"" + (bloquear ? " FOR UPDATE" : ""),
+                ReservaDao::leer, id, empresa.todas(),empresa.valor());
     }
 
     /** Inserta la reserva con un código provisional visible únicamente dentro de la transacción. */

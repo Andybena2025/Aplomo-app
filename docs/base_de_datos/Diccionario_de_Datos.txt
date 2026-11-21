@@ -514,3 +514,8 @@ RNF-004     Contraseña de mínimo 8 caracteres con al menos una letra y un núm
 
                                                                                     Diccionario de datos v6 · página 16 de 16
 
+PASO 24 (propuesta, 20 nov 2026): 22 tablas.
+cuenta.rol ENUM ADMINISTRADOR/EVALUADOR/USUARIO. cuenta.id_empresa se conserva como dato legado; cuenta_empresa es la fuente.
+cuenta_empresa: id_cuenta_empresa INT PK AI; id_cuenta INT FK cuenta; id_empresa INT FK empresa; activo BOOLEAN NOT NULL DEFAULT TRUE; fecha_asignacion DATETIME NOT NULL. UNIQUE(id_cuenta,id_empresa); ambas FKs RESTRICT al borrar y actualizar. Máximo un Evaluador activo por empresa validado en servicio bajo bloqueo.
+reserva.nota_administrador VARCHAR(500) NULL; reserva.nota_vista BOOLEAN NOT NULL DEFAULT FALSE. Solo A edita y E asignado confirma.
+empresa.id_administrador y reserva.id_administrador: Cuenta que registró (Administrador o Evaluador).

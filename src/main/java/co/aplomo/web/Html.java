@@ -146,11 +146,11 @@ public final class Html {
         if (s != null && s.cuenta() != null) {
             Cuenta c = s.cuenta();
             String iniciales = iniciales(c.nombre());
-            String rolTexto = c.rol() == Rol.ADMINISTRADOR ? "Administrador" : "Usuario";
+            String rolTexto = Formularios.etiqueta(c.rol().name());
             // Pestañas de texto con la activa resaltada, como en el mock
             String[][] tabs = c.rol() == Rol.ADMINISTRADOR
-                    ? new String[][]{{"Inicio","/"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Pendientes","/pendientes"}, {"Usuarios","/usuarios"}}
-                    : new String[][]{{"Inicio","/"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Pendientes","/pendientes"}};
+                    ? new String[][]{{"Inicio","/"}, {"Agenda","/agenda"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Pendientes","/pendientes"}, {"Usuarios","/usuarios"}}
+                    : c.rol()==Rol.EVALUADOR?new String[][]{{"Inicio","/"},{"Mi agenda","/agenda"},{"Mis evaluaciones","/mis-evaluaciones"},{"Empresas","/empresas"},{"Reservas","/reservas"},{"Visitas","/visitas"},{"Pendientes","/pendientes"}} : new String[][]{{"Inicio","/"}, {"Empresas","/empresas"}, {"Reservas","/reservas"}, {"Visitas","/visitas"}, {"Pendientes","/pendientes"}};
             StringBuilder nav = new StringBuilder();
             if (!c.temporal()) {
                 for (String[] tab : tabs) {

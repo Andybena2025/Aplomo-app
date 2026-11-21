@@ -34,3 +34,15 @@ Para volver a la app normal, apaga Docker con el tercer comando y sigue el arran
 - Puerto: primero `PORT` si la plataforma lo proporciona; si no existe, `APLOMO_PUERTO`; sin ambos, 8080. El puerto debe estar entre 1 y 65535.
 
 La imagen se ejecuta con el usuario `aplomo`, sin permisos de administrador. Compose entrega las claves al arrancar; no las guarda dentro de la imagen. La cuenta de base de datos de la aplicación solo tiene SELECT, INSERT y UPDATE.
+
+## Bases Docker existentes: migración del Paso 24
+
+Las instalaciones nuevas ya tienen 22 tablas. Para un volumen existente, respalda con mysqldump antes de migrar; no uses `down -v`. Con la app detenida, ejecuta la migración en MySQL con su administrador:
+
+```sh
+docker compose exec -T db sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysqldump -u root --single-transaction rula_ergonomia' > respaldo_privado_paso24.sql
+docker compose exec -T db sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -u root rula_ergonomia' < docs/base_de_datos/migracion_paso24.sql
+docker compose up -d --build app
+```
+
+Guarda el respaldo fuera de Git. La app avisa y no inicia si falta la migración. Nunca reemplaces el esquema de un volumen existente con el script de instalación.

@@ -19,7 +19,7 @@ public final class PaginasEmpresas {
     public static String lista(Sesion sesion, List<Empresa> empresas, String aviso) {
         StringBuilder html = new StringBuilder(Html.aviso(aviso, "Datos guardados.".equals(aviso) || "Registro reactivado.".equals(aviso)));
         html.append("<div class=\"row between\"><p class=\"muted\">").append(Html.plural(empresas.size(), "empresa")).append("</p>");
-        if (admin(sesion)) html.append(enlace("/empresas/nueva", "Nueva empresa", true));
+        if (sesion.cuenta().rol()==Rol.ADMINISTRADOR) html.append(enlace("/empresas/nueva", "Nueva empresa", true));
         html.append("</div><div class=\"grid2\">");
         for (Empresa empresa : empresas) {
             html.append("<article class=\"card stack\"><div class=\"row between\"><h2>")
@@ -34,7 +34,10 @@ public final class PaginasEmpresas {
 
     /** Muestra la empresa y sus catálogos; el Usuario recibe únicamente enlaces de consulta. */
     public static String empresa(Sesion sesion, Empresa empresa, List<Sede> sedes, List<Area> areas,
-                                 List<Cargo> cargos, String aviso) {
+                                 List<Cargo> cargos, String aviso) {return empresa(sesion,empresa,sedes,areas,cargos,aviso,List.of());}
+    /** RF-003: asignaciones de la empresa, sin datos privados de cuenta. */
+    public static String empresa(Sesion sesion, Empresa empresa, List<Sede> sedes, List<Area> areas,
+                                 List<Cargo> cargos, String aviso,List<Cuenta> cuentas) {
         String ruta = "/empresas/" + empresa.id();
         StringBuilder html = new StringBuilder(Html.aviso(aviso, "Datos guardados.".equals(aviso) || "Registro reactivado.".equals(aviso)));
         html.append(avisoInactivo(sesion,empresa.activo(),"Esta empresa está desactivada.","empresa",empresa.id())).append(enlace("/empresas", "← Empresas", false)).append("<section class=\"card stack\">")
@@ -45,6 +48,7 @@ public final class PaginasEmpresas {
                 .append(acciones(sesion, ruta, empresa.activo())).append("</section>");
         String accionesPagina=enlace("/calificaciones?empresa="+empresa.id(),"Ver calificaciones",false);
         if(admin(sesion))accionesPagina+=enlace("/informes/empresa/"+empresa.id(),"Generar informe",true)+enlace("/evaluaciones?empresa="+empresa.id(),"Ver evaluaciones de la empresa",false);
+        if(sesion.cuenta().rol()==Rol.ADMINISTRADOR){html.append("<section class=\"card stack\"><h2>Cuentas de la empresa</h2>");var evaluador=cuentas.stream().filter(q->q.rol()==Rol.EVALUADOR&&q.estado()!=Cuenta.Estado.INACTIVA).findFirst();html.append("<p>Evaluador: ").append(evaluador.map(q->enlace("/usuarios/"+q.id()+"/editar",q.nombre(),false)).orElse("<span class=\"tag\">Sin evaluador asignado</span>")).append("</p><h3>Usuarios</h3>");var usuarios=cuentas.stream().filter(q->q.rol()==Rol.USUARIO).toList();if(usuarios.isEmpty())html.append("<p class=\"muted\">Sin Usuarios asignados.</p>");else for(var q:usuarios)html.append(enlace("/usuarios/"+q.id()+"/editar",q.nombre(),false));html.append("</section>");}
         html.append(seccion("Sedes", admin(sesion) && empresa.activo() ? ruta + "/sedes/nuevo" : null, "Nueva sede",enlace("/sedes?empresa="+empresa.id(),"Consultar sedes",false)));
         for (Sede sede : sedes) {
             html.append(tarjeta(sede.nombre(), sede.ciudad() + " · " + sede.direccion(), sede.activo(),
@@ -198,15 +202,15 @@ public final class PaginasEmpresas {
                 .replace(" required", " min=\"" + minimo + "\" max=\"" + maximo + "\" step=\"1\" required");
     }
 
-    private static boolean admin(Sesion sesion) { return sesion.cuenta().rol() == Rol.ADMINISTRADOR; }
+    private static boolean admin(Sesion sesion) { return sesion.cuenta().rol() != Rol.USUARIO; }
     private static String estado(boolean activo) { return "<span class=\"tag" + (activo ? " good" : "") + "\">" + (activo ? "Activo" : "Inactivo") + "</span>"; }
     private static String dato(String titulo, String valor) { return "<div><dt>" + escapar(titulo) + "</dt><dd>" + escapar(valor) + "</dd></div>"; }
 
     private static String acciones(Sesion sesion, String ruta, boolean activo) {
         if (!admin(sesion)) return "";
         return "<div class=\"row\">" + enlace(ruta + "/editar", "Editar", false)
-                + "<form method=\"post\" action=\"" + ruta + (activo ? "/desactivar" : "/activar") + "\">"
-                + Html.csrf(sesion) + "<button class=\"btn\">" + (activo ? "Desactivar" : "Reactivar") + "</button></form></div>";
+                + (sesion.cuenta().rol()!=Rol.ADMINISTRADOR?"":"<form method=\"post\" action=\"" + ruta + (activo ? "/desactivar" : "/activar") + "\">"
+                + Html.csrf(sesion) + "<button class=\"btn\">" + (activo ? "Desactivar" : "Reactivar") + "</button></form>")+"</div>";
     }
 
     private static String tarjeta(String nombre, String detalle, boolean activo, String acciones) {

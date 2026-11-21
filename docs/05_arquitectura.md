@@ -69,3 +69,13 @@ GET  /static/...            CSS, JS e imágenes
 ## Bitácora (RNF-005)
 
 Cada creación y cada cambio de estado de reserva, visita, evaluación y análisis escribe en `bitacora` quién, cuándo y qué cambió.
+
+## Tres roles · cambio Paso 24 (propuesta, Andy, 20 nov 2026)
+
+- Administrador maestro: todas las empresas; único que crea empresas, administra cuentas, asigna empresas y activa/desactiva catálogos.
+- Evaluador: trabajo completo en sus empresas asignadas (también historial inactivo), sin crear empresas ni activar/desactivar registros. Mi agenda y Mis evaluaciones; práctica privada.
+- Usuario: consulta una o varias empresas asignadas; resultados solo de visitas Finalizadas y nunca fotos. Reservas en todos sus estados, sin editar.
+- `cuenta_empresa` es la fuente de acceso. Quitar una asignación revoca el acceso en la siguiente petición. Una empresa admite un solo Evaluador activo. El historial de evaluaciones creadas por el Evaluador sigue disponible en solo lectura.
+- RF-029 sigue fuera de alcance: no hay registro libre.
+
+Mi agenda: GET /agenda (A/E), semana de Bogotá o mes, lunes primero, canceladas opcionales, cruce solo informativo. Administrador en solo lectura con filtro de Evaluador, Evaluador con Nueva reserva. Notas de hasta 500 caracteres solo A/E y acuse Entendido con CSRF. Mis evaluaciones: GET /mis-evaluaciones solo E; autor tomado de la primera bitácora CREAR de evaluacion.

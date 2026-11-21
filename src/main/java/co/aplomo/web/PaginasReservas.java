@@ -46,6 +46,10 @@ public final class PaginasReservas {
 
     /** Detalla la reserva y muestra solo las transiciones que siguen disponibles. */
     public static String detalle(Sesion sesion, Ficha ficha, String aviso, boolean exito) {
+        return detalle(sesion,ficha,aviso,exito,null);
+    }
+    /** RF-033: integra la nota privada según el rol. */
+    public static String detalle(Sesion sesion,Ficha ficha,String aviso,boolean exito,co.aplomo.servicio.Agenda.Nota nota){
         Reserva r = ficha.reserva();
         StringBuilder html = new StringBuilder(enlace("/reservas", "← Reservas", false));
         html.append(Html.aviso(aviso, exito)).append("<section class=\"card stack\"><div class=\"row between\"><h2>")
@@ -76,7 +80,7 @@ public final class PaginasReservas {
         if (ficha.visita() != null && (admin(sesion) || "FINALIZADA".equals(ficha.estadoVisita()))) {
             html.append(enlace("/visitas/" + ficha.visita(), "Ver visita", false));
         }
-        html.append("</section>");
+        html.append("</section>").append(PaginasAgenda.nota(sesion,r.id(),nota));
         return Html.pagina(r.codigo(), html.toString(), sesion,"Reservas · Detalle","");
     }
 
@@ -200,5 +204,5 @@ public final class PaginasReservas {
         return "<div><dt>" + escapar(titulo) + "</dt><dd class=\"texto-notas\">" + escapar(valor) + "</dd></div>";
     }
 
-    private static boolean admin(Sesion sesion) { return sesion.cuenta().rol() == Rol.ADMINISTRADOR; }
+    private static boolean admin(Sesion sesion) { return sesion.cuenta().rol() != Rol.USUARIO; }
 }

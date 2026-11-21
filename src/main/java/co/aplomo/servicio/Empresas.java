@@ -32,12 +32,14 @@ public final class Empresas {
     /** RNF-009, RF-028/024: abre todas las evaluaciones del puesto, solo para Administrador vigente. */
     public HistorialPuesto historialPuesto(Cuenta actor,int id)throws SQLException{
         return tx.ejecutar(con->{
-            administrador(con,actor);var p=exigir(puestos.buscar(con,id,0,false));var l=exigir(salones.buscar(con,p.salon(),0,false));
-            var s=exigir(sedes.buscar(con,l.sede(),0,false));var e=exigir(empresas.buscar(con,s.empresa(),0,false));
-            return new HistorialPuesto(p,e,s,l,p.area()==null?null:areas.buscar(con,p.area(),0,false),p.cargo()==null?null:cargos.buscar(con,p.cargo(),0,false),new ConsultaDao().historialPuesto(con,id));
+            administrador(con,actor);var p=exigir(puestos.buscar(con,id,alcance(con,actor),false));var l=exigir(salones.buscar(con,p.salon(),alcance(con,actor),false));
+            var s=exigir(sedes.buscar(con,l.sede(),alcance(con,actor),false));var e=exigir(empresas.buscar(con,s.empresa(),alcance(con,actor),false));
+            return new HistorialPuesto(p,e,s,l,p.area()==null?null:areas.buscar(con,p.area(),alcance(con,actor),false),p.cargo()==null?null:cargos.buscar(con,p.cargo(),alcance(con,actor),false),new ConsultaDao().historialPuesto(con,id));
         });
     }
 
+    /** RF-003: cuentas vinculadas, visibles solo al Administrador. */
+    public List<Cuenta> vinculadas(Cuenta actor,int empresa)throws SQLException{return tx.ejecutar(c->{Permisos.administrador(AccesoDatos.vigente(c,actor));exigir(empresas.buscar(c,empresa,0,false));return new CuentaDao().listar(c).stream().filter(q->{try{return new CuentaEmpresaDao().ids(c,q.id()).contains(empresa);}catch(SQLException e){throw new IllegalStateException(e);}}).toList();});}
     /** Lista todas las empresas para Administrador o únicamente la empresa del Usuario. */
     public List<Empresa> listar(Cuenta actor) throws SQLException {
         return tx.ejecutar(con -> empresas.buscarTodos(con, 0, alcance(con, actor)));
@@ -76,7 +78,7 @@ public final class Empresas {
     /** Lista sedes, incluidas las inactivas para conservar el acceso a su historial. */
     public List<Sede> sedes(Cuenta actor, int empresa) throws SQLException {
         return tx.ejecutar(con -> {
-            int filtro = alcance(con, actor);
+            var filtro=alcance(con, actor);
             exigir(empresas.buscar(con, empresa, filtro, false));
             return sedes.buscarTodos(con, empresa, filtro);
         });
@@ -85,7 +87,7 @@ public final class Empresas {
     /** Lista los salones de una sede autorizada. */
     public List<Salon> salones(Cuenta actor, int sede) throws SQLException {
         return tx.ejecutar(con -> {
-            int filtro = alcance(con, actor);
+            var filtro=alcance(con, actor);
             exigir(sedes.buscar(con, sede, filtro, false));
             return salones.buscarTodos(con, sede, filtro);
         });
@@ -94,7 +96,7 @@ public final class Empresas {
     /** Lista las áreas de una empresa autorizada. */
     public List<Area> areas(Cuenta actor, int empresa) throws SQLException {
         return tx.ejecutar(con -> {
-            int filtro = alcance(con, actor);
+            var filtro=alcance(con, actor);
             exigir(empresas.buscar(con, empresa, filtro, false));
             return areas.buscarTodos(con, empresa, filtro);
         });
@@ -103,7 +105,7 @@ public final class Empresas {
     /** Lista los cargos de una empresa autorizada. */
     public List<Cargo> cargos(Cuenta actor, int empresa) throws SQLException {
         return tx.ejecutar(con -> {
-            int filtro = alcance(con, actor);
+            var filtro=alcance(con, actor);
             exigir(empresas.buscar(con, empresa, filtro, false));
             return cargos.buscarTodos(con, empresa, filtro);
         });
@@ -112,7 +114,7 @@ public final class Empresas {
     /** Lista los puestos de un salón autorizado. */
     public List<Puesto> puestos(Cuenta actor, int salon) throws SQLException {
         return tx.ejecutar(con -> {
-            int filtro = alcance(con, actor);
+            var filtro=alcance(con, actor);
             exigir(salones.buscar(con, salon, filtro, false));
             return puestos.buscarTodos(con, salon, filtro);
         });
@@ -122,7 +124,8 @@ public final class Empresas {
     public Guardado guardar(Cuenta actor, Empresa datos) throws SQLException {
         return tx.ejecutar(con -> {
             Cuenta administrador = administrador(con, actor);
-            Empresa anterior = datos.id() == 0 ? null : exigir(empresas.buscar(con, datos.id(), 0, true));
+            if(datos.id()==0)Permisos.administrador(administrador);
+            Empresa anterior = datos.id() == 0 ? null : exigir(empresas.buscar(con, datos.id(), alcance(con,actor), true));
             Empresa dato = new Empresa(datos.id(), anterior == null ? administrador.id() : anterior.administrador(),
                     Validacion.texto(datos.nombre(), "nombre", 120),
                     Validacion.texto(datos.nit(), "NIT", 20).replaceAll("\\s+", ""),
@@ -130,7 +133,7 @@ public final class Empresas {
                     Validacion.opcional(datos.telefono(), "teléfono", 20), Validacion.correo(datos.correo()),
                     Validacion.opcional(datos.contacto(), "persona de contacto", 100), anterior == null || anterior.activo());
             String aviso = null;
-            for (Empresa otra : empresas.buscarTodos(con, 0, 0)) {
+            for (Empresa otra : empresas.buscarTodos(con, 0, alcance(con,actor))) {
                 if (otra.id() == dato.id()) continue;
                 if (Validacion.nombre(otra.nit()).replaceAll("\\s+", "").equals(Validacion.nombre(dato.nit()))) {
                     throw new IllegalArgumentException("El NIT ya pertenece a " + otra.nombre() + (otra.nombre().endsWith(".") ? "" : ".") + " Edita o reactiva esa empresa.");
@@ -150,15 +153,15 @@ public final class Empresas {
     public Guardado guardar(Cuenta actor, Sede datos) throws SQLException {
         return tx.ejecutar(con -> {
             administrador(con, actor);
-            Sede anterior = datos.id() == 0 ? null : exigir(sedes.buscar(con, datos.id(), 0, true));
+            Sede anterior = datos.id() == 0 ? null : exigir(sedes.buscar(con, datos.id(), alcance(con,actor), true));
             int empresa = anterior == null ? datos.empresa() : anterior.empresa();
-            Empresa padre = exigir(empresas.buscar(con, empresa, 0, true));
+            Empresa padre = exigir(empresas.buscar(con, empresa, alcance(con,actor), true));
             if (anterior == null) activo(padre.activo(), "la empresa");
             Sede dato = new Sede(datos.id(), empresa, Validacion.texto(datos.nombre(), "nombre", 100),
                     Validacion.texto(datos.direccion(), "dirección", 150), Validacion.texto(datos.ciudad(), "ciudad", 60),
                     Validacion.texto(datos.telefono(), "teléfono", 20), Validacion.texto(datos.horario(), "horario", 100),
                     Validacion.texto(datos.descripcion(), "descripción", 200), anterior == null || anterior.activo());
-            for (Sede otra : sedes.buscarTodos(con, empresa, 0)) {
+            for (Sede otra : sedes.buscarTodos(con, empresa, alcance(con,actor))) {
                 duplicado(dato.id(), dato.nombre(), otra.id(), otra.nombre());
             }
             return guardarSede(con, dato);
@@ -169,17 +172,17 @@ public final class Empresas {
     public Guardado guardar(Cuenta actor, Salon datos) throws SQLException {
         return tx.ejecutar(con -> {
             administrador(con, actor);
-            Salon anterior = datos.id() == 0 ? null : exigir(salones.buscar(con, datos.id(), 0, true));
+            Salon anterior = datos.id() == 0 ? null : exigir(salones.buscar(con, datos.id(), alcance(con,actor), true));
             int sede = anterior == null ? datos.sede() : anterior.sede();
-            Sede padre = exigir(sedes.buscar(con, sede, 0, true));
-            Empresa empresa = exigir(empresas.buscar(con, padre.empresa(), 0, true));
+            Sede padre = exigir(sedes.buscar(con, sede, alcance(con,actor), true));
+            Empresa empresa = exigir(empresas.buscar(con, padre.empresa(), alcance(con,actor), true));
             if (anterior == null) { activo(padre.activo(), "la sede"); activo(empresa.activo(), "la empresa"); }
             Salon dato = new Salon(datos.id(), sede, Validacion.texto(datos.nombre(), "nombre", 100),
                     Validacion.texto(datos.descripcion(), "descripción", 200),
                     Validacion.entero(Integer.toString(datos.piso()), "piso", -128, 127),
                     Validacion.entero(Integer.toString(datos.capacidad()), "capacidad de puestos", 1, 32767),
                     anterior == null || anterior.activo());
-            for (Salon otro : salones.buscarTodos(con, sede, 0)) {
+            for (Salon otro : salones.buscarTodos(con, sede, alcance(con,actor))) {
                 duplicado(dato.id(), dato.nombre(), otro.id(), otro.nombre());
             }
             try { return new Guardado(salones.guardar(con, dato), null); }
@@ -191,13 +194,13 @@ public final class Empresas {
     public Guardado guardar(Cuenta actor, Area datos) throws SQLException {
         return tx.ejecutar(con -> {
             administrador(con, actor);
-            Area anterior = datos.id() == 0 ? null : exigir(areas.buscar(con, datos.id(), 0, true));
+            Area anterior = datos.id() == 0 ? null : exigir(areas.buscar(con, datos.id(), alcance(con,actor), true));
             int empresa = anterior == null ? datos.empresa() : anterior.empresa();
-            Empresa padre = exigir(empresas.buscar(con, empresa, 0, true));
+            Empresa padre = exigir(empresas.buscar(con, empresa, alcance(con,actor), true));
             if (anterior == null) activo(padre.activo(), "la empresa");
             Area dato = new Area(datos.id(), empresa, Validacion.texto(datos.nombre(), "nombre", 100),
                     anterior == null || anterior.activo());
-            for (Area otra : areas.buscarTodos(con, empresa, 0)) {
+            for (Area otra : areas.buscarTodos(con, empresa, alcance(con,actor))) {
                 duplicado(dato.id(), dato.nombre(), otra.id(), otra.nombre());
             }
             try { return new Guardado(areas.guardar(con, dato), null); }
@@ -209,14 +212,14 @@ public final class Empresas {
     public Guardado guardar(Cuenta actor, Cargo datos) throws SQLException {
         return tx.ejecutar(con -> {
             administrador(con, actor);
-            Cargo anterior = datos.id() == 0 ? null : exigir(cargos.buscar(con, datos.id(), 0, true));
+            Cargo anterior = datos.id() == 0 ? null : exigir(cargos.buscar(con, datos.id(), alcance(con,actor), true));
             int empresa = anterior == null ? datos.empresa() : anterior.empresa();
-            Empresa padre = exigir(empresas.buscar(con, empresa, 0, true));
+            Empresa padre = exigir(empresas.buscar(con, empresa, alcance(con,actor), true));
             if (anterior == null) activo(padre.activo(), "la empresa");
             Cargo dato = new Cargo(datos.id(), empresa, Validacion.texto(datos.nombre(), "nombre", 100),
                     Validacion.opcion(datos.tipo(), "tipo de cargo", "OPERATIVO", "ADMINISTRATIVO", "OTRO"),
                     anterior == null || anterior.activo());
-            for (Cargo otro : cargos.buscarTodos(con, empresa, 0)) {
+            for (Cargo otro : cargos.buscarTodos(con, empresa, alcance(con,actor))) {
                 duplicado(dato.id(), dato.nombre(), otro.id(), otro.nombre());
             }
             try { return new Guardado(cargos.guardar(con, dato), null); }
@@ -228,11 +231,11 @@ public final class Empresas {
     public Guardado guardar(Cuenta actor, Puesto datos) throws SQLException {
         return tx.ejecutar(con -> {
             administrador(con, actor);
-            Puesto anterior = datos.id() == 0 ? null : exigir(puestos.buscar(con, datos.id(), 0, true));
+            Puesto anterior = datos.id() == 0 ? null : exigir(puestos.buscar(con, datos.id(), alcance(con,actor), true));
             int salon = anterior == null ? datos.salon() : anterior.salon();
-            Salon padre = exigir(salones.buscar(con, salon, 0, true));
-            Sede sede = exigir(sedes.buscar(con, padre.sede(), 0, true));
-            Empresa empresa = exigir(empresas.buscar(con, sede.empresa(), 0, true));
+            Salon padre = exigir(salones.buscar(con, salon, alcance(con,actor), true));
+            Sede sede = exigir(sedes.buscar(con, padre.sede(), alcance(con,actor), true));
+            Empresa empresa = exigir(empresas.buscar(con, sede.empresa(), alcance(con,actor), true));
             if (anterior == null) {
                 activo(padre.activo(), "el salón"); activo(sede.activo(), "la sede"); activo(empresa.activo(), "la empresa");
             }
@@ -250,7 +253,7 @@ public final class Empresas {
                     Validacion.opcion(datos.tipo(), "tipo de puesto", "ESCRITORIO", "MESA", "MOSTRADOR", "OTRO"),
                     Validacion.texto(datos.ubicacion(), "ubicación", 120), anterior == null ? null : anterior.puntaje(),
                     anterior == null || anterior.activo());
-            for (Puesto otro : puestos.buscarTodos(con, salon, 0)) {
+            for (Puesto otro : puestos.buscarTodos(con, salon, alcance(con,actor))) {
                 if (otro.id() != dato.id() && otro.numero() == dato.numero()) {
                     throw new IllegalArgumentException("El puesto " + otro.numero() + " ya existe en este salón. Edítalo o reactívalo.");
                 }
@@ -263,7 +266,7 @@ public final class Empresas {
     /** Cambia el estado de una empresa y conserva sus relaciones y su historial. */
     public void estadoEmpresa(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            administrador(con, actor);
+            Permisos.administrador(AccesoDatos.vigente(con,actor));
             exigir(empresas.buscar(con, id, 0, true));
             empresas.estado(con, id, activo);
             return null;
@@ -273,7 +276,7 @@ public final class Empresas {
     /** Cambia el estado de una sede sin borrar sus salones. */
     public void estadoSede(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            administrador(con, actor);
+            Permisos.administrador(AccesoDatos.vigente(con,actor));
             exigir(sedes.buscar(con, id, 0, true));
             sedes.estado(con, id, activo);
             return null;
@@ -283,7 +286,7 @@ public final class Empresas {
     /** Cambia el estado de un salón sin borrar sus puestos. */
     public void estadoSalon(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            administrador(con, actor);
+            Permisos.administrador(AccesoDatos.vigente(con,actor));
             exigir(salones.buscar(con, id, 0, true));
             salones.estado(con, id, activo);
             return null;
@@ -293,7 +296,7 @@ public final class Empresas {
     /** Cambia el estado de un área conservando las asignaciones existentes. */
     public void estadoArea(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            administrador(con, actor);
+            Permisos.administrador(AccesoDatos.vigente(con,actor));
             exigir(areas.buscar(con, id, 0, true));
             areas.estado(con, id, activo);
             return null;
@@ -303,7 +306,7 @@ public final class Empresas {
     /** Cambia el estado de un cargo conservando las asignaciones existentes. */
     public void estadoCargo(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            administrador(con, actor);
+            Permisos.administrador(AccesoDatos.vigente(con,actor));
             exigir(cargos.buscar(con, id, 0, true));
             cargos.estado(con, id, activo);
             return null;
@@ -313,7 +316,7 @@ public final class Empresas {
     /** Cambia el estado de un puesto y conserva su puntaje y evaluaciones. */
     public void estadoPuesto(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            administrador(con, actor);
+            Permisos.administrador(AccesoDatos.vigente(con,actor));
             exigir(puestos.buscar(con, id, 0, true));
             puestos.estado(con, id, activo);
             return null;
@@ -325,13 +328,13 @@ public final class Empresas {
         catch (SQLIntegrityConstraintViolationException e) { throw repetido(); }
     }
 
-    private static int alcance(Connection con, Cuenta actor) throws SQLException {
+    private static AccesoDatos.Alcance alcance(Connection con, Cuenta actor) throws SQLException {
         return AccesoDatos.empresaPermitida(AccesoDatos.vigente(con, actor));
     }
 
     private static Cuenta administrador(Connection con, Cuenta actor) throws SQLException {
         Cuenta actual = AccesoDatos.vigente(con, actor);
-        Permisos.administrador(actual);
+        Permisos.trabajo(actual);
         return actual;
     }
 

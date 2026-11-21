@@ -14,7 +14,7 @@ public final class PendientesWeb {
         if(ruta.equals("/pendientes")&&!post){var q=Router.consulta(x);String estado=q.getOrDefault("estado","ABIERTO"),orden=q.getOrDefault("orden","prioridad");Router.enviar(x,200,PaginasPendientes.lista(s,servicio.listar(s.cuenta(),estado,orden),estado,orden,q.get("aviso")));return;}
         if(!ruta.matches("/pendientes/[1-9][0-9]*(/(editar|arreglado))?")){Router.enviar(x,404,"Página no disponible.");return;}
         String[] partes=ruta.split("/");int id=Validacion.entero(partes[2],"pendiente",1,Integer.MAX_VALUE);String accion=partes.length>3?partes[3]:"";
-        if(post||!accion.isEmpty())Permisos.administrador(s.cuenta());
+        if(post||!accion.isEmpty())Permisos.trabajo(s.cuenta());
         var f=servicio.consultar(s.cuenta(),id);
         if(!post&&accion.isEmpty()){Router.enviar(x,200,PaginasPendientes.detalle(s,f,servicio.historial(s.cuenta(),id),Router.consulta(x).get("aviso"),true));return;}
         if(!post&&accion.equals("editar")){Router.enviar(x,200,PaginasPendientes.editar(s,f,Map.of(),null));return;}

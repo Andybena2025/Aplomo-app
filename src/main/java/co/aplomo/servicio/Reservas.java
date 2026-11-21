@@ -34,6 +34,9 @@ public final class Reservas {
         this.tx = tx; this.reloj = reloj; this.bitacora = bitacora;
     }
 
+    /** RF-033: agenda comparte fecha y transacciones. */
+    public Agenda agenda(){return new Agenda(tx,reloj);}
+
     /** Devuelve la fecha de negocio usada por el formulario y la validación. */
     public LocalDate hoy() { return LocalDate.now(reloj); }
 
@@ -51,8 +54,8 @@ public final class Reservas {
     /** Lee los catálogos activos en tres consultas, evitando opciones bajo padres desactivados. */
     public Catalogo catalogo(Cuenta actor) throws SQLException {
         return tx.ejecutar(con -> {
-            administrador(con, actor);
-            return new Catalogo(new EmpresaDao().activas(con), new SedeDao().activas(con), new SalonDao().activos(con));
+            var a=administrador(con, actor);
+            var es=new EmpresaDao().activas(con).stream().filter(e->permitida(con,a,e.id())).toList();var ids=es.stream().map(Empresa::id).toList();var ss=new SedeDao().activas(con).stream().filter(e->ids.contains(e.empresa())).toList();var si=ss.stream().map(Sede::id).toList();return new Catalogo(es,ss,new SalonDao().activos(con).stream().filter(e->si.contains(e.sede())).toList());
         });
     }
 
@@ -60,12 +63,12 @@ public final class Reservas {
     public int guardar(Cuenta actor, int id, Datos datos) throws SQLException {
         return tx.ejecutar(con -> {
             Cuenta responsable = administrador(con, actor);
-            Ficha anterior = id == 0 ? null : exigir(reservas.buscar(con, id, 0, true));
+            Ficha anterior = id == 0 ? null : exigir(reservas.buscar(con, id, AccesoDatos.empresaPermitida(responsable), true));
             if (anterior != null && !anterior.reserva().editable()) {
                 throw new IllegalArgumentException("Una reserva finalizada o cancelada no se puede editar.");
             }
             int salon = anterior == null ? datos.salon() : anterior.reserva().salon();
-            Salon lugar = new SalonDao().buscar(con, salon, 0, true);
+            Salon lugar = new SalonDao().buscar(con, salon, AccesoDatos.empresaPermitida(responsable), true);
             if (lugar == null) throw new IllegalArgumentException("Selecciona un salón existente.");
             if (anterior == null) comprobarSeleccion(con, datos, lugar);
             Reserva reserva = validar(id, salon, responsable.id(), anterior, datos);
@@ -103,7 +106,7 @@ public final class Reservas {
     private void cambiar(Cuenta actor, int id, String nuevo, String motivo) throws SQLException {
         tx.ejecutar(con -> {
             Cuenta responsable = administrador(con, actor);
-            Ficha ficha = exigir(reservas.buscar(con, id, 0, true));
+            Ficha ficha = exigir(reservas.buscar(con, id, AccesoDatos.empresaPermitida(responsable), true));
             Reserva reserva = ficha.reserva();
             if (nuevo.equals("EN_COLA") && !reserva.estado().equals("ESPERANDO")) {
                 throw new IllegalArgumentException("Solo se puede aceptar una reserva en estado Esperando.");
@@ -148,10 +151,11 @@ public final class Reservas {
 
     private static Cuenta administrador(Connection con, Cuenta actor) throws SQLException {
         Cuenta actual = AccesoDatos.vigente(con, actor);
-        Permisos.administrador(actual);
+        Permisos.trabajo(actual);
         return actual;
     }
 
+    private static boolean permitida(Connection c,Cuenta a,int e){try{AccesoDatos.exigirEmpresa(c,a,e);return true;}catch(SecurityException ex){return false;}catch(SQLException ex){throw new IllegalStateException(ex);}}
     private static Ficha exigir(Ficha ficha) {
         if (ficha == null) throw new SecurityException("La reserva no está disponible para tu cuenta.");
         return ficha;

@@ -10,7 +10,7 @@ public enum SeccionConsulta {
     PUESTOS("Puestos","puesto","numero:Puesto|ubicacion:Empresa y lugar|asignacion:Área y cargo|puntaje:Resultado|estado:Estado","empresa,sede,salon,area,cargo,numero,puntaje,color,nivel,estado,puesto,registros","ACTIVO,INACTIVO"),
     RESERVAS("Reservas","reserva","codigo:Reserva|ubicacion:Empresa y lugar|fecha:Fecha y horario|tipo:Categoría|estado:Estado","empresa,sede,salon,desde,hasta,estado","ESPERANDO,EN_COLA,FINALIZADA,CANCELADA"),
     VISITAS("Visitas","visita","codigo:Reserva|ubicacion:Empresa y lugar|fecha:Inicio real|estado:Estado|calificacion:Calificación","empresa,sede,salon,desde,hasta,estado,registros","EN_CURSO,FINALIZADA"),
-    EVALUACIONES("Evaluaciones","evaluación","fecha:Fecha|ubicacion:Empresa y lugar|numero:Puesto|puntaje:Resultado|estado:Visita","empresa,sede,salon,area,cargo,numero,desde,hasta,puntaje,color,nivel,estado,puesto,registros","EN_CURSO,FINALIZADA"),
+    EVALUACIONES("Evaluaciones","evaluación","fecha:Fecha|ubicacion:Empresa y lugar|numero:Puesto|puntaje:Resultado|estado:Visita","empresa,sede,salon,area,cargo,numero,desde,hasta,puntaje,color,nivel,estado,puesto,registros,evaluador","EN_CURSO,FINALIZADA"),
     PENDIENTES("Pendientes de arreglo","pendiente","numero:Puesto y ubicación|puntaje:Resultado|seguimiento:Seguimiento|estado:Estado","empresa,sede,salon,area,cargo,numero,desde,hasta,puntaje,color,nivel,estado,puesto,registros","ABIERTO,ARREGLADO"),
     SUGERENCIAS("Sugerencias","sugerencia","numero:Puesto|nombre:Sugerencia|origen:Origen|prioridad:Prioridad|estado:Estado","empresa,sede,salon,area,cargo,numero,desde,hasta,puntaje,color,nivel,estado,puesto,registros","PENDIENTE,EN_PROCESO,HECHA");
     /** Una columna y su clave permitida de ordenación. */

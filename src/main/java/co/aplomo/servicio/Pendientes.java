@@ -21,7 +21,7 @@ public final class Pendientes {
     public List<PendienteDao.Cambio> historial(Cuenta actor,int id)throws SQLException{return tx.ejecutar(c->{visible(c,actor,id,false);return dao.historial(c,id);});}
     /** Guarda seguimiento opcional sin imponer fechas futuras que no exigen los documentos. */
     public void guardar(Cuenta actor,int id,String descripcion,String prioridad,String fecha)throws SQLException{
-        tx.ejecutar(c->{var actual=admin(c,actor);var f=exigir(dao.buscar(c,id,0,false,true));
+        tx.ejecutar(c->{var actual=admin(c,actor);var f=exigir(dao.buscar(c,id,AccesoDatos.empresaPermitida(actual),false,true));
             String texto=Validacion.notas(descripcion);if(texto.codePointCount(0,texto.length())>255)throw new IllegalArgumentException("La descripción permite hasta 255 caracteres.");
             String p=prioridad==null||prioridad.isBlank()?null:Validacion.opcion(prioridad,"prioridad","ALTA","MEDIA","BAJA");LocalDate limite=fecha(fecha);
             var anterior=f.pendiente();if(Objects.equals(anterior.descripcion(),texto.isEmpty()?null:texto)&&Objects.equals(anterior.prioridad(),p)&&Objects.equals(anterior.limite(),limite))return null;
@@ -30,7 +30,7 @@ public final class Pendientes {
     }
     /** Marca solo este registro; un segundo envío no duplica el cambio ni su auditoría. */
     public boolean arreglar(Cuenta actor,int id)throws SQLException{
-        return tx.ejecutar(c->{var actual=admin(c,actor);var f=exigir(dao.buscar(c,id,0,false,true));if(f.pendiente().estado().equals("ARREGLADO"))return false;
+        return tx.ejecutar(c->{var actual=admin(c,actor);var f=exigir(dao.buscar(c,id,AccesoDatos.empresaPermitida(actual),false,true));if(f.pendiente().estado().equals("ARREGLADO"))return false;
             dao.arreglar(c,id);bitacora.registrar(c,actual.id(),LocalDateTime.now(reloj),"pendiente_arreglo",id,"CAMBIAR_ESTADO","ABIERTO","ARREGLADO","El Administrador confirmó que la empresa arregló el puesto.");return true;});
     }
     /** RF-022: se invoca con un resultado Rojo calculado por el servidor, bajo el bloqueo de la visita. */
@@ -42,6 +42,6 @@ public final class Pendientes {
     }
     private PendienteDao.Ficha visible(Connection c,Cuenta actor,int id,boolean bloqueo)throws SQLException{var actual=AccesoDatos.vigente(c,actor);return exigir(dao.buscar(c,id,AccesoDatos.empresaPermitida(actual),actual.rol()==Cuenta.Rol.USUARIO,bloqueo));}
     private static PendienteDao.Ficha exigir(PendienteDao.Ficha f){if(f==null)throw new SecurityException("Acceso denegado. El pendiente no está disponible para tu cuenta.");return f;}
-    private static Cuenta admin(Connection c,Cuenta a)throws SQLException{var actual=AccesoDatos.vigente(c,a);Permisos.administrador(actual);return actual;}
+    private static Cuenta admin(Connection c,Cuenta a)throws SQLException{var actual=AccesoDatos.vigente(c,a);Permisos.trabajo(actual);return actual;}
     private static LocalDate fecha(String texto){if(texto==null||texto.isBlank())return null;try{var d=LocalDate.parse(texto);if(d.getYear()<1000||d.getYear()>9999)throw new DateTimeParseException("Fuera de rango",texto,0);return d;}catch(DateTimeParseException x){throw new IllegalArgumentException("Revisa la fecha límite: escribe una fecha válida.");}}
 }

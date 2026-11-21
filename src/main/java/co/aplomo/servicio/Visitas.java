@@ -41,7 +41,7 @@ public final class Visitas {
 
     /** Acceso administrativo a puestos pendientes; no expone visitas en curso al Usuario. */
     public List<ParaEvaluar> paraEvaluar(Cuenta actor) throws SQLException {
-        return tx.ejecutar(con->{administrador(con,actor);return visitas.paraEvaluar(con);});
+        return tx.ejecutar(con->{administrador(con,actor);return visitas.paraEvaluar(con).stream().filter(f->{try{AccesoDatos.exigirVisita(con,actor,f.visita());return true;}catch(SecurityException ex){return false;}catch(SQLException ex){throw new IllegalStateException(ex);}}).toList();});
     }
 
     /** Práctica comparte las transacciones y el reloj, sin usar privilegios de MySQL adicionales. */
@@ -73,7 +73,7 @@ public final class Visitas {
     public int iniciar(Cuenta actor, int reserva) throws SQLException {
         return tx.ejecutar(con -> {
             Cuenta responsable = administrador(con, actor);
-            ReservaDao.Ficha ficha = reservas.buscar(con, reserva, 0, true);
+            ReservaDao.Ficha ficha = reservas.buscar(con, reserva, AccesoDatos.empresaPermitida(responsable), true);
             if (ficha == null) throw new SecurityException("La reserva no está disponible para tu cuenta.");
             if (!ficha.reserva().estado().equals("EN_COLA")) {
                 throw new IllegalArgumentException("Primero acepta la reserva para iniciar la visita desde En cola.");
@@ -97,6 +97,7 @@ public final class Visitas {
     public void finalizar(Cuenta actor, int id, String notas) throws SQLException {
         tx.ejecutar(con -> {
             Cuenta responsable = administrador(con, actor);
+            AccesoDatos.exigirVisita(con,responsable,id);
             Ficha inicial = exigir(visitas.buscar(con, id, 0, false, false));
             // Orden único de bloqueo: reserva y después visita, igual que al iniciar o cancelar.
             ReservaDao.Ficha reserva = reservas.buscar(con, inicial.visita().reserva(), 0, true);
@@ -138,12 +139,13 @@ public final class Visitas {
 
     private Ficha visible(Connection con, Cuenta actor, int id) throws SQLException {
         Cuenta actual = AccesoDatos.vigente(con, actor);
-        return exigir(visitas.buscar(con, id, AccesoDatos.empresaPermitida(actual), actual.rol() == Rol.USUARIO, false));
+        if(actual.rol()!=Rol.USUARIO){AccesoDatos.exigirVisita(con,actual,id);return exigir(visitas.buscar(con,id,0,false,false));}
+        return exigir(visitas.buscar(con, id, AccesoDatos.empresaPermitida(actual), true, false));
     }
 
     private static Cuenta administrador(Connection con, Cuenta actor) throws SQLException {
         Cuenta actual = AccesoDatos.vigente(con, actor);
-        Permisos.administrador(actual);
+        Permisos.trabajo(actual);
         return actual;
     }
 

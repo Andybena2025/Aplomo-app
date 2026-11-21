@@ -27,7 +27,7 @@ public final class UsuariosWeb {
         if(ruta.equals("/usuarios") && !post) {
             String q=x.getRequestURI().getRawQuery();
             String aviso="guardado=1".equals(q) ? "Cuenta actualizada." : "creado=1".equals(q) ? "Cuenta creada." : null;
-            Router.enviar(x,200,PaginasUsuarios.lista(s,usuarios.listar(s.cuenta()),usuarios.empresas(s.cuenta()),aviso)); return;
+            Router.enviar(x,200,PaginasUsuarios.lista(s,usuarios.listar(s.cuenta()),usuarios.empresas(s.cuenta()),usuarios.asignaciones(s.cuenta()),aviso)); return;
         }
         if(ruta.equals("/usuarios/nuevo") && !post) {
             Router.enviar(x,200,PaginasUsuarios.formulario(s,null,usuarios.empresas(s.cuenta()),Map.of(),null)); return;
@@ -36,7 +36,7 @@ public final class UsuariosWeb {
         boolean edicion=m.matches() && m.group(2).equals("editar");
         int id=m.matches() ? id(m.group(1)) : 0;
         if(edicion && !post) {
-            Router.enviar(x,200,PaginasUsuarios.formulario(s,usuarios.consultar(s.cuenta(),id),usuarios.empresas(s.cuenta()),Map.of(),null)); return;
+            Router.enviar(x,200,PaginasUsuarios.formulario(s,usuarios.consultar(s.cuenta(),id),usuarios.empresas(s.cuenta()),seleccion(s,id),null)); return;
         }
         if(post && (ruta.equals("/usuarios") || edicion)) {
             Cuenta anterior=edicion ? usuarios.consultar(s.cuenta(),id) : null;
@@ -63,6 +63,7 @@ public final class UsuariosWeb {
         Router.enviar(x,404,Html.pagina("Página no disponible","<a href=\"/usuarios\">Volver a usuarios</a>",s));
     }
 
+    private Map<String,String> seleccion(Sesion s,int id)throws SQLException{var m=new java.util.HashMap<String,String>();for(int e:usuarios.asignaciones(s.cuenta()).getOrDefault(id,java.util.List.of()))m.put("empresa_"+e,"on");return m;}
     private static int id(String texto) {
         try { return Integer.parseInt(texto); }
         catch(NumberFormatException e) { throw new IllegalArgumentException("La cuenta no existe. Vuelve a la lista de usuarios."); }
@@ -74,6 +75,6 @@ public final class UsuariosWeb {
         catch(IllegalArgumentException e) { throw new IllegalArgumentException("Elige un rol válido."); }
         Integer empresa=null;
         if(!f.getOrDefault("empresa","").isBlank()) empresa=id(f.get("empresa"));
-        return new Usuarios.Datos(f.get("nombre"),f.get("correo"),f.get("telefono"),f.get("cargo"),rol,empresa);
+        return new Usuarios.Datos(f.get("nombre"),f.get("correo"),f.get("telefono"),f.get("cargo"),rol,empresa, f.keySet().stream().filter(k->k.startsWith("empresa_")&&f.get(k).equals("on")).map(k->id(k.substring(8))).toList().isEmpty()?(empresa==null?java.util.List.of():java.util.List.of(empresa)):f.keySet().stream().filter(k->k.startsWith("empresa_")&&f.get(k).equals("on")).map(k->id(k.substring(8))).toList());
     }
 }

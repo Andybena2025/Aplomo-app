@@ -44,7 +44,7 @@ class UsuariosTest extends BasePrueba {
         assertEquals(antes.id(),despues.id()); assertEquals(antes.hash(),despues.hash());
         assertEquals(antes.estado(),despues.estado()); assertEquals("Nombre nuevo",despues.nombre());
         usuarios.editar(cuenta(admin),usuario,datos(correoNuevo(),Rol.ADMINISTRADOR,null),"");
-        assertEquals(Rol.ADMINISTRADOR,cuenta(usuario).rol()); assertNull(cuenta(usuario).empresa());
+        assertEquals(Rol.ADMINISTRADOR,cuenta(usuario).rol()); assertEquals(empresa,cuenta(usuario).empresa());assertTrue(new CuentaEmpresaDao().ids(con,usuario).isEmpty());
     }
 
     @Test void desactivaSinBorrarYReactiva() throws Exception {

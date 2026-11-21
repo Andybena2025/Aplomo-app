@@ -37,18 +37,18 @@ public final class ReservasWeb {
             return;
         }
         if (ruta.equals("/reservas/catalogo") && !post) {
-            Permisos.administrador(sesion.cuenta());
+            Permisos.trabajo(sesion.cuenta());
             Router.enviar(x, 200, PaginasReservas.selectores(reservas.catalogo(sesion.cuenta()), Router.consulta(x)));
             return;
         }
         if (Set.of("/reservas/crear-empresa", "/reservas/crear-sede", "/reservas/crear-salon").contains(ruta)) {
             if (!post) { noDisponible(x, sesion); return; }
-            Permisos.administrador(sesion.cuenta());
+            Permisos.trabajo(sesion.cuenta());
             alta(x, sesion, ruta.substring("/reservas/crear-".length()), datos);
             return;
         }
         if (ruta.equals("/reservas") || ruta.equals("/reservas/nueva")) {
-            Permisos.administrador(sesion.cuenta());
+            Permisos.trabajo(sesion.cuenta());
             if (ruta.endsWith("nueva") && post) { noDisponible(x, sesion); return; }
             var contexto = new Contexto(null, reservas.catalogo(sesion.cuenta()),
                     post ? Map.of() : Router.consulta(x), reservas.hoy());
@@ -61,11 +61,11 @@ public final class ReservasWeb {
         String accion = registro.group(2);
         Ficha ficha = reservas.consultar(sesion.cuenta(), id);
         if (accion == null && !post) {
-            Router.enviar(x, 200, PaginasReservas.detalle(sesion, ficha, aviso(x), true));
+            Router.enviar(x, 200, PaginasReservas.detalle(sesion, ficha, aviso(x), true,reservas.agenda().nota(sesion.cuenta(),id)));
             return;
         }
         if (accion == null) { noDisponible(x, sesion); return; }
-        Permisos.administrador(sesion.cuenta());
+        Permisos.trabajo(sesion.cuenta());
         if (accion.equals("editar")) {
             if (!ficha.reserva().editable()) throw new IllegalArgumentException("Una reserva finalizada o cancelada no se puede editar.");
             formulario(x, sesion, new Contexto(ficha, null, campos(ficha), reservas.hoy()), datos, post);

@@ -44,14 +44,14 @@ public final class Evaluaciones {
     public Contexto contexto(Cuenta actor, int visita) throws SQLException {
         return tx.ejecutar(con -> {
             admin(con, actor);
-            var ficha = abierta(con, visita, false);
+            var ficha = abierta(con, actor, visita, false);
             return new Contexto(ficha, dao.puestos(con, ficha.salon()));
         });
     }
 
     /** Siguiente pendiente real de esta visita, en el orden de puestos activos del salón. */
     public int siguientePendiente(Cuenta actor,int visita) throws SQLException {
-        return tx.ejecutar(con->{admin(con,actor);var ficha=abierta(con,visita,false);
+        return tx.ejecutar(con->{admin(con,actor);var ficha=abierta(con,actor,visita,false);
             var evaluados=new HashSet<Integer>();for(var e:new VisitaDao().evaluaciones(con,visita,false))evaluados.add(e.puesto());
             return dao.puestos(con,ficha.salon()).stream().filter(p->!evaluados.contains(p.id())).mapToInt(Puesto::id).findFirst().orElse(0);
         });
@@ -72,7 +72,7 @@ public final class Evaluaciones {
                 var previa = new VisitaDao().buscar(con, visita, 0, false, false);
                 if (previa == null) throw new SecurityException("La visita no está disponible.");
                 new ReservaDao().buscar(con, previa.visita().reserva(), 0, true);
-                var ficha = abierta(con, visita, true);
+                var ficha = abierta(con, actor, visita, true);
                 Datos d = validar(entrada);
                 Puesto puesto = new PuestoDao().buscar(con, d.puesto(), 0, true);
                 if (puesto == null || !puesto.activo() || puesto.salon() != ficha.salon())
@@ -122,7 +122,7 @@ public final class Evaluaciones {
 
     /** Autoriza antes de leer la ruta y entregar una foto; un Usuario nunca recibe contenido ni metadatos. */
     public Contenido foto(Cuenta actor, int id) throws SQLException, IOException {
-        var foto = tx.ejecutar(con -> { admin(con, actor); return dao.foto(con, id); });
+        var foto = tx.ejecutar(con -> { admin(con, actor); var f=dao.foto(con,id);if(f!=null)AccesoDatos.exigirEvaluacion(con,actor,f.evaluacion(),false);return f; });
         if (foto == null) throw new FileNotFoundException("Foto no disponible.");
         return new Contenido(archivos.leer(foto.nombre()), foto.nombre().endsWith(".png") ? "image/png" : "image/jpeg");
     }
@@ -130,12 +130,15 @@ public final class Evaluaciones {
     /** Abre la evaluación guardada con sus condiciones y fotografías solo para Administrador. */
     public Consulta consultar(Cuenta actor, int id) throws SQLException {
         return tx.ejecutar(con->{
-            admin(con,actor);var ficha=dao.consultar(con,id);
+            admin(con,actor);AccesoDatos.exigirEvaluacion(con,actor,id,false);var ficha=dao.consultar(con,id);
             if(ficha==null) throw new SecurityException("La evaluación no está disponible.");
             var visita=new VisitaDao().buscar(con,ficha.visita(),0,false,false);
-            return new Consulta(ficha,dao.fotos(con,id),visita!=null&&visita.visita().estado().equals("EN_CURSO"));
+            return new Consulta(ficha,dao.fotos(con,id),visita!=null&&visita.visita().estado().equals("EN_CURSO")&&asignada(con,actor,id));
         });
     }
+
+    /** RF-002: distingue el historial propio retirado de una empresa asignada actualmente. */
+    public boolean permiteTrabajo(Cuenta actor,int id)throws SQLException{return tx.ejecutar(c->{try{AccesoDatos.exigirEvaluacion(c,actor,id,true);return true;}catch(SecurityException e){return false;}});}
 
     /** Comparte el servicio de análisis para vista previa y nuevos análisis de fotos existentes. */
     public Analisis analisis() { return analisis; }
@@ -155,19 +158,20 @@ public final class Evaluaciones {
     /** Cuenta evaluaciones y colores de puestos para Inicio; el Usuario conserva su alcance anterior (RF-024). */
     public long[] resumen(Cuenta actor) throws SQLException {
         return tx.ejecutar(c->{
-            Cuenta actual=AccesoDatos.vigente(c,actor);int empresa=AccesoDatos.empresaPermitida(actual);boolean usuario=actual.rol()==Cuenta.Rol.USUARIO;
-            long evaluaciones=Sql.uno(c,"SELECT COUNT(*) FROM evaluacion e JOIN visita v USING(id_visita) JOIN puesto_trabajo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA')"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa"),r->r.getLong(1),empresa,empresa,usuario);
+            Cuenta actual=AccesoDatos.vigente(c,actor);var empresa=AccesoDatos.empresaPermitida(actual);boolean usuario=actual.rol()==Cuenta.Rol.USUARIO;
+            long evaluaciones=Sql.uno(c,"SELECT COUNT(*) FROM evaluacion e JOIN visita v USING(id_visita) JOIN puesto_trabajo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE "+empresa.sql("s.id_empresa")+" AND (?=FALSE OR v.estado='FINALIZADA')"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa"),r->r.getLong(1),empresa.todas(),empresa.valor(),usuario);
             long rojos;
             if(!usuario){
                 Map<String,Long> colores=new HashMap<>();
-                for(var fila:Sql.listar(c,"SELECT n.color,COUNT(*) FROM puesto_trabajo p JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN nivel_riesgo n ON p.ultimo_puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo WHERE TRUE"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" GROUP BY n.color",r->Map.entry(r.getString(1),r.getLong(2))))colores.put(fila.getKey(),fila.getValue());
+                for(var fila:Sql.listar(c,"SELECT n.color,COUNT(*) FROM puesto_trabajo p JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN nivel_riesgo n ON p.ultimo_puntaje BETWEEN n.puntaje_minimo AND n.puntaje_maximo WHERE "+empresa.sql("s.id_empresa")+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" GROUP BY n.color",r->Map.entry(r.getString(1),r.getLong(2)),empresa.todas(),empresa.valor()))colores.put(fila.getKey(),fila.getValue());
                 return new long[]{evaluaciones,colores.getOrDefault("ROJO",0L),colores.getOrDefault("VERDE",0L),colores.getOrDefault("AMARILLO",0L)};
             }
-            else rojos=Sql.uno(c,"SELECT COUNT(*) FROM puesto_trabajo p JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE s.id_empresa=?"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" AND EXISTS (SELECT 1 FROM nivel_riesgo n WHERE n.color=? AND (SELECT MAX(a.puntaje_final) FROM fotografia f JOIN analisis_rula a USING(id_foto) WHERE f.id_evaluacion=(SELECT MAX(e.id_evaluacion) FROM evaluacion e JOIN visita v USING(id_visita) WHERE e.id_puesto=p.id_puesto AND v.estado='FINALIZADA')) BETWEEN n.puntaje_minimo AND n.puntaje_maximo)",r->r.getLong(1),empresa,"ROJO");
+            else rojos=Sql.uno(c,"SELECT COUNT(*) FROM puesto_trabajo p JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) WHERE "+empresa.sql("s.id_empresa")+""+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" AND EXISTS (SELECT 1 FROM nivel_riesgo n WHERE n.color=? AND (SELECT MAX(a.puntaje_final) FROM fotografia f JOIN analisis_rula a USING(id_foto) WHERE f.id_evaluacion=(SELECT MAX(e.id_evaluacion) FROM evaluacion e JOIN visita v USING(id_visita) WHERE e.id_puesto=p.id_puesto AND v.estado='FINALIZADA')) BETWEEN n.puntaje_minimo AND n.puntaje_maximo)",r->r.getLong(1),empresa.todas(),empresa.valor(),"ROJO");
             return new long[]{evaluaciones,rojos};
         });
     }
 
+    private static boolean asignada(Connection c,Cuenta a,int v)throws SQLException{try{AccesoDatos.exigirEvaluacion(c,a,v,true);return true;}catch(SecurityException e){return false;}}
     private static Datos validar(Datos d) {
         if (d == null) throw new IllegalArgumentException("Completa los datos de la evaluación.");
         String postura = Validacion.texto(d.postura(), "postura o tarea", 150);
@@ -183,9 +187,10 @@ public final class Evaluaciones {
                 d.apoyapies(), d.apoyabrazos(), d.regulable(), obs, d.aceptaFotos(), d.sinFotos());
     }
     private static Cuenta admin(Connection con, Cuenta actor) throws SQLException {
-        Cuenta actual = AccesoDatos.vigente(con, actor); Permisos.administrador(actual); return actual;
+        Cuenta actual = AccesoDatos.vigente(con, actor); Permisos.trabajo(actual); return actual;
     }
-    private static VisitaDao.Ficha abierta(Connection con, int id, boolean bloquear) throws SQLException {
+    private static VisitaDao.Ficha abierta(Connection con, Cuenta actor, int id, boolean bloquear) throws SQLException {
+        AccesoDatos.exigirVisita(con,actor,id);
         var ficha = new VisitaDao().buscar(con, id, 0, false, bloquear);
         if (ficha == null) throw new SecurityException("La visita no está disponible.");
         if (!ficha.visita().estado().equals("EN_CURSO")) throw new IllegalArgumentException("Solo puedes evaluar dentro de una visita En curso.");

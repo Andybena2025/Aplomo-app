@@ -1,4 +1,5 @@
 package co.aplomo.dao;
+import co.aplomo.seguridad.AccesoDatos.Alcance;
 
 import co.aplomo.modelo.Puesto;
 import co.aplomo.db.Sql;
@@ -11,15 +12,19 @@ public final class PuestoDao {
     public PuestoDao() {}
 
     /** Consulta una fila con filtro de empresa y bloqueo opcional para las modificaciones. */
-    public Puesto buscar(Connection con, int id, int empresaPermitida, boolean bloquear) throws SQLException {
-        String consulta = seleccion(empresaPermitida>0)+" WHERE r.id_puesto = ? AND (? = 0 OR s.id_empresa = ?)" + (bloquear ? " FOR UPDATE" : "");
-        return Sql.uno(con, consulta, PuestoDao::leer, id, empresaPermitida, empresaPermitida);
+    public Puesto buscar(Connection con, int id, int empresaPermitida, boolean bloquear) throws SQLException {return buscar(con,id,Alcance.exacta(empresaPermitida),bloquear);}
+    /** RF-002: consulta parametrizada en el alcance vigente. */
+    public Puesto buscar(Connection con, int id, Alcance empresaPermitida, boolean bloquear) throws SQLException {
+        String consulta = seleccion(empresaPermitida.finalizadas())+" WHERE r.id_puesto = ? AND "+empresaPermitida.sql("s.id_empresa")+"" + (bloquear ? " FOR UPDATE" : "");
+        return Sql.uno(con, consulta, PuestoDao::leer, id, empresaPermitida.todas(),empresaPermitida.valor());
     }
 
     /** Lista el catálogo de un padre y limita los resultados a la empresa autorizada (RF-002). */
-    public List<Puesto> buscarTodos(Connection con, int padre, int empresaPermitida) throws SQLException {
-        return Sql.listar(con, seleccion(empresaPermitida>0)+" WHERE r.id_salon = ? AND (? = 0 OR s.id_empresa = ?) ORDER BY r.numero, r.id_puesto",
-                PuestoDao::leer, padre, empresaPermitida, empresaPermitida);
+    public List<Puesto> buscarTodos(Connection con, int padre, int empresaPermitida) throws SQLException {return buscarTodos(con,padre,Alcance.exacta(empresaPermitida));}
+    /** RF-002: consulta parametrizada en el alcance vigente. */
+    public List<Puesto> buscarTodos(Connection con, int padre, Alcance empresaPermitida) throws SQLException {
+        return Sql.listar(con, seleccion(empresaPermitida.finalizadas())+" WHERE r.id_salon = ? AND "+empresaPermitida.sql("s.id_empresa")+" ORDER BY r.numero, r.id_puesto",
+                PuestoDao::leer, padre, empresaPermitida.todas(),empresaPermitida.valor());
     }
 
     /** Guarda los datos editables y conserva el ID, las relaciones y el estado existentes. */

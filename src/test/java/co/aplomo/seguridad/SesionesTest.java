@@ -41,11 +41,11 @@ class SesionesTest {
 
     @Test void permisosPorRolEmpresaYTemporal() {
         assertThrows(SecurityException.class,()->Permisos.administrador(c));
-        assertTrue(Permisos.empresa(c,2)); assertFalse(Permisos.empresa(c,3)); assertFalse(Permisos.empresa(null,2));
+        assertThrows(SecurityException.class,()->Permisos.trabajo(c)); assertThrows(SecurityException.class,()->Permisos.trabajo(null));
         var admin=new Cuenta(2,null,"A","a@b.co","1","C","hash",false,0,null,Estado.ACTIVA,Rol.ADMINISTRADOR);
-        assertDoesNotThrow(()->Permisos.administrador(admin)); assertTrue(Permisos.empresa(admin,99));
+        assertDoesNotThrow(()->Permisos.administrador(admin)); assertDoesNotThrow(()->Permisos.trabajo(admin));
         var temporal=new Cuenta(2,null,"A","a@b.co","1","C","hash",true,0,null,Estado.ACTIVA,Rol.ADMINISTRADOR);
         assertThrows(SecurityException.class,()->Permisos.administrador(temporal));
-        assertFalse(Permisos.empresa(temporal,99));
+        assertThrows(SecurityException.class,()->Permisos.trabajo(temporal));
     }
 }

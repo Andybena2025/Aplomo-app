@@ -15,9 +15,9 @@ public final class Permisos {
         }
     }
 
-    /** Indica si la cuenta puede consultar la empresa; el DAO también debe filtrar por su ID. */
-    public static boolean empresa(Cuenta cuenta, int empresa) {
-        return cuenta != null && cuenta.estado() == Estado.ACTIVA && !cuenta.temporal()
-                && (cuenta.rol() == Rol.ADMINISTRADOR || Objects.equals(cuenta.empresa(),empresa));
-    }
+    /** RF-002: trabajo reservado a Administrador o Evaluador; el servicio comprueba la empresa. */
+    public static void trabajo(Cuenta c){if(c==null||c.estado()!=Estado.ACTIVA||c.temporal()||c.rol()==Rol.USUARIO)throw new SecurityException("Acceso denegado. Esta opción requiere una cuenta de evaluación.");}
+
+    /** RF-002: autorización de empresa con fuente cuenta_empresa, nunca la relación anterior. */
+    public static boolean empresa(java.sql.Connection c,Cuenta cuenta,int empresa)throws java.sql.SQLException{try{AccesoDatos.exigirEmpresa(c,cuenta,empresa);return true;}catch(SecurityException e){return false;}}
 }

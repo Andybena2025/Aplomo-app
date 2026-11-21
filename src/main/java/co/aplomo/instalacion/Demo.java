@@ -77,7 +77,7 @@ public final class Demo {
             String orden=parte.strip();if(orden.isEmpty()||orden.equalsIgnoreCase("START TRANSACTION")||orden.equalsIgnoreCase("COMMIT"))continue;
             try(PreparedStatement ps=con.prepareStatement(orden)){ps.execute();}
         }
-        DemoCompleta.cargar(con,fotos,admin);
+        DemoCompleta.cargar(con,fotos,admin);DemoRoles.cargar(con,fotos,admin);
     }
 
     /** Borra solo las tres empresas exactas; el llamador confirma o revierte. */

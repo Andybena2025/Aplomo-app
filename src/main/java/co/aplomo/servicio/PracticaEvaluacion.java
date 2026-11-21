@@ -17,13 +17,13 @@ public final class PracticaEvaluacion {
     public PracticaEvaluacion(Transacciones tx,Clock reloj){this.tx=tx;this.reloj=reloj;}
 
     /** Lee la visita de práctica vigente sin crear datos ni incluirla en operación. */
-    public Integer enCurso(Cuenta actor)throws SQLException{return tx.ejecutar(c->{Permisos.administrador(AccesoDatos.vigente(c,actor));return Sql.uno(c,"SELECT v.id_visita FROM visita v JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa e USING(id_empresa) WHERE e.nit=? AND v.estado='EN_CURSO' ORDER BY v.id_visita DESC LIMIT 1",rs->rs.getInt(1),NIT);});}
+    public Integer enCurso(Cuenta actor)throws SQLException{return tx.ejecutar(c->{Permisos.trabajo(AccesoDatos.vigente(c,actor));return Sql.uno(c,"SELECT v.id_visita FROM visita v JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa e USING(id_empresa) WHERE e.nit=? AND (?=TRUE OR r.id_administrador=?) AND v.estado='EN_CURSO' ORDER BY v.id_visita DESC LIMIT 1",rs->rs.getInt(1),NIT,actor.rol()==Cuenta.Rol.ADMINISTRADOR,actor.id());});}
 
     /** Reutiliza incluso un puesto evaluado; si finalizan la visita, inicia otra sin borrar intentos. */
     public Destino abrir(Cuenta actor,String tipo)throws SQLException {
         if(!Set.of("OFICINA","PLANTA").contains(tipo==null?"":tipo))throw new IllegalArgumentException("Elige Oficina o Planta para practicar.");
         return tx.ejecutar(con->{
-            Cuenta admin=AccesoDatos.vigente(con,actor);Permisos.administrador(admin);
+            Cuenta admin=AccesoDatos.vigente(con,actor);Permisos.trabajo(admin);
             // El NIT único y el bloqueo de empresa serializan también dos clics simultáneos.
             Sql.actualizar(con,"INSERT INTO empresa (id_administrador,nombre,nit,descripcion) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE id_empresa=id_empresa",admin.id(),NOMBRE,NIT,"Solo demostración. Las evaluaciones de práctica se conservan aquí.");
             int empresa=Sql.uno(con,"SELECT id_empresa FROM empresa WHERE nit=? FOR UPDATE",r->r.getInt(1),NIT);
@@ -43,7 +43,7 @@ public final class PracticaEvaluacion {
                 if(numero==(tipo.equals("OFICINA")?1:2))elegido=puesto;
             }
             if(!Boolean.TRUE.equals(Sql.uno(con,"SELECT activo FROM puesto_trabajo WHERE id_puesto=?",r->r.getBoolean(1),elegido)))throw new IllegalArgumentException("El puesto de práctica está desactivado. Actívalo en Empresas para continuar.");
-            Integer visita=Sql.uno(con,"SELECT v.id_visita FROM visita v JOIN reserva r USING(id_reserva) WHERE r.id_salon=? AND v.estado='EN_CURSO' AND r.estado='EN_COLA' ORDER BY v.id_visita DESC LIMIT 1 FOR UPDATE",r->r.getInt(1),salon);
+            Integer visita=Sql.uno(con,"SELECT v.id_visita FROM visita v JOIN reserva r USING(id_reserva) WHERE r.id_salon=? AND (?=TRUE OR r.id_administrador=?) AND v.estado='EN_CURSO' AND r.estado='EN_COLA' ORDER BY v.id_visita DESC LIMIT 1 FOR UPDATE",r->r.getInt(1),salon,admin.rol()==Cuenta.Rol.ADMINISTRADOR,admin.id());
             if(visita==null){
                 LocalDate fecha=LocalDate.now(reloj);LocalTime inicio=LocalTime.of(8,0);
                 while(Sql.<Integer>uno(con,"SELECT COUNT(*) FROM reserva WHERE id_salon=? AND fecha=? AND hora_inicio=?",r->r.getInt(1),salon,fecha,inicio)>0){inicio=inicio.plusMinutes(1);if(!inicio.isBefore(LocalTime.of(23,58))){fecha=fecha.plusDays(1);inicio=LocalTime.of(8,0);}}

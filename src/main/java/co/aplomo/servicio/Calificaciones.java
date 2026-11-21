@@ -36,7 +36,7 @@ public final class Calificaciones {
 
     /** Solo el Administrador genera una vista imprimible y solo si existe una visita Finalizada. */
     public InformeEmpresa informe(Cuenta actor,int empresa)throws SQLException {
-        return tx.ejecutar(c->{var a=AccesoDatos.vigente(c,actor);Permisos.administrador(a);
+        return tx.ejecutar(c->{var a=AccesoDatos.vigente(c,actor);Permisos.trabajo(a);
             var informe=cargar(c,a,empresa);
             if(informe.sedes().stream().allMatch(s->s.visitas().isEmpty()))
                 throw new IllegalArgumentException("Esta empresa aún no tiene visitas Finalizadas. Finaliza al menos una visita para generar el informe.");
@@ -46,7 +46,7 @@ public final class Calificaciones {
 
     private InformeEmpresa cargar(Connection c,Cuenta actor,int empresa)throws SQLException {
         if(empresa<1)throw new IllegalArgumentException("Elige una empresa para consultar sus calificaciones.");
-        int permitida=AccesoDatos.empresaPermitida(actor);
+        var permitida=AccesoDatos.empresaPermitida(actor);
         Empresa e=new EmpresaDao().buscar(c,empresa,permitida,false);
         if(e==null||co.aplomo.modelo.Demostracion.NIT_PRACTICA.equals(e.nit()))throw new SecurityException("Acceso denegado. La empresa no está disponible para tu cuenta.");
         var sedes=new SedeDao().buscarTodos(c,empresa,permitida);

@@ -85,7 +85,7 @@ Los valores marcados como "(propuesta)" son del equipo y están pendientes de va
 
 - **Módulo:** Seguridad y acceso · **Rol:** Administrador, Usuario · **Prioridad:** Media
 
-**Descripción.** El sistema deberá tener dos roles: Administrador (ingeniero industrial o analista), que gestiona el sistema y las cuentas de usuario y registra empresas, reservas, visitas, evaluaciones, pendientes, sugerencias e informes; y Usuario (persona de contacto de la empresa cliente), que solo inicia sesión y consulta, busca y filtra la información de su propia empresa (RF-024).
+**Descripción (cambio Paso 24, propuesta).** Administrador maestro gestiona todo y asigna empresas; Evaluador realiza el trabajo de evaluación en sus empresas asignadas, sin crear empresas ni activar/desactivar; Usuario consulta sus empresas y solo resultados Finalizados, sin fotos. Permisos renovados en cada petición.
 
 **Regla de negocio.** Los permisos se revisan en el servidor; no basta con esconder los botones. El Usuario no ve botones de crear, editar ni cambiar estado. Fuente: lista acordada en clase (5-nov-2026), n.º 2; roles según los casos de uso aprobados por el docente (CU5-01 a CU5-04).
 
@@ -95,7 +95,7 @@ Los valores marcados como "(propuesta)" son del equipo y están pendientes de va
 
 **Descripción.** El sistema deberá permitir al Administrador crear, editar, activar y desactivar cuentas de usuario, con nombre, correo, teléfono y cargo, y asignarles un rol.
 
-**Regla de negocio.** Solo el Administrador activa y desactiva cuentas. Al crear una cuenta de Usuario se indica la empresa a la que pertenece. No se repiten correos (RF-010). Un usuario desactivado no entra, pero lo que hizo queda guardado. Al crear la cuenta se asigna una contraseña temporal. El sistema se instala con una cuenta de Administrador inicial, y no se puede desactivar al último Administrador activo (propuesta del equipo). Fuente: lista acordada en clase (5-nov-2026), n.º 3; caso de uso aprobado CU5-04.
+**Regla de negocio.** Solo el Administrador activa y desactiva cuentas. **(cambio Paso 24, propuesta)** El Administrador asigna una o más empresas al Usuario y cero o más al Evaluador. Una empresa tiene como máximo un Evaluador activo. Cambiar el rol retira las asignaciones anteriores, conservando su historial. No se repiten correos (RF-010). Un usuario desactivado no entra, pero lo que hizo queda guardado. Al crear la cuenta se asigna una contraseña temporal. El sistema se instala con una cuenta de Administrador inicial, y no se puede desactivar al último Administrador activo (propuesta del equipo). Fuente: lista acordada en clase (5-nov-2026), n.º 3; caso de uso aprobado CU5-04.
 
 ### RF-004 · Crear y consultar empresas
 
@@ -297,7 +297,7 @@ Los valores marcados como "(propuesta)" son del equipo y están pendientes de va
 
 **Descripción.** El sistema deberá mostrar en cada sección (empresas, áreas y cargos, sedes, salones, puestos, reservas, visitas, evaluaciones, pendientes y sugerencias) una tabla que se pueda ordenar, buscar y filtrar por empresa, área, cargo, sede, salón, número de puesto, fecha, puntaje, nivel de riesgo y estado.
 
-**Regla de negocio.** El Usuario solo ve, busca y ordena los datos de su propia empresa, sin botones de crear ni editar. El Administrador ve todas las empresas. La tabla indica cuántos resultados hay. Fuente: lista acordada en clase (5-nov-2026), n.º 24.
+**Regla de negocio (cambio Paso 24, propuesta).** El Usuario consulta sus empresas asignadas, sin botones de crear ni editar. El Evaluador trabaja dentro de su alcance y conserva la lectura de sus propias evaluaciones al retirarlo. El Administrador ve todo y filtra por Evaluador, incluidos inactivos o Sin registro. La tabla indica cuántos resultados hay. Fuente: lista acordada en clase (5-nov-2026), n.º 24.
 
 ### RF-025 · Calificar las sedes y la empresa
 
@@ -425,7 +425,7 @@ Los valores marcados como "(propuesta)" son del equipo y están pendientes de va
 
 ## Visión futura (próximo semestre) · NO implementar ahora
 
-Estos 4 requisitos vienen de un modelo de 3 roles (con Evaluador) que el docente no aprobó para este semestre. Quedan documentados, pero **no se programan** y no cuentan en los 44.
+Estos 4 requisitos siguen como visión futura; el rol Evaluador fue incorporado por el cambio Paso 24, pero no su registro libre. Quedan documentados, pero **no se programan** y no cuentan en los 44.
 
 - **RF-029 · Registrarse como Evaluador Independiente:** El sistema deberá permitir que una persona se registre por su cuenta como Evaluador Independiente, con nombre, número de documento, correo, teléfono, profesión y contraseña, sin estar asociada a una empresa.
 - **RF-030 · Ver los resultados de la empresa en el sistema:** El sistema deberá mostrar, en la pestaña Resultados, los puestos evaluados de una empresa con su sede, salón, puntaje RULA final (1 a 7), color del semáforo, nivel oficial de RULA, fecha de la visita, sugerencias y estado de pendiente, y permitir filtrarlos por sede, área, cargo y color.
@@ -435,3 +435,7 @@ Estos 4 requisitos vienen de un modelo de 3 roles (con Evaluador) que el docente
 ## Filas antiguas que se ignoran
 
 La matriz de Notion todavía tiene dos filas de la versión 4 (RNF-011 "Cierre de sesión por inactividad" y RNF-012 "Capacidad de almacenamiento de fotografías"). **No son parte de la v6.** El cierre por inactividad ya está en RF-001b; las fotos fuera de la base de datos ya están en RF-016. El RNF-011 válido es "Mantenibilidad del código".
+
+### RF-033 · Consultar mi agenda (propuesta, cambio Paso 24)
+
+Evaluador: semana y mes de sus empresas, notas privadas del Administrador y acuse; Administrador: agenda global de solo lectura, filtro por Evaluador y notas. Cruces informativos, semana de lunes a domingo, hora de Bogotá. Usuario sin acceso.

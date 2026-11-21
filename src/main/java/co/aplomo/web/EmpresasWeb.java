@@ -23,6 +23,9 @@ public final class EmpresasWeb {
     /** Recibe el servicio de configuración para compartirlo con las pruebas de HTTP. */
     public EmpresasWeb(Empresas empresas) { this.empresas = empresas; }
 
+    /** Servicio de empresas con autorización renovada (RF-002). */
+    public Empresas servicio(){return empresas;}
+
     /** Atiende consultas y cambios, sin aceptar IDs ni relaciones padre desde campos editables. */
     public void atender(HttpExchange x, Sesion sesion, Map<String,String> datos) throws SQLException, IOException {
         String ruta = x.getRequestURI().getPath();
@@ -39,7 +42,7 @@ public final class EmpresasWeb {
         }
         var nuevo = NUEVO.matcher(ruta);
         if (nuevo.matches()) {
-            Permisos.administrador(sesion.cuenta());
+            Permisos.trabajo(sesion.cuenta());
             String padre = nuevo.group(1), tipo = nuevo.group(3);
             boolean relacion = padre.equals("empresas") && Set.of("sedes", "areas", "cargos").contains(tipo)
                     || padre.equals("sedes") && tipo.equals("salones")
@@ -54,7 +57,7 @@ public final class EmpresasWeb {
         int id = id(registro.group(2));
         if (accion == null && !post) { detalle(x, sesion, tipo, id); return; }
         if (accion == null || !post && !accion.equals("editar")) { noDisponible(x, sesion); return; }
-        Permisos.administrador(sesion.cuenta());
+        if(accion.equals("editar"))Permisos.trabajo(sesion.cuenta());else Permisos.administrador(sesion.cuenta());
         Contexto contexto = preparar(sesion, tipo, id, 0);
         if (accion.equals("editar")) {
             atenderFormulario(x, sesion, contexto, datos, post);
@@ -182,7 +185,7 @@ public final class EmpresasWeb {
     private void detalle(HttpExchange x, Sesion s, String tipo, int id) throws SQLException, IOException {
         switch (tipo) {
             case "empresas" -> Router.enviar(x, 200, PaginasEmpresas.empresa(s, empresas.empresa(s.cuenta(), id),
-                    empresas.sedes(s.cuenta(), id), empresas.areas(s.cuenta(), id), empresas.cargos(s.cuenta(), id), aviso(x)));
+                    empresas.sedes(s.cuenta(), id), empresas.areas(s.cuenta(), id), empresas.cargos(s.cuenta(), id), aviso(x),s.cuenta().rol()==Cuenta.Rol.ADMINISTRADOR?empresas.vinculadas(s.cuenta(),id):List.of()));
             case "sedes" -> {
                 Sede sede = empresas.sede(s.cuenta(), id);
                 Router.enviar(x, 200, PaginasEmpresas.sede(s, sede, empresas.empresa(s.cuenta(), sede.empresa()),
@@ -199,7 +202,7 @@ public final class EmpresasWeb {
             case "puestos" -> {
                 // RF-002/024: el Usuario conserva la redirección autorizada anterior; no recibe el historial administrativo.
                 Puesto puesto=empresas.puesto(s.cuenta(),id);
-                if(s.cuenta().rol()==Cuenta.Rol.ADMINISTRADOR)Router.enviar(x,200,PaginasEmpresas.historialPuesto(s,empresas.historialPuesto(s.cuenta(),id)));
+                if(s.cuenta().rol()!=Cuenta.Rol.USUARIO)Router.enviar(x,200,PaginasEmpresas.historialPuesto(s,empresas.historialPuesto(s.cuenta(),id)));
                 else Router.redirigir(x,"/salones/"+puesto.salon());
             }
             default -> noDisponible(x, s);

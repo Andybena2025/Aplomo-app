@@ -43,3 +43,6 @@ __pycache__/
 
 # Lista privada de cuentas del equipo (solo se versiona la plantilla)
 config/cuentas.csv
+
+# Respaldos privados de migración
+config/respaldos/

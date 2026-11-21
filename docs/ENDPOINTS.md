@@ -214,3 +214,16 @@ Paso 17: la empresa DEMO-APLOMO-PRACTICA se excluye de listas, catálogos, conta
 ## Historial de registros inactivos (Paso 23)
 
 Solo A recibe los avisos con «Ver evaluaciones» en detalles inactivos de empresa/sede/salón; el enlace conserva `empresa`, `sede` o `salon` como filtro. Toda empresa, activa o no, ofrece al Administrador «Ver evaluaciones de la empresa». Cada tarjeta de puesto del salón ofrece «Ver historial». Abrir estos GET no cambia estados ni reactiva registros. Calificaciones e informe general continúan disponibles para una empresa inactiva. U conserva empresa propia, resultados solo Finalizados y fotos denegadas.
+
+## Paso 24 · permisos A / E / U
+
+A = Administrador; E = Evaluador en empresa asignada; U = Usuario en empresas asignadas, resultados Finalizados y sin fotos.
+
+| Método | Ruta | Permisos | Comportamiento |
+|---|---|---|---|
+| GET | /agenda | A / E | Semana/mes, vista/fecha/evaluador/canceladas; evaluador solo A, incluye inactivos |
+| GET | /mis-evaluaciones | E | Solo autor CREAR de bitácora; conserva histórico sin escritura al retirar empresa |
+| POST | /reservas/{id}/nota-administrador | A | nota máx. 500, CSRF; marca no vista y bitácora EDITAR |
+| POST | /reservas/{id}/entendido | E | Solo su empresa, CSRF; confirma lectura |
+
+Las rutas de crear/editar sedes, salones, áreas, cargos y puestos; crear/editar/aceptar/cancelar reservas; iniciar/finalizar visitas; evaluaciones, fotos y análisis; pendientes y sugerencias; informes y práctica pasan de A a A/E, con alcance en el servidor. POST /evaluaciones/calcular mantiene exactamente su contrato y cálculo; solo la autorización exterior admite E. GET /puestos/{id} historial es A/E; U conserva su redirección propia. Consultas/calificaciones son A/E/U; informes A/E. /usuarios (todos los métodos), crear empresa y activar/desactivar jerarquía siguen solo A. Usuarios pueden tener varias empresas; reservas no exigen Finalizada, resultados sí.

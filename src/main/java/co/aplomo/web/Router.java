@@ -127,12 +127,14 @@ public final class Router implements HttpHandler {
         }
         if(consultas.atender(x,s))return;
         if (ruta.startsWith("/evaluaciones") || ruta.startsWith("/fotos/")) {
-            Permisos.administrador(s.cuenta());
+            Permisos.trabajo(s.cuenta());
             if (s.cuenta().temporal()) { redirigir(x,"/cuenta/contrasena"); return; }
             evaluaciones.atender(x,s); return;
         }
         Map<String,String> f = metodo.equals("POST") ? formulario(x) : Map.of();
         if (metodo.equals("POST")) exigirCsrf(s,f);
+        if(ruta.equals("/agenda")&&metodo.equals("GET")){enviar(x,200,PaginasAgenda.pagina(s,reservas.servicio().agenda().consultar(s.cuenta(),consulta(x))));return;}
+        if(ruta.matches("/reservas/[1-9][0-9]*/(nota-administrador|entendido)")&&metodo.equals("POST")){int rid=Integer.parseInt(ruta.split("/")[2]);var agenda=reservas.servicio().agenda();if(ruta.endsWith("/entendido"))agenda.entender(s.cuenta(),rid);else agenda.guardarNota(s.cuenta(),rid,f.get("nota"));redirigir(x,"/reservas/"+rid);return;}
         if (ruta.equals("/logout")) {
             if (!metodo.equals("POST")) { enviar(x,405,"Usa el botón Cerrar sesión."); return; }
             sesiones.cerrar(s.id()); ponerCookie(x,""); redirigir(x,"/login"); return;
@@ -148,7 +150,7 @@ public final class Router implements HttpHandler {
             redirigir(x,"/?contrasena=1"); return;
         }
         if(ruta.equals("/demo/evaluacion")) {
-            Permisos.administrador(s.cuenta());
+            Permisos.trabajo(s.cuenta());
             if(!GaleriaDemo.habilitada()){enviar(x,404,Html.pagina("Demostración no disponible","",s));return;}
             if(metodo.equals("GET")){enviar(x,200,InicioEvaluacion.paginaPractica(s));return;}
             var destino=visitas.servicio().practica().abrir(s.cuenta(),f.get("tipo"));
@@ -190,7 +192,9 @@ public final class Router implements HttpHandler {
             inicio.append("<div class=\"pagehead\"><div><span class=\"eyebrow\">")
                     .append(Html.fecha(Html.hoy()).toUpperCase(java.util.Locale.ROOT)).append("</span><h1>Hola, ")
                     .append(Html.escapar(nombre)).append("</h1></div></div>");
-            if(c.rol()==Cuenta.Rol.ADMINISTRADOR)inicio.append(InicioEvaluacion.practica(visitas.servicio().practica().enCurso(c)));
+            if(c.rol()!=Cuenta.Rol.USUARIO)inicio.append(InicioEvaluacion.practica(visitas.servicio().practica().enCurso(c)));
+            if(c.rol()!=Cuenta.Rol.ADMINISTRADOR&&this.empresas.servicio().listar(c).isEmpty())inicio.append(Html.aviso("Aún no tienes empresas asignadas. Pídeselas al Administrador.",false));
+            if(c.rol()==Cuenta.Rol.EVALUADOR){var ag=reservas.servicio().agenda();var notas=ag.nuevas(c);if(!notas.isEmpty())inicio.append("<p><a href=\"/reservas/").append(notas.get(0)).append("\">Tienes ").append(notas.size()).append(" notas nuevas del Administrador</a></p>");var hoy=ag.consultar(c,Map.of());inicio.append("<section class=\"card stack\"><h2>Hoy en tu agenda</h2>");var citasHoy=hoy.citas().stream().filter(t->t.ficha().reserva().fecha().equals(reservas.servicio().hoy())).limit(3).toList();if(citasHoy.isEmpty())inicio.append("<p class=\"muted\">No tienes citas hoy.</p>");else for(var cita:citasHoy)inicio.append(PaginasAgenda.cita(cita));inicio.append("<a class=\"btn\" href=\"/agenda\">Ver mi agenda</a></section>");}
             // 4 tarjetas KPI como en el mock
             inicio.append("<div class=\"grid4\" style=\"margin-bottom:24px\">")
                     .append(kpi("Visitas en curso", String.valueOf(enCurso), null))
@@ -207,7 +211,7 @@ public final class Router implements HttpHandler {
             }
             // Visitas en curso y reservas recientes como en el mock
             inicio.append("<div class=\"grid2\"><section class=\"stack\">");
-            if(c.rol()==Cuenta.Rol.ADMINISTRADOR){
+            if(c.rol()!=Cuenta.Rol.USUARIO){
                 inicio.append("<h3>Semáforo de puestos</h3><div class=\"semaforo\">")
                     .append(semaforo("VERDE",resumen[2],"Aceptable","/evaluaciones"))
                     .append(semaforo("AMARILLO",resumen[3],"En observación","/evaluaciones"))
@@ -215,7 +219,7 @@ public final class Router implements HttpHandler {
                 if(resumen[1]+resumen[2]+resumen[3]>0)inicio.append("<div class=\"barra\" aria-hidden=\"true\"><i style=\"flex:").append(resumen[2]).append(";background:var(--verde)\"></i><i style=\"flex:").append(resumen[3]).append(";background:var(--amarillo)\"></i><i style=\"flex:").append(resumen[1]).append(";background:var(--rojo)\"></i></div>");
                 inicio.append("</div>");
             }
-            if(c.rol()==Cuenta.Rol.ADMINISTRADOR)inicio.append(InicioEvaluacion.tarjeta(visitas.servicio().paraEvaluar(c)));
+            if(c.rol()!=Cuenta.Rol.USUARIO)inicio.append(InicioEvaluacion.tarjeta(visitas.servicio().paraEvaluar(c)));
             else inicio.append("<h3>Visitas en curso</h3>").append(Html.vacio("Aún no hay visitas disponibles.",""));
             inicio.append("</section><section class=\"stack\"><h3>Reservas</h3>");
             var pendientes = listaReservas.stream()
@@ -254,7 +258,7 @@ public final class Router implements HttpHandler {
 
     private static boolean vigente(Cuenta antes, Cuenta ahora) {
         return ahora != null && ahora.estado() == Estado.ACTIVA && antes.hash().equals(ahora.hash())
-                && antes.rol() == ahora.rol() && Objects.equals(antes.empresa(),ahora.empresa())
+                && antes.rol() == ahora.rol()
                 && antes.temporal() == ahora.temporal();
     }
 

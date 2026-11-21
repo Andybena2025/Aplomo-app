@@ -164,3 +164,7 @@ Deben aprobar **984 pruebas**.
 | Quiero empezar de cero | Pídeselo a Andy: borrar la base no se hace desde la app (nada se borra). |
 
 **Importante:** nunca vuelvas a correr `Script_MySQL_RULA.sql` sobre una base que ya tiene datos, porque empieza borrando la base. Los scripts `iniciar` ya lo evitan.
+
+## Actualizar una instalación existente al Paso 24
+
+Detén la app. En Mac ejecuta `bash scripts/migrar_paso24.sh`; en Windows `scripts\migrar_paso24.bat`, usando el administrador de MySQL. Primero crea un respaldo privado en config/respaldos y luego agrega las asignaciones y notas sin borrar datos. La relación anterior del Usuario se copia automáticamente. Arranca otra vez con el script normal. En bases de pruebas selecciona rula_ergonomia_pruebas antes de aplicar migracion_paso24.sql. No vuelvas a ejecutar el script de instalación sobre una base existente.

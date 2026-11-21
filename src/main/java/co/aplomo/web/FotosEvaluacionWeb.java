@@ -13,7 +13,7 @@ import java.util.*;
 final class FotosEvaluacionWeb {
  private FotosEvaluacionWeb(){}
  static void cambiar(HttpExchange x,Sesion s,FotosEvaluacion servicio,int evaluacion)throws IOException,SQLException {
-  Permisos.administrador(s.cuenta());var partes=Multipart.leer(x.getRequestBody(),x.getRequestHeaders().getFirst("Content-Type"));Map<String,String> f=new HashMap<>();var archivos=new ArrayList<Multipart.Parte>();
+  Permisos.trabajo(s.cuenta());var partes=Multipart.leer(x.getRequestBody(),x.getRequestHeaders().getFirst("Content-Type"));Map<String,String> f=new HashMap<>();var archivos=new ArrayList<Multipart.Parte>();
   for(var p:partes)if(p.archivo()==null)f.put(p.nombre(),new String(p.bytes(),StandardCharsets.UTF_8));else if(!p.archivo().isEmpty()||p.bytes().length>0)archivos.add(p);
   if(!Sesiones.csrfValido(s,f.get("csrf"))){Router.responder(x,403,"text/plain; charset=UTF-8","El formulario venció. Abre otra pestaña, inicia sesión y vuelve a intentarlo.");return;}
   if(archivos.size()>1)throw new IllegalArgumentException("Elige una foto a la vez.");

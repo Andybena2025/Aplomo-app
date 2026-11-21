@@ -10,7 +10,7 @@ public final class SugerenciasWeb {
     public void atender(HttpExchange x,Sesion s,Map<String,String>d)throws IOException,SQLException{
         String ruta=x.getRequestURI().getPath();boolean post=x.getRequestMethod().equals("POST");var q=Router.consulta(x);
         if(ruta.equals("/sugerencias")&&!post){int e=q.containsKey("evaluacion")?id(q.get("evaluacion")):0;Router.enviar(x,200,PaginasSugerencias.lista(s,servicio.listar(s.cuenta(),e),e==0?null:servicio.contexto(s.cuenta(),e)));return;}
-        if(post||ruta.endsWith("/editar")||ruta.equals("/sugerencias/nueva"))Permisos.administrador(s.cuenta());
+        if(post||ruta.endsWith("/editar")||ruta.equals("/sugerencias/nueva"))Permisos.trabajo(s.cuenta());
         if(ruta.equals("/sugerencias/nueva")||ruta.equals("/sugerencias")){
             int e=id(q.get("evaluacion"));var c=servicio.contexto(s.cuenta(),e);
             if(!post){Router.enviar(x,200,PaginasSugerencias.formulario(s,c,null,Map.of(),null));return;}

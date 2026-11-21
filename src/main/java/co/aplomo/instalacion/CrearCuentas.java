@@ -54,7 +54,7 @@ public final class CrearCuentas {
         while((linea=lineas.readLine())!=null){numero++;if(linea.isBlank())continue;
             if(linea.length()>4000||filas.size()>=1000)throw new IllegalArgumentException("El archivo admite hasta 1000 cuentas y líneas de hasta 4000 caracteres.");
             var c=campos(linea);if(c.size()!=4)throw new IllegalArgumentException("Revisa las cuatro columnas de la línea "+numero+".");
-            Rol rol;try{rol=Rol.valueOf(c.get(2));}catch(IllegalArgumentException e){throw new IllegalArgumentException("El rol de la línea "+numero+" debe ser ADMINISTRADOR o USUARIO.");}
+            Rol rol;try{rol=Rol.valueOf(c.get(2));}catch(IllegalArgumentException e){throw new IllegalArgumentException("El rol de la línea "+numero+" debe ser ADMINISTRADOR, EVALUADOR o USUARIO.");}
             String correo=c.get(1).toLowerCase(Locale.ROOT),nit=c.get(3);
             // Reutiliza las reglas del formulario antes de crear ninguna cuenta.
             var datos=new Usuarios.Datos(c.get(0),correo,"Pendiente","Pendiente",rol,rol==Rol.USUARIO?1:null);
@@ -97,9 +97,9 @@ public final class CrearCuentas {
         // Recoge datos obligatorios antes de imprimir la tabla, sin inventar teléfonos o cargos.
         var datos=new LinkedHashMap<Fila,Usuarios.Datos>();var errores=new HashMap<Fila,String>();
         for(var f:filas){if(existentes.contains(f.correo()))continue;
-            Integer empresa=f.rol()==Rol.USUARIO?porNit.get(f.nit()):null;
-            if(f.rol()==Rol.USUARIO&&empresa==null){errores.put(f,"no creada: la empresa no existe o está inactiva");continue;}
-            try{var contacto=preguntar.apply(f);if(contacto==null)throw new IllegalArgumentException("Faltan teléfono y cargo.");datos.put(f,new Usuarios.Datos(f.nombre(),f.correo(),contacto.telefono(),contacto.cargo(),f.rol(),empresa));}
+            var asignadas=f.rol()==Rol.ADMINISTRADOR||f.nit().isBlank()?List.<Integer>of():Arrays.stream(f.nit().split(";",-1)).map(String::strip).map(porNit::get).toList();Integer empresa=asignadas.size()==1?asignadas.get(0):null;
+            if(asignadas.stream().anyMatch(Objects::isNull)){errores.put(f,"no creada: la empresa no existe o está inactiva");continue;}
+            try{var contacto=preguntar.apply(f);if(contacto==null)throw new IllegalArgumentException("Faltan teléfono y cargo.");datos.put(f,new Usuarios.Datos(f.nombre(),f.correo(),contacto.telefono(),contacto.cargo(),f.rol(),empresa,asignadas));}
             catch(IllegalArgumentException e){errores.put(f,"no creada: "+e.getMessage());}
         }
         salida.println("Correo | Contraseña temporal / resultado");salida.println("-------|-------------------------------");int fallos=0;

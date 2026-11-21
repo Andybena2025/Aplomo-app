@@ -59,7 +59,7 @@ public final class PaginasCalificaciones {
         return "<div class=\"informe-controles\">"+enlace("/empresas/"+i.empresa().id(),"← Empresa",false)
                 +"<div class=\"pagehead\"><div><span class=\"eyebrow\">"+(informe?"Informes · Empresa":"Consultas · Calificaciones")+"</span><h1>"+(informe?"Informe general":"Calificaciones")
                 +"</h1><p class=\"muted\">"+escapar(i.empresa().nombre())+" · Solo visitas Finalizadas</p></div>"
-                +(informe?"<div class=\"stack informe-imprimir\"><button class=\"btn p\" type=\"button\" data-imprimir>Imprimir o guardar PDF</button><p class=\"hint\">En el cuadro de imprimir, desmarca Encabezados y pies de página</p></div>":s.cuenta().rol()==Cuenta.Rol.ADMINISTRADOR?enlace("/informes/empresa/"+i.empresa().id(),"Generar informe",true):"")
+                +(informe?"<div class=\"stack informe-imprimir\"><button class=\"btn p\" type=\"button\" data-imprimir>Imprimir o guardar PDF</button><p class=\"hint\">En el cuadro de imprimir, desmarca Encabezados y pies de página</p></div>":s.cuenta().rol()!=Cuenta.Rol.USUARIO?enlace("/informes/empresa/"+i.empresa().id(),"Generar informe",true):"")
                 +"</div></div>";
     }
     private static String metodo(){return "Indicadores del equipo (propuesta), no parte del método RULA; pendientes de validar con la clienta. Puesto: máximo de su última evaluación Finalizada. Visita: promedio guardado de sus puestos. Sede: promedio de visitas con calificación. General: promedio de las sedes calificadas, mínimo "+Calificaciones.MINIMO_SEDES_GENERAL+". Para el color se redondea al entero más cercano (propuesta).";}

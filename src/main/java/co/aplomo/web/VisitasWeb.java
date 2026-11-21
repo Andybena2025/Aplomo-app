@@ -32,7 +32,7 @@ public final class VisitasWeb {
         var iniciar = INICIAR.matcher(ruta);
         if (iniciar.matches()) {
             if (!post) { noDisponible(x, sesion); return; }
-            Permisos.administrador(sesion.cuenta());
+            Permisos.trabajo(sesion.cuenta());
             int reserva = id(iniciar.group(1));
             var anterior = reservas.consultar(sesion.cuenta(), reserva);
             try {
@@ -53,11 +53,11 @@ public final class VisitasWeb {
         if (!registro.matches()) { noDisponible(x, sesion); return; }
         int id = id(registro.group(1));
         boolean finalizar = registro.group(2) != null;
-        if (finalizar) Permisos.administrador(sesion.cuenta());
+        if (finalizar) Permisos.trabajo(sesion.cuenta());
         Ficha ficha = visitas.consultar(sesion.cuenta(), id);
         List<Evaluacion> evaluaciones = visitas.evaluaciones(sesion.cuenta(), id);
         if (!finalizar && !post) {
-            Router.enviar(x, 200, PaginasVisitas.detalle(sesion, ficha, evaluaciones, sesion.cuenta().rol()==co.aplomo.modelo.Cuenta.Rol.ADMINISTRADOR && ficha.visita().estado().equals("EN_CURSO") ? visitas.puestos(sesion.cuenta(), id) : List.of(), Router.consulta(x).get("aviso"), true));
+            Router.enviar(x, 200, PaginasVisitas.detalle(sesion, ficha, evaluaciones, sesion.cuenta().rol()!=co.aplomo.modelo.Cuenta.Rol.USUARIO && ficha.visita().estado().equals("EN_CURSO") ? visitas.puestos(sesion.cuenta(), id) : List.of(), Router.consulta(x).get("aviso"), true));
             return;
         }
         if (!finalizar) { noDisponible(x, sesion); return; }

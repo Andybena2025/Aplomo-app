@@ -149,7 +149,7 @@ class VisitasTest extends BasePrueba {
         assertEquals(List.of(id), visitas.listar(contacto).stream().map(f -> f.visita().id()).toList());
         assertEquals(1, visitas.evaluaciones(contacto, id).size());
         int ajena = Sql.insertar(con, "INSERT INTO empresa (id_administrador,nombre,nit) VALUES (?,?,?)", admin, "Ajena", UUID.randomUUID().toString().substring(0,20));
-        Sql.actualizar(con, "UPDATE cuenta SET id_empresa = ? WHERE id_cuenta = ?", ajena, usuario);
+        new co.aplomo.dao.CuentaEmpresaDao().sincronizar(con,admin,usuario,List.of(ajena),false);
         var otroContacto = cuenta(usuario);
         assertTrue(visitas.listar(otroContacto).isEmpty());
         assertThrows(SecurityException.class, () -> visitas.consultar(otroContacto, id));

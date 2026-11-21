@@ -75,3 +75,22 @@ Los scripts compilan y preparan una lista de dependencias en `target/cuentas-cla
 Las pruebas automatizadas importan dos cuentas ficticias en **rula_ergonomia_pruebas**, repiten el archivo, comprueban bcrypt/longitud, conservan una cuenta inactiva y verifican la redirección al cambio obligatorio de contraseña. Los datos se revierten al terminar. No se crean cuentas del equipo real durante esas pruebas.
 
 La versión Windows se entrega con los mismos pasos; no se ejecutó en Windows en este Mac. Si quieres usarla contra otra instalación, revisa primero la configuración de conexión: no cambies la base accidentalmente.
+
+## Tres roles · cambio Paso 24 (propuesta, Andy, 20 nov 2026)
+
+- Administrador maestro: todas las empresas; único que crea empresas, administra cuentas, asigna empresas y activa/desactiva catálogos.
+- Evaluador: trabajo completo en sus empresas asignadas (también historial inactivo), sin crear empresas ni activar/desactivar registros. Mi agenda y Mis evaluaciones; práctica privada.
+- Usuario: consulta una o varias empresas asignadas; resultados solo de visitas Finalizadas y nunca fotos. Reservas en todos sus estados, sin editar.
+- `cuenta_empresa` es la fuente de acceso. Quitar una asignación revoca el acceso en la siguiente petición. Una empresa admite un solo Evaluador activo. El historial de evaluaciones creadas por el Evaluador sigue disponible en solo lectura.
+- RF-029 sigue fuera de alcance: no hay registro libre.
+
+CSV: `rol` también admite EVALUADOR; `nit_empresa` admite varios NIT separados por `;`. Para Administrador queda vacío. La herramienta usa el mismo servicio y conserva la regla de un solo Evaluador activo.
+
+| Correo demo | Rol | Qué ve |
+|---|---|---|
+| evaluador1@rula.local | Evaluador | Empresas E1/E2, su agenda y sus evaluaciones |
+| evaluador2@rula.local | Evaluador | Empresa E3, su agenda y sus evaluaciones |
+| usuario1@rula.local | Usuario | E1/E2, reservas y resultados Finalizados, sin fotos |
+| usuario2@rula.local | Usuario | E3, reservas y resultados Finalizados, sin fotos |
+
+La carga demo es explícita, con contraseña inicial de demostración temporal igual al patrón de instalación. No altera las cuentas del equipo. Cambiarla en el primer ingreso.

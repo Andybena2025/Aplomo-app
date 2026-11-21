@@ -103,5 +103,5 @@ public final class PaginasVisitas {
     private static String claseEstado(String valor) { return valor.equals("EN_CURSO") ? "tag warn" : "tag good"; }
     private static String calificacion(Ficha ficha) { return ficha.visita().calificacion() == null ? "Sin calificación disponible" : ficha.visita().calificacion().toPlainString(); }
     private static String dato(String titulo, String valor) { return "<div><dt>" + escapar(titulo) + "</dt><dd class=\"texto-notas\">" + escapar(valor) + "</dd></div>"; }
-    private static boolean admin(Sesion sesion) { return sesion.cuenta().rol() == Rol.ADMINISTRADOR; }
+    private static boolean admin(Sesion sesion) { return sesion.cuenta().rol() != Rol.USUARIO; }
 }

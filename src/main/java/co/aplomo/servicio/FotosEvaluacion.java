@@ -19,7 +19,7 @@ public final class FotosEvaluacion {
     public Cambio cambiar(Cuenta actor,int evaluacion,Integer anterior,Fotos.Entrada entrada)throws SQLException,IOException {
         List<String> nuevos=new ArrayList<>();
         try{return tx.ejecutar(c->{
-            Cuenta admin=AccesoDatos.vigente(c,actor);Permisos.administrador(admin);var dao=new EvaluacionDao();var e=dao.consultar(c,evaluacion);
+            Cuenta admin=AccesoDatos.vigente(c,actor);Permisos.trabajo(admin);var dao=new EvaluacionDao();AccesoDatos.exigirEvaluacion(c,actor,evaluacion,true);var e=dao.consultar(c,evaluacion);
             if(e==null)throw new SecurityException("La evaluación no está disponible.");
             var vd=new VisitaDao();var visita=vd.buscar(c,e.visita(),0,false,false);if(visita==null)throw new SecurityException("La visita no está disponible.");
             new ReservaDao().buscar(c,visita.visita().reserva(),0,true);visita=vd.buscar(c,e.visita(),0,false,true);

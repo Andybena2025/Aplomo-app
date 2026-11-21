@@ -1,7 +1,7 @@
 -- =====================================================================
 -- Sistema RULA – Evaluación Ergonómica · Script de base de datos MySQL
 -- Proyecto Nuclear 6.0 · Matriz de requisitos v6 · Fase de Diseño
--- Basado en el Modelo E-R v6 (21 tablas, 3FN) y el Diccionario de datos v6
+-- Basado en el Modelo E-R v6 (22 tablas, 3FN) y el Diccionario de datos v6
 -- Motor: MySQL 8.0.16 o superior · InnoDB · utf8mb4 (RNF-001)
 -- utf8mb4_unicode_ci compara sin distinguir mayúsculas ni tildes (RF-010)
 -- Nada se borra: las llaves foráneas usan ON DELETE RESTRICT (RF-028, RNF-009)
@@ -19,7 +19,7 @@ USE rula_ergonomia;
 -- cuenta: Cuentas de las personas que entran al sistema. Administrador y Usuario viven en la misma tabla y se distinguen por rol (herencia de Cuenta). (RF-001a, RF-001c, RF-002, RF-003, RNF-004)
 CREATE TABLE cuenta (
   id_cuenta INT NOT NULL AUTO_INCREMENT COMMENT 'Identificador de la cuenta.',
-  id_empresa INT NULL COMMENT 'Empresa del Usuario. Vacío para el Administrador.',
+  id_empresa INT NULL COMMENT 'Relación anterior conservada. La fuente de asignaciones es cuenta_empresa.',
   nombre VARCHAR(100) NOT NULL COMMENT 'Nombre de la persona.',
   correo VARCHAR(120) NOT NULL COMMENT 'Correo con el que entra. No se repite.',
   telefono VARCHAR(20) NOT NULL COMMENT 'Teléfono de contacto.',
@@ -29,7 +29,7 @@ CREATE TABLE cuenta (
   intentos_fallidos TINYINT NOT NULL DEFAULT 0 COMMENT 'Intentos fallidos seguidos de inicio de sesión.',
   bloqueado_hasta DATETIME NULL COMMENT 'Fecha y hora hasta la que el ingreso queda bloqueado (5 intentos = 15 minutos).',
   estado ENUM('ACTIVA', 'INACTIVA', 'BLOQUEADA') NOT NULL DEFAULT 'ACTIVA' COMMENT 'Estado de la cuenta.',
-  rol ENUM('ADMINISTRADOR', 'USUARIO') NOT NULL COMMENT 'Rol de la cuenta.',
+  rol ENUM('ADMINISTRADOR', 'EVALUADOR', 'USUARIO') NOT NULL COMMENT 'Rol de la cuenta.',
   CONSTRAINT pk_cuenta PRIMARY KEY (id_cuenta),
   CONSTRAINT uq_cuenta_correo UNIQUE (correo),
   CONSTRAINT chk_cuenta_intentos CHECK (intentos_fallidos >= 0)
@@ -57,7 +57,7 @@ CREATE TABLE bitacora (
 -- empresa: Empresas cliente que evalúa el Ingeniero Industrial. No se borran: se desactivan. (RF-004, RF-010, RF-028)
 CREATE TABLE empresa (
   id_empresa INT NOT NULL AUTO_INCREMENT COMMENT 'Identificador de la empresa.',
-  id_administrador INT NOT NULL COMMENT 'Administrador que registró la empresa.',
+  id_administrador INT NOT NULL COMMENT 'Cuenta que registró (Administrador o Evaluador)',
   nombre VARCHAR(120) NOT NULL COMMENT 'Nombre de la empresa (obligatorio).',
   nit VARCHAR(20) NOT NULL COMMENT 'NIT de la empresa (obligatorio, no se repite).',
   descripcion VARCHAR(255) NULL COMMENT 'Descripción opcional.',
@@ -72,6 +72,18 @@ CREATE TABLE empresa (
 
 -- La cuenta del Usuario apunta a su empresa: se agrega después porque empresa necesita a cuenta (referencia circular).
 ALTER TABLE cuenta ADD CONSTRAINT fk_cuenta_id_empresa FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+CREATE TABLE IF NOT EXISTS cuenta_empresa (
+ id_cuenta_empresa INT NOT NULL AUTO_INCREMENT COMMENT 'Identificador de la asignación.',
+ id_cuenta INT NOT NULL COMMENT 'Cuenta Evaluador o Usuario asignada.',
+ id_empresa INT NOT NULL COMMENT 'Empresa dentro de su alcance.',
+ activo BOOLEAN NOT NULL DEFAULT TRUE COMMENT 'Falso al retirar la asignación; conserva historial.',
+ fecha_asignacion DATETIME NOT NULL COMMENT 'Fecha de la última asignación.',
+ CONSTRAINT pk_cuenta_empresa PRIMARY KEY(id_cuenta_empresa),
+ CONSTRAINT uq_cuenta_empresa UNIQUE(id_cuenta,id_empresa),
+ CONSTRAINT fk_ce_cuenta FOREIGN KEY(id_cuenta) REFERENCES cuenta(id_cuenta) ON DELETE RESTRICT ON UPDATE RESTRICT,
+ CONSTRAINT fk_ce_empresa FOREIGN KEY(id_empresa) REFERENCES empresa(id_empresa) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB COMMENT='RF-002/003: empresas asignadas por el Administrador.';
 
 -- sede: Sedes de cada empresa. (RF-005, RF-010, RF-028)
 CREATE TABLE sede (
@@ -153,9 +165,11 @@ CREATE TABLE puesto_trabajo (
 
 -- reserva: Reservas de visita a un salón, con su código y su estado. (RF-009b, RF-010, RF-011, RF-012)
 CREATE TABLE reserva (
+  nota_administrador VARCHAR(500) NULL COMMENT 'Nota privada del Administrador para el Evaluador.',
+  nota_vista BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'El Evaluador confirmó que leyó la nota.',
   id_reserva INT NOT NULL AUTO_INCREMENT COMMENT 'Identificador de la reserva.',
   id_salon INT NOT NULL COMMENT 'Salón reservado; la sede y la empresa se obtienen por el salón.',
-  id_administrador INT NOT NULL COMMENT 'Administrador que registró la reserva.',
+  id_administrador INT NOT NULL COMMENT 'Cuenta que registró (Administrador o Evaluador)',
   codigo VARCHAR(12) NOT NULL COMMENT 'Código único que asigna el sistema (por ejemplo, R-0001). No se cambia.',
   fecha DATE NOT NULL COMMENT 'Fecha de la visita (hoy o posterior).',
   hora_inicio TIME NOT NULL COMMENT 'Hora de inicio.',

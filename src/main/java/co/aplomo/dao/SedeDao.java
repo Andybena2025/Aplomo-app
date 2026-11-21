@@ -1,4 +1,5 @@
 package co.aplomo.dao;
+import co.aplomo.seguridad.AccesoDatos.Alcance;
 
 import co.aplomo.modelo.Sede;
 import co.aplomo.db.Sql;
@@ -11,15 +12,19 @@ public final class SedeDao {
     public SedeDao() {}
 
     /** Consulta una fila con filtro de empresa y bloqueo opcional para las modificaciones. */
-    public Sede buscar(Connection con, int id, int empresaPermitida, boolean bloquear) throws SQLException {
-        String consulta = "SELECT r.* FROM sede r WHERE r.id_sede = ? AND (? = 0 OR r.id_empresa = ?)" + (bloquear ? " FOR UPDATE" : "");
-        return Sql.uno(con, consulta, SedeDao::leer, id, empresaPermitida, empresaPermitida);
+    public Sede buscar(Connection con, int id, int empresaPermitida, boolean bloquear) throws SQLException {return buscar(con,id,Alcance.exacta(empresaPermitida),bloquear);}
+    /** RF-002: consulta parametrizada en el alcance vigente. */
+    public Sede buscar(Connection con, int id, Alcance empresaPermitida, boolean bloquear) throws SQLException {
+        String consulta = "SELECT r.* FROM sede r WHERE r.id_sede = ? AND "+empresaPermitida.sql("r.id_empresa")+"" + (bloquear ? " FOR UPDATE" : "");
+        return Sql.uno(con, consulta, SedeDao::leer, id, empresaPermitida.todas(),empresaPermitida.valor());
     }
 
     /** Lista el catálogo de un padre y limita los resultados a la empresa autorizada (RF-002). */
-    public List<Sede> buscarTodos(Connection con, int padre, int empresaPermitida) throws SQLException {
-        return Sql.listar(con, "SELECT r.* FROM sede r WHERE r.id_empresa = ? AND (? = 0 OR r.id_empresa = ?) ORDER BY r.nombre, r.id_sede",
-                SedeDao::leer, padre, empresaPermitida, empresaPermitida);
+    public List<Sede> buscarTodos(Connection con, int padre, int empresaPermitida) throws SQLException {return buscarTodos(con,padre,Alcance.exacta(empresaPermitida));}
+    /** RF-002: consulta parametrizada en el alcance vigente. */
+    public List<Sede> buscarTodos(Connection con, int padre, Alcance empresaPermitida) throws SQLException {
+        return Sql.listar(con, "SELECT r.* FROM sede r WHERE r.id_empresa = ? AND "+empresaPermitida.sql("r.id_empresa")+" ORDER BY r.nombre, r.id_sede",
+                SedeDao::leer, padre, empresaPermitida.todas(),empresaPermitida.valor());
     }
 
     /** Guarda los datos editables y conserva el ID, las relaciones y el estado existentes. */

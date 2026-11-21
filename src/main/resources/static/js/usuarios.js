@@ -13,7 +13,7 @@
     filas.forEach(fila => {
       fila.hidden = !(normalizar(fila.querySelector('[data-nombre-correo]').textContent).includes(q)
         && (!rol.value || fila.dataset.rol === rol.value)
-        && (!empresa.value || fila.dataset.empresa === empresa.value));
+        && (!empresa.value || fila.dataset.empresa.split(" ").includes(empresa.value)));
       if (!fila.hidden) cantidad++;
     });
     document.querySelector('[data-contador-usuarios]').textContent = `${cantidad} ${cantidad === 1 ? 'cuenta registrada' : 'cuentas registradas'}`;

@@ -72,4 +72,8 @@ class CrearCuentasTest extends HttpPrueba {
         var f=ejemplo().get(0);var out=new StringWriter();assertEquals(1,CrearCuentas.crear(usuarios(),empresas(),cuenta(admin),List.of(f),x->new CrearCuentas.Contacto("",""),new PrintWriter(out)));
         assertNull(dao.porCorreo(con,f.correo()));assertTrue(out.toString().contains("no creada"));
     }
+    @Test void csvAceptaEvaluadorConVariosNitSinDuplicar()throws Exception{
+        var em=new Empresas(tx);int otra=em.guardar(cuenta(admin),new co.aplomo.modelo.Empresa(0,admin,"Segunda QA",java.util.UUID.randomUUID().toString().substring(0,20),"",null,null,null,true)).id();
+        String n1=em.empresa(cuenta(admin),empresa).nit(),n2=em.empresa(cuenta(admin),otra).nit();var filas=CrearCuentas.leer(new StringReader("nombre,correo,rol,nit_empresa\nEvaluador CSV,csv.evaluador@prueba.invalid,EVALUADOR,"+n1+";"+n2));ejecutar(filas);int id=dao.porCorreo(con,"csv.evaluador@prueba.invalid").id();assertEquals(List.of(empresa,otra),new co.aplomo.dao.CuentaEmpresaDao().ids(con,id));assertTrue(ejecutar(filas).contains("ya existe"));
+    }
 }

@@ -1,3 +1,4 @@
+-- Paso 24: Demo.cargar también crea 2 Evaluadores y 2 Usuarios demo, asignaciones, agenda y resultados propios.
 -- Paso 17: estructura ficticia e idempotente. Resultados y fotos se crean con Demo.cargar y el motor real.
 -- No ejecutar este SQL solo para obtener evaluaciones: usar scripts/cargar_demo o el perfil Docker demo.
 

@@ -16,15 +16,19 @@ public final class Usuarios {
     private final EmpresaDao empresas;
 
     /** Datos editables; no incluye ID, estado, intentos ni hash (RF-003). */
-    public record Datos(String nombre, String correo, String telefono, String cargo, Rol rol, Integer empresa) {
+    public record Datos(String nombre, String correo, String telefono, String cargo, Rol rol, Integer empresa, List<Integer> empresas) {
+        /** Compatibilidad de clientes de una sola empresa; autoriza mediante cuenta_empresa. */
+        public Datos(String n,String c,String t,String cargo,Rol r,Integer empresa){this(n,c,t,cargo,r,empresa,empresa==null?List.of():List.of(empresa));}
         /** Valida y normaliza los campos también en el servidor (RNF-004). */
         public Datos {
             nombre=texto(nombre,100,"nombre"); correo=texto(correo,120,"correo").toLowerCase(Locale.ROOT);
             telefono=texto(telefono,20,"teléfono"); cargo=texto(cargo,80,"cargo");
             if(!correo.matches("[^\\s@<>\\\"]+@[^\\s@<>\\\"]+\\.[^\\s@<>\\\"]+")) throw new IllegalArgumentException("Escribe un correo válido.");
             if(rol==null) throw new IllegalArgumentException("Elige un rol válido.");
-            if(rol==Rol.USUARIO && (empresa==null || empresa<1)) throw new IllegalArgumentException("Elige la empresa del Usuario.");
-            if(rol==Rol.ADMINISTRADOR && empresa!=null) throw new IllegalArgumentException("El Administrador es independiente y no se asigna a una empresa.");
+            empresas=empresas==null?List.of():List.copyOf(new TreeSet<>(empresas));
+            if(empresas.stream().anyMatch(id->id==null||id<1))throw new IllegalArgumentException("Elige empresas válidas.");
+            if(rol==Rol.USUARIO && empresas.isEmpty()) throw new IllegalArgumentException("Elige la empresa del Usuario.");
+            if(rol==Rol.ADMINISTRADOR && !empresas.isEmpty()) throw new IllegalArgumentException("El Administrador es independiente y no se asigna a una empresa.");
         }
         private static String texto(String valor,int maximo,String campo) {
             String limpio=valor==null ? "" : valor.strip().replaceAll("\\s+"," ");
@@ -49,6 +53,9 @@ public final class Usuarios {
         return tx.ejecutar(con -> { autorizar(con,actor); return exigirCuenta(con,id,false); });
     }
 
+    /** RF-003: empresas de cada cuenta; solo para la gestión del Administrador. */
+    public Map<Integer,List<Integer>> asignaciones(Cuenta actor)throws SQLException{return tx.ejecutar(c->{autorizar(c,actor);return new CuentaEmpresaDao().todas(c);});}
+
     /** Lee el catálogo existente para asignar empresa al Usuario (RF-003). */
     public List<Opcion> empresas(Cuenta actor) throws SQLException {
         return tx.ejecutar(con -> { autorizar(con,actor); return empresas.listar(con); });
@@ -59,8 +66,8 @@ public final class Usuarios {
         Permisos.administrador(actor); String hash=Contrasenas.cifrar(temporal);
         return tx.ejecutar(con -> {
             dao.bloquearAdministradores(con); autorizar(con,actor);
-            validarEmpresa(con,datos,null); duplicados(con,datos.correo(),0);
-            try { return dao.crear(con,datos.nombre(),datos.correo(),datos.telefono(),datos.cargo(),datos.rol(),datos.empresa(),hash); }
+            new CuentaEmpresaDao().validar(con,0,datos.rol(),datos.empresas(),true); duplicados(con,datos.correo(),0);
+            try { int id=dao.crear(con,datos.nombre(),datos.correo(),datos.telefono(),datos.cargo(),datos.rol(),datos.empresa(),hash);new CuentaEmpresaDao().sincronizar(con,actor.id(),id,datos.empresas(),false);return id; }
             catch(SQLIntegrityConstraintViolationException e) { throw new IllegalArgumentException("El correo ya está registrado. Revisa la cuenta existente."); }
         });
     }
@@ -73,9 +80,10 @@ public final class Usuarios {
             List<Cuenta> administradores=dao.bloquearAdministradores(con); autorizar(con,actor);
             Cuenta anterior=exigirCuenta(con,id,true);
             conservarAdministrador(anterior,datos.rol(),anterior.estado(),activos(administradores));
-            validarEmpresa(con,datos,anterior.empresa()); duplicados(con,datos.correo(),id);
+            new CuentaEmpresaDao().validar(con,id,datos.rol(),datos.empresas(),anterior.estado()!=Estado.INACTIVA); duplicados(con,datos.correo(),id);
             try { dao.editar(con,id,datos.nombre(),datos.correo(),datos.telefono(),datos.cargo(),datos.rol(),datos.empresa()); }
             catch(SQLIntegrityConstraintViolationException e) { throw new IllegalArgumentException("El correo ya está registrado. Revisa la cuenta existente."); }
+            new CuentaEmpresaDao().sincronizar(con,actor.id(),id,datos.empresas(),anterior.rol()!=datos.rol());
             if(hash!=null) dao.contrasena(con,id,hash,true);
             return null;
         });
@@ -89,6 +97,7 @@ public final class Usuarios {
             Cuenta anterior=exigirCuenta(con,id,true);
             Estado nuevo=activar ? Estado.ACTIVA : Estado.INACTIVA;
             conservarAdministrador(anterior,anterior.rol(),nuevo,activos(administradores));
+            if(activar)new CuentaEmpresaDao().validar(con,id,anterior.rol(),new CuentaEmpresaDao().ids(con,id),true);
             dao.acceso(con,id,0,null,nuevo); return null;
         });
     }
@@ -112,15 +121,6 @@ public final class Usuarios {
         Cuenta c=dao.porId(con,id,bloquear);
         if(c==null) throw new IllegalArgumentException("La cuenta no existe. Vuelve a la lista de usuarios.");
         return c;
-    }
-
-    private void validarEmpresa(Connection con,Datos datos,Integer anterior) throws SQLException {
-        if (datos.empresa() == null) return;
-        co.aplomo.modelo.Empresa empresa = empresas.buscar(con,datos.empresa(),0,false);
-        if (empresa == null) throw new IllegalArgumentException("La empresa elegida no existe. Selecciona una de la lista.");
-        if (!empresa.activo() && !Objects.equals(anterior,empresa.id())) {
-            throw new IllegalArgumentException("La empresa está inactiva. Reactívala antes de asignar cuentas nuevas.");
-        }
     }
 
     private void duplicados(Connection con,String correo,int mismoId) throws SQLException {

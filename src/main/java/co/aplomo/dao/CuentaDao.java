@@ -80,7 +80,7 @@ public class CuentaDao {
     /** Edita datos de la cuenta sin cambiar su ID, estado ni contraseña (RF-003). */
     public void editar(Connection con, int id, String nombre, String correo, String telefono, String cargo,
                        Rol rol, Integer empresa) throws SQLException {
-        try(var ps=con.prepareStatement("UPDATE cuenta SET nombre = ?, correo = ?, telefono = ?, cargo = ?, rol = ?, id_empresa = ? WHERE id_cuenta = ?")) {
+        try(var ps=con.prepareStatement("UPDATE cuenta SET nombre = ?, correo = ?, telefono = ?, cargo = ?, rol = ?, id_empresa = COALESCE(id_empresa, ?) WHERE id_cuenta = ?")) {
             ps.setString(1,nombre); ps.setString(2,correo); ps.setString(3,telefono); ps.setString(4,cargo);
             ps.setString(5,rol.name()); ps.setObject(6,empresa); ps.setInt(7,id); ps.executeUpdate();
         }

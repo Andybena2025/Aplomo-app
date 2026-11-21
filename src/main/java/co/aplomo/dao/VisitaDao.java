@@ -1,4 +1,5 @@
 package co.aplomo.dao;
+import co.aplomo.seguridad.AccesoDatos.Alcance;
 
 import co.aplomo.db.Sql;
 import co.aplomo.modelo.Visita;
@@ -41,15 +42,19 @@ public final class VisitaDao {
     public VisitaDao() {}
 
     /** Lista todas las visitas para Administrador o solo las finalizadas de la empresa del Usuario. */
-    public List<Ficha> listar(Connection con, int empresa, boolean soloFinalizadas) throws SQLException {
-        return Sql.listar(con, CONTEXTO + " WHERE (? = 0 OR s.id_empresa = ?) AND (? = FALSE OR v.estado = 'FINALIZADA')"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" ORDER BY v.hora_real_inicio DESC, v.id_visita DESC",
-                VisitaDao::leer, empresa, empresa, soloFinalizadas);
+    public List<Ficha> listar(Connection con, int empresa, boolean soloFinalizadas) throws SQLException {return listar(con,Alcance.exacta(empresa),soloFinalizadas);}
+    /** RF-002: consulta parametrizada en el alcance vigente. */
+    public List<Ficha> listar(Connection con, Alcance empresa, boolean soloFinalizadas) throws SQLException {
+        return Sql.listar(con, CONTEXTO + " WHERE "+empresa.sql("s.id_empresa")+" AND (? = FALSE OR v.estado = 'FINALIZADA')"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" ORDER BY v.hora_real_inicio DESC, v.id_visita DESC",
+                VisitaDao::leer, empresa.todas(),empresa.valor(), soloFinalizadas);
     }
 
     /** Consulta una visita dentro del alcance de la cuenta y permite bloquearla para finalizar. */
-    public Ficha buscar(Connection con, int id, int empresa, boolean soloFinalizadas, boolean bloquear) throws SQLException {
-        return Sql.uno(con, CONTEXTO + " WHERE v.id_visita = ? AND (? = 0 OR s.id_empresa = ?) AND (? = FALSE OR v.estado = 'FINALIZADA')"
-                        + (bloquear ? " FOR UPDATE" : ""), VisitaDao::leer, id, empresa, empresa, soloFinalizadas);
+    public Ficha buscar(Connection con, int id, int empresa, boolean soloFinalizadas, boolean bloquear) throws SQLException {return buscar(con,id,Alcance.exacta(empresa),soloFinalizadas,bloquear);}
+    /** RF-002: consulta parametrizada en el alcance vigente. */
+    public Ficha buscar(Connection con, int id, Alcance empresa, boolean soloFinalizadas, boolean bloquear) throws SQLException {
+        return Sql.uno(con, CONTEXTO + " WHERE v.id_visita = ? AND "+empresa.sql("s.id_empresa")+" AND (? = FALSE OR v.estado = 'FINALIZADA')"
+                        + (bloquear ? " FOR UPDATE" : ""), VisitaDao::leer, id, empresa.todas(),empresa.valor(), soloFinalizadas);
     }
 
     /** Inicia una visita; la restricción única impide más de una por reserva. */

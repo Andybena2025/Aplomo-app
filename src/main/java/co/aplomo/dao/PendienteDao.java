@@ -1,4 +1,5 @@
 package co.aplomo.dao;
+import co.aplomo.seguridad.AccesoDatos.Alcance;
 
 import co.aplomo.db.Sql;
 import co.aplomo.modelo.PendienteArreglo;
@@ -14,14 +15,18 @@ public final class PendienteDao {
     /** Crea el acceso parametrizado a pendientes. */
     public PendienteDao() {}
     /** Lista el alcance permitido con orden fijo elegido por lista blanca. */
-    public List<Ficha> listar(Connection c,int empresa,boolean finalizadas,String estado,String orden)throws SQLException{
+    public List<Ficha> listar(Connection c,int empresa,boolean finalizadas,String estado,String orden)throws SQLException{return listar(c,Alcance.exacta(empresa),finalizadas,estado,orden);}
+    /** RF-002: consulta parametrizada en el alcance vigente. */
+    public List<Ficha> listar(Connection c,Alcance empresa,boolean finalizadas,String estado,String orden)throws SQLException{
         String ordenar=switch(orden){case "prioridad"->"CASE p.prioridad WHEN 'ALTA' THEN 0 WHEN 'MEDIA' THEN 1 WHEN 'BAJA' THEN 2 ELSE 3 END,p.fecha_limite IS NULL,p.fecha_limite,p.id_pendiente DESC";case "limite"->"p.fecha_limite IS NULL,p.fecha_limite,p.id_pendiente DESC";default->"p.fecha_registro DESC,p.id_pendiente DESC";};
-        return Sql.listar(c,CONTEXTO+" WHERE (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA') AND (?='TODOS' OR p.estado=?)"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" ORDER BY "+ordenar,PendienteDao::ficha,empresa,empresa,finalizadas,estado,estado);
+        return Sql.listar(c,CONTEXTO+" WHERE "+empresa.sql("s.id_empresa")+" AND (?=FALSE OR v.estado='FINALIZADA') AND (?='TODOS' OR p.estado=?)"+co.aplomo.modelo.Demostracion.filtro("s.id_empresa")+" ORDER BY "+ordenar,PendienteDao::ficha,empresa.todas(),empresa.valor(),finalizadas,estado,estado);
     }
     /** Consulta dentro del alcance; bloquea solo el pendiente para no invertir bloqueos de análisis/visita. */
-    public Ficha buscar(Connection c,int id,int empresa,boolean finalizadas,boolean bloquear)throws SQLException{
+    public Ficha buscar(Connection c,int id,int empresa,boolean finalizadas,boolean bloquear)throws SQLException{return buscar(c,id,Alcance.exacta(empresa),finalizadas,bloquear);}
+    /** RF-002: consulta parametrizada en el alcance vigente. */
+    public Ficha buscar(Connection c,int id,Alcance empresa,boolean finalizadas,boolean bloquear)throws SQLException{
         PendienteArreglo actual=bloquear?Sql.uno(c,"SELECT * FROM pendiente_arreglo WHERE id_pendiente=? FOR UPDATE",PendienteDao::leer,id):null;
-        var f=Sql.uno(c,CONTEXTO+" WHERE p.id_pendiente=? AND (?=0 OR s.id_empresa=?) AND (?=FALSE OR v.estado='FINALIZADA')",PendienteDao::ficha,id,empresa,empresa,finalizadas);
+        var f=Sql.uno(c,CONTEXTO+" WHERE p.id_pendiente=? AND "+empresa.sql("s.id_empresa")+" AND (?=FALSE OR v.estado='FINALIZADA')",PendienteDao::ficha,id,empresa.todas(),empresa.valor(),finalizadas);
         return f==null?null:actual==null?f:new Ficha(actual,f.puesto(),f.numero(),f.visita(),f.empresa(),f.empresaNombre(),f.sedeNombre(),f.salonNombre(),f.color(),f.nivel());
     }
     /** Consulta la única fila de una evaluación dentro de la transacción del análisis. */

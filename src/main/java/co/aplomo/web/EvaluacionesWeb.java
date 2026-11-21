@@ -20,7 +20,7 @@ public final class EvaluacionesWeb {
 
     /** Comprueba permiso antes de leer archivos; los errores AJAX dejan intacto el formulario. */
     public void atender(HttpExchange x, Sesion s) throws IOException, SQLException {
-        Permisos.administrador(s.cuenta());
+        Permisos.trabajo(s.cuenta());
         String ruta=x.getRequestURI().getPath();
         boolean post=x.getRequestMethod().equals("POST");
         if(post&&ruta.matches("/evaluaciones/[1-9][0-9]*/fotos")){FotosEvaluacionWeb.cambiar(x,s,servicio.fotosEvaluacion(),entero(ruta.split("/")[2],"evaluación"));return;}
@@ -55,6 +55,7 @@ public final class EvaluacionesWeb {
         }
         if(ruta.matches("/evaluaciones/[1-9][0-9]*/analisis/[1-9][0-9]*")&&!post) {
             String[] ids=ruta.split("/");var guardado=servicio.analisis().consultar(s.cuenta(),entero(ids[2],"evaluación"),entero(ids[4],"análisis"));
+            if(!servicio.permiteTrabajo(s.cuenta(),guardado.ficha().evaluacion())){Router.enviar(x,200,PaginasAnalisis.guardado(s,guardado));return;}
             var c=servicio.sugerencias().contexto(s.cuenta(),guardado.ficha().evaluacion()); var lista=servicio.sugerencias().listar(s.cuenta(),c.evaluacion());
             Router.enviar(x,200,PaginasAnalisis.guardado(s,guardado).replace("</main>",PaginasSugerencias.resumen(lista,c)+"</main>"));return;
         }
@@ -80,7 +81,7 @@ public final class EvaluacionesWeb {
         }
         if (!post && ruta.matches("/evaluaciones/[1-9][0-9]*")) {
             int id=entero(ruta.substring(14),"evaluación");var analisis=servicio.analisis().listar(s.cuenta(),id);String pagina=PaginasEvaluacion.detalle(s,servicio.consultar(s.cuenta(),id),analisis,Router.consulta(x).get("aviso"));
-            if(!analisis.isEmpty())pagina=pagina.replace("</main>",PaginasSugerencias.resumen(servicio.sugerencias().listar(s.cuenta(),id),servicio.sugerencias().contexto(s.cuenta(),id))+"</main>");Router.enviar(x,200,pagina);return;
+            if(!analisis.isEmpty()&&servicio.permiteTrabajo(s.cuenta(),id))pagina=pagina.replace("</main>",PaginasSugerencias.resumen(servicio.sugerencias().listar(s.cuenta(),id),servicio.sugerencias().contexto(s.cuenta(),id))+"</main>");Router.enviar(x,200,pagina);return;
         }
         if (!ruta.equals("/evaluaciones") || !post) { Router.enviar(x,404,"Página no disponible.");return; }
         try {
