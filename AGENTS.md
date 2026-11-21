@@ -198,3 +198,15 @@ Luego ESPERA el OK de Andy.
   y ROLLBACK confirmado; sin capturas, descargas ni cambios del motor, cálculo, IA o imágenes. Commit/push A al repo
   verificado; B y C siguen autorizados y pendientes. No pedir un nuevo OK entre A/B/C: el encargo los autoriza juntos.
   La cuenta inicial se conserva hasta que Andy resuelva la pregunta pendiente. Informe `docs/informe_paso27.md`.
+
+
+- Cierre de 27B: reserva.id_evaluador, mensaje y asignaciones múltiples; bandeja privada A/E/U,
+  solicitud de visita con alternativas, aceptación/asignación y respuesta única, sin borrar.
+  1072 casos Maven distintos verificados (suite 1068 una vez, 13 fallos resueltos por reintento dirigido,
+  cuatro casos nuevos de cierre); 136 JS. Migración real con respaldo dos veces: 22→23 tablas, conteos
+  anteriores iguales; 69/74 reservas con ingeniero, cinco sin asignación activa. Dos notas importadas y
+  seis avisos demo idempotentes; contraseñas conservadas. Diez medidas de bandeja/formulario sin desborde,
+  solicitud y aceptación reales en QA revertida, sin errores de consola, capturas ni descargas.
+  Primer lanzador visual sin URL de pruebas salió sin confirmar; se verificaron cero datos de prueba reales
+  y se añadió URL explícita y guardia de catálogo. No tocar motor/cálculo/IA/imágenes. C sigue autorizado.
+  Informe docs/informe_paso27.md. Sigue pendiente la decisión sobre la cuenta inicial; se conserva.

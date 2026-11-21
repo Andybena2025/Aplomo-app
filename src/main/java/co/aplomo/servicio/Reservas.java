@@ -75,6 +75,20 @@ public final class Reservas {
     /**
      * RF-033: agenda comparte fecha y transacciones.
      */
+    public Avisos avisos() {
+        return new Avisos(tx, reloj);
+    }
+
+    /**
+     * RF-002 (propuesta): solicitudes con las mismas transacciones y reloj.
+     */
+    public SolicitudesVisita solicitudes() {
+        return new SolicitudesVisita(tx, reloj);
+    }
+
+    /**
+     * RF-033: calendario de las citas asignadas.
+     */
     public Agenda agenda() {
         return new Agenda(tx, reloj);
     }
@@ -86,10 +100,8 @@ public final class Reservas {
         return tx.ejecutar(conexion -> {
             Cuenta actual = AccesoDatos.vigente(conexion, actor);
             Permisos.evaluador(actual);
-            var cruces = co.aplomo.db.Sql.listar(conexion,
-                    "SELECT DISTINCT r.hora_inicio,r.hora_fin FROM reserva r JOIN salon l USING(id_salon) " +
-                            "JOIN sede s USING(id_sede) JOIN cuenta_empresa ce ON ce.id_empresa=s.id_empresa " +
-                            "WHERE ce.id_cuenta=? AND ce.activo=TRUE AND r.fecha=? AND r.estado<>'CANCELADA' " +
+            var cruces = co.aplomo.db.Sql.listar(conexion, "SELECT DISTINCT r.hora_inicio,r.hora_fin FROM reserva r " +
+                            "WHERE r.id_evaluador=? AND r.fecha=? AND r.estado<>'CANCELADA' " +
                             "AND r.id_reserva<>? ORDER BY r.hora_inicio",
                     fila -> new LocalTime[]{fila.getTime(1).toLocalTime(), fila.getTime(2).toLocalTime()}, actual.id(),
                     fecha, omitir);
@@ -148,6 +160,10 @@ public final class Reservas {
             Permisos.evaluador(responsable);
             Ficha anterior =
                     id == 0 ? null : exigir(reservas.buscar(con, id, AccesoDatos.empresaPermitida(responsable), true));
+            if (anterior != null && anterior.reserva().evaluador() != null &&
+                    !java.util.Objects.equals(anterior.reserva().evaluador(), responsable.id())) {
+                throw new SecurityException("Esta cita está asignada a otro ingeniero.");
+            }
             if (anterior != null && !anterior.reserva().editable()) {
                 throw new IllegalArgumentException("Una reserva finalizada o cancelada no se puede editar.");
             }
@@ -200,6 +216,10 @@ public final class Reservas {
             Cuenta responsable = administrador(con, actor);
             Permisos.evaluador(responsable);
             Ficha ficha = exigir(reservas.buscar(con, id, AccesoDatos.empresaPermitida(responsable), true));
+            if (ficha != null && ficha.reserva().evaluador() != null &&
+                    !java.util.Objects.equals(ficha.reserva().evaluador(), responsable.id())) {
+                throw new SecurityException("Esta cita está asignada a otro ingeniero.");
+            }
             Reserva reserva = ficha.reserva();
             if (nuevo.equals("EN_COLA") && !reserva.estado().equals("ESPERANDO")) {
                 throw new IllegalArgumentException("Solo se puede aceptar una reserva en estado Esperando.");
@@ -213,6 +233,13 @@ public final class Reservas {
                 }
             }
             reservas.estado(con, id, nuevo, motivo);
+            var contacto = new co.aplomo.dao.CuentaDao().porId(con, reserva.administrador(), false);
+            if (contacto != null && contacto.rol() == Cuenta.Rol.USUARIO) {
+                String textoAviso = nuevo.equals("EN_COLA") ? "Tu visita fue aceptada." :
+                        "Tu visita fue cancelada: " + motivo;
+                new co.aplomo.dao.MensajeDao().enviar(con, id, responsable.id(), contacto.id(), "AVISO",
+                        textoAviso, LocalDateTime.now(reloj));
+            }
             bitacora.registrar(con, responsable.id(), LocalDateTime.now(reloj), "reserva", id, "CAMBIAR_ESTADO",
                     reserva.estado(), nuevo, motivo);
             return null;
@@ -233,7 +260,8 @@ public final class Reservas {
                 anterior == null ? "" : anterior.reserva().codigo(), datos.fecha(), datos.inicio().withNano(0),
                 datos.fin().withNano(0), categoria, Validacion.opcional(datos.descripcion(), "descripción", 255),
                 Validacion.notas(datos.notas()), anterior == null ? "ESPERANDO" : anterior.reserva().estado(),
-                anterior == null ? null : anterior.reserva().motivo());
+                anterior == null ? null : anterior.reserva().motivo(),
+                anterior == null ? administrador : anterior.reserva().evaluador());
     }
 
     private static void comprobarSeleccion(Connection con, Datos datos, Salon salon) throws SQLException {

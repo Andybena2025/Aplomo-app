@@ -123,3 +123,64 @@ del viernes); visitas 45→45; evaluaciones 66→66; fotos 66→66; análisis 66
 Nueve cuentas del equipo activas más la inicial conservada: 10. Las tres cuentas antiguas
 `companero1–3` quedan Inactivas; solo `companero2` cambió de Activa a Inactiva. Las otras cuatro genéricas
 no existían y no se crean. Avisos de ejemplo nuevos: pendientes de 27B. No se envió correo ni WhatsApp.
+
+
+## 27B · Avisos y solicitudes de visita
+
+Implementado: responsable por cita, varias personas evaluadoras en una empresa, bandeja privada en los
+3 roles y solicitud del Usuario con alternativas ante cruce. La nota del Administrador conserva su campo
+anterior y genera un mensaje; también se importaron las notas anteriores sin reiniciar el acuse.
+Se eligió la bitácora para enlazar la respuesta única a su petición, evitando un campo no solicitado.
+
+| Requisito (propuesta aprobada) | Archivo / método | Prueba |
+| --- | --- | --- |
+| RF-002: asignaciones múltiples | CuentaEmpresaDao.validar; migracion_paso27.sql | AvisosSolicitudesTest.aceptarAsignaEmpresaYSostieneVariosIngenieros |
+| RF-011/033: cita y cruces por ingeniero | Reserva.evaluador; CrucesAgendaDao.comprobar; Agenda.consultar | cruceEsPorIngenieroYNoPorEmpresa; reservaAnteriorRecibeIngenieroSinCambiarConteos |
+| RF-002/033: bandeja privada y acuse | MensajeDao.exigir/entender; Avisos; AvisosWeb; notas.js | libreCreaReservaYMensajeSoloAlIngeniero; pedirInformacionPermiteSoloUnaRespuestaYAcusePrivado; HttpAvisos27Test |
+| RF-002: nota privada real | Agenda.guardarNota/nota; AgendaDao; AgendaWeb | notasIgualesVuelvenAAvisarYLeerSinAcuseNoMarcaNada; otroAsignadoConsultaReservaSinNotaPeroNoPuedeEditarNiIniciar |
+| RF-011: solicitud libre/ocupada | SolicitudesVisita.solicitar/libre; SolicitudesVisitaWeb.alternativas | HttpAvisos27Test.solicitarConCruceConservaCamposYDaLasDosAlternativas |
+| RF-002/012: aceptar, llamada, información y rechazo | SolicitudesVisita.actuar; Avisos.responder | aceptarAsignaEmpresaYSostieneVariosIngenieros; rechazarConMotivoConservaLaReserva; pedirInformacionPermiteSoloUnaRespuestaYAcusePrivado |
+| RNF-004/005: permisos, CSRF, escape y auditoría | Router; MensajeDao; Avisos; SolicitudesVisita | HttpAvisos27Test.usuarioAjenoEs403AntesDeCrearYNoPuedeDecidirLaSolicitud; todosLosRolesTienenBandejaYNoVenMensajesAjenos |
+| RNF-002/007: responsive, texto y recuperación | aplomo.css; notas.js; SolicitudesVisitaWeb | 10 mediciones DOM + recorrido de solicitud/aceptación; qa_notas.cjs |
+
+### Pruebas y migración
+
+- Suite completa una vez: **1068 ejecutadas, 1055 aprobadas, 13 fallos, 0 errores y 0 omitidas**.
+  Corregidos los fallos (expectativas antiguas y lectura de reserva ajena al responsable); reintento dirigido:
+  **29/29**. Se añadieron cuatro casos más y comprobaciones finales: **1072 casos Maven distintos verificados**.
+  El cierre del formulario también corrigió un color nulo legado; último reintento HTTP/longitud **5/5**.
+- JavaScript: **136/136**, 0 fallos; los cinco casos de avisos se repitieron tras el último ajuste, **5/5**.
+- Rendimiento de la suite, P95 lista/guardar/informe: **569,13 / 16,38 / 182,81 ms**.
+- Migración de prueba dos veces, 23 tablas y conteos previos conservados. El caso de una reserva anterior
+  sin ingeniero comprueba el relleno dos veces y conserva el número de reservas, con ROLLBACK.
+- Migración real con respaldo privado: **22 → 23 tablas**, las 22 anteriores conservan cada conteo.
+  **74 reservas: 69 con ingeniero y 5 sin asignación activa**, sin inventar responsables.
+  **2 notas anteriores importadas**; segundo pase idéntico. Demo: **6 avisos nuevos (1 nuevo y 1 leído por E)**;
+  total **8 mensajes**. Cargar dos veces no duplica ni cambia claves ni otros conteos.
+- Citas pasadas/futuras/canceladas: Andrés **22/9/0**, Johan **12/8/1**, Gabriella **8/9/0**.
+- QA de interfaz: bandeja y solicitud a **360/390/820/1180/1366 px: 0 px de desborde horizontal**.
+  Usuario solicita → E recibe en bandeja → abre contacto → acepta → reserva Aceptada.
+  **0 errores de consola**. Sin capturas ni descargas, por instrucción de Andy.
+- El primer lanzador de QA omitió la URL de pruebas: la conexión salió sin confirmar al detectar la tabla
+  ausente. Comprobación posterior en la base real: **0 empresas y 0 cuentas de prueba**. Se fijó la URL y
+  se agregó un guardado de seguridad que exige rula_ergonomia_pruebas. El recorrido final se revirtió.
+
+### Checklist y límites
+
+- ✅ Casos Maven y JS verificados; código protegido, IA e imágenes conservados.
+- ✅ Bandeja por destinatario; Usuario ajeno y CSRF rechazados por HTTP.
+- ✅ Notas iguales vuelven a avisar; sondeo no lee ni prolonga sesión; pausa en pestaña oculta.
+- ✅ Botón y hoja de avisos, formulario breve y ambos caminos de cruce revisados sin desborde.
+- ✅ Sin claves/fotos privadas en el commit; respaldo fuera de Git.
+- ❌ iPad/iPhone físico, Windows y tres equipos en red: no comprobados.
+- ❌ 27C sigue pendiente en este punto; no hay aún solicitudes públicas de acceso.
+
+### Cómo probarlo
+
+1. Como Administrador, abre una cita con ingeniero, escribe una nota y verifica «Nota enviada a…».
+2. Como ese Evaluador, abre Avisos: aparece la nota. Entendido la pasa a Leídos.
+3. Como Usuario, pulsa Solicitar una visita, elige sede/salón/ingeniero, fecha y horas.
+4. Si está ocupado, conserva los datos y ofrece Elegir otra hora / Elegir otro ingeniero.
+5. Como E destinatario, abre la solicitud en Avisos: pide información, llama, acepta o rechaza con motivo.
+6. Como Usuario, responde una sola vez a la petición y verifica el aviso de aceptación o rechazo.
+7. Otro Evaluador asignado puede consultar la cita, pero no recibe su nota ni puede editarla o iniciarla.

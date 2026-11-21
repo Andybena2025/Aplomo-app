@@ -148,10 +148,10 @@ public final class PracticaEvaluacion {
                 var reservas = new ReservaDao();
                 int reserva = Sql.insertar(con,
                         "INSERT INTO reserva (id_salon,id_administrador,codigo,fecha,hora_inicio,hora" +
-                                "_fin,categoria,descripcion,estado) VALUES (?,?,?,?,?,?,?,?,?)", salon, admin.id(),
-                        UUID.randomUUID().toString().replace("-", "").substring(0, 12), fecha, inicio,
+                                "_fin,categoria,descripcion,estado,id_evaluador) VALUES (?,?,?,?,?,?,?,?,?,?)", salon,
+                        admin.id(), UUID.randomUUID().toString().replace("-", "").substring(0, 12), fecha, inicio,
                         inicio.plusMinutes(1), "EVALUACION_INICIAL",
-                        "DEMO · Visita para practicar sin usar una empresa real", "EN_COLA");
+                        "DEMO · Visita para practicar sin usar una empresa real", "EN_COLA", admin.id());
                 reservas.codigo(con, reserva, "R-" + String.format(Locale.ROOT, "%04d", reserva));
                 bitacora.registrar(con, admin.id(), ahora, "reserva", reserva, "CREAR", null, "EN_COLA",
                         "Reserva de práctica");

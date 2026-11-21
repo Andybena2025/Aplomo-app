@@ -125,6 +125,10 @@ public final class Visitas {
             Permisos.evaluador(responsable);
             ReservaDao.Ficha ficha = reservas.buscar(con, reserva, AccesoDatos.empresaPermitida(responsable), true);
             if (ficha == null) throw new SecurityException("La reserva no está disponible para tu cuenta.");
+            if (ficha != null && ficha.reserva().evaluador() != null &&
+                    !java.util.Objects.equals(ficha.reserva().evaluador(), responsable.id())) {
+                throw new SecurityException("Esta cita está asignada a otro ingeniero.");
+            }
             if (!ficha.reserva().estado().equals("EN_COLA")) {
                 throw new IllegalArgumentException("Primero acepta la reserva para iniciar la visita desde En cola.");
             }

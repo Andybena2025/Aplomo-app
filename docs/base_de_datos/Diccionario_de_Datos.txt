@@ -542,3 +542,18 @@ Paleta vigente del Paso 27A (sustituye la paleta visual del Paso 26):
 #FF4F9A Andrés Evaluador (fijo); #3D7BFF Johan; #16BFC9 Laura Gabriella.
 Otros colores personales: #9B6BFF, #C9CCD2, #FF8FD0. No indican riesgo RULA.
 El PDF conserva sus 16 páginas originales y añade la actualización de los Pasos 24, 26 y 27A.
+
+
+Paso 27B (21/11/2026): 23 tablas. Sustituye el límite de un Evaluador activo por empresa.
+- reserva.id_evaluador: INT NULL, FK cuenta. Responsable de la cita, independiente de cuenta_empresa.
+  La migración completa reservas anteriores con un Evaluador activo; prioriza al registrador si corresponde.
+  Sin Evaluador activo queda NULL y la Administradora ve la cita Sin asignar. Nuevas reservas web llevan ID.
+- reserva.id_administrador: registrador (Evaluador o Usuario; Administrador en datos legados).
+- mensaje: id_mensaje INT PK AI; id_reserva INT NULL FK reserva; id_remitente e id_destinatario INT NOT NULL
+  FK cuenta; tipo ENUM NOTA_ADMIN/SOLICITUD_VISITA/PEDIR_LLAMADA/PEDIR_INFORMACION/RESPUESTA/SOLICITUD_ACCESO/AVISO;
+  texto VARCHAR(500) NOT NULL; creado DATETIME NOT NULL (Bogotá); leido BOOLEAN NOT NULL DEFAULT FALSE.
+  Índice por destinatario, leído y fecha. Sin DELETE. Solo el destinatario lee o acusa recibo.
+- Una respuesta por PEDIR_INFORMACION: bloqueo de la fila mensaje y bitácora de EDITAR, detalle
+  Respuesta enviada sobre el ID padre. No se añade un campo de relación no solicitado.
+- La nota anterior se conserva en reserva y genera NOTA_ADMIN en la misma transacción.
+  La migración importa notas anteriores una sola vez, conservando el acuse. Repetir no reinicia lectura.

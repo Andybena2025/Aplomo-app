@@ -277,3 +277,23 @@ El selector colombiano de fecha y hora conserva los valores ISO de los formulari
 El motor, las tablas RULA y el bloque de POST `/evaluaciones/calcular` se conservan sin cambios.
 
 GET `/reservas/horas-libres`: recibe `fecha` y `omitir` según la tabla del Paso 27A.
+
+### Paso 27B · avisos y solicitudes (propuesta aprobada por Andy)
+
+| Ruta | Permiso y comportamiento |
+| --- | --- |
+| GET `/avisos` | A/E/U. Bandeja propia, filtro `leidos=1`; panel con cabecera `X-Alineo-Panel: 1`. |
+| GET `/avisos/nuevos` | A/E/U. JSON de avisos propios sin leer; no renueva inactividad, 401 si venció la sesión. |
+| POST `/avisos/{id}/entendido` | Destinatario, CSRF. Acuse explícito, sin borrar. |
+| POST `/avisos/{id}/responder` | U destinatario de PEDIR_INFORMACION; CSRF, texto de 500, una respuesta por mensaje. |
+| GET/POST `/solicitar-visita` | U vigente. Sede/salón de su empresa, ingeniero activo, fecha/horas y motivo opcional. Cruce validado otra vez en el POST. |
+| GET `/solicitudes-visita/{id}` | E responsable de esa petición, acceso mínimo al contacto antes de asignación. |
+| POST `/solicitudes-visita/{id}/aceptar` | E responsable, CSRF. EN_COLA y asignación de empresa en una transacción. |
+| POST `/solicitudes-visita/{id}/llamada` | E responsable, CSRF. Avisa al contacto sin cambiar el estado. |
+| POST `/solicitudes-visita/{id}/informacion` | E responsable, CSRF. Texto obligatorio, máximo 500. |
+| POST `/solicitudes-visita/{id}/rechazar` | E responsable, CSRF. Motivo obligatorio, máximo 255; CANCELADA. |
+
+`/notas/nuevas` conserva el contrato privado legado para E; ahora filtra por `reserva.id_evaluador`.
+La bandeja nueva usa `/avisos/nuevos`. Consultar no marca leído. Varias notas idénticas tienen IDs distintos.
+Un E asignado a la empresa consulta otras citas, pero no las edita ni inicia por otro ingeniero.
+Las solicitudes creadas por U solo las ve su propio contacto; las citas legadas de la empresa siguen visibles.

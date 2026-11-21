@@ -41,6 +41,8 @@ class HttpRecorridoMarcaTest extends HttpPrueba {
                     new Usuarios.Datos("Evaluador QA", UUID.randomUUID() + "@prueba.invalid", "123", "QA", rol, null,
                             List.of(empresa)), clave);
             dao.contrasena(con, actor, cuenta(actor).hash(), false);
+            Sql.actualizar(con, "UPDATE reserva r JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) " +
+                    "SET r.id_evaluador=? WHERE s.id_empresa=?", actor, empresa);
         } else if (rol == Cuenta.Rol.USUARIO) actor = usuario;
         entrar(actor);
         List<String> rutas = new ArrayList<>(

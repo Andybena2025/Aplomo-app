@@ -39,6 +39,10 @@ class HttpPaso26Test extends HttpPrueba {
                 new Usuarios.Datos("Evaluador QA", UUID.randomUUID() + "@prueba.invalid", "123", "Prueba",
                         Cuenta.Rol.EVALUADOR, null, empresas, ColoresAgenda.PALETA.get(0)), clave);
         dao.contrasena(con, id, cuenta(id).hash(), false);
+        for (int empresaAsignada : empresas) {
+            Sql.actualizar(con, "UPDATE reserva r JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) " +
+                    "SET r.id_evaluador=? WHERE s.id_empresa=?", id, empresaAsignada);
+        }
         return id;
     }
 

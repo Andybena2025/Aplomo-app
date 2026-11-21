@@ -337,7 +337,7 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
         assertTrue(texto2.contains("data-perfil"));
         assertTrue(texto2.contains("data-lado-campo=\"AMBOS\""));
         assertFalse(texto2.contains("data-foto-pantalla"));
-        assertFalse(texto2.contains("<dialog"));
+        assertFalse(texto2.replaceAll("<dialog class=\"avisos-panel[^>]*>[\\s\\S]*?</dialog>", "").contains("<dialog"));
         assertTrue(texto2.contains("data-medidas-compactas hidden"));
     }
 

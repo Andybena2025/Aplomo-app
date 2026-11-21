@@ -61,6 +61,10 @@ class HttpTresRolesTest extends HttpPrueba {
         us = servicioUsuarios();
         ev1 = crear(Cuenta.Rol.EVALUADOR, List.of(empresa));
         ev2 = crear(Cuenta.Rol.EVALUADOR, List.of(escenario.empresaB));
+        Sql.actualizar(con, "UPDATE reserva r JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) " +
+                        "SET r.id_evaluador=CASE WHEN s.id_empresa=? THEN ? ELSE ? END " + "WHERE s.id_empresa IN (?,"
+                        + "?)",
+                empresa, ev1, ev2, empresa, escenario.empresaB);
         entrar(ev1);
     }
 
@@ -178,9 +182,9 @@ class HttpTresRolesTest extends HttpPrueba {
     }
 
     @Test
-    void unSoloEvaluadorActivoYUsuarioDeVariasEmpresas() throws Exception {
-        var error = assertThrows(IllegalArgumentException.class, () -> crear(Cuenta.Rol.EVALUADOR, List.of(empresa)));
-        assertTrue(error.getMessage().startsWith("Esta empresa ya tiene evaluador:"));
+    void variosEvaluadoresActivosYUsuarioDeVariasEmpresas() throws Exception {
+        int adicional = crear(Cuenta.Rol.EVALUADOR, List.of(empresa));
+        assertTrue(new CuentaEmpresaDao().ids(con, adicional).contains(empresa));
         int cantidad = crear(Cuenta.Rol.USUARIO, List.of(empresa, escenario.empresaB));
         cambiarCuenta(cantidad);
         String texto = get("/empresas").body();
@@ -274,7 +278,7 @@ class HttpTresRolesTest extends HttpPrueba {
     @Test
     void arranqueCompruebaEsquemaActual() throws Exception {
         assertDoesNotThrow(() -> Esquema.verificar(con));
-        assertEquals(22,
+        assertEquals(23,
                 Sql.<Integer>uno(con, "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE()",
                         rs -> rs.getInt(1)));
     }

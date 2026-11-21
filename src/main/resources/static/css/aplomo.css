@@ -1938,3 +1938,26 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
 .progreso-visita::-webkit-progress-value{background:var(--ivory)}
 .progreso-visita::-webkit-progress-bar{background:#3A3A40}
 .inicio-indicador small{font-size:12px;color:var(--muted)}
+
+/* Paso 27B · Bandeja privada; hoja segura por encima de la barra móvil. */
+.bandeja-boton{position:relative;flex-shrink:0}
+.avisos-contador{position:absolute;right:-5px;top:-5px;min-width:21px;height:21px;border-radius:50%;display:grid;
+ place-items:center;background:#F2D9A2;color:#0E0E10;font:700 11px Inter,sans-serif;box-shadow:0 0 12px #F2D9A244}
+.avisos-contador[hidden]{display:none}
+.avisos-panel{position:fixed;inset:0 0 0 auto;margin:0;width:min(100%,480px);max-width:100%;height:100dvh;
+ max-height:100dvh;padding:24px 24px calc(24px + env(safe-area-inset-bottom));background:var(--bg);color:var(--text);
+ border:1px solid var(--line2);overflow:auto;z-index:1001}
+.avisos-panel::backdrop{background:#0008}
+.aviso-tarjeta{padding:20px;margin-top:16px;border:1px solid var(--line2);border-radius:14px;background:var(--bg)}
+.aviso-tarjeta.nuevo{border-color:#F2D9A2;border-left-width:4px;background:#24211C}
+.aviso-tarjeta p{font-size:15px;overflow-wrap:anywhere}
+.aviso-tarjeta h3{font-size:22px}
+.aviso-cita{display:block;border:1px solid var(--line2);border-radius:10px;padding:14px;color:inherit}
+.notas-vivas{position:fixed;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:1000;
+ width:min(380px,calc(100vw - 32px))}
+.notas-vivas .card{background:#24211C;border-color:#F2D9A2;max-height:65dvh;overflow:auto}
+.cal-aviso{position:absolute;right:5px;top:5px;border-radius:50%;padding:2px 6px;background:#F2D9A2;
+ color:#0E0E10;font:700 11px Inter,sans-serif}
+.solicitar-visita{max-width:720px;margin-inline:auto}
+@media(max-width:700px){.avisos-panel{inset:auto 0 0;height:85dvh;width:100%;border-radius:20px 20px 0 0}
+ .notas-vivas{right:16px}.bandeja-boton{width:44px;height:44px}}

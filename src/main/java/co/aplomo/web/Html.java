@@ -158,9 +158,10 @@ public final class Html {
     }
 
     private static String notas(Sesion sesion) {
-        if (sesion == null || sesion.cuenta() == null || sesion.cuenta().temporal() ||
-                sesion.cuenta().rol() != Rol.EVALUADOR) return "";
-        return "<div data-notas-csrf=\"" + escapar(sesion.csrf()) + "\"></div>" +
+        if (sesion == null || sesion.cuenta() == null || sesion.cuenta().temporal()) return "";
+        return "<div data-notas-csrf=\"" + escapar(sesion.csrf()) +
+                "\"></div><dialog class=\"avisos-panel stack\" data-panel-avisos " +
+                "aria-label=\"Avisos\"><div data-contenido-avisos></div></dialog>" +
                 "<script src=\"/static/js/notas.js\" defer></script>";
     }
 
@@ -293,6 +294,10 @@ public final class Html {
                     + "<div class=\"who\"><div class=\"meta\" style=\"text-align:right\"><div>" +
                     escapar(cuenta.nombre()) + "</div><div class=\"muted small\">" + escapar(rolTexto) +
                     "</div></div>" + "<a class=\"btn ayuda-cabecera\" href=\"/ayuda\">Ayuda</a>" +
+                    "<a class=\"avatar bandeja-boton\" href=\"/avisos\" data-abrir-avisos aria-label=\"Avisos\">" +
+                    "<svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" " +
+                    "aria-hidden=\"true\"><path d=\"M4 4h16v16H4z M4 14h5l1 3h4l1-3h5\"/></svg>" +
+                    "<span class=\"avisos-contador\" data-contador-avisos hidden></span></a>" +
                     "<a href=\"/cuenta\" class=\"avatar\" title=\"Mi cuenta\">" + escapar(iniciales) + "</a>" +
                     "<form method=\"post\" action=\"/logout\" style=\"margin:0\">" + csrf(sesion2) +
                     "<button class=\"btn\">Salir</button></form></div>" + "</div></header>";

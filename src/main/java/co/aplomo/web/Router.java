@@ -28,6 +28,8 @@ public final class Router implements HttpHandler {
     private final UsuariosWeb usuarios;
     private final EmpresasWeb empresas;
     private final ReservasWeb reservas;
+    private final AvisosWeb avisos;
+    private final SolicitudesVisitaWeb solicitudesVisita;
     private final VisitasWeb visitas;
     private final EvaluacionesWeb evaluaciones;
     private final PendientesWeb pendientes;
@@ -94,6 +96,8 @@ public final class Router implements HttpHandler {
             co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas,
             co.aplomo.servicio.Visitas visitas, co.aplomo.servicio.Evaluaciones evaluaciones) {
         this.agenda = new AgendaWeb(reservas.agenda());
+        this.avisos = new AvisosWeb(reservas.avisos());
+        this.solicitudesVisita = new SolicitudesVisitaWeb(reservas.solicitudes());
         this.demo = new DemoWeb(visitas);
         this.acceso = new AccesoWeb(auth, sesiones);
         this.inicio = new InicioWeb(empresas, reservas, visitas, evaluaciones);
@@ -163,7 +167,8 @@ public final class Router implements HttpHandler {
             return;
         }
         String id = cookie(intercambio);
-        Sesion sesion = ruta.equals("/notas/nuevas") ? sesiones.consultar(id) : sesiones.obtener(id);
+        Sesion sesion = (ruta.equals("/notas/nuevas") || ruta.equals("/avisos/nuevos")) ? sesiones.consultar(
+                id) : sesiones.obtener(id);
         if (sesion != null && sesion.cuenta() != null) {
             Cuenta cuenta2 = auth.actual(sesion.cuenta().id());
             if (!vigente(sesion.cuenta(), cuenta2)) {
@@ -184,11 +189,17 @@ public final class Router implements HttpHandler {
 
             // RF-001b, RNF-007: un formulario anónimo vigente no es una sesión cerrada.
             if (ruta.startsWith("/fotos/")) throw new SecurityException("Acceso denegado.");
+            if (ruta.equals("/avisos/nuevos") || ruta.equals("/notas/nuevas")) {
+                responder(intercambio, 401, "application/json; charset=UTF-8", "{\"sesion\":\"vencida\"}");
+                return;
+            }
             boolean vencida = sesion == null && id != null;
             if (vencida) ponerCookie(intercambio, "");
             redirigir(intercambio, vencida ? "/login?inactividad=1" : "/login");
             return;
         }
+        if (metodo.equals("GET") && avisos.atender(intercambio, sesion, Map.of())) return;
+        if (metodo.equals("GET") && solicitudesVisita.atender(intercambio, sesion, Map.of())) return;
         if (metodo.equals("GET") && agenda.atender(intercambio, sesion, Map.of())) return;
         if (archivo.atender(intercambio, sesion)) return;
         if (ruta.equals("/empresas") && metodo.equals("GET")) {
@@ -208,6 +219,8 @@ public final class Router implements HttpHandler {
         }
         Map<String, String> parametros2 = metodo.equals("POST") ? formulario(intercambio) : Map.of();
         if (metodo.equals("POST")) exigirCsrf(sesion, parametros2);
+        if (avisos.atender(intercambio, sesion, parametros2)) return;
+        if (solicitudesVisita.atender(intercambio, sesion, parametros2)) return;
         if (agenda.atender(intercambio, sesion, parametros2)) return;
         if (ruta.equals("/logout")) {
             acceso.cerrar(intercambio, sesion);

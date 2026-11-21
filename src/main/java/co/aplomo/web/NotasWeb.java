@@ -44,7 +44,7 @@ public final class NotasWeb {
                 "}";
     }
 
-    private static String texto(String valor) {
+    static String texto(String valor) {
         StringBuilder texto = new StringBuilder("\"");
         for (char caracter : valor.toCharArray()) {
             switch (caracter) {

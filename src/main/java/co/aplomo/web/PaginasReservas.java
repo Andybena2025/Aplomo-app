@@ -97,7 +97,8 @@ public final class PaginasReservas {
                 .append(dato("Descripción", reserva.descripcion())).append(dato("Notas", reserva.notas()));
         if (reserva.motivo() != null) html.append(dato("Cancelación", reserva.motivo()));
         html.append("</dl>");
-        if (sesion.cuenta().rol() == Rol.EVALUADOR && reserva.editable()) {
+        if (sesion.cuenta().rol() == Rol.EVALUADOR && reserva.editable() &&
+                (reserva.evaluador() == null || java.util.Objects.equals(reserva.evaluador(), sesion.cuenta().id()))) {
             html.append("<div class=\"row\">")
                     .append(enlace("/reservas/" + reserva.id() + "/editar", "Editar reserva", false));
             if (reserva.estado().equals("ESPERANDO")) {

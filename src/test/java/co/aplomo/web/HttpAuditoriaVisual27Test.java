@@ -1,5 +1,7 @@
 package co.aplomo.web;
 
+import co.aplomo.db.Sql;
+
 import co.aplomo.modelo.Cuenta;
 import co.aplomo.servicio.Usuarios;
 import co.aplomo.soporte.EscenarioConsultas;
@@ -27,6 +29,8 @@ class HttpAuditoriaVisual27Test extends HttpPrueba {
                 new Usuarios.Datos("Evaluadora QA", "visual27@prueba.invalid", "123", "QA", Cuenta.Rol.EVALUADOR, null,
                         List.of(empresa)), clave);
         dao.contrasena(con, evaluador, cuenta(evaluador).hash(), false);
+        Sql.actualizar(con, "UPDATE reserva r JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) " +
+                "SET r.id_evaluador=? WHERE s.id_empresa=?", evaluador, empresa);
         int actor = rol == Cuenta.Rol.ADMINISTRADOR ? admin : rol == Cuenta.Rol.EVALUADOR ? evaluador : usuario;
         entrar(actor);
         List<String> comunes = new ArrayList<>(

@@ -42,7 +42,7 @@ public final class CuentaEmpresaDao {
     }
 
     /**
-     * Valida y bloquea en orden para impedir dos Evaluadores simultáneos. RNF-011.
+     * Valida empresas y bloquea en orden; admite varios Evaluadores. RNF-011.
      */
     public void validar(Connection conexion, int cuenta, Cuenta.Rol rol, Collection<Integer> empresas,
             boolean activa) throws SQLException {
@@ -53,14 +53,7 @@ public final class CuentaEmpresaDao {
                 throw new IllegalArgumentException("La empresa elegida no existe. Selecciona una de la lista.");
             if (!emp && !ids(conexion, cuenta).contains(id)) throw new IllegalArgumentException(
                     "La empresa está inactiva. Reactívala antes de asignar cuentas nuevas.");
-            if (rol == Cuenta.Rol.EVALUADOR && activa) {
-                String nombre = Sql.uno(conexion,
-                        "SELECT q.nombre FROM cuenta_empresa ce JOIN cuenta q USING(id_cuenta) WHERE " +
-                                "ce.id_empresa=? AND ce.activo=TRUE AND q.rol='EVALUADOR' AND q.estado<>'INAC" +
-                                "TIVA' AND q.id_cuenta<>? LIMIT 1", fila3 -> fila3.getString(1), id, cuenta);
-                if (nombre != null) throw new IllegalArgumentException(
-                        "Esta empresa ya tiene evaluador: " + nombre + ". Quítasela primero.");
-            }
+
         }
     }
 

@@ -141,8 +141,9 @@ final class DemoPresentacion {
                 empresa);
         int reserva = Sql.insertar(conexion,
                 "INSERT INTO reserva(id_salon,id_administrador,codigo,fecha,hora_inicio,hora_" +
-                        "fin,categoria,descripcion,estado) " + "VALUES(?,?,?,?,?,?,?,?,?)", salon, evaluador, codigo,
-                fecha, hora, hora.plusHours(1), "EVALUACION_INICIAL", "Demostración ALINEO.", "EN_COLA");
+                        "fin,categoria,descripcion,estado,id_evaluador) " + "VALUES(?,?,?,?,?,?,?,?,?,?)", salon,
+                evaluador, codigo, fecha, hora, hora.plusHours(1), "EVALUACION_INICIAL", "Demostración ALINEO.",
+                "EN_COLA", evaluador);
         if (cancelada) {
             Sql.actualizar(conexion, "UPDATE reserva SET estado='CANCELADA',motivo_cancelacion=? WHERE id_reserva=?",
                     "Cambio de turno ficticio", reserva);

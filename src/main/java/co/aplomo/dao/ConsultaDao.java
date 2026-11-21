@@ -199,9 +199,13 @@ public final class ConsultaDao {
             }
             default -> throw new IllegalArgumentException("Sección no disponible.");
         }
+        String privacidadReserva = seccion == SeccionConsulta.RESERVAS && usuario ?
+                " AND (r.id_administrador=" + empresa.cuenta() +
+                " OR EXISTS(SELECT 1 FROM cuenta autor WHERE autor.id_cuenta=r.id_administrador " +
+                "AND autor.rol<>'USUARIO'))" : "";
         String sql =
                 "SELECT q.*,n.color,n.nivel_oficial_rula nivel FROM (SELECT " + select + " FROM " + desde + " WHERE " +
-                        empresa.sql("em.id_empresa") + "" +
+                        empresa.sql("em.id_empresa") + privacidadReserva +
                         (puesto > 0 ? "" : co.aplomo.modelo.Demostracion.filtro("em.id_empresa")) + extra + (autor > 0 ?
                         " AND (SELECT b.id_cuenta FROM bitacora b WHERE b.tabla='evaluacion' AND b.ac" +
                         "cion='CREAR' AND b.id_registro=e.id_evaluacion ORDER BY b.id_bitacora LIMIT " + "1)=?" : "") +

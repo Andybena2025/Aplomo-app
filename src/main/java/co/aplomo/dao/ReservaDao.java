@@ -45,7 +45,7 @@ public final class ReservaDao {
      */
     public List<Ficha> listar(Connection con, Alcance empresa) throws SQLException {
         return Sql.listar(con, CONTEXTO + " WHERE " + empresa.sql("s.id_empresa") + "" +
-                        co.aplomo.modelo.Demostracion.filtro("s.id_empresa") +
+                        co.aplomo.modelo.Demostracion.filtro("s.id_empresa") + privacidad(empresa) +
                         " ORDER BY r.fecha DESC, r.hora_inicio DESC, r.id_reserva DESC", ReservaDao::leer,
                 empresa.todas(),
                 empresa.valor());
@@ -62,8 +62,9 @@ public final class ReservaDao {
      * RF-002: consulta parametrizada en el alcance vigente.
      */
     public Ficha buscar(Connection con, int id, Alcance empresa, boolean bloquear) throws SQLException {
-        return Sql.uno(con, CONTEXTO + " WHERE r.id_reserva = ? AND " + empresa.sql("s.id_empresa") + "" +
-                (bloquear ? " FOR UPDATE" : ""), ReservaDao::leer, id, empresa.todas(), empresa.valor());
+        return Sql.uno(con,
+                CONTEXTO + " WHERE r.id_reserva = ? AND " + empresa.sql("s.id_empresa") + "" + privacidad(empresa) +
+                        (bloquear ? " FOR UPDATE" : ""), ReservaDao::leer, id, empresa.todas(), empresa.valor());
     }
 
     /**
@@ -71,9 +72,9 @@ public final class ReservaDao {
      */
     public int crear(Connection con, Reserva reserva, String provisional) throws SQLException {
         return Sql.insertar(con, "INSERT INTO reserva (id_salon, id_administrador, codigo, fecha, hora_inicio," +
-                        " hora_fin, categoria, descripcion, notas) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", reserva.salon(),
-                reserva.administrador(), provisional, reserva.fecha(), reserva.inicio(), reserva.fin(),
-                reserva.categoria(), reserva.descripcion(), reserva.notas());
+                        " hora_fin, categoria, descripcion, notas, id_evaluador) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                reserva.salon(), reserva.administrador(), provisional, reserva.fecha(), reserva.inicio(), reserva.fin(),
+                reserva.categoria(), reserva.descripcion(), reserva.notas(), reserva.evaluador());
     }
 
     /**
@@ -110,6 +111,12 @@ public final class ReservaDao {
                 ReservaDao::reserva, reserva.salon(), reserva.fecha(), reserva.inicio(), reserva.id());
     }
 
+    private static String privacidad(Alcance al) {
+        return !al.finalizadas() ? "" : " AND (r.id_administrador=" + al.cuenta() +
+                                        " OR EXISTS(SELECT 1 FROM cuenta autor WHERE autor.id_cuenta=r" +
+                                        ".id_administrador " + "AND autor.rol<>'USUARIO'))";
+    }
+
     private static Ficha leer(ResultSet fila) throws SQLException {
         return new Ficha(reserva(fila), fila.getInt("id_empresa"), fila.getInt("id_sede"),
                 fila.getString("empresa_nombre"), fila.getString("sede_nombre"), fila.getString("salon_nombre"),
@@ -122,6 +129,7 @@ public final class ReservaDao {
                 fila.getString("codigo"), fila.getDate("fecha").toLocalDate(),
                 fila.getTime("hora_inicio").toLocalTime(), fila.getTime("hora_fin").toLocalTime(),
                 fila.getString("categoria"), fila.getString("descripcion"), fila.getString("notas"),
-                fila.getString("estado"), fila.getString("motivo_cancelacion"));
+                fila.getString("estado"), fila.getString("motivo_cancelacion"),
+                Sql.enteroOpcional(fila, "id_evaluador"));
     }
 }

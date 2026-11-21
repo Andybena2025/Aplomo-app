@@ -41,9 +41,15 @@ public final class AgendaWeb {
                 intercambio.getRequestMethod().equals("POST")) {
             int rid = Integer.parseInt(ruta.split("/")[2]);
             var agenda = servicio;
-            if (ruta.endsWith("/entendido")) agenda.entender(sesion.cuenta(), rid);
-            else agenda.guardarNota(sesion.cuenta(), rid, parametros.get("nota"));
-            Router.redirigir(intercambio, "/reservas/" + rid);
+            if (ruta.endsWith("/entendido")) {
+                agenda.entender(sesion.cuenta(), rid);
+                Router.redirigir(intercambio, "/reservas/" + rid);
+            } else {
+                String nombre = agenda.guardarNota(sesion.cuenta(), rid, parametros.get("nota"));
+                Router.enviar(intercambio, 200, Html.pagina("Nota enviada",
+                        Html.aviso("Nota enviada a " + nombre, true) + "<a class=\"btn\" href=\"/reservas/" + rid +
+                                "\">Ver cita</a>", sesion));
+            }
             return true;
         }
         return false;

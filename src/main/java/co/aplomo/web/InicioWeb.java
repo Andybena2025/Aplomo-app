@@ -90,15 +90,15 @@ public final class InicioWeb {
         List<Fila> evaluacionesLista = filas(cuenta, SeccionConsulta.EVALUACIONES);
         List<Fila> pendientes = filas(cuenta, SeccionConsulta.PENDIENTES);
         proxima(cuenta, citas, html);
-        int puestosPendientes = Math.toIntExact(visitas.paraEvaluar(cuenta).stream()
-                .filter(puesto -> puesto.puesto() != null).count());
+        int puestosPendientes = Math.toIntExact(
+                visitas.paraEvaluar(cuenta).stream().filter(puesto -> puesto.puesto() != null).count());
         html.append("<div class=\"inicio-indicadores\">")
                 .append(kpi("Visitas en curso", contar(visitasLista, "EN_CURSO"), "/visitas?estado=EN_CURSO").replace(
                         "</a>", "<small>" + Html.plural(puestosPendientes, "puesto") + " por evaluar</small></a>"))
                 .append(kpi("Por confirmar",
                         citas.stream().filter(c -> c.reserva().estado().equals("ESPERANDO")).count(),
-                        "/reservas?estado=ESPERANDO")).append(kpi("Evaluaciones", evaluacionesLista.size(),
-                        "/evaluaciones"))
+                        "/reservas?estado=ESPERANDO"))
+                .append(kpi("Evaluaciones", evaluacionesLista.size(), "/evaluaciones"))
                 .append(kpi("Pendientes abiertos", contar(pendientes, "ABIERTO"), "/pendientes?estado=ABIERTO"))
                 .append("</div><div class=\"inicio-columnas\"><section class=\"stack\">");
         visitasEnCurso(cuenta, html);
@@ -158,6 +158,7 @@ public final class InicioWeb {
     private void representante(Cuenta cuenta, List<Empresa> companias, StringBuilder html) throws SQLException {
         List<Fila> puestos = filas(cuenta, SeccionConsulta.PUESTOS);
         List<Fila> resultados = filas(cuenta, SeccionConsulta.EVALUACIONES);
+        html.append(enlace("/solicitar-visita", "Solicitar una visita", true));
         html.append("<h2>").append(companias.size() == 1 ? "Tu empresa" : "Tus empresas").append("</h2>");
         for (Empresa empresa : companias) {
             html.append("<a class=\"lista-fila\" href=\"/empresas/").append(empresa.id()).append("\"><strong>")
@@ -200,9 +201,8 @@ public final class InicioWeb {
                     .append(Html.escapar(ficha.sedeNombre() + " · " + ficha.salonNombre())).append("</p><p>")
                     .append(evaluados.size()).append(" de ").append(puestos.size())
                     .append(" puestos evaluados</p><progress class=\"progreso-visita\" aria-label=\"Puestos " +
-                            "evaluados\" max=\"")
-                    .append(Math.max(1, puestos.size())).append("\" value=\"").append(evaluados.size())
-                    .append("\"></progress><ol class=\"evaluar-puestos\">");
+                            "evaluados\" max=\"").append(Math.max(1, puestos.size())).append("\" value=\"")
+                    .append(evaluados.size()).append("\"></progress><ol class=\"evaluar-puestos\">");
             for (var puesto : puestos) {
                 html.append("<li><span>").append(Html.escapar(puesto.descripcion())).append("</span>")
                         .append(SistemaVisual.estado(evaluados.contains(puesto.id()) ? "EVALUADO" : "POR_EVALUAR"))

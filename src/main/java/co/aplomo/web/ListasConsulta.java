@@ -69,6 +69,9 @@ public final class ListasConsulta {
         if (seccion == SeccionConsulta.EMPRESAS && (evaluador || administrador)) {
             return "<a class=\"btn p\" href=\"/empresas/nueva\">Nueva empresa</a>";
         }
+        if (seccion == SeccionConsulta.RESERVAS && sesion.cuenta().rol() == Rol.USUARIO) {
+            return "<a class=\"btn p\" href=\"/solicitar-visita\">Solicitar una visita</a>";
+        }
         if (seccion == SeccionConsulta.RESERVAS && evaluador) {
             return "<a class=\"btn p\" href=\"/reservas/nueva\">Nueva reserva</a>";
         }

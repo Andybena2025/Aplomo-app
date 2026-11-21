@@ -36,6 +36,16 @@ public class AgendaDao {
     }
 
     /**
+     * RF-033: responsable persistido en esta cita, independiente de otros asignados a la empresa.
+     */
+    public Map.Entry<Integer, String> responsableReserva(Connection con, int reserva) throws SQLException {
+        return Sql.uno(con, "SELECT q.id_cuenta,q.nombre FROM reserva r JOIN cuenta q " +
+                        "ON q.id_cuenta=r.id_evaluador WHERE r.id_reserva=?", f -> Map.entry(f.getInt(1),
+                        f.getString(2)),
+                reserva);
+    }
+
+    /**
      * RF-033: texto y acuse de una reserva cuyo alcance ya se comprobó.
      */
     public Nota nota(Connection conexion2, int id) throws SQLException {
@@ -64,8 +74,8 @@ public class AgendaDao {
     public List<Integer> nuevas(Connection conexion2, AccesoDatos.Alcance al) throws SQLException {
         return Sql.listar(conexion2, "SELECT r.id_reserva FROM reserva r JOIN salon l USING(id_salon) JOIN sede s " +
                 "USING(id_sede) WHERE " + al.sql("s.id_empresa") +
-                " AND r.nota_administrador IS NOT NULL AND r.nota_vista=FALSE ORDER BY r.fech" +
-                "a,r.hora_inicio,r.id_reserva", rs -> rs.getInt(1), al.todas(), al.valor());
+                " AND r.id_evaluador=? AND r.nota_administrador IS NOT NULL AND r.nota_vista=FALSE ORDER BY r.fech" +
+                "a,r.hora_inicio,r.id_reserva", rs -> rs.getInt(1), al.todas(), al.valor(), al.cuenta());
     }
 
     /**
@@ -76,10 +86,10 @@ public class AgendaDao {
                 "SELECT r.id_reserva,r.fecha,r.hora_inicio,e.nombre,r.nota_administrador FROM" + " reserva r " +
                         "JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa e USING" +
                         "(id_empresa) " + "WHERE " + alcance.sql("s.id_empresa") +
-                        " AND r.nota_administrador IS NOT NULL AND r.nota_vista=FALSE ORDER BY r.fech" +
-                        "a,r.hora_inicio", fila -> new Aviso(fila.getInt(1), fila.getDate(2).toLocalDate()
+                        " AND r.id_evaluador=? AND r.nota_administrador IS NOT NULL AND r.nota_vista=FALSE ORDER BY r" +
+                        ".fech" + "a,r.hora_inicio", fila -> new Aviso(fila.getInt(1), fila.getDate(2).toLocalDate()
                         .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                         fila.getTime(3).toLocalTime().format(java.time.format.DateTimeFormatter.ofPattern("H:mm")),
-                        fila.getString(4), fila.getString(5)), alcance.todas(), alcance.valor());
+                        fila.getString(4), fila.getString(5)), alcance.todas(), alcance.valor(), alcance.cuenta());
     }
 }

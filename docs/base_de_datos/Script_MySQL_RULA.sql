@@ -173,7 +173,8 @@ CREATE TABLE reserva (
   nota_vista BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'El Evaluador confirmó que leyó la nota.',
   id_reserva INT NOT NULL AUTO_INCREMENT COMMENT 'Identificador de la reserva.',
   id_salon INT NOT NULL COMMENT 'Salón reservado; la sede y la empresa se obtienen por el salón.',
-  id_administrador INT NOT NULL COMMENT 'Cuenta que registró (Administrador o Evaluador)',
+  id_administrador INT NOT NULL COMMENT 'Cuenta que registró: Evaluador o Usuario; legado Administrador',
+  id_evaluador INT NULL,
   codigo VARCHAR(12) NOT NULL COMMENT 'Código único que asigna el sistema (por ejemplo, R-0001). No se cambia.',
   fecha DATE NOT NULL COMMENT 'Fecha de la visita (hoy o posterior).',
   hora_inicio TIME NOT NULL COMMENT 'Hora de inicio.',
@@ -183,6 +184,7 @@ CREATE TABLE reserva (
   notas TEXT NULL COMMENT 'Notas opcionales.',
   estado ENUM('ESPERANDO', 'EN_COLA', 'FINALIZADA', 'CANCELADA') NOT NULL DEFAULT 'ESPERANDO' COMMENT 'Estado de la reserva.',
   motivo_cancelacion VARCHAR(255) NULL COMMENT 'Motivo obligatorio cuando la reserva se cancela.',
+  CONSTRAINT fk_reserva_evaluador FOREIGN KEY(id_evaluador) REFERENCES cuenta(id_cuenta),
   CONSTRAINT pk_reserva PRIMARY KEY (id_reserva),
   CONSTRAINT uq_reserva UNIQUE (id_salon, fecha, hora_inicio),
   CONSTRAINT uq_reserva_codigo UNIQUE (codigo),
@@ -457,3 +459,18 @@ GRANT SELECT, INSERT, UPDATE ON rula_ergonomia.* TO 'app_rula'@'localhost';
 FLUSH PRIVILEGES;
 
 -- Fin del script
+
+CREATE TABLE IF NOT EXISTS mensaje (
+  id_mensaje INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id_reserva INT NULL,
+  id_remitente INT NOT NULL,
+  id_destinatario INT NOT NULL,
+  tipo ENUM('NOTA_ADMIN','SOLICITUD_VISITA','PEDIR_LLAMADA','PEDIR_INFORMACION','RESPUESTA','SOLICITUD_ACCESO','AVISO') NOT NULL,
+  texto VARCHAR(500) NOT NULL,
+  creado DATETIME NOT NULL,
+  leido BOOLEAN NOT NULL DEFAULT FALSE,
+  INDEX ix_mensaje_destinatario (id_destinatario,leido,creado),
+  CONSTRAINT fk_mensaje_reserva FOREIGN KEY (id_reserva) REFERENCES reserva(id_reserva),
+  CONSTRAINT fk_mensaje_remitente FOREIGN KEY (id_remitente) REFERENCES cuenta(id_cuenta),
+  CONSTRAINT fk_mensaje_destinatario FOREIGN KEY (id_destinatario) REFERENCES cuenta(id_cuenta)
+) ENGINE=InnoDB;

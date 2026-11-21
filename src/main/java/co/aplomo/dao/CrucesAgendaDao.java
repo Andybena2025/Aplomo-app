@@ -17,21 +17,16 @@ public final class CrucesAgendaDao {
      * RF-033: bloquea la cuenta responsable y comprueba intervalos de todas sus empresas.
      */
     public void comprobar(Connection conexion, Reserva reserva) throws SQLException {
-        Integer evaluador = Sql.uno(conexion,
-                "SELECT q.id_cuenta FROM cuenta q JOIN cuenta_empresa ce USING(id_cuenta) " +
-                        "JOIN sede s ON s.id_empresa=ce.id_empresa JOIN salon l USING(id_sede) " +
-                        "WHERE l.id_salon=? AND ce.activo=TRUE AND q.rol='EVALUADOR' " +
-                        "AND q.estado<>'INACTIVA' ORDER BY q.id_cuenta LIMIT 1 FOR UPDATE", fila -> fila.getInt(1),
-                reserva.salon());
+        Integer evaluador = reserva.evaluador();
+        if (evaluador != null)
+            Sql.uno(conexion, "SELECT id_cuenta FROM cuenta WHERE id_cuenta=? FOR UPDATE", fila -> fila.getInt(1),
+                    evaluador);
         if (evaluador == null) {
             return;
         }
-        LocalTime[] cruce = Sql.uno(conexion,
-                "SELECT r.hora_inicio,r.hora_fin FROM reserva r JOIN salon l USING(id_salon) " +
-                        "JOIN sede s USING(id_sede) JOIN cuenta_empresa ce ON ce.id_empresa=s.id_empresa " +
-                        "WHERE ce.id_cuenta=? AND ce.activo=TRUE AND r.estado<>'CANCELADA' " +
-                        "AND r.fecha=? AND r.id_reserva<>? AND r.hora_inicio<? AND r.hora_fin>? " +
-                        "ORDER BY r.hora_inicio LIMIT 1 FOR UPDATE",
+        LocalTime[] cruce = Sql.uno(conexion, "SELECT r.hora_inicio,r.hora_fin FROM reserva r WHERE r.id_evaluador=? " +
+                        "AND r.estado<>'CANCELADA' AND r.fecha=? AND r.id_reserva<>? " +
+                        "AND r.hora_inicio<? AND r.hora_fin>? ORDER BY r.hora_inicio LIMIT 1 FOR UPDATE",
                 fila -> new LocalTime[]{fila.getTime(1).toLocalTime(), fila.getTime(2).toLocalTime()}, evaluador,
                 reserva.fecha(), reserva.id(), reserva.fin(), reserva.inicio());
         if (cruce != null) {

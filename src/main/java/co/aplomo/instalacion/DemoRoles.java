@@ -51,6 +51,7 @@ final class DemoRoles {
                     List.of(empresas.get(empresasUsuario[indice])), false);
         }
         DemoPresentacion.citas(conexion, fotos, administrador, empresas, evaluadores, presentacion);
+        DemoAvisos.cargar(conexion, administrador, evaluadores);
         HorariosDemo.conciliar(conexion, administrador);
     }
 

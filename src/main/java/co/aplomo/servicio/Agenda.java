@@ -60,7 +60,15 @@ public final class Agenda {
      * Cita autorizada con su nota y visita; sin controles de modificación. RNF-011.
      */
     public record Cita(ReservaDao.Ficha ficha, Integer evaluador, String nombreEvaluador, Nota nota, boolean cruce,
-                       String color) {
+                       String color, int nuevos) {
+        /**
+         * RF-033: compatibilidad de citas sin avisos nuevos.
+         */
+        public Cita(ReservaDao.Ficha ficha, Integer evaluador, String nombreEvaluador, Nota nota, boolean cruce,
+                String color) {
+            this(ficha, evaluador, nombreEvaluador, nota, cruce, color, 0);
+        }
+
         /**
          * RNF-011: operación del componente.
          */
@@ -92,8 +100,13 @@ public final class Agenda {
             Periodo periodo = periodo(parametros);
             var evaluadores = dao.evaluadores(conexion);
             String filtro = filtro(cuenta, parametros, evaluadores);
+            if (cuenta.rol() == Cuenta.Rol.EVALUADOR) filtro = Integer.toString(cuenta.id());
             var bases = new ReservaDao().listar(conexion, AccesoDatos.empresaPermitida(cuenta));
-            List<Cita> citas = citas(conexion, bases, periodo, filtro, evaluadores);
+            var nuevos = new co.aplomo.dao.MensajeDao().listar(conexion, cuenta.id()).stream()
+                    .filter(m -> !m.leido() && m.reserva() != null).collect(
+                            java.util.stream.Collectors.groupingBy(co.aplomo.dao.MensajeDao.Mensaje::reserva,
+                                    java.util.stream.Collectors.counting()));
+            List<Cita> citas = citas(conexion, bases, periodo, filtro, evaluadores, nuevos);
             citas.sort(Comparator.comparing((Cita cita) -> cita.ficha().reserva().fecha())
                     .thenComparing(cita -> cita.ficha().reserva().inicio())
                     .thenComparingInt(cita -> cita.ficha().reserva().id()));
@@ -135,13 +148,13 @@ public final class Agenda {
     }
 
     private List<Cita> citas(Connection conexion2, List<ReservaDao.Ficha> bases, Periodo periodo, String filtro,
-            List<Evaluador> evaluadores) throws SQLException {
+            List<Evaluador> evaluadores, Map<Integer, Long> nuevos) throws SQLException {
         List<Cita> citas = new ArrayList<>();
         for (var reserva2 : bases) {
             var res = reserva2.reserva();
             if (res.fecha().isBefore(periodo.desde()) || !res.fecha().isBefore(periodo.hasta()) ||
                     !periodo.canceladas() && res.estado().equals("CANCELADA")) continue;
-            var responsable = dao.responsable(conexion2, reserva2.empresa());
+            var responsable = dao.responsableReserva(conexion2, res.id());
             Integer id = responsable == null ? null : responsable.getKey();
             if (filtro.equals("SIN_ASIGNAR") && id != null ||
                     !Set.of("TODOS", "SIN_ASIGNAR").contains(filtro) && !Objects.equals(id, Integer.valueOf(filtro)))
@@ -149,7 +162,8 @@ public final class Agenda {
             citas.add(new Cita(reserva2, id, responsable == null ? "Sin evaluador asignado" : responsable.getValue(),
                     notaEn(conexion2, res.id()), false,
                     evaluadores.stream().filter(elemento2 -> Objects.equals(elemento2.id(), id)).map(Evaluador::color)
-                            .filter(Objects::nonNull).findFirst().orElse(null)));
+                            .filter(Objects::nonNull).findFirst().orElse(null),
+                    Math.toIntExact(nuevos.getOrDefault(res.id(), 0L))));
         }
         return citas;
     }
@@ -162,7 +176,10 @@ public final class Agenda {
             var cuenta2 = AccesoDatos.vigente(conexion2, actor);
             if (cuenta2.rol() == Cuenta.Rol.USUARIO) return null;
             Permisos.trabajo(cuenta2);
-            exigir(conexion2, cuenta2, reserva);
+            var ficha = new ReservaDao().buscar(conexion2, reserva, AccesoDatos.empresaPermitida(cuenta2), false);
+            if (ficha == null) throw new SecurityException("Acceso denegado.");
+            if (cuenta2.rol() == Cuenta.Rol.EVALUADOR && !Objects.equals(ficha.reserva().evaluador(), cuenta2.id()))
+                return null;
             return notaEn(conexion2, reserva);
         });
     }
@@ -170,16 +187,24 @@ public final class Agenda {
     /**
      * Guarda nota privada y reinicia el acuse aun si su texto es igual. RNF-011.
      */
-    public void guardarNota(Cuenta actor, int reserva, String texto) throws SQLException {
-        tx.ejecutar(conexion2 -> {
+    public String guardarNota(Cuenta actor, int reserva, String texto) throws SQLException {
+        return tx.ejecutar(conexion2 -> {
             var cuenta2 = AccesoDatos.vigente(conexion2, actor);
             Permisos.administrador(cuenta2);
             exigir(conexion2, cuenta2, reserva);
             String texto2 = Validacion.opcional(texto, "nota para el evaluador", 500);
             dao.guardarNota(conexion2, reserva, texto2);
+            var destinatario = dao.responsableReserva(conexion2, reserva);
+            if (destinatario == null && !texto2.isBlank()) {
+                throw new IllegalArgumentException("Asigna un ingeniero a la cita antes de enviarle una nota.");
+            }
+            if (destinatario != null && !texto2.isBlank()) {
+                new co.aplomo.dao.MensajeDao().enviar(conexion2, reserva, cuenta2.id(), destinatario.getKey(),
+                        "NOTA_ADMIN", texto2, LocalDateTime.now(reloj));
+            }
             new BitacoraDao().registrar(conexion2, cuenta2.id(), LocalDateTime.now(reloj), "reserva", reserva, "EDITAR",
                     null, null, "Nota del Administrador");
-            return null;
+            return destinatario == null ? "el ingeniero" : destinatario.getValue();
         });
     }
 
@@ -192,6 +217,9 @@ public final class Agenda {
             if (cuenta2.rol() != Cuenta.Rol.EVALUADOR) throw new SecurityException("Acceso denegado.");
             exigir(conexion2, cuenta2, reserva);
             dao.entender(conexion2, reserva);
+            co.aplomo.db.Sql.actualizar(conexion2,
+                    "UPDATE mensaje SET leido=TRUE WHERE id_reserva=? AND id_destinatario=? AND tipo='NOTA_ADMIN'",
+                    reserva, cuenta2.id());
             return null;
         });
     }
@@ -227,8 +255,11 @@ public final class Agenda {
     }
 
     private static void exigir(Connection conexion2, Cuenta cuenta2, int id) throws SQLException {
-        if (new ReservaDao().buscar(conexion2, id, AccesoDatos.empresaPermitida(cuenta2), false) == null)
+        var ficha = new ReservaDao().buscar(conexion2, id, AccesoDatos.empresaPermitida(cuenta2), false);
+        if (ficha == null ||
+                cuenta2.rol() == Cuenta.Rol.EVALUADOR && !Objects.equals(ficha.reserva().evaluador(), cuenta2.id())) {
             throw new SecurityException("La reserva no está disponible para tu cuenta.");
+        }
     }
 
     private Nota notaEn(Connection conexion2, int id) throws SQLException {

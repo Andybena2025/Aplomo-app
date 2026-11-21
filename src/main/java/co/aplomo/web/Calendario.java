@@ -59,6 +59,9 @@ public final class Calendario {
                 .append("\">").append(fecha.getDayOfMonth()).append(vista.mes() ? "</button>" : "</span>");
         if (fecha.isBefore(Html.hoy()))
             html.append("<span class=\"cal-dia-pasado\" aria-label=\"Día pasado\">✓</span>");
+        long avisos = citas.stream().mapToInt(Cita::nuevos).sum();
+        if (avisos > 0)
+            html.append("<span class=\"cal-aviso\" aria-label=\"Notas nuevas\">").append(avisos).append("</span>");
         html.append("<div class=\"cal-eventos\">");
         for (Cita cita : citas.stream().limit(vista.mes() ? 3 : Integer.MAX_VALUE).toList()) {
             html.append(pildora(cita, !vista.mes()));
@@ -99,7 +102,7 @@ public final class Calendario {
         return "<a class=\"cal-cita color-" + indice + (pasada ? " pasada" : "") + "\" data-evaluador=\"" +
                 cita.evaluador() + "\" href=\"/reservas/" + reserva.id() + "\"" + estilo + "><small>" +
                 reserva.inicio().format(HORA) + "</small><b>" + Html.escapar(cita.ficha().empresaNombre()) + "</b>" +
-                nota + "</a>";
+                nota + (cita.nuevos() > 0 ? "<span class=\"pill\">Nota nueva</span>" : "") + "</a>";
     }
 
     /**
