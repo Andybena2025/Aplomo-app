@@ -90,6 +90,22 @@ public final class Calificaciones {
         });
     }
 
+    /**
+     * RF-002/026: valida el contexto de visita antes de resaltarlo en el informe de su empresa.
+     */
+    public co.aplomo.dao.VisitaDao.Ficha visitaInforme(Cuenta actor, int empresa, int visita) throws SQLException {
+        return tx.ejecutar(conexion -> {
+            Cuenta cuenta = AccesoDatos.vigente(conexion, actor);
+            Permisos.trabajo(cuenta);
+            var ficha = new co.aplomo.dao.VisitaDao().buscar(conexion, visita, AccesoDatos.empresaPermitida(cuenta),
+                    false, false);
+            if (ficha == null || ficha.empresa() != empresa) {
+                throw new SecurityException("Acceso denegado. La visita no pertenece a esta empresa.");
+            }
+            return ficha;
+        });
+    }
+
     private InformeEmpresa cargar(Connection conexion, Cuenta actor, int empresa) throws SQLException {
         if (empresa < 1) throw new IllegalArgumentException("Elige una empresa para consultar sus calificaciones.");
         var permitida = AccesoDatos.empresaPermitida(actor);

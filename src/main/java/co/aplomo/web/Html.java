@@ -131,10 +131,10 @@ public final class Html {
      */
     public static String aviso(String mensaje, boolean confirmacion) {
         if (mensaje == null || mensaje.isBlank()) return "";
-        return "<div class=\"aviso\" role=\"" + (confirmacion ? "status" : "alert") + "\"" +
-                (confirmacion ? " data-confirmacion" : "") + "><span>" + escapar(mensaje) +
-                "</span><button type=\"button\" class=\"link\" data-cerrar aria-label=\"Cerra" +
-                "r aviso\">Cerrar</button></div>";
+        return confirmacion ? "<div class=\"toast-exito\" role=\"status\" data-toast><b aria-hidden=\"true\">✓</b> " +
+                escapar(mensaje) + "</div>" :
+                "<div class=\"alerta\" role=\"alert\" data-alerta><span aria-hidden=\"true\">⚠</span> " +
+                        escapar(mensaje) + "</div>";
     }
 
     /**
@@ -231,7 +231,11 @@ public final class Html {
      */
     public static String pagina(String titulo, String contenido, Sesion sesion2, boolean conPagehead, boolean atras) {
         contenido += notas(sesion2);
-        String cabecera = cabecera(sesion2, atras);
+        String rolPagina = sesion2 == null || sesion2.cuenta() == null ? "publica" : sesion2.cuenta().rol().name()
+                                                                                     .toLowerCase(Locale.ROOT);
+        boolean enfoque = java.util.regex.Pattern.compile("<form\\b[^>]*\\bdata-(?:conversacion|evaluacion)(?:[=>\\s])")
+                .matcher(contenido).find();
+        String cabecera = enfoque ? cabeceraEnfoque(contenido) : cabecera(sesion2, atras);
 
         // Una sola salida de navegación; los pasos internos del asistente se conservan.
         if (!cabecera.isEmpty())
@@ -246,10 +250,23 @@ public final class Html {
                 "<link rel=\"stylesheet\" href=\"/static/css/aplomo.css\">" +
                 "<script src=\"/static/js/interfaz.js\" defer></script><script src=\"/static/" +
                 "js/progreso.js\" defer></script><script src=\"/static/js/cuenta.js\" defer><" +
-                "/script><script src=\"/static/js/reservas.js\" defer></script></head><body>" +
+                "/script><script src=\"/static/js/reservas.js\" defer></script>" +
+                "<script src=\"/static/js/tiempo-colombia.js\" defer></script>" +
+                "<script src=\"/static/js/sistema-visual.js\" defer></script></head><body class=\"alineo rol-" +
+                rolPagina + (enfoque ? " modo-enfoque" : "") + "\">" +
                 "<a class=\"saltar\" href=\"#contenido\">Saltar al contenido</a>" + cabecera +
                 (cabecera.isEmpty() ? "" : laterales()) + "<main id=\"contenido\" class=\"wrap\" tabindex=\"-1\">" +
                 pagehead + contenido + "</main>" + (cabecera.isEmpty() ? "" : pie()) + "</body></html>";
+    }
+
+    private static String cabeceraEnfoque(String contenido) {
+        var lugar = java.util.regex.Pattern.compile("data-enfoque-lugar=\"([^\"]*)\"").matcher(contenido);
+        var visita = java.util.regex.Pattern.compile("data-enfoque-visita=\"([0-9]+)\"").matcher(contenido);
+        String nombre = lugar.find() ? lugar.group(1) : "Revisión de la postura";
+        String volver = visita.find() ? "/visitas/" + visita.group(1) : "/visitas";
+        return "<header class=\"top enfoque-cabecera\"><div class=\"wrap\"><a class=\"logo-cabecera\" href=\"/\">" +
+                logo(26) + "</a><span class=\"enfoque-lugar\">Evaluación · " + nombre +
+                "</span><a class=\"btn\" href=\"" + volver + "\">Salir</a></div></header>";
     }
 
     private static String cabecera(Sesion sesion2, boolean atras) {
@@ -375,9 +392,7 @@ public final class Html {
      * RF-020: etiqueta completa con color y nivel leídos de MySQL, sin recalcular RULA.
      */
     public static String riesgo(Integer puntaje, String color, int nivel) {
-        if (puntaje == null) return "<span class=\"tag\">Sin resultado</span>";
-        return "<span class=\"pill " + escapar(color) + "\">" + puntaje + " · " + escapar(Formularios.etiqueta(color)) +
-                " · Nivel " + nivel + "</span>";
+        return SistemaVisual.riesgo(puntaje, color, nivel);
     }
 
     /**

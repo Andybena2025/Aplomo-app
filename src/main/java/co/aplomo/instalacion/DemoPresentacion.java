@@ -39,7 +39,7 @@ final class DemoPresentacion {
                 "Lácteos La " + "Sabana", "Confecciones Armenia"};
         List<Integer> empresas = new ArrayList<>();
         for (int indice = 0; indice < nombres.length; indice++) {
-            String nit = "DEMO-APLOMO-E" + (indice + 1);
+            String nit = DemoIdentidades.NITS.get(indice);
             Integer empresa = Sql.uno(conexion, "SELECT id_empresa FROM empresa WHERE nit=?", fila -> fila.getInt(1),
                     nit);
             if (empresa == null) empresa = Sql.insertar(conexion,
@@ -48,7 +48,7 @@ final class DemoPresentacion {
                     "Demostración ALINEO. Información ficticia.", "0000000000", "demo@ejemplo.invalid",
                     "Contacto ficticio");
             empresas.add(empresa);
-            estructura(conexion, empresa, indice == 2 ? "Sede Alcázar" : "Sede de producción", indice);
+            estructura(conexion, empresa, DemoIdentidades.SEDES.get(indice), indice);
         }
         actualizarMarca(conexion);
         return List.copyOf(empresas);
@@ -63,11 +63,8 @@ final class DemoPresentacion {
                         "cion) VALUES(?,?,?,?,?,?,?)", empresa, nombreSede, "Dirección ficticia", "Armenia",
                 "0000000000", "8:00 a 16:00", "Demo ALINEO.");
         int area = catalogo(conexion, "area", empresa, "Operaciones");
-        int cargo = catalogo(conexion, "cargo", empresa, "Operario de demostración");
-        String[] salones =
-                indice == 2 ? new String[]{"Taller de mantenimiento", "Oficina administrativa"} : new String[]{List.of(
-                        "Ensamble", "Carpintería", "Métodos", "Confección", "Bodega de café", "Laboratorio de calidad",
-                        "Taller histórico").get(indice), "Oficina administrativa"};
+        int cargo = catalogo(conexion, "cargo", empresa, "Operario de producción");
+        String[] salones = {DemoIdentidades.PLANTA.get(indice), DemoIdentidades.OFICINA.get(indice)};
         for (int tipo = 0; tipo < salones.length; tipo++) {
             Integer salon = Sql.uno(conexion, "SELECT id_salon FROM salon WHERE id_sede=? AND nombre=?",
                     fila -> fila.getInt(1), sede, salones[tipo]);
@@ -116,10 +113,16 @@ final class DemoPresentacion {
         }
         cita(conexion, fotos, administrador, evaluadores.get(0), empresas.get(2), presentacion, LocalTime.of(9, 0),
                 "V26" + presentacion.format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE), false, false);
+        for (int persona = 1; persona < evaluadores.size(); persona++) {
+            cita(conexion, fotos, administrador, evaluadores.get(persona), empresas.get(persona == 1 ? 0 : 4),
+                    presentacion, LocalTime.of(9, 0),
+                    "V27" + persona + presentacion.format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE), false,
+                    false);
+        }
         historialInactivo(conexion, fotos, administrador, empresas.get(6), evaluadores.get(1));
         Sql.actualizar(conexion, "UPDATE reserva r JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) " +
                         "JOIN empresa e USING(id_empresa) SET r.nota_administrador=?,r.nota_vista=TRUE " +
-                        "WHERE e.nit='DEMO-APLOMO-E1' AND r.codigo=? AND r.nota_administrador IS NULL",
+                        "WHERE e.nit='900.512.384-1' AND r.codigo=? AND r.nota_administrador IS NULL",
                 "Revisa los apoyos durante la visita.",
                 "D26" + presentacion.format(java.time.format.DateTimeFormatter.ofPattern("yyMMdd")) + "140");
     }
@@ -134,8 +137,8 @@ final class DemoPresentacion {
                 "SELECT l.id_salon FROM salon l JOIN sede s USING(id_sede) WHERE s.id_empresa=? " +
                         "AND l.activo=TRUE AND EXISTS(SELECT 1 FROM puesto_trabajo p " +
                         "WHERE p.id_salon=l.id_salon AND p.activo=TRUE) " +
-                        "ORDER BY (l.nombre='Taller de mantenimiento') DESC,l.id_salon DESC LIMIT 1",
-                fila -> fila.getInt(1), empresa);
+                        "ORDER BY (l.nombre='Taller de diseño') DESC,l.id_salon DESC LIMIT 1", fila -> fila.getInt(1),
+                empresa);
         int reserva = Sql.insertar(conexion,
                 "INSERT INTO reserva(id_salon,id_administrador,codigo,fecha,hora_inicio,hora_" +
                         "fin,categoria,descripcion,estado) " + "VALUES(?,?,?,?,?,?,?,?,?)", salon, evaluador, codigo,
@@ -185,6 +188,7 @@ final class DemoPresentacion {
 
     private static void historialInactivo(Connection conexion, Path fotos, int administrador, int empresa,
             int evaluador) throws SQLException, IOException {
+        ajustarHistorial(conexion, administrador, empresa);
         int existentes = Sql.uno(conexion, "SELECT COUNT(*) FROM reserva WHERE codigo LIKE 'A26-2025-%'",
                 fila -> fila.getInt(1));
         if (existentes == 3) return;
@@ -196,17 +200,39 @@ final class DemoPresentacion {
         temporal.add(empresa);
         new co.aplomo.dao.CuentaEmpresaDao().sincronizar(conexion, administrador, evaluador, temporal, false);
         for (int indice = 0; indice < 3; indice++) {
-            cita(conexion, fotos, administrador, evaluador, empresa, LocalDate.of(2025, 8 + indice, 12),
+            cita(conexion, fotos, administrador, evaluador, empresa, diaHabil(LocalDate.of(2025, 8 + indice, 12)),
                     LocalTime.of(10, 0), "A26-2025-" + indice, true, false);
         }
         new co.aplomo.dao.CuentaEmpresaDao().sincronizar(conexion, administrador, evaluador, asignadas, false);
         Sql.actualizar(conexion, "UPDATE empresa SET activo=FALSE WHERE id_empresa=?", empresa);
     }
 
+    private static LocalDate diaHabil(LocalDate fecha) {
+        while (fecha.getDayOfWeek().getValue() > 5) fecha = fecha.plusDays(1);
+        return fecha;
+    }
+
+    private static void ajustarHistorial(Connection conexion, int administrador, int empresa) throws SQLException {
+        var citas = Sql.listar(conexion, "SELECT r.id_reserva,r.fecha FROM reserva r JOIN salon l USING(id_salon) " +
+                        "JOIN sede s USING(id_sede) WHERE s.id_empresa=? AND r.codigo LIKE 'A26-2025-%' " +
+                        "AND WEEKDAY(r.fecha)>4", fila -> java.util.Map.entry(fila.getInt(1),
+                        fila.getDate(2).toLocalDate()),
+                empresa);
+        for (var cita : citas) {
+            Sql.actualizar(conexion, "UPDATE reserva SET fecha=? WHERE id_reserva=?", diaHabil(cita.getValue()),
+                    cita.getKey());
+            Sql.actualizar(conexion, "UPDATE visita v JOIN reserva r USING(id_reserva) " +
+                    "SET v.hora_real_inicio=TIMESTAMP(r.fecha,TIME(v.hora_real_inicio))," +
+                    "v.hora_real_fin=TIMESTAMP(r.fecha,TIME(v.hora_real_fin)) WHERE r.id_reserva=?", cita.getKey());
+            new BitacoraDao().registrar(conexion, administrador, java.time.LocalDateTime.now(ZONA), "reserva",
+                    cita.getKey(), "EDITAR", null, null, "Demo: historial trasladado a día hábil");
+        }
+    }
+
     static void actualizarMarca(Connection conexion) throws SQLException {
         Sql.actualizar(conexion, "UPDATE empresa SET descripcion=REPLACE(descripcion,'APLOMO','ALINEO') " +
-                "WHERE nit IN ('DEMO-APLOMO-E1','DEMO-APLOMO-E2','DEMO-APLOMO-E3','DEMO-APLOMO-E4'," +
-                "'DEMO-APLOMO-E5','DEMO-APLOMO-E6','DEMO-APLOMO-E7')");
+                "WHERE nit IN ('900.512.384-1','901.638.205-4','012345','900.782.156-2'," +
+                "'901.428.603-7','900.315.928-5','901.267.840-3')");
         for (String tabla : List.of("sede", "salon", "puesto_trabajo", "visita", "evaluacion")) {
             String union = switch (tabla) {
                 case "sede" -> "sede t JOIN empresa e USING(id_empresa)";
@@ -226,10 +252,13 @@ final class DemoPresentacion {
                 default -> "t.postura=REPLACE(t.postura,'APLOMO','ALINEO')," +
                         "t.motivo=REPLACE(t.motivo,'APLOMO','ALINEO')";
             };
-            Sql.actualizar(conexion, "UPDATE " + union + " SET " + campos + " WHERE e.nit LIKE 'DEMO-APLOMO-E%'");
+            Sql.actualizar(conexion, "UPDATE " + union + " SET " + campos +
+                    " WHERE e.nit IN ('900.512.384-1','901.638.205-4','012345','900.782.156-2','901.428.603-7','900" +
+                    ".315.928-5','901.267.840-3')");
         }
         Sql.actualizar(conexion, "UPDATE reserva r JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) " +
                 "JOIN empresa e USING(id_empresa) SET r.descripcion=REPLACE(r.descripcion,'AP" + "LOMO','ALINEO')," +
-                "r.notas=REPLACE(r.notas,'APLOMO','ALINEO') WHERE e.nit LIKE 'DEMO-APLOMO-E%'");
+                "r.notas=REPLACE(r.notas,'APLOMO','ALINEO') WHERE e.nit IN ('900.512.384-1','901.638.205-4','012345'," +
+                "'900.782.156-2','901.428.603-7','900.315.928-5','901.267.840-3')");
     }
 }

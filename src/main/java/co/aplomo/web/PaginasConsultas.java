@@ -33,6 +33,10 @@ public final class PaginasConsultas {
      * Genera la sección con su contador, filtros y enlaces de ordenación accesibles. RNF-011.
      */
     public static String lista(Sesion sesion, Pagina pagina, Contexto contexto) {
+        return ListasConsulta.pagina(sesion, pagina, contexto);
+    }
+
+    private static String listaAnterior(Sesion sesion, Pagina pagina, Contexto contexto) {
         var elemento = pagina.seccion();
         var parametros2 = pagina.filtros();
         boolean admin = sesion.cuenta().rol() != Cuenta.Rol.USUARIO;
@@ -149,7 +153,7 @@ public final class PaginasConsultas {
         return pagina.filas().size() + " " + plural;
     }
 
-    private static String contexto(Contexto sugerencia, Fila elemento, boolean admin) {
+    static String contexto(Contexto sugerencia, Fila elemento, boolean admin) {
         if (!admin || elemento == null) return PaginasSugerencias.contexto(sugerencia);
         return "<section class=\"card stack\"><div class=\"row between\"><h2>Puesto " + sugerencia.numero() +
                 inactivo(elemento, "puesto", false, true) + "</h2>" +
@@ -172,9 +176,9 @@ public final class PaginasConsultas {
         var extras = elemento2.filtros().stream().filter(k -> !Set.of("empresa", "estado", "evaluador").contains(k))
                 .filter(k -> admin || !Set.of("registros", "puesto").contains(k))
                 .filter(k -> !contexto || Set.of("desde", "hasta", "registros").contains(k)).toList();
-        contenido.append("<details class=\"guia filtros-extra\"").append(extras.stream().anyMatch(
-                        k -> !parametros2.getOrDefault(k, "").isEmpty() && !parametros2.get(k).equals("TODOS")) ?
-                            " open" : "")
+        boolean abiertos = extras.stream().anyMatch(
+                k -> !parametros2.getOrDefault(k, "").isEmpty() && !parametros2.get(k).equals("TODOS"));
+        contenido.append("<details class=\"guia filtros-extra\"").append(abiertos ? " open" : "")
                 .append("><summary>Más filtros</summary><div class=\"grid3\">");
         for (String key : extras) contenido.append(filtro(elemento, key));
         if (parametros2.containsKey("evaluacion"))
@@ -200,7 +204,7 @@ public final class PaginasConsultas {
         return contenido.append(enlace(limpiar, "Limpiar filtros", false)).append("</div></form>").toString();
     }
 
-    private static String filtro(Pagina elemento, String key) {
+    static String filtro(Pagina elemento, String key) {
         var parametros2 = elemento.filtros();
         String titulo = switch (key) {
             case "evaluador" -> "Evaluador";
@@ -305,8 +309,7 @@ public final class PaginasConsultas {
 
     private static String inactivo(Fila elemento, String nivel, boolean femenino, boolean admin) {
         String clave = nivel.equals("empresa") || nivel.equals("sede") ? nivel + "_activa" : nivel + "_activo";
-        return admin && elemento.valor(clave).equals("0") ?
-                " <span class=\"tag\">" + (femenino ? "Inactiva" : "Inactivo") + "</span>" : "";
+        return admin && elemento.valor(clave).equals("0") ? SistemaVisual.estado("INACTIVA") : "";
     }
 
     private static String accionVacio(SeccionConsulta elemento, Map<String, String> parametros2, Contexto sugerencia) {

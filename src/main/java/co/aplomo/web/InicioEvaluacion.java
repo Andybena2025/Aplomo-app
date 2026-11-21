@@ -12,13 +12,10 @@ final class InicioEvaluacion {
     }
 
     static String practica(Integer visita) {
-        return GaleriaDemo.habilitada() ?
-                "<section class=\"card practica-discreta\" aria-labelledby=\"practicar-evalua" +
-                "cion\"><div><span class=\"eyebrow\">Demostración</span><h2 id=\"practicar-ev" +
-                "aluacion\">Probar evaluación</h2></div><div class=\"row\"><a class=\"btn\" h" +
-                "ref=\"/demo/evaluacion\">Abrir evaluación de prueba</a>" +
-                (visita == null ? "" : "<a class=\"btn\" href=\"/visitas/" + visita + "\">Continuar práctica</a>") +
-                "</div></section>" : "";
+        if (!GaleriaDemo.habilitada()) return "";
+        return "<div class=\"practica-fila row\"><a href=\"/demo/evaluacion\">Probar evaluación</a>" +
+                "<span>Ensaya sin sumar resultados</span>" +
+                (visita == null ? "" : "<a href=\"/visitas/" + visita + "\">Continuar práctica</a>") + "</div>";
     }
 
     static String paginaPractica(co.aplomo.seguridad.Sesiones.Sesion sesion) {

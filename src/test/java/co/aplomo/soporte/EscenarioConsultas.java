@@ -58,21 +58,26 @@ public final class EscenarioConsultas {
         puesto1 = puesto(elemento, empresas, salonA, areaA, cargoA, 1, "Estación de ensamble Alfa");
         puesto2 = puesto(elemento, empresas, salonA, areaA, cargoA, 2, "Estación nueva en curso");
         puesto3 = puesto(elemento, empresas, salonA, areaA, cargoA, 3, "Estación de ensamble Zeta");
-        reservaFinal = reservas.guardar(elemento.cuenta(elemento.admin), 0, elemento.solicitud(salon));
-        reservas.aceptar(elemento.cuenta(elemento.admin), reservaFinal);
-        visitaFinal = visitas.iniciar(elemento.cuenta(elemento.admin), reservaFinal);
+        reservaFinal = reservas.guardar(elemento.evaluadorTrabajo((elemento.solicitud(salon)).empresa()), 0,
+                elemento.solicitud(salon));
+        reservas.aceptar(elemento.evaluadorReserva(reservaFinal), reservaFinal);
+        visitaFinal = visitas.iniciar(elemento.evaluadorReserva(reservaFinal), reservaFinal);
         evalVerde = evaluar(elemento, visitaFinal, puesto1, 1);
         evalRojo = evaluar(elemento, visitaFinal, puesto3, 10);
         visitas.finalizar(elemento.cuenta(elemento.admin), visitaFinal, "Visita finalizada de prueba");
         elemento.reloj.avanzar(Duration.ofDays(1));
-        reservaAbierta = reservas.guardar(elemento.cuenta(elemento.admin), 0, solicitud(empresaA, salon, 11));
-        reservas.aceptar(elemento.cuenta(elemento.admin), reservaAbierta);
-        visitaAbierta = visitas.iniciar(elemento.cuenta(elemento.admin), reservaAbierta);
+        reservaAbierta = reservas.guardar(elemento.evaluadorTrabajo((solicitud(empresaA, salon, 11)).empresa()), 0,
+                solicitud(empresaA, salon, 11));
+        reservas.aceptar(elemento.evaluadorReserva(reservaAbierta), reservaAbierta);
+        visitaAbierta = visitas.iniciar(elemento.evaluadorReserva(reservaAbierta), reservaAbierta);
         evalAbierta = evaluar(elemento, visitaAbierta, puesto1, 10);
         evalNuevaAbierta = evaluar(elemento, visitaAbierta, puesto2, 10);
-        reservaEsperando = reservas.guardar(elemento.cuenta(elemento.admin), 0, solicitud(empresaA, salon, 13));
-        reservaCancelada = reservas.guardar(elemento.cuenta(elemento.admin), 0, solicitud(empresaA, salon, 15));
-        reservas.cancelar(elemento.cuenta(elemento.admin), reservaCancelada, "La empresa solicitó otro horario.");
+        reservaEsperando = reservas.guardar(elemento.evaluadorTrabajo((solicitud(empresaA, salon, 13)).empresa()), 0,
+                solicitud(empresaA, salon, 13));
+        reservaCancelada = reservas.guardar(elemento.evaluadorTrabajo((solicitud(empresaA, salon, 15)).empresa()), 0,
+                solicitud(empresaA, salon, 15));
+        reservas.cancelar(elemento.evaluadorReserva(reservaCancelada), reservaCancelada,
+                "La empresa solicitó otro horario.");
         empresaB = Sql.insertar(elemento.con, "INSERT INTO empresa (id_administrador,nombre,nit) VALUES (?,?,?)",
                 elemento.admin, "Empresa ajena QA", UUID.randomUUID().toString().substring(0, 20));
         elemento.empresa = empresaB;
@@ -83,9 +88,10 @@ public final class EscenarioConsultas {
         cargoB = empresas.guardar(elemento.cuenta(elemento.admin),
                 new Cargo(0, empresaB, "Cargo ajeno QA", "ADMINISTRATIVO", true)).id();
         puestoB = puesto(elemento, empresas, salonB, areaB, cargoB, 1, "Puesto ajeno QA");
-        reservaB = reservas.guardar(elemento.cuenta(elemento.admin), 0, elemento.solicitud(otro));
-        reservas.aceptar(elemento.cuenta(elemento.admin), reservaB);
-        visitaB = visitas.iniciar(elemento.cuenta(elemento.admin), reservaB);
+        reservaB = reservas.guardar(elemento.evaluadorTrabajo((elemento.solicitud(otro)).empresa()), 0,
+                elemento.solicitud(otro));
+        reservas.aceptar(elemento.evaluadorReserva(reservaB), reservaB);
+        visitaB = visitas.iniciar(elemento.evaluadorReserva(reservaB), reservaB);
         evalB = evaluar(elemento, visitaB, puestoB, 10);
         visitas.finalizar(elemento.cuenta(elemento.admin), visitaB, "");
         elemento.empresa = empresaA;
@@ -95,6 +101,7 @@ public final class EscenarioConsultas {
                 .sugerencia().id();
         sugerenciaB = evaluaciones.sugerencias().listar(elemento.cuenta(elemento.admin), evalB).get(0).sugerencia()
                 .id();
+        elemento.terminarPreparacionTrabajo();
     }
 
     private int evaluar(BasePrueba elemento, int visita, int puesto, int caso) throws Exception {

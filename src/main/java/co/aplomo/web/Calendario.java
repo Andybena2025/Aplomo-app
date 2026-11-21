@@ -35,19 +35,20 @@ public final class Calendario {
             html.append("<div class=\"cal-dia-titulo\">").append(dia).append("</div>");
         }
         LocalDate desde = vista.desde().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        LocalDate hasta = vista.mes() ? vista.hasta().minusDays(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-                                        .plusDays(1) : vista.hasta();
+        LocalDate hasta = vista.mes() ? desde.plusDays(42) : vista.hasta();
         if (!vista.mes()) html.append(horas());
         for (LocalDate fecha = desde; fecha.isBefore(hasta); fecha = fecha.plusDays(1)) {
             html.append(dia(vista, fecha));
         }
-        return html.append("</div><section class=\"cal-dia-seleccionado stack\" hidden ")
-                .append("aria-live=\"polite\"></section>").toString();
+        return html.append(
+                "</div><p class=\"hint cal-leyenda\">✓ Día pasado</p><section class=\"cal-dia-seleccionado " +
+                        "stack\" hidden ").append("aria-live=\"polite\"></section>").toString();
     }
 
     private static String dia(Vista vista, LocalDate fecha) {
         List<Cita> citas = vista.citas().stream().filter(cita -> cita.ficha().reserva().fecha().equals(fecha)).toList();
         String clases = fecha.equals(Html.hoy()) ? " cal-hoy" : "";
+        if (fecha.equals(LocalDate.of(2026, 11, 27))) clases += " cal-presentacion";
         if (fecha.getMonth() != vista.fecha().getMonth() || fecha.getDayOfWeek().getValue() > 5) {
             clases += " cal-oscuro";
         }
@@ -56,13 +57,15 @@ public final class Calendario {
                 .append(vista.mes() ? "<button type=\"button\" class=\"cal-numero\" aria-label=\"" :
                         "<span " + "class=\"cal" + "-numero\" " + "aria-label=\"").append(Html.fecha(fecha))
                 .append("\">").append(fecha.getDayOfMonth()).append(vista.mes() ? "</button>" : "</span>");
+        if (fecha.isBefore(Html.hoy()))
+            html.append("<span class=\"cal-dia-pasado\" aria-label=\"Día pasado\">✓</span>");
         html.append("<div class=\"cal-eventos\">");
-        for (Cita cita : citas.stream().limit(vista.mes() ? 2 : Integer.MAX_VALUE).toList()) {
+        for (Cita cita : citas.stream().limit(vista.mes() ? 3 : Integer.MAX_VALUE).toList()) {
             html.append(pildora(cita, !vista.mes()));
         }
-        if (vista.mes() && citas.size() > 2) {
+        if (vista.mes() && citas.size() > 3) {
             html.append("<a class=\"cal-mas\" href=\"").append(PaginasAgenda.url(vista, fecha, false)).append("\">+")
-                    .append(citas.size() - 2).append(" más</a>");
+                    .append(citas.size() - 3).append(" más</a>");
         }
         return html.append("</div></section>").toString();
     }
@@ -82,11 +85,13 @@ public final class Calendario {
         var reserva = cita.ficha().reserva();
         int indice = cita.color() == null ? -1 : ColoresAgenda.PALETA.indexOf(cita.color());
         boolean pasada = reserva.fecha().isBefore(Html.hoy());
-        String estilo = "";
+        String estilo = " style=\"--persona:" + (indice < 0 ? "#C9CCD2" : ColoresAgenda.PALETA.get(indice)) + "\"";
         if (semana) {
             int inicio = reserva.inicio().toSecondOfDay() / 60 - 7 * 60;
             int duracion = (reserva.fin().toSecondOfDay() - reserva.inicio().toSecondOfDay()) / 60;
-            estilo = " style=\"--inicio:" + Math.max(0, inicio) + ";--duracion:" + duracion + "\"";
+            estilo =
+                    " style=\"--persona:" + (indice < 0 ? "#C9CCD2" : ColoresAgenda.PALETA.get(indice)) + ";--inicio:" +
+                            Math.max(0, inicio) + ";--duracion:" + duracion + "\"";
         }
         String nota = cita.nota() == null || cita.nota().texto() == null ? "" : cita.nota()
                 .vista() ? "<span class=\"sr-only\">Nota leída</span>" : "<i class=\"cal-nota\" title=\"Nota del " +
@@ -95,6 +100,20 @@ public final class Calendario {
                 cita.evaluador() + "\" href=\"/reservas/" + reserva.id() + "\"" + estilo + "><small>" +
                 reserva.inicio().format(HORA) + "</small><b>" + Html.escapar(cita.ficha().empresaNombre()) + "</b>" +
                 nota + "</a>";
+    }
+
+    /**
+     * RF-033: filtros del equipo antes del título, sin panel lateral.
+     */
+    public static String filtros(Sesion sesion, Vista vista) {
+        if (sesion.cuenta().rol() != Rol.ADMINISTRADOR) return "";
+        StringBuilder html = new StringBuilder("<div class=\"cal-filtros chips\" aria-label=\"Evaluadores\">" +
+                "<button class=\"chip\" type=\"button\" data-todos-evaluadores aria-pressed=\"true\">Todos · " +
+                vista.citas().size() + "</button>");
+        for (Evaluador persona : vista.evaluadores()) {
+            if (persona.activo()) html.append(evaluador(persona, vista));
+        }
+        return html.append("</div>").toString();
     }
 
     /**
@@ -125,7 +144,8 @@ public final class Calendario {
         return "<label class=\"cal-evaluador color-" +
                 (evaluador.color() == null ? -1 : ColoresAgenda.PALETA.indexOf(evaluador.color())) +
                 "\"><input type=\"checkbox\" data-filtrar-evaluador=\"" + evaluador.id() + "\" checked><i></i><span>" +
-                Html.escapar(evaluador.nombre()) + "<small>" + cantidad + " citas este mes</small></span></label>";
+                Html.escapar(evaluador.nombre()) + "<small>" + Html.plural(Math.toIntExact(cantidad), "cita") +
+                "</small></span></label>";
     }
 
     private static String proxima(Cita cita) {

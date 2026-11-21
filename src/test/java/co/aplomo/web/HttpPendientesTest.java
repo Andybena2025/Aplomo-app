@@ -46,9 +46,9 @@ class HttpPendientesTest extends HttpPrueba {
         int puesto = new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Ensamble", "ESCRITORIO", "Centro", null, true)).id();
         var reserva2 = new Reservas(tx, reloj);
-        int reserva = reserva2.guardar(cuenta(admin), 0, solicitud(salon));
-        reserva2.aceptar(cuenta(admin), reserva);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), reserva);
+        int reserva = reserva2.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        reserva2.aceptar(evaluadorReserva(reserva), reserva);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(reserva), reserva);
         var elemento = new ByteArrayOutputStream();
         ImageIO.write(new java.awt.image.BufferedImage(12, 12, 1), "png", elemento);
         var evaluacion = new Evaluaciones.Datos(puesto, "Postura", "MAS_INADECUADA", "Trabajo mantenido", 60, false,
@@ -76,7 +76,7 @@ class HttpPendientesTest extends HttpPrueba {
         assertFalse(detalle.body().contains("<script>inocuo"));
         assertTrue(detalle.body().contains("25/11/2026"));
         assertFalse(detalle.body().contains("/fotos/"));
-        assertTrue(get("/pendientes?estado=TODOS&orden=limite").body().contains("Ver pendiente"));
+        assertTrue(get("/pendientes?estado=TODOS&orden=limite").body().contains("data-registro="));
     }
 
     @Test
@@ -138,7 +138,7 @@ class HttpPendientesTest extends HttpPrueba {
         assertEquals(403,
                 post("/pendientes/" + pendiente, Map.of("csrf", token, "descripcion", "No permitido")).statusCode());
         assertEquals(403, post("/pendientes/" + pendiente + "/arreglado", Map.of("csrf", token)).statusCode());
-        assertTrue(get("/pendientes").body().contains("Ver pendiente"));
+        assertTrue(get("/pendientes").body().contains("data-registro="));
     }
 
     @Test

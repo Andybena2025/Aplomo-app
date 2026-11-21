@@ -27,7 +27,7 @@ import java.util.Properties;
  */
 public final class Demo {
     public static final String CONFIRMACION = "REINICIAR DEMO";
-    private static final String EMPRESAS = "nit IN ('DEMO-APLOMO-E1','DEMO-APLOMO-E2','DEMO-APLOMO-E3')";
+    private static final String EMPRESAS = "nit IN ('900.512.384-1','901.638.205-4','012345')";
     private static final List<String> MUESTRAS = List.of("de100001-493b-4bc9-a64e-d51b4ea3c901.jpg",
             "de100002-493b-4bc9-a64e-d51b4ea3c902.jpg", "de100003-493b-4bc9-a64e-d51b4ea3c903.jpg",
             "de100004-493b-4bc9-a64e-d51b4ea3c904.jpg");
@@ -61,7 +61,7 @@ public final class Demo {
             verificarAdministrador(con);
             String confirmacion = "";
             if (reiniciar) {
-                terminal.printf("Se borrarán SOLO DEMO-APLOMO-E1, E2 y E3 y sus registros. Las cuentas nunca " +
+                terminal.printf("Se reiniciarán SOLO las tres empresas identificadas de la demo. Las cuentas nunca " +
                         "se borran. Si alguna está vinculada, el reinicio se cancela.%n");
                 confirmacion = terminal.readLine("Escribe %s para continuar: ", CONFIRMACION);
                 if (!CONFIRMACION.equals(confirmacion)) {
@@ -81,8 +81,8 @@ public final class Demo {
             }
             int borradas = limpiarFotos(con, Config.carpetaFotos(), fotos);
             copiarMuestras(Config.carpetaFotos());
-            terminal.printf("Demostración lista. Entra como Administrador y abre Visitas en curso o las c" +
-                    "onsultas. Fotos antiguas retiradas: %d.%n", borradas);
+            terminal.printf("Datos listos. Entra como Evaluador y abre Mi agenda o Visitas en curso. " +
+                    "Fotos antiguas retiradas: %d.%n", borradas);
             terminal.printf("No se modificaron otras empresas, cuentas ni config/db.properties.%n");
         } catch (Exception error2) {
             throw new IllegalStateException(
@@ -153,6 +153,7 @@ public final class Demo {
                 "ND contrasena_temporal=FALSE ORDER BY id_cuenta LIMIT 1", fila -> fila.getInt(1));
         if (admin == null) throw new IllegalArgumentException(
                 "Primero ingresa como Administrador y cambia la contraseña temporal de ALINEO.");
+        DemoIdentidades.preparar(con, admin);
         Integer ajenas = Sql.uno(con, "SELECT COUNT(*) FROM reserva r JOIN salon l USING(id_salon) JOIN sede s USIN" +
                 "G(id_sede) JOIN empresa e USING(id_empresa) WHERE r.codigo IN ('DEMO-FIN-01'" +
                 ",'DEMO-FIN-02','DEMO-COL-01','DEMO-COL-02','DEMO-ESP-01','DEMO-ESP-02','DEMO" +
@@ -163,6 +164,7 @@ public final class Demo {
         String texto = Files.readAllLines(sql, StandardCharsets.UTF_8).stream()
                 .filter(texto2 -> !texto2.stripLeading().startsWith("--"))
                 .collect(java.util.stream.Collectors.joining("\n"));
+        texto = DemoIdentidades.adaptar(texto);
         for (String parte : texto.split(";")) {
             String orden = parte.strip();
             if (orden.isEmpty() || orden.equalsIgnoreCase("START TRANSACTION") || orden.equalsIgnoreCase("COMMIT"))
@@ -173,6 +175,7 @@ public final class Demo {
         }
         DemoCompleta.cargar(con, fotos, admin);
         DemoRoles.cargar(con, fotos, admin);
+        DemoIdentidades.completar(con, admin);
     }
 
     /**
@@ -187,6 +190,7 @@ public final class Demo {
                 fila -> fila.getInt(1)));
         List<Integer> empresas = ids.get("empresa");
         if (empresas.isEmpty()) return List.of();
+        DemoIdentidades.exigirIdentidad(con, empresas);
         if (!hijos(con, "cuenta", "id_cuenta", "id_empresa", empresas).isEmpty()) throw new IllegalArgumentException(
                 "Hay cuentas vinculadas a una empresa demo. Reasígnalas antes; no se borró nada.");
         ids.put("sede", hijos(con, "sede", "id_sede", "id_empresa", empresas));

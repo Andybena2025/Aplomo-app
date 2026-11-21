@@ -21,3 +21,14 @@ document.querySelectorAll(".cal-numero").forEach(boton => {
     destino.hidden = false;
   });
 });
+
+const todosEvaluadores = document.querySelector('[data-todos-evaluadores]');
+if (todosEvaluadores) todosEvaluadores.onclick = () => {
+  document.querySelectorAll('[data-filtrar-evaluador]').forEach(control => { control.checked = true; });
+  document.querySelectorAll('[data-evaluador]').forEach(cita => { cita.hidden = false; });
+  todosEvaluadores.setAttribute('aria-pressed', 'true');
+};
+document.querySelectorAll('[data-filtrar-evaluador]').forEach(control => control.addEventListener('change', () => {
+  todosEvaluadores?.setAttribute('aria-pressed', String([...document.querySelectorAll('[data-filtrar-evaluador]')]
+    .every(opcion => opcion.checked)));
+}));

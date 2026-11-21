@@ -41,3 +41,75 @@ El docente quiere que el software se vea como el prototipo. Las capturas están 
 ## Variante clara (opcional, para más adelante)
 
 Una compañera propuso una versión clara, "Perla": fondo `#F3EFE8`, tarjetas `#FCFBF8`, texto `#1E1C1A`, botones negros, y semáforo más oscuro (`#248A3D`, `#C99400`, `#D70015`) para que se lea sobre claro. Todavía no está decidida: **no la apliques** salvo que Andy lo pida.
+
+## Paso 27 · Sistema visual vigente (21/11/2026)
+
+Este apartado sustituye las indicaciones visuales anteriores cuando se contradigan. Conserva Obsidian & Ivory,
+Instrument Serif e Inter. Los cambios de propiedad, avisos y solicitudes se validan en el servidor; el aspecto
+nunca concede permisos.
+
+| Componente | Regla vigente |
+| --- | --- |
+| Fondo y superficies | Carbón `#0E0E10`; tarjetas opacas; filas alternas `#18181B`. |
+| Títulos | Instrument Serif, champán `#E3CDA0`; texto normal marfil y secundario `#9E998F`. La marca sigue marfil. |
+| Anchos | Paneles hasta 1180 px; formularios, lectura y Mi cuenta hasta 720 px. |
+| Acción principal | Marfil, texto oscuro; una acción principal por sección. |
+| Acción secundaria | Fondo `#242429`, borde de 1,5 px `#CFC8BA`, texto 600. Enlaces champán subrayados. |
+| Tamaño de controles | Al menos 44 px; en tabletas los botones alcanzan 56 px y las opciones 84 px. |
+| Riesgo en calma | Punto de 8 px: Verde `#5E9C77`, Amarillo `#C2A35C`, Rojo `#C06A62`; cifra serif marfil y nivel gris. |
+| Resultado final | Único lugar con semáforo fuerte: anillo principal de 96 px, posturas con anillo de 58 px. |
+| Activa / Inactiva | Activa azul `#8FB2FF`, fondo al 16 %; Inactiva gris `#A9AEB7`. |
+| Reserva | Por confirmar lila; Aceptada azul; Finalizada marfil con marca; Cancelada gris tachada. |
+| Visita / seguimiento | En curso y En proceso champán; Abierto lila; Resuelto marfil. Se conservan los estados del esquema. |
+| Puesto | Por evaluar champán; Evaluado marfil. |
+| Aviso nuevo | Champán sólido `#F2D9A2` y texto oscuro; distinto del riesgo y del color de personas. |
+| Error | Coral `#FF9A8A`, fondo al 12 %, borde de campo; mensaje español junto al dato, con foco. |
+| Éxito | Toast inferior centrado, 4 segundos, `role=status`; fondo `#1E2A22`, borde `#3F6B50`, texto `#CFEBD9`. |
+
+### Personas, no riesgo
+
+Andrés Evaluador usa siempre `#FF4F9A`; Johan, `#3D7BFF`; Laura Gabriella, `#16BFC9`.
+Los demás disponen de `#9B6BFF`, `#C9CCD2` y `#FF8FD0`. La asignación se guarda en `cuenta.color_agenda`.
+Los colores sólidos del calendario identifican al Evaluador; no tienen relación con la calificación RULA.
+
+### Listas y páginas
+
+- Filas completas enlazadas, un nombre fuerte en una línea, elipsis y nombre completo al pasar el puntero.
+- Búsqueda inmediata y chips con contadores; no hay que pulsar Aplicar filtros en las listas rediseñadas.
+- Reservas y Visitas agrupadas por fecha; Pendientes por empresa, riesgo calmado, prioridad y fecha.
+- Empresas y Archivo muestran ciudad registrada y sector opcional; sin sector no se añade un valor supuesto.
+- Usuarios tiene tres contadores de rol, filtro por empresa y estado Activas inicial; una fila abre su edición.
+- Empresa: datos y equipo separados; sedes enlazadas completas; áreas y cargos compactos.
+- Mi cuenta: ajustes personales; cada dato se edita en su propia página con Cancelar y Guardar.
+- Ayuda: navegación de temas del rol y artículo; sin acordeones. No se inventan teléfonos o correos de contacto.
+- Inicio se adapta al rol. Los indicadores enlazan a las listas de las que proceden. La práctica es discreta y solo del Evaluador.
+
+### Fechas, calendario y evaluación
+
+Las fechas visibles usan DD / MM / AAAA y las horas HH : MM. El campo oculto conserva ISO para el servidor.
+Se admite salto al completar, Backspace, pegado y flechas; el calendario pequeño se cierra con Escape.
+Reservas ofrece intervalos libres de 30 minutos entre 8:00 y 16:00, sin restringir las horas que se escriben manualmente.
+El servidor vuelve a comprobar los cruces al guardar. Este intervalo del selector es una elección de interfaz,
+no una regla nueva del método ni una limitación de la agenda.
+
+Agenda usa seis semanas iguales en el mes, superficie `#2E2E34`, cabecera `#38383F`, líneas `#45454C` y borde
+`#4A4A52`. Máximo tres citas por día y enlace al resto; filtros del equipo arriba. Los días pasados tienen marca,
+hoy lleva círculo champán y el 27/11/2026 un borde de referencia para la presentación. En celular se elige el día
+para ver sus citas.
+
+La evaluación tiene modo enfoque, contexto del lugar y salida a la visita. Conserva las fotos, puntos, líneas,
+mediciones y valores existentes. Sus fases son Permiso, Puesto, Postura 1, Postura 2 y Resultado. La revisión de
+cada foto presenta Brazo, Antebrazo, Muñeca, Cuello, Tronco y Piernas, una parte a la vez, seguida del esfuerzo.
+La barra inferior permanece fija; los avisos de falta aparecen solo al intentar continuar. El análisis adicional
+conserva el recorrido de la foto existente, con Revisar postura y Resultado.
+
+El resultado resume el máximo recibido del servidor, conserva el desglose plegado y muestra primero tres
+sugerencias. Exportar PDF abre el informe general autorizado de la empresa y resalta la visita si ya está
+Finalizada; una visita En curso se identifica sin incorporarla a los promedios históricos.
+
+### Accesibilidad
+
+Foco visible, enlace Saltar al contenido, nombres accesibles de campos y botones, errores anunciados y sin
+perder respuestas. El nivel está escrito y el riesgo tiene nombre accesible; el color nunca es la única señal.
+Las tarjetas seleccionadas mantienen texto oscuro legible. Las animaciones respetan movimiento reducido.
+El informe usa tinta oscura sobre papel claro y conserva nivel y acción al imprimir en blanco y negro.

@@ -18,26 +18,7 @@ public final class PaginasAyuda {
      * Centro de ayuda, con preguntas filtrables y contenidos autorizados por el servicio. RNF-011.
      */
     public static String pagina(Sesion sesion, Contenido elemento) {
-        StringBuilder contenido2 = new StringBuilder(Html.encabezado("Ayuda · Centro de ayuda", "Centro de ayuda",
-                sesion == null ? "<a class=\"btn\" href=\"/login\">Volver a iniciar sesión</a>" : ""));
-        contenido2.append("<p class=\"muted\">Encuentra una respuesta y sigue con tu trabajo.</p><div c" +
-                "lass=\"card field ayuda-buscador\"><label for=\"ayuda-buscar\">¿Qué necesita" +
-                "s?</label><input class=\"input\" type=\"search\" id=\"ayuda-buscar\" placeho" +
-                "lder=\"Busca una pregunta\" data-ayuda-buscar></div><p class=\"aviso\" role=" +
-                "\"status\" data-ayuda-vacia hidden>No encontramos esa pregunta. Pregúntale a" +
-                "l Administrador de tu cuenta.</p><div class=\"stack ayuda-temas\">");
-        contenido2.append(indice(elemento));
-        for (int n = 1; n <= 13; n++)
-            if (elemento.temas().contains(n)) {
-                contenido2.append("<section class=\"card stack\" data-ayuda-grupo id=\"ayuda-" + n + "\" data-tema=\"")
-                        .append(n).append("\"><h2>").append(titulo(n)).append("</h2>");
-                tema(n, sesion, elemento, contenido2);
-                contenido2.append("</section>");
-            }
-        contenido2.append("</div><p class=\"muted\">¿No encontraste tu respuesta? Escríbele al Administ" +
-                "rador de tu cuenta o usa el contacto de arriba.</p><script src=\"/static/js/" +
-                "ayuda.js\" defer></script>");
-        return Html.pagina("Ayuda", contenido2.toString(), sesion, false, false);
+        return CentroAyuda.pagina(sesion, elemento);
     }
 
     private static void tema(int numero, Sesion sesion, Contenido elemento, StringBuilder contenido2) {
@@ -107,8 +88,8 @@ public final class PaginasAyuda {
         for (var empresa : elemento.riesgos())
             riesgo.append("<div><dt>").append(Html.riesgo(empresa.minimo(), empresa.color(), empresa.nivel()))
                     .append(" — ").append(empresa.minimo() == empresa.maximo() ? empresa.minimo() :
-                            empresa.minimo() + " a " + empresa.maximo()).append("</dt><dd>").append(escapar(empresa.
-                                nombre()))
+                            empresa.minimo() + " a " + empresa.maximo()).append("</dt><dd>")
+                    .append(escapar(empresa.nombre()))
                     .append(". ").append(escapar(empresa.accion())).append("</dd></div>");
         contenido2.append(
                 pregunta("¿Qué significan el puntaje, el color y el nivel?", riesgo.append("</dl>").toString()));

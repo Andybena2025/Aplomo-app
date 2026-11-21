@@ -35,7 +35,7 @@ class Paso17Test extends HttpPrueba {
     void practicaNoCambiaLasOnceListasNiSusCatalogosNiElSemaforo() throws Exception {
         var evs = new Evaluaciones(tx, reloj, new Fotos(carpetaFotos), new BitacoraDao());
         var consultas = evs.consultas();
-        var cuenta2 = cuenta(admin);
+        var cuenta2 = evaluadorTrabajo();
         var antes = new EnumMap<SeccionConsulta, Integer>(SeccionConsulta.class);
         for (var seccion : SeccionConsulta.values())
             antes.put(seccion, consultas.listar(cuenta2, seccion, Map.of()).filas().size());
@@ -67,28 +67,29 @@ class Paso17Test extends HttpPrueba {
 
     @Test
     void inicioTieneUnSoloBloqueDeVisitasYContinuarPracticaSeparado() throws Exception {
-        entrar(admin);
+        var evaluador = evaluadorTrabajo();
+        entrar(evaluador.id());
         String texto = get("/").body();
         assertFalse(texto.contains("Evaluar ahora"));
-        assertFalse(texto.contains("Continuar práctica"));
-        var destino = new Visitas(tx, reloj).practica().abrir(cuenta(admin), "OFICINA");
+        var destino = new Visitas(tx, reloj).practica().abrir(evaluador, "OFICINA");
         texto = get("/").body();
-        assertTrue(texto.contains("Continuar práctica"));
-        assertTrue(texto.contains("/visitas/" + destino.visita()));
-        assertEquals(1, texto.split("id=\"visitas-en-curso\"", -1).length - 1);
+        assertTrue(texto.contains("Probar evaluación"));
+        assertTrue(texto.contains("href=\"/demo/evaluacion\""));
+        assertEquals(1, texto.split("<h2>Visitas en curso</h2>", -1).length - 1);
         assertFalse(texto.contains("Todos los puestos están evaluados"));
+        assertTrue(destino.visita() > 0);
     }
 
     @Test
     void pestañasYOrdenDentroDeMasFiltros() throws Exception {
         entrar(admin);
-        String texto = get("/empresas").body();
+        String texto = get("/evaluaciones").body();
         assertFalse(texto.contains("Ver otras secciones"));
-        assertTrue(texto.contains("secciones-tabs"));
-        assertTrue(texto.contains("href=\"/empresas\" class=\"on\" aria-current=\"page\""));
-        int inicio = texto.indexOf("Más filtros"), orden = texto.indexOf("Ordenar por", inicio), fin = texto.indexOf(
-                "</details>", inicio);
+        assertTrue(texto.contains("data-lista-filtro"));
+        int inicio = texto.indexOf("Más filtros"), orden = texto.indexOf("Ordenar por", inicio);
+        int fin = texto.indexOf("</details>", inicio);
         assertTrue(inicio > 0 && orden > inicio && orden < fin);
+        assertFalse(texto.contains("Aplicar filtros"));
     }
 
     @Test
@@ -97,9 +98,9 @@ class Paso17Test extends HttpPrueba {
         new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Puesto", "MESA", "Aquí", null, true));
         var reservas = new Reservas(tx, reloj);
-        int reserva = reservas.guardar(cuenta(admin), 0, solicitud(salon));
-        reservas.aceptar(cuenta(admin), reserva);
-        int visita = new Visitas(tx, reloj).iniciar(cuenta(admin), reserva);
+        int reserva = reservas.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        reservas.aceptar(evaluadorReserva(reserva), reserva);
+        int visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(reserva), reserva);
         entrar(admin);
         String texto = get("/visitas/" + visita).body();
         assertFalse(texto.contains("<dt>Fin real</dt>"));

@@ -54,14 +54,26 @@ public final class EmpresasWeb {
     public void atender(HttpExchange intercambio, Sesion sesion,
             Map<String, String> datos) throws SQLException, IOException {
         String ruta = intercambio.getRequestURI().getPath();
+        if (ruta.matches("/empresas/[1-9][0-9]*/transferir") && intercambio.getRequestMethod().equals("POST")) {
+            int empresa = id(ruta.split("/")[2]);
+            empresas.transferir(sesion.cuenta(), empresa, id(datos.get("evaluador")));
+            Router.redirigir(intercambio, "/empresas/" + empresa + "?aviso=Due%C3%B1o%20actualizado.");
+            return;
+        }
         boolean post = intercambio.getRequestMethod().equals("POST");
         if (ruta.equals("/empresas") && !post) {
+            if (Router.consulta(intercambio).containsKey("registros") &&
+                    sesion.cuenta().rol() != Cuenta.Rol.ADMINISTRADOR) {
+                throw new SecurityException(
+                        "Acceso denegado. El filtro Registros requiere una cuenta de Administrador.");
+            }
             Router.enviar(intercambio, 200,
-                    PaginasEmpresas.lista(sesion, empresas.listar(sesion.cuenta()), aviso(intercambio)));
+                    PaginasEmpresas.listado(sesion, empresas.resumen(sesion.cuenta(), Router.consulta(intercambio)),
+                            aviso(intercambio), Router.consulta(intercambio)));
             return;
         }
         if (ruta.equals("/empresas") || ruta.equals("/empresas/nueva")) {
-            Permisos.administrador(sesion.cuenta());
+            Permisos.trabajo(sesion.cuenta());
             if (post && ruta.endsWith("nueva")) {
                 noDisponible(intercambio, sesion);
                 return;
@@ -98,8 +110,7 @@ public final class EmpresasWeb {
             noDisponible(intercambio, sesion);
             return;
         }
-        if (accion.equals("editar")) Permisos.trabajo(sesion.cuenta());
-        else Permisos.administrador(sesion.cuenta());
+        Permisos.trabajo(sesion.cuenta());
         Contexto contexto = preparar(sesion, tipo, id, 0);
         if (accion.equals("editar")) {
             atenderFormulario(intercambio, sesion, contexto, datos, post);
@@ -122,11 +133,15 @@ public final class EmpresasWeb {
     private void atenderFormulario(HttpExchange intercambio, Sesion sesion, Contexto contexto,
             Map<String, String> datos, boolean post) throws SQLException, IOException {
         if (!post) {
+            if (!contexto.tipo().equals("empresas") || contexto.id() != 0) {
+                empresas.autorizarEdicion(sesion.cuenta(), contexto.tipo(), contexto.id(), contexto.padre());
+            }
             Router.enviar(intercambio, 200, PaginasEmpresas.formulario(sesion, contexto, Map.of(), null));
             return;
         }
         Empresas.Guardado guardado;
         try {
+            empresas.autorizarEdicion(sesion.cuenta(), contexto.tipo(), contexto.id(), contexto.padre());
             guardado = guardar(sesion, contexto, datos);
         } catch (IllegalArgumentException error) {
             Router.enviar(intercambio, 400, PaginasEmpresas.formulario(sesion, contexto, datos, error.getMessage()));
@@ -148,7 +163,7 @@ public final class EmpresasWeb {
             case "empresas" -> empresas.guardar(sesion2.cuenta(),
                     new Empresa(empresa.id(), 0, parametros.get("nombre"), parametros.get("nit"),
                             parametros.get("descripcion"), parametros.get("telefono"), parametros.get("correo"),
-                            parametros.get("persona_contacto"), true));
+                            parametros.get("persona_contacto"), true, null, parametros.get("sector")));
             case "sedes" -> empresas.guardar(sesion2.cuenta(),
                     new Sede(empresa.id(), empresa.padre(), parametros.get("nombre"), parametros.get("direccion"),
                             parametros.get("ciudad"), parametros.get("telefono"), parametros.get("horario"),
@@ -184,7 +199,7 @@ public final class EmpresasWeb {
                     Empresa empresa = empresas.empresa(sesion.cuenta(), id);
                     datos = datos("nombre", empresa.nombre(), "nit", empresa.nit(), "descripcion",
                             empresa.descripcion(), "telefono", empresa.telefono(), "correo", empresa.correo(),
-                            "persona_contacto", empresa.contacto());
+                            "persona_contacto", empresa.contacto(), "sector", empresa.sector());
                 }
             }
             case "sedes" -> {
@@ -253,19 +268,27 @@ public final class EmpresasWeb {
                             empresas.sedes(sesion2.cuenta(), id), empresas.areas(sesion2.cuenta(), id),
                             empresas.cargos(sesion2.cuenta(), id), aviso(intercambio),
                             sesion2.cuenta().rol() == Cuenta.Rol.ADMINISTRADOR ? empresas.vinculadas(sesion2.cuenta(),
-                                    id) : List.of()));
+                                    id) : List.of(), empresas.puedeEditar(sesion2.cuenta(), id, true),
+                            empresas.puedeEditar(sesion2.cuenta(), id, false),
+                            empresas.candidatosTransferencia(sesion2.cuenta(), id),
+                            sesion2.cuenta().rol() == Cuenta.Rol.USUARIO ? List.of() : empresas.equipo(sesion2.cuenta(),
+                                    id), empresas.cantidadesSedes(sesion2.cuenta(), id)));
             case "sedes" -> {
                 Sede sede = empresas.sede(sesion2.cuenta(), id);
                 Router.enviar(intercambio, 200,
                         PaginasEmpresas.sede(sesion2, sede, empresas.empresa(sesion2.cuenta(), sede.empresa()),
-                                empresas.salones(sesion2.cuenta(), id), aviso(intercambio)));
+                                empresas.salones(sesion2.cuenta(), id), aviso(intercambio),
+                                empresas.puedeEditar(sesion2.cuenta(), sede.empresa(), false),
+                                empresas.puedeEditar(sesion2.cuenta(), sede.empresa(), true)));
             }
             case "salones" -> {
                 Salon salon = empresas.salon(sesion2.cuenta(), id);
                 Sede sede = empresas.sede(sesion2.cuenta(), salon.sede());
                 Router.enviar(intercambio, 200,
                         PaginasEmpresas.salon(sesion2, salon, sede, empresas.empresa(sesion2.cuenta(), sede.empresa()),
-                                empresas.puestos(sesion2.cuenta(), id), aviso(intercambio)));
+                                empresas.puestos(sesion2.cuenta(), id), aviso(intercambio),
+                                empresas.puedeEditar(sesion2.cuenta(), sede.empresa(), false),
+                                empresas.puedeEditar(sesion2.cuenta(), sede.empresa(), true)));
             }
             case "areas" -> Router.redirigir(intercambio, "/empresas/" + empresas.area(sesion2.cuenta(), id).empresa());
             case "cargos" ->

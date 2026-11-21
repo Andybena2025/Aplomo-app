@@ -176,6 +176,11 @@ public final class Usuarios {
             List<Cuenta> administradores = dao.bloquearAdministradores(con);
             autorizar(con, actor);
             Cuenta anterior = exigirCuenta(con, id, true);
+            if (anterior.rol() == Rol.EVALUADOR && datos.rol() != Rol.EVALUADOR &&
+                    co.aplomo.db.Sql.<Integer>uno(con, "SELECT COUNT(*) FROM empresa WHERE id_creador=?",
+                            fila -> fila.getInt(1), id) > 0) {
+                throw new IllegalArgumentException("Transfiere sus empresas antes de cambiar el rol.");
+            }
             conservarAdministrador(anterior, datos.rol(), anterior.estado(), activos(administradores));
             new CuentaEmpresaDao().validar(con, id, datos.rol(), datos.empresas(),
                     anterior.estado() != Estado.INACTIVA);

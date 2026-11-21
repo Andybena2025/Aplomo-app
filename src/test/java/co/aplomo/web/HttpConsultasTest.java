@@ -54,9 +54,10 @@ class HttpConsultasTest extends HttpPrueba {
     void listasDelUsuarioNoExponenEmpresaAjenaNiAcciones(SeccionConsulta elemento) throws Exception {
         var respuesta = get(elemento.ruta());
         assertEquals(200, respuesta.statusCode(), respuesta.body());
-        assertTrue(respuesta.body().contains("Aplicar filtros"));
+        assertFalse(respuesta.body().contains("Aplicar filtros"));
+        assertTrue(respuesta.body().contains("data-lista-buscar"));
         if (elemento == SeccionConsulta.PENDIENTES)
-            assertTrue(respuesta.body().contains("<span class=\"eyebrow\">Seguimiento · Pendientes</span>"));
+            assertTrue(respuesta.body().contains("<span class=\"eyebrow\">Gestión · Pendientes</span>"));
         assertFalse(respuesta.body().contains("Empresa ajena QA"));
         assertFalse(respuesta.body().contains("Área ajena QA"));
         assertFalse(respuesta.body().contains("Cargo ajeno QA"));
@@ -133,14 +134,12 @@ class HttpConsultasTest extends HttpPrueba {
         assertEquals(200, respuesta.statusCode());
         assertEquals(1, contarFilas(respuesta.body()));
         assertTrue(respuesta.body().contains("data-registro=\"" + escenario.evalRojo + "\""));
-        var elemento = Pattern.compile("class=\"orden-columna\" href=\"([^\"]+)\"").matcher(respuesta.body());
-        assertTrue(elemento.find());
-        String enlace = elemento.group(1).replace("&amp;", "&");
-        assertTrue(enlace.contains("color=ROJO"));
-        assertTrue(enlace.contains("q=ensamble"));
-        assertTrue(enlace.contains("numero=3"));
-        assertEquals(200, get(enlace).statusCode());
-        assertEquals(1, contarFilas(get(enlace).body()));
+        assertTrue(respuesta.body().contains("name=\"orden\""));
+        assertTrue(respuesta.body().contains("name=\"color\""));
+        assertTrue(respuesta.body().contains("value=\"ensamble\""));
+        assertTrue(respuesta.body().contains("name=\"numero\""));
+        assertEquals(200, get(ruta + "&orden=fecha&direccion=desc").statusCode());
+        assertEquals(1, contarFilas(get(ruta + "&orden=fecha&direccion=desc").body()));
     }
 
     @Test
@@ -159,8 +158,8 @@ class HttpConsultasTest extends HttpPrueba {
     void listaDeUnaEvaluacionOcultaPuestoYLaGeneralLoConserva() throws Exception {
         var particular = get("/sugerencias?evaluacion=" + escenario.evalRojo);
         assertEquals(200, particular.statusCode());
-        assertFalse(particular.body().contains("aria-label=\"Ordenar por Puesto\""));
-        assertTrue(get("/sugerencias").body().contains("aria-label=\"Ordenar por Puesto\""));
+        assertFalse(particular.body().contains("data-puesto"));
+        assertTrue(get("/sugerencias").body().contains("data-puesto"));
         assertTrue(particular.body().contains("11 sugerencias"));
     }
 
@@ -178,12 +177,14 @@ class HttpConsultasTest extends HttpPrueba {
     }
 
     private static String fila(String texto2, int id) {
-        var elemento = Pattern.compile("<tr data-registro=\"" + id + "\">(.*?)</tr>", Pattern.DOTALL).matcher(texto2);
+        var elemento = Pattern.compile("<a\\b(?=[^>]*data-registro=\"" + id + "\")[^>]*>(.*?)</a>", Pattern.DOTALL)
+                .matcher(texto2);
         assertTrue(elemento.find());
         return elemento.group(1);
     }
 
     private static int contarFilas(String texto2) {
-        return (int) Pattern.compile("<tr data-registro=").matcher(texto2).results().count();
+        return (int) Pattern.compile("<a\\b(?![^>]*\\bhidden)(?=[^>]*\\bdata-registro=)[^>]*>").matcher(texto2)
+                .results().count();
     }
 }

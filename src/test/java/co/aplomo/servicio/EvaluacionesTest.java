@@ -48,9 +48,9 @@ class EvaluacionesTest extends BasePrueba {
         puesto = new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Puesto", "ESCRITORIO", "Centro", null, true)).id();
         var reservas = new Reservas(tx, reloj);
-        int cantidad = reservas.guardar(cuenta(admin), 0, solicitud(salon));
-        reservas.aceptar(cuenta(admin), cantidad);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), cantidad);
+        int cantidad = reservas.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        reservas.aceptar(evaluadorReserva(cantidad), cantidad);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(cantidad), cantidad);
     }
 
     private Evaluaciones.Datos datos(boolean acepta, boolean sin) {

@@ -55,7 +55,7 @@ final class DemoCompleta {
             int i = Math.min(bloque, 3);
             boolean segunda = bloque == 4;
             Integer empresa = Sql.uno(conexion, "SELECT id_empresa FROM empresa WHERE nit=?", rs -> rs.getInt(1),
-                    "DEMO-APLOMO-E" + i);
+                    DemoIdentidades.NITS.get(i - 1));
             if (empresa == null) throw new IllegalArgumentException("Falta una empresa de demostración.");
             Integer area = Sql.uno(conexion,
                     "SELECT id_area FROM area WHERE id_empresa=? AND activo=TRUE ORDER BY id_area" + " LIMIT 1",
@@ -67,10 +67,10 @@ final class DemoCompleta {
                     "SELECT id_sede FROM sede WHERE id_empresa=? ORDER BY id_sede LIMIT 1 OFFSET " + (segunda ? 1 : 0),
                     rs -> rs.getInt(1), empresa);
             Integer salon = Sql.uno(conexion, "SELECT id_salon FROM salon WHERE id_sede=? AND nombre=?",
-                    rs -> rs.getInt(1), sede, "Demostración de resultados");
+                    rs -> rs.getInt(1), sede, "Área de trabajo");
             if (salon == null) salon = Sql.insertar(conexion,
                     "INSERT INTO salon (id_sede,nombre,descripcion,piso,capacidad_puestos) VALUES" + " (?,?,?,?,?)",
-                    sede, "Demostración de resultados", "Solo datos ficticios · Paso 17", 1, 12);
+                    sede, "Área de trabajo", "Solo datos ficticios · Paso 17", 1, 12);
             String codigo = segunda ? "DEMO17-E3B" : "DEMO-17-E" + i;
             Integer reserva = Sql.uno(conexion,
                     "SELECT r.id_reserva FROM reserva r JOIN salon l USING(id_salon) JOIN sede s " +
@@ -135,7 +135,7 @@ final class DemoCompleta {
                                     "Imagen de demostración · Caso manual simulado, no una valoración real.")),
                             List.of(new Analisis.Solicitud(0, entrada(color))));
                     var sugerencias = servicio.sugerencias();
-                    int sug = sugerencias.guardar(actor, ev, 0, "DEMO17 · Revisar el puesto",
+                    int sug = sugerencias.guardar(actor, ev, 0, "Revisar el puesto",
                             "Demostración: revisar el alcance y conservar apoyos adecuados.",
                             color == 0 ? "MOBILIARIO" : "POSTURA", color == 2 ? "ALTA" : "MEDIA",
                             dia.plusDays(14).toString());

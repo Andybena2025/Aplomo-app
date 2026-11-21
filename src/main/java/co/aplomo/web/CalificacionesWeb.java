@@ -48,8 +48,11 @@ public final class CalificacionesWeb {
                     servicio.consultar(sesion.cuenta(), Validacion.entero(id, "empresa", 1, Integer.MAX_VALUE))));
         } else if (ruta.matches("/informes/empresa/[1-9][0-9]*")) {
             int id = Validacion.entero(ruta.substring("/informes/empresa/".length()), "empresa", 1, Integer.MAX_VALUE);
+            String visita = Router.consulta(intercambio).getOrDefault("visita", "");
+            var contexto = visita.isBlank() ? null : servicio.visitaInforme(sesion.cuenta(), id,
+                    Validacion.entero(visita, "visita", 1, Integer.MAX_VALUE));
             Router.enviar(intercambio, 200,
-                    PaginasCalificaciones.informe(sesion, servicio.informe(sesion.cuenta(), id)));
+                    PaginasCalificaciones.informe(sesion, servicio.informe(sesion.cuenta(), id), contexto));
         } else Router.enviar(intercambio, 404,
                 Html.pagina("Informe no encontrado", Html.aviso("Abre una empresa y pulsa Generar informe.", false),
                         sesion));

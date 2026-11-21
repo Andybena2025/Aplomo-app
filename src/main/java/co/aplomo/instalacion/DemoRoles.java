@@ -25,6 +25,11 @@ final class DemoRoles {
     static void cargar(Connection conexion, Path fotos, int administrador) throws SQLException, IOException {
         LocalDate presentacion = LocalDate.parse(System.getProperty("aplomo.demo.fecha", "2026-11-27"));
         List<Integer> empresas = DemoPresentacion.empresas(conexion, administrador);
+        String[] administradores = {"Andrés Benavides", "Johan Zapata", "Laura Gabriella Romero"};
+        String[] correosAdmin = {"andres@rula.local", "johan@rula.local", "gabby@rula.local"};
+        for (int indice = 0; indice < administradores.length; indice++) {
+            cuenta(conexion, administradores[indice], correosAdmin[indice], Cuenta.Rol.ADMINISTRADOR);
+        }
         desactivarGenericas(conexion, administrador);
         List<Integer> evaluadores = new ArrayList<>();
         String[] nombres = {"Andrés Benavides", "Johan Zapata", "Laura Gabriella Romero"};
@@ -33,7 +38,7 @@ final class DemoRoles {
         int[] empresasUsuario = {4, 2, 0};
         for (int indice = 0; indice < nombres.length; indice++) {
             String sufijo = indice == 2 ? ".evaluadora@rula.local" : ".evaluador@rula.local";
-            int evaluador = cuenta(conexion, nombres[indice], correos[indice] + sufijo, Cuenta.Rol.EVALUADOR);
+            int evaluador = cuenta(conexion, "Ing. " + nombres[indice], correos[indice] + sufijo, Cuenta.Rol.EVALUADOR);
             List<Integer> elegidas = List.of(empresas.get(asignaciones[indice][0]),
                     empresas.get(asignaciones[indice][1]));
             new CuentaEmpresaDao().validar(conexion, evaluador, Cuenta.Rol.EVALUADOR, elegidas, true);
@@ -41,7 +46,7 @@ final class DemoRoles {
             ColoresAgenda.guardar(conexion, evaluador, ColoresAgenda.PALETA.get(indice));
             evaluadores.add(evaluador);
             String usuario = correos[indice] + (indice == 2 ? ".usuaria@rula.local" : ".usuario@rula.local");
-            int cuenta = cuenta(conexion, nombres[indice], usuario, Cuenta.Rol.USUARIO);
+            int cuenta = cuenta(conexion, "Rep. " + nombres[indice], usuario, Cuenta.Rol.USUARIO);
             new CuentaEmpresaDao().sincronizar(conexion, administrador, cuenta,
                     List.of(empresas.get(empresasUsuario[indice])), false);
         }
@@ -53,25 +58,39 @@ final class DemoRoles {
         CuentaDao cuentas = new CuentaDao();
         Cuenta existente = cuentas.porCorreo(conexion, correo);
         if (existente != null) {
-            if (!existente.nombre().equals(nombre) || existente.rol() != rol) {
+            String anterior = existente.nombre().replaceFirst("^(Ing\\.|Rep\\.)\\s*", "");
+            String esperado = nombre.replaceFirst("^(Ing\\.|Rep\\.)\\s*", "");
+            boolean conocido = anterior.equals(esperado) ||
+                    anterior.equals("Andrés Eduardo Benavides") && esperado.equals("Andrés Benavides") ||
+                    anterior.equals("Johan Andrés Zapata Quintero") && esperado.equals("Johan Zapata") ||
+                    anterior.equals("Laura Gabriella Romero Gómez") && esperado.equals("Laura Gabriella Romero");
+            if (!conocido || existente.rol() != rol) {
                 throw new IllegalArgumentException(
                         "Un correo de demostración pertenece a otra cuenta. No se modificó.");
             }
+            Sql.actualizar(conexion, "UPDATE cuenta SET nombre=?,cargo=? WHERE id_cuenta=?", nombre, cargo(rol, nombre),
+                    existente.id());
             return existente.id();
         }
-        return cuentas.crear(conexion, nombre, correo, "0000000000", "Demostración", rol, null,
+        return cuentas.crear(conexion, nombre, correo, "0000000000", cargo(rol, nombre), rol, null,
                 Contrasenas.cifrar("Cambiar2026"));
     }
 
+    private static String cargo(Cuenta.Rol rol, String nombre) {
+        return switch (rol) {
+            case ADMINISTRADOR ->
+                    nombre.contains("Gabriella") ? "Coordinadora de evaluaciones" : "Coordinador de evaluaciones";
+            case EVALUADOR -> "Ingeniero(a) Industrial · Evaluador RULA";
+            case USUARIO -> nombre.contains("Gabriella") ? "Coordinadora de SST" : "Coordinador de SST";
+        };
+    }
+
     private static void desactivarGenericas(Connection conexion, int administrador) throws SQLException {
-        for (String correo : List.of("evaluador1", "evaluador2", "usuario1", "usuario2")) {
+        for (String correo : List.of("companero1", "companero2", "companero3", "evaluador1", "evaluador2", "usuario1",
+                "usuario2")) {
             Cuenta cuenta = new CuentaDao().porCorreo(conexion, correo + "@rula.local");
             if (cuenta == null) continue;
-            if (!cuenta.cargo().equals("Demostración") || cuenta.rol() == Cuenta.Rol.ADMINISTRADOR) {
-                throw new IllegalArgumentException("Una cuenta genérica ya tiene otro uso. No se cambió.");
-            }
             Sql.actualizar(conexion, "UPDATE cuenta SET estado='INACTIVA' WHERE id_cuenta=?", cuenta.id());
-            new CuentaEmpresaDao().sincronizar(conexion, administrador, cuenta.id(), List.of(), false);
         }
     }
 }

@@ -134,7 +134,7 @@ El cargador prepara Ensambles del Quindío, Muebles Cafeteros y Humboldt con dat
 
 No cargues `datos_demo.sql` a mano para obtener resultados: ahora contiene solo estructura ficticia. Los análisis se generan desde Java con las tablas RULA de MySQL. La práctica rápida `DEMO-APLOMO-PRACTICA` está separada de estas tres empresas y no aparece en sus consultas ni indicadores.
 
-Para **reiniciar solo las tres empresas DEMO**: Mac `bash scripts/reiniciar_demo.sh`; Windows `scripts\reiniciar_demo.bat`. El script exige administrador de MySQL y escribir `REINICIAR DEMO` antes de borrar los registros vinculados exclusivamente a DEMO-APLOMO-E1, E2 y E3. Si hay cuentas vinculadas, cancela. Conserva las cuentas, la práctica rápida, las demás empresas y la configuración. Cierra la app antes y vuelve a abrirla al terminar. Es una herramienta voluntaria de desarrollo.
+Para **reiniciar solo las tres empresas DEMO**: Mac `bash scripts/reiniciar_demo.sh`; Windows `scripts\reiniciar_demo.bat`. El script exige administrador de MySQL y escribir `REINICIAR DEMO` antes de borrar los registros de Ensambles (900.512.384-1), Muebles Cafeteros (901.638.205-4) y Humboldt (012345), comprobando además su marca privada de demo. Si hay cuentas vinculadas, cancela. Conserva las cuentas, la práctica rápida, las demás empresas y la configuración. Cierra la app antes y vuelve a abrirla al terminar. Es una herramienta voluntaria de desarrollo.
 
 ## Cuentas del equipo
 
@@ -190,3 +190,17 @@ Copia `config/contacto.properties.ejemplo` a `config/contacto.properties` y reem
 El contacto empresarial se configura solo en el archivo privado `config/contacto.properties`:
 `contacto.empresa.correo`, `contacto.empresa.telefono` y `contacto.whatsapp`.
 Los ejemplos no son datos de contacto reales. Sin WhatsApp configurado, el login dirige a Ayuda.
+
+
+## Actualizar al Paso 27A
+
+1. Detén ALINEO y ejecuta `bash scripts/migrar_paso27.sh` (Windows: `scripts\migrar_paso27.bat`).
+   Usa el administrador de MySQL. Primero guarda un respaldo privado en `config/respaldos/`.
+   Agrega el dueño y el sector opcional de la empresa, y actualiza la paleta de los evaluadores; no borra tablas ni filas.
+2. Vuelve a iniciar. Una empresa creada por Evaluador solo la edita su dueño. El Administrador puede transferirla
+   a otro Evaluador activo únicamente si el dueño está Inactivo; la transferencia queda en la bitácora.
+3. Cargar la demo es opcional: `bash scripts/cargar_demo.sh 2026-11-27` o `scripts\cargar_demo.bat 2026-11-27`.
+   Prepara nueve cuentas del equipo y desactiva las siete cuentas genéricas antiguas que encuentre. Conserva claves
+   y estados de las cuentas existentes del equipo; la cuenta inicial no se desactiva. Repetirlo no duplica citas.
+   Para evaluar usa la cuenta Evaluador; el Administrador ya no crea reservas, inicia visitas ni practica.
+   Si un NIT de ejemplo ya pertenece a una empresa ajena a la demo, la carga se cancela y revierte.

@@ -93,15 +93,16 @@ public final class EmpresaDao {
      */
     public int guardar(Connection con, Empresa dato) throws SQLException {
         if (dato.id() == 0) {
-            return Sql.insertar(con, "INSERT INTO empresa (id_administrador, nombre, nit, descripcion, telefono, c" +
-                            "orreo, persona_contacto) VALUES (?, ?, ?, ?, ?, ?, ?)", dato.administrador(),
-                    dato.nombre(),
-                    dato.nit(), dato.descripcion(), dato.telefono(), dato.correo(), dato.contacto());
+            return Sql.insertar(con,
+                    "INSERT INTO empresa(id_administrador,nombre,nit,descripcion,telefono,correo,persona_contacto," +
+                            "id_creador,sector) VALUES(?,?,?,?,?,?,?,?,?)", dato.administrador(), dato.nombre(),
+                    dato.nit(), dato.descripcion(), dato.telefono(), dato.correo(), dato.contacto(), dato.creador(),
+                    dato.sector());
         }
-        Sql.actualizar(con, "UPDATE empresa SET nombre = ?, nit = ?, descripcion = ?, telefono = ?, corre" +
-                        "o = ?, persona_contacto = ? WHERE id_empresa = ?", dato.nombre(), dato.nit(),
-                dato.descripcion(),
-                dato.telefono(), dato.correo(), dato.contacto(), dato.id());
+        Sql.actualizar(con,
+                "UPDATE empresa SET nombre=?,nit=?,descripcion=?,telefono=?,correo=?,persona_contacto=?,sector=? " +
+                        "WHERE id_empresa=?", dato.nombre(), dato.nit(), dato.descripcion(), dato.telefono(),
+                dato.correo(), dato.contacto(), dato.sector(), dato.id());
         return dato.id();
     }
 
@@ -131,6 +132,7 @@ public final class EmpresaDao {
     private static Empresa leer(ResultSet fila) throws SQLException {
         return new Empresa(fila.getInt("id_empresa"), fila.getInt("id_administrador"), fila.getString("nombre"),
                 fila.getString("nit"), fila.getString("descripcion"), fila.getString("telefono"),
-                fila.getString("correo"), fila.getString("persona_contacto"), fila.getBoolean("activo"));
+                fila.getString("correo"), fila.getString("persona_contacto"), fila.getBoolean("activo"),
+                Sql.enteroOpcional(fila, "id_creador"), fila.getString("sector"));
     }
 }

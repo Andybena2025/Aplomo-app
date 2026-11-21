@@ -41,11 +41,13 @@ class HttpHistorialInactivosTest extends HttpPrueba {
     }
 
     private static int filas(String html) {
-        return (int) Pattern.compile("<tr data-registro=").matcher(html).results().count();
+        return (int) Pattern.compile("<a\\b(?![^>]*\\bhidden)(?=[^>]*\\bdata-registro=)[^>]*>").matcher(html).results()
+                .count();
     }
 
     private static String fila(String texto, int id) {
-        var elemento = Pattern.compile("<tr data-registro=\"" + id + "\">(.*?)</tr>", Pattern.DOTALL).matcher(texto);
+        var elemento = Pattern.compile("<a\\b(?=[^>]*data-registro=\"" + id + "\")[^>]*>(.*?)</a>", Pattern.DOTALL)
+                .matcher(texto);
         assertTrue(elemento.find());
         return elemento.group(1);
     }
@@ -68,7 +70,7 @@ class HttpHistorialInactivosTest extends HttpPrueba {
         assertEquals(4, filas(evaluaciones("INACTIVOS")));
         assertEquals(0, filas(evaluaciones("ACTIVOS")));
         String texto = evaluaciones("TODOS");
-        assertTrue(fila(texto, escenario.evalVerde).contains("<span class=\"tag\">Inactiva</span>"));
+        assertTrue(fila(texto, escenario.evalVerde).contains("Inactiva"));
         assertTrue(texto.contains("(inactiva)"));
         var calificacion = get("/calificaciones?empresa=" + escenario.empresaA);
         assertEquals(200, calificacion.statusCode());
@@ -91,7 +93,7 @@ class HttpHistorialInactivosTest extends HttpPrueba {
         assertTrue(todos.body().contains("name=\"registros\""));
         assertTrue(todos.body().contains("Solo activos"));
         assertTrue(todos.body().contains("Solo inactivos"));
-        assertTrue(todos.body().contains("<span class=\"tag\">Inactiva</span>"));
+        assertTrue(todos.body().contains("Inactiva"));
         assertEquals(filas(todos.body()), filas(get(base + "&registros=INACTIVOS").body()));
         assertEquals(0, filas(get(base + "&registros=ACTIVOS").body()));
         assertEquals(400, get(base + "&registros=valor-invalido").statusCode());
@@ -200,7 +202,7 @@ class HttpHistorialInactivosTest extends HttpPrueba {
             assertTrue(nombre.contains(k.equals("empresa") || k.equals("sede") ? "(inactiva)" : "(inactivo)"));
         }
         String texto = get("/sugerencias?evaluacion=" + escenario.evalVerde + "&registros=ACTIVOS").body();
-        assertTrue(texto.contains("<span class=\"tag\">Inactiva</span>"));
+        assertTrue(texto.contains("Inactiva"));
         assertFalse(texto.contains("aria-label=\"Ordenar por Puesto\""));
     }
 

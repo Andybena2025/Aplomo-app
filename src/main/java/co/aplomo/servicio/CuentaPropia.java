@@ -57,6 +57,26 @@ public final class CuentaPropia {
         });
     }
 
+    /**
+     * RF-001c: cambia un solo dato propio sin sobrescribir los demás ni aceptar columnas arbitrarias.
+     */
+    public Cuenta guardarCampo(Cuenta titular, String campo, String valor) throws SQLException {
+        int limite = switch (campo) {
+            case "nombre" -> 100;
+            case "telefono" -> 20;
+            case "cargo" -> 80;
+            default -> throw new IllegalArgumentException("El dato no se puede editar aquí.");
+        };
+        String limpio = validar(valor, limite, campo.equals("telefono") ? "teléfono" : campo);
+        return transacciones.ejecutar(conexion -> {
+            Cuenta actual = AccesoDatos.vigente(conexion, titular);
+            Sql.actualizar(conexion, "UPDATE cuenta SET " + campo + "=? WHERE id_cuenta=?", limpio, actual.id());
+            new BitacoraDao().registrar(conexion, actual.id(), LocalDateTime.now(reloj), "cuenta", actual.id(),
+                    "EDITAR", null, null, "Actualizó su " + campo);
+            return new CuentaDao().porId(conexion, actual.id(), false);
+        });
+    }
+
     private static String validar(String valor, int limite, String campo) {
         String limpio = valor == null ? "" : valor.strip().replaceAll("\\s+", " ");
         if (limpio.isBlank() || limpio.length() > limite || limpio.indexOf('\0') >= 0) {

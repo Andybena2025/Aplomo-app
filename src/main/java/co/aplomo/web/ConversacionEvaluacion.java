@@ -20,14 +20,15 @@ final class ConversacionEvaluacion {
 
     static String nueva(Sesion sesion, Evaluaciones.Contexto evaluacion, int id) {
         String aviso = evaluacion.visita().empresaNombre().equals(co.aplomo.servicio.PracticaEvaluacion.NOMBRE) ?
-                "<div class=\"banner\" role=\"status\">Evaluación de práctica · Los resultado" +
-                "s se guardan en la empresa de demostración. Puedes usar las fotos de ejemplo" + ".</div>" : "";
+                "<div class=\"banner practica-fija\" " + "role=\"status\">MODO PRÁCTICA · No cuenta en" +
+                " tus resultados</div>" : "";
         return pagina(sesion, evaluacion.puestos(), id, evaluacion.visita().visita().id(),
-                evaluacion.visita().empresaNombre() + " · " + evaluacion.visita().salonNombre()).replace(
-                "<form data-evaluacion", aviso + "<form data-evaluacion");
+                evaluacion.visita().empresaNombre() + " · " + evaluacion.visita().sedeNombre() + " · " +
+                        evaluacion.visita().salonNombre(), evaluacion.visita().empresa()).replace(
+                "<form data-enfoque-lugar", aviso + "<form data-enfoque-lugar");
     }
 
-    private static String pagina(Sesion sesion, List<Puesto> puestos, int id, int visita, String lugar) {
+    private static String pagina(Sesion sesion, List<Puesto> puestos, int id, int visita, String lugar, int empresa) {
         var elemento = puestos.stream().filter(elemento2 -> elemento2.id() == id).findFirst().orElse(null);
         if (id != 0 && elemento == null)
             throw new IllegalArgumentException("Elige un puesto activo del salón de esta visita.");
@@ -39,6 +40,10 @@ final class ConversacionEvaluacion {
                 .append("</span></div><form data-evaluacion data-revision=\"si\" data-conversacion=\"" +
                         "si\" data-tour=\"campo\" data-fases=\"5\" action=\"/evaluaciones\" method=\"" +
                         "post\" enctype=\"multipart/form-data\" novalidate>").append(Html.csrf(sesion));
+        int inicioFormulario = contenido.indexOf("<form data-evaluacion");
+        contenido.insert(inicioFormulario + "<form".length(),
+                " data-enfoque-lugar=\"" + escapar(lugar) + "\" data-enfoque-visita=\"" + visita +
+                        "\" data-enfoque-empresa=\"" + empresa + "\"");
         oculto(contenido, "visita", "" + visita);
         oculto(contenido, "recorrido", "campo");
         for (String texto2 : List.of("postura", "motivo", "criterio", "minutos", "condiciones_respondidas"))
@@ -69,11 +74,12 @@ final class ConversacionEvaluacion {
         contenido.append("</ol><progress max=\"5\" value=\"1\" aria-label=\"Avance de la evaluación\">" +
                 "</progress></header>");
         abrir(contenido, 1, "Consentimiento");
-        contenido.append(PaginasEvaluacion.opcion("acepta", "si",
-                "Confirmo que la persona evaluada aceptó y firmó el consentimiento informado " + "por escrito.", "",
-                true, "required", ""));
-        pregunta(contenido, "registro", "", "Permiso de fotos",
-                new String[][]{{"CON_FOTOS", "Sí, permite fotos"}, {"SIN_REGISTRO_FOTOGRAFICO", "No permite fotos"}});
+        contenido.append("<h3>¿La persona aceptó ser evaluada?</h3>")
+                .append(PaginasEvaluacion.opcion("acepta", "si", "Sí, firmó el consentimiento", "", true, "required",
+                        "")).append("<p class=\"hint\">Por escrito, antes de la evaluación.</p>");
+        pregunta(contenido, "registro", "", "¿Permite que le tomemos fotos?",
+                new String[][]{{"CON_FOTOS", "Sí, permite fotos", "", "Medimos sobre la foto"}, {
+                    "SIN_REGISTRO_FOTOGRAFICO", "No permite fotos", "", "Sin puntaje RULA"}});
         contenido.append("</section>");
         abrir(contenido, 2, "Datos del puesto");
         String[][] tiempos = {{"MENOS_2", "Menos de 2 horas"}, {"DE_2_A_4", "De 2 a 4 horas"}, {"DE_4_A_6",
@@ -117,7 +123,7 @@ final class ConversacionEvaluacion {
                     .append("\" alt=\"\"><div><span data-angulo=\"").append(k)
                     .append("\">Sin medir</span><span class=\"tag\" data-revisar hidden>Revisar</span>");
             String[][] opciones = RecorridoCuerpo.RANGOS.get(Segmento.valueOf(k)).stream()
-                    .map(elemento4 -> new String[]{"" + elemento4.grados(), elemento4.etiqueta()})
+                    .map(elemento4 -> new String[]{"" + elemento4.grados(), elemento4.etiqueta(), elemento4.imagen()})
                     .toArray(String[][]::new);
             pregunta(contenido, "rango_" + k, "", nombre(k), opciones);
             contenido.append("</div></div>");
@@ -243,9 +249,11 @@ final class ConversacionEvaluacion {
             contenido.append("<button type=\"button\" class=\"campo-opcion\" data-respuesta=\"").append(texto2)
                     .append("\" data-valor=\"").append(escapar(texto4[0])).append("\" aria-pressed=\"")
                     .append(texto4[0].equals(defecto)).append("\">");
-            if (texto4.length > 2)
+            if (texto4.length > 2 && !texto4[2].isBlank())
                 contenido.append("<img src=\"/static/img/tour/").append(texto4[2]).append("\" alt=\"\">");
-            contenido.append("<span>").append(escapar(texto4[1])).append("</span></button>");
+            contenido.append("<span>").append(escapar(texto4[1])).append("</span>");
+            if (texto4.length > 3) contenido.append("<small>").append(escapar(texto4[3])).append("</small>");
+            contenido.append("</button>");
         }
         contenido.append("</div></div>");
     }
@@ -288,12 +296,24 @@ final class ConversacionEvaluacion {
     }
 
     static String continuar(Sesion sesion, Evaluaciones.Consulta evaluacion) {
+        return continuar(sesion, evaluacion, null);
+    }
+
+    static String continuar(Sesion sesion, Evaluaciones.Consulta evaluacion, Evaluaciones.Contexto contexto) {
         var evaluacion2 = evaluacion.ficha();
         var evaluacion3 = evaluacion2.datos();
         var elemento = new Puesto(evaluacion2.puesto(), 0, null, null, evaluacion2.numero(), evaluacion3.postura(),
                 evaluacion2.tipoPuesto(), "", null, true);
-        String html = pagina(sesion, List.of(elemento), elemento.id(), evaluacion2.visita(),
-                "Evaluación existente · Puesto " + evaluacion2.numero());
+        String lugar = contexto == null ?
+                "Evaluación existente · Puesto " + evaluacion2.numero() :
+                contexto.visita().empresaNombre() + " · " + contexto.visita().sedeNombre() + " · " +
+                        contexto.visita().salonNombre();
+        String html = pagina(sesion, List.of(elemento), elemento.id(), evaluacion2.visita(), lugar,
+                contexto == null ? 0 : contexto.visita().empresa());
+        html = html.replaceAll("<ol class=\"campo-progreso\"[^>]*>.*?</ol>",
+                        "<ol class=\"campo-progreso\" aria-label=\"Pasos de la evaluación\">" +
+                                "<li data-etapa=\"1\">Revisar postura</li><li data-etapa=\"2\">Resultado</li></ol>")
+                .replace("<progress max=\"5\"", "<progress max=\"2\"");
         html = html.replace("<span class=\"tag\" data-modo>Planta</span>", "");
         html = html.replace("<span class=\"tag\" data-modo>Oficina</span>", "");
         html = html.replace("action=\"/evaluaciones\"",

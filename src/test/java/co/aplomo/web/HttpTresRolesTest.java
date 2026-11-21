@@ -105,15 +105,16 @@ class HttpTresRolesTest extends HttpPrueba {
     @Test
     void evaluadorNoAdministraEmpresasEstadosNiCuentas() throws Exception {
         String csrf = csrf(get("/"));
-        for (String ruta : List.of("/usuarios", "/usuarios/nuevo", "/empresas/nueva"))
+        for (String ruta : List.of("/usuarios", "/usuarios/nuevo", "/empresas/" + empresa + "/editar"))
             assertEquals(403, get(ruta).statusCode(), ruta);
         for (String ruta : List.of("/usuarios", "/empresas/" + empresa + "/desactivar",
                 "/puestos/" + escenario.puesto1 + "/desactivar"))
             assertEquals(403, post(ruta, Map.of("csrf", csrf)).statusCode(), ruta);
         var em = new Empresas(tx);
         assertThrows(SecurityException.class, () -> em.estadoEmpresa(cuenta(ev1), empresa, false));
-        assertThrows(SecurityException.class,
-                () -> em.guardar(cuenta(ev1), new Empresa(0, ev1, "No permitida", "OTRA", "", null, null, null, true)));
+        int creada = em.guardar(cuenta(ev1), new Empresa(0, ev1, "Empresa propia", "OTRA", "", null, null, null, true))
+                .id();
+        assertEquals(ev1, em.empresa(cuenta(ev1), creada).creador());
         assertFalse(get("/empresas/" + empresa).body().contains("/desactivar"));
     }
 
@@ -168,7 +169,7 @@ class HttpTresRolesTest extends HttpPrueba {
         assertEquals(List.of(escenario.puesto2),
                 escenario.consultas.propias(cuenta(ev1), Map.of()).catalogos().get("puesto").stream()
                         .map(co.aplomo.dao.ConsultaDao.Opcion::id).toList());
-        assertTrue(get("/").body().contains("Aún no tienes empresas asignadas. Pídeselas al Administrador."));
+        assertTrue(get("/").body().contains("Hoy no tienes citas"));
         assertTrue(get("/puestos/" + escenario.puesto2).body().contains("/evaluaciones/" + propia));
         assertFalse(texto.contains("/evaluaciones/" + escenario.evalRojo + "\""));
         assertTrue(Sql.<Integer>uno(con,

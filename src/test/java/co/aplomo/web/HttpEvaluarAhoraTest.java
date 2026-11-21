@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HttpEvaluarAhoraTest extends HttpPrueba {
     @Test
-    void administradorVePendientesActivosYElEnlaceAbreElPuestoCorrecto() throws Exception {
+    void evaluadorVePendientesActivosYElEnlaceAbreElPuestoCorrecto() throws Exception {
         var salon = crearSalon();
         var empresas = new Empresas(tx);
         var visitas = new Visitas(tx, reloj);
@@ -26,14 +26,15 @@ class HttpEvaluarAhoraTest extends HttpPrueba {
         int inactivo = empresas.guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 2, "Inactivo", "MESA", "Centro", null, false)).id();
         empresas.estadoPuesto(cuenta(admin), inactivo, false);
-        int reserva = new Reservas(tx, reloj).guardar(cuenta(admin), 0, solicitud(salon));
-        new Reservas(tx, reloj).aceptar(cuenta(admin), reserva);
-        int visita = visitas.iniciar(cuenta(admin), reserva);
+        int reserva = new Reservas(tx, reloj).guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0,
+                solicitud(salon));
+        new Reservas(tx, reloj).aceptar(evaluadorReserva(reserva), reserva);
+        int visita = visitas.iniciar(evaluadorReserva(reserva), reserva);
         evaluacion(visita, salon.id(), 3);
-        entrar(admin);
+        entrar(evaluadorTrabajo().id());
         String texto = get("/").body();
         assertFalse(texto.contains("Evaluar ahora"));
-        assertTrue(texto.contains("id=\"visitas-en-curso\""));
+        assertTrue(texto.contains("<h2>Visitas en curso</h2>"));
         assertTrue(texto.contains("Computador &lt;ficticio&gt;"));
         assertTrue(texto.contains("/evaluaciones/nueva?visita=" + visita + "&amp;puesto=" + pendiente));
         assertFalse(texto.contains("&amp;puesto=" + inactivo));
@@ -45,21 +46,21 @@ class HttpEvaluarAhoraTest extends HttpPrueba {
 
     @Test
     void sinVisitasMuestraMensajeYReservas() throws Exception {
-        entrar(admin);
+        entrar(evaluadorTrabajo().id());
         String texto = get("/").body();
         assertTrue(texto.contains("No hay una visita en curso"));
-        assertTrue(texto.contains("href=\"/reservas\">Ir a Reservas</a>"));
+        assertTrue(texto.contains("Iniciar desde una reserva"));
     }
 
     @Test
     void usuarioNoVeElAtajoNiPuedeEntrarPorDireccionManual() throws Exception {
         var salon = crearSalon();
         var reservas = new Reservas(tx, reloj);
-        int reserva = reservas.guardar(cuenta(admin), 0, solicitud(salon));
-        reservas.aceptar(cuenta(admin), reserva);
+        int reserva = reservas.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        reservas.aceptar(evaluadorReserva(reserva), reserva);
         new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Mesa", "MESA", "Centro", null, true));
-        int visita = new Visitas(tx, reloj).iniciar(cuenta(admin), reserva);
+        int visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(reserva), reserva);
         Sql.actualizar(con, "UPDATE cuenta SET contrasena_temporal=FALSE WHERE id_cuenta=?", usuario);
         entrar(usuario);
         String texto = get("/").body();

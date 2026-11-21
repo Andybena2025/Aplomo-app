@@ -50,9 +50,9 @@ class PendientesTest extends BasePrueba {
         puesto = new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Ensamble", "ESCRITORIO", "Centro", null, true)).id();
         var reserva2 = new Reservas(tx, reloj);
-        int reserva = reserva2.guardar(cuenta(admin), 0, solicitud(salon));
-        reserva2.aceptar(cuenta(admin), reserva);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), reserva);
+        int reserva = reserva2.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        reserva2.aceptar(evaluadorReserva(reserva), reserva);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(reserva), reserva);
         eval = evals.guardar(cuenta(admin), visita, datos(), List.of(imagen()));
         foto = new EvaluacionDao().fotos(con, eval).get(0).id();
     }

@@ -173,3 +173,28 @@ Luego ESPERA el OK de Andy.
   1342→16 líneas >120; las 16 protegidas son idénticas a antes. Suite completa una vez: 1036/1036 Maven,
   122/122 JS, 0 fallos/errores/omitidas. Sin cambios de SQL, esquema, motor, IA, galería o rutas en este segundo commit.
   Informe docs/informe_paso26b.md. No hay capturas, descargas ni evidencia nueva.
+
+### Paso 27 en curso (21 nov 2026)
+
+- Encargo activo: tres commits A/B/C con push tras cada uno; sin capturas, descargas de navegadores ni cambios
+  en motor RULA, bloque protegido de cálculo, IA o imágenes. Aún no marcarlo terminado sin suite y QA final.
+- Decisión de Andy: empresa creada por E tiene dueño en `empresa.id_creador`; solo él modifica datos y estructura
+  y desactiva. Otros E asignados consultan/reservan/evalúan; A consulta. Solo A transfiere de dueño Inactivo a E
+  Activo, con bitácora y validación de servidor.
+- Decisión de Andy: `empresa.sector VARCHAR(60) NULL` opcional, migración repetible, Script y Diccionario;
+  formulario de empresa y Solicitar acceso. Ciudad registrada y sector; sin sector, solo ciudad.
+- Trabajo del 27A se prepara en la copia de trabajo; no confundir los cambios pendientes con lo que ya corre en 8080.
+- Pendiente de respuesta: conservar o desactivar la cuenta inicial admin@rula.local además de las nueve del equipo.
+  No cambiar su contraseña ni desactivarla mientras esa decisión no esté resuelta.
+
+
+- Cierre de 27A: sistema visual compartido, tres inicios, listas completas/chips/búsqueda y filtros avanzados sin
+  Aplicar; calendario de seis semanas, cuenta por campo, ayuda por rol y resultado compacto con barra fija.
+  Propiedad/sector según respuestas expresas de Andy: solo dueño E; transferencia de dueño Inactivo por A a E Activo.
+  Verificados 1057 casos Maven (suite completa una vez + reintentos de fallos) y 134 JS (128 iniciales + seis nuevos
+  de filtros); cierre dirigido de áreas modificadas y regla de 120 columnas. Rendimiento P95 de lista/guardar/informe
+  con 1000 registros: 561,32 / 16,42 / 194,54 ms. 205 medidas iniciales + 52 de cierre, sin desborde final; Resultado
+  sin desplazamiento vertical en cuatro ventanas pedidas, calendario mensual también cabe. Ensayos solo en pruebas
+  y ROLLBACK confirmado; sin capturas, descargas ni cambios del motor, cálculo, IA o imágenes. Commit/push A al repo
+  verificado; B y C siguen autorizados y pendientes. No pedir un nuevo OK entre A/B/C: el encargo los autoriza juntos.
+  La cuenta inicial se conserva hasta que Andy resuelva la pregunta pendiente. Informe `docs/informe_paso27.md`.

@@ -69,6 +69,13 @@ public final class PaginasCalificaciones {
      * Informe general: hoja clara del mock, sin bibliotecas PDF ni fotografías privadas. RNF-011.
      */
     public static String informe(Sesion sesion, InformeEmpresa i) {
+        return informe(sesion, i, null);
+    }
+
+    /**
+     * RF-026: resalta una visita autorizada sin cambiar promedios ni incluir resultados sin finalizar.
+     */
+    public static String informe(Sesion sesion, InformeEmpresa i, co.aplomo.dao.VisitaDao.Ficha visitaActual) {
         StringBuilder contenido2 = new StringBuilder(encabezado(sesion, i, true));
         contenido2.append("<p class=\"hint informe-ayuda\">Pulsa Imprimir o guardar PDF. En el diálogo " +
                         "del navegador elige tu impresora o Guardar como PDF.</p>")
@@ -80,6 +87,14 @@ public final class PaginasCalificaciones {
                 .append("</p>").append("<p>Contacto: ").append(texto(i.empresa().contacto(), "Sin registrar"))
                 .append(" · ").append(texto(i.empresa().telefono(), "Sin teléfono")).append(" · ")
                 .append(texto(i.empresa().correo(), "Sin correo")).append("</p>");
+        if (visitaActual != null) {
+            contenido2.append("<p class=\"visita-destacada\">Visita actual: ")
+                    .append(escapar(visitaActual.sedeNombre())).append(" · ")
+                    .append(escapar(visitaActual.salonNombre())).append(" · ")
+                    .append(visitaActual.visita().estado().equals("EN_CURSO") ?
+                            "En curso. El informe incluye solo resultados de visitas " +
+                            "Finalizadas." : "Finalizada. Resaltada en el detalle de su sede.").append("</p>");
+        }
         resumen(contenido2, i);
         contenido2.append("<p class=\"informe-metodo\">").append(metodo()).append("</p></section>");
         for (var sede : i.sedes()) sede(contenido2, sede);
@@ -97,7 +112,13 @@ public final class PaginasCalificaciones {
                         "todo RULA (McAtamney y Corlett, 1993)<br>Generado el ").append(Html.fechaHora(i.generado()))
                 .append(" · Resultados de visitas Finalizadas.</footer></article></div><script src=\"" +
                         "/static/js/informe.js\" defer></script>");
-        return Html.pagina("Informe general", contenido2.toString(), sesion, false);
+        return Html.pagina("Informe general", resaltar(contenido2.toString(), visitaActual), sesion, false);
+    }
+
+    private static String resaltar(String html, co.aplomo.dao.VisitaDao.Ficha visita) {
+        if (visita == null) return html;
+        return html.replace("data-visita=\"" + visita.visita().id() + "\"",
+                "data-visita=\"" + visita.visita().id() + "\" data-visita-actual");
     }
 
     private static String encabezado(Sesion sesion, InformeEmpresa i, boolean informe) {
@@ -170,8 +191,9 @@ public final class PaginasCalificaciones {
         contenido2.append("</div>");
         contenido2.append("<div class=\"informe-bloque\"><h3>Visitas y calificaciones históricas</h3>");
         tabla(contenido2, List.of("Reserva", "Inicio y fin reales", "Calificación"), empresa.visitas().stream()
-                .map(visita -> List.of(escapar(visita.codigo()),
-                        Html.fechaHora(visita.inicio()) + "<br>" + Html.fechaHora(visita.fin()),
+                .map(visita -> List.of(
+                        "<span class=\"hint\" data-visita=\"" + visita.id() + "\">" + escapar(visita.codigo()) +
+                                "</span>", Html.fechaHora(visita.inicio()) + "<br>" + Html.fechaHora(visita.fin()),
                         nota(visita.calificacion()))).toList());
         contenido2.append("</div><div class=\"informe-bloque\"><h3>Puestos y resultados actuales</h3><p" +
                 ">Una fila por puesto: última evaluación Finalizada; máximo de sus análisis. " +

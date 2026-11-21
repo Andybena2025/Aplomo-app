@@ -57,6 +57,8 @@ CREATE TABLE bitacora (
 
 -- empresa: Empresas cliente que evalúa el Ingeniero Industrial. No se borran: se desactivan. (RF-004, RF-010, RF-028)
 CREATE TABLE empresa (
+  id_creador INT NULL COMMENT 'Dueño del registro; solo el Evaluador creador edita su empresa.',
+  sector VARCHAR(60) NULL COMMENT 'Sector opcional; no se infiere de la descripción.',
   id_empresa INT NOT NULL AUTO_INCREMENT COMMENT 'Identificador de la empresa.',
   id_administrador INT NOT NULL COMMENT 'Cuenta que registró (Administrador o Evaluador)',
   nombre VARCHAR(120) NOT NULL COMMENT 'Nombre de la empresa (obligatorio).',
@@ -66,6 +68,7 @@ CREATE TABLE empresa (
   correo VARCHAR(120) NULL COMMENT 'Correo opcional.',
   persona_contacto VARCHAR(100) NULL COMMENT 'Persona de contacto opcional.',
   activo BOOLEAN NOT NULL DEFAULT TRUE COMMENT 'Falso si la empresa está desactivada.',
+  CONSTRAINT fk_empresa_creador FOREIGN KEY (id_creador) REFERENCES cuenta(id_cuenta),
   CONSTRAINT pk_empresa PRIMARY KEY (id_empresa),
   CONSTRAINT uq_empresa_nit UNIQUE (nit),
   CONSTRAINT fk_empresa_id_administrador FOREIGN KEY (id_administrador) REFERENCES cuenta (id_cuenta) ON DELETE RESTRICT ON UPDATE RESTRICT

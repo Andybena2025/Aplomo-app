@@ -80,6 +80,32 @@ public final class Reservas {
     }
 
     /**
+     * RF-011/033: intervalos libres de media hora; el POST vuelve a comprobar el cruce.
+     */
+    public List<LocalTime> horasLibres(Cuenta actor, LocalDate fecha, int omitir) throws SQLException {
+        return tx.ejecutar(conexion -> {
+            Cuenta actual = AccesoDatos.vigente(conexion, actor);
+            Permisos.evaluador(actual);
+            var cruces = co.aplomo.db.Sql.listar(conexion,
+                    "SELECT DISTINCT r.hora_inicio,r.hora_fin FROM reserva r JOIN salon l USING(id_salon) " +
+                            "JOIN sede s USING(id_sede) JOIN cuenta_empresa ce ON ce.id_empresa=s.id_empresa " +
+                            "WHERE ce.id_cuenta=? AND ce.activo=TRUE AND r.fecha=? AND r.estado<>'CANCELADA' " +
+                            "AND r.id_reserva<>? ORDER BY r.hora_inicio",
+                    fila -> new LocalTime[]{fila.getTime(1).toLocalTime(), fila.getTime(2).toLocalTime()}, actual.id(),
+                    fecha, omitir);
+            var libres = new java.util.ArrayList<LocalTime>();
+            for (LocalTime hora = LocalTime.of(8, 0); hora.isBefore(LocalTime.of(16, 0)); hora = hora.plusMinutes(30)) {
+                LocalTime inicio = hora;
+                LocalTime fin = hora.plusMinutes(30);
+                if (cruces.stream().noneMatch(cruce -> inicio.isBefore(cruce[1]) && fin.isAfter(cruce[0]))) {
+                    libres.add(hora);
+                }
+            }
+            return List.copyOf(libres);
+        });
+    }
+
+    /**
      * Devuelve la fecha de negocio usada por el formulario y la validación. RNF-011.
      */
     public LocalDate hoy() {
@@ -119,6 +145,7 @@ public final class Reservas {
     public int guardar(Cuenta actor, int id, Datos datos) throws SQLException {
         return tx.ejecutar(con -> {
             Cuenta responsable = administrador(con, actor);
+            Permisos.evaluador(responsable);
             Ficha anterior =
                     id == 0 ? null : exigir(reservas.buscar(con, id, AccesoDatos.empresaPermitida(responsable), true));
             if (anterior != null && !anterior.reserva().editable()) {
@@ -171,6 +198,7 @@ public final class Reservas {
     private void cambiar(Cuenta actor, int id, String nuevo, String motivo) throws SQLException {
         tx.ejecutar(con -> {
             Cuenta responsable = administrador(con, actor);
+            Permisos.evaluador(responsable);
             Ficha ficha = exigir(reservas.buscar(con, id, AccesoDatos.empresaPermitida(responsable), true));
             Reserva reserva = ficha.reserva();
             if (nuevo.equals("EN_COLA") && !reserva.estado().equals("ESPERANDO")) {

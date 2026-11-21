@@ -29,10 +29,11 @@ public final class PaginasAgenda {
         titulo = Character.toUpperCase(titulo.charAt(0)) + titulo.substring(1);
         String accion = sesion.cuenta().rol() ==
                 Rol.EVALUADOR ? "<a class=\"btn p\" href=\"/reservas/nueva\">Nueva reserva</a>" : "";
-        StringBuilder pagina = new StringBuilder(Html.encabezado(etiqueta, titulo, accion));
+        StringBuilder pagina = new StringBuilder(
+                Html.encabezado(etiqueta, titulo, Calendario.filtros(sesion, vista) + accion));
         pagina.append(controles(vista)).append("<div class=\"calendario-layout\"><section>")
-                .append(Calendario.cuadricula(vista)).append("</section>").append(Calendario.panel(sesion, vista))
-                .append("</div>").append("<script src=\"/static/js/agenda.js\" defer></script>");
+                .append(Calendario.cuadricula(vista)).append("</section>").append("</div>")
+                .append("<script src=\"/static/js/agenda.js\" defer></script>");
         return Html.pagina(etiqueta, pagina.toString(), sesion, false, false);
     }
 

@@ -50,9 +50,9 @@ class SugerenciasTest extends BasePrueba {
         puesto = new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Ensamble", "MESA", "Centro", null, true)).id();
         var reserva2 = new Reservas(tx, reloj);
-        int reserva = reserva2.guardar(cuenta(admin), 0, solicitud(salon));
-        reserva2.aceptar(cuenta(admin), reserva);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), reserva);
+        int reserva = reserva2.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        reserva2.aceptar(evaluadorReserva(reserva), reserva);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(reserva), reserva);
         evaluacion = evs.guardar(cuenta(admin), visita,
                 new Evaluaciones.Datos(puesto, "Postura", "MAS_INADECUADA", "Trabajo mantenido", 120, true, true, true,
                         true, true, true, "", true, false), List.of(imagen()));

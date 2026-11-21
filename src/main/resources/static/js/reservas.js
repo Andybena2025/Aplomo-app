@@ -3,6 +3,40 @@
   const reserva = document.querySelector('form[data-reserva]');
   if (!reserva) return;
 
+  const horarios = reserva.querySelector('[data-horas-libres]');
+  let solicitudHoras = 0;
+  async function horasLibres() {
+    if (!horarios || !reserva.elements.fecha.value) return;
+    const solicitud = ++solicitudHoras;
+    horarios.textContent = 'Buscando horas libres…';
+    const omitir = reserva.action.match(/\/reservas\/(\d+)\/editar/)?.[1] || '0';
+    try {
+      const parametros = new URLSearchParams({fecha: reserva.elements.fecha.value, omitir});
+      const respuesta = await fetch('/reservas/horas-libres?' + parametros, {credentials: 'same-origin'});
+      if (solicitud !== solicitudHoras) return;
+      if (!respuesta.ok || respuesta.redirected) throw new Error('No pudimos consultar las horas libres.');
+      const contenido = new DOMParser().parseFromString(await respuesta.text(), 'text/html');
+      horarios.replaceChildren(...contenido.body.childNodes);
+      horarios.querySelectorAll('[data-hora-libre]').forEach(boton => {
+        boton.onclick = () => {
+          const [hora, minuto] = boton.dataset.horaLibre.split(':').map(Number);
+          const fin = hora * 60 + minuto + 30;
+          reserva.elements.inicio.value = boton.dataset.horaLibre;
+          reserva.elements.fin.value = `${String(Math.floor(fin / 60)).padStart(2, '0')}:${String(fin % 60).padStart(2, '0')}`;
+          for (const nombre of ['inicio', 'fin']) reserva.elements[nombre].dispatchEvent(new Event('aplomo:valor'));
+          horarios.querySelectorAll('button').forEach(otro => otro.setAttribute('aria-pressed', String(otro === boton)));
+        };
+      });
+    } catch (error) {
+      if (solicitud === solicitudHoras) horarios.textContent = 'No pudimos consultar las horas. Puedes escribirlas a mano.';
+    }
+  }
+  reserva.addEventListener('change', evento => { if (evento.target.name === 'fecha') horasLibres(); });
+  reserva.addEventListener('click', evento => {
+    if (evento.target.closest('[data-ver-horas]')) { horasLibres(); horarios?.scrollIntoView({block: 'nearest'}); }
+  });
+  horasLibres();
+
   const altas = [...document.querySelectorAll('form[data-alta-reserva]')];
   const aviso = document.querySelector('[data-aviso-reserva]');
   const controles = () => ({

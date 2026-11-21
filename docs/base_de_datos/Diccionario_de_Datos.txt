@@ -525,3 +525,20 @@ CHAR(7), permite NULL. Color personal del Evaluador en Agenda; nunca representa 
 Paleta: #FF8FB8, #6FA8FF, #B9A7FF, #7FD1E0, #F4B393, #C9CCD2.
 Sin elección se conserva el anterior o se asigna el primero libre; sin colores libres se pide elegir.
 Migración aditiva e idempotente: migracion_paso26.sql. Sin tablas nuevas ni cambios en tablas RULA.
+
+
+PASO 27A · Ampliación de empresa (Andy, 21/11/2026)
+- id_creador: INT NULL, FK cuenta.id_cuenta. Dueño de la empresa. Las empresas anteriores
+  conservan su registrador como creador. Si el dueño es Evaluador, solo él modifica los
+  datos, sedes, salones, áreas, cargos y puestos, y los desactiva. Los otros asignados y
+  el Administrador consultan. Solo el Administrador transfiere de un dueño Inactivo a
+  un Evaluador Activo; el cambio se registra en bitácora.
+- sector: VARCHAR(60) NULL. Opcional, editable; se presenta junto a la ciudad registrada.
+  Si no existe sector se muestra solo la ciudad; nunca se infiere.
+- Migración: migracion_paso27.sql, aditiva y repetible, con respaldo previo.
+
+
+Paleta vigente del Paso 27A (sustituye la paleta visual del Paso 26):
+#FF4F9A Andrés Evaluador (fijo); #3D7BFF Johan; #16BFC9 Laura Gabriella.
+Otros colores personales: #9B6BFF, #C9CCD2, #FF8FD0. No indican riesgo RULA.
+El PDF conserva sus 16 páginas originales y añade la actualización de los Pasos 24, 26 y 27A.

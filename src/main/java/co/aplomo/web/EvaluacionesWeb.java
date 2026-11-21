@@ -103,8 +103,8 @@ public final class EvaluacionesWeb {
         if (ruta.matches("/evaluaciones/[1-9][0-9]*/analizar") && !post) {
             int id = entero(ruta.split("/")[2], "evaluación");
             var consulta = servicio.consultar(s.cuenta(), id);
-            servicio.contexto(s.cuenta(), consulta.ficha().visita());
-            Router.enviar(x, 200, PaginasAnalisis.continuar(s, consulta));
+            var contexto = servicio.contexto(s.cuenta(), consulta.ficha().visita());
+            Router.enviar(x, 200, PaginasAnalisis.continuar(s, consulta, contexto));
             return;
         }
         if (ruta.matches("/evaluaciones/[1-9][0-9]*/analisis") && post) {

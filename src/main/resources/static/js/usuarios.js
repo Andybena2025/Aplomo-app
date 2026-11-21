@@ -1,29 +1,24 @@
-/* Filtros de presentación sobre las cuentas que el servidor ya autorizó consultar. */
+/* RF-003: filtros sobre filas autorizadas; no cambian permisos ni cuentas. */
 (() => {
-  const form = document.querySelector('[data-filtros-usuarios]');
-  if (!form) return;
-  const filas = [...document.querySelectorAll('[data-cuenta]')];
-  const buscar = document.querySelector('#usuarios-buscar');
-  const rol = document.querySelector('#usuarios-rol');
-  const empresa = document.querySelector('#usuarios-empresa');
-  const normalizar = valor => valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es').trim();
-  const actualizar = () => {
-    const q = normalizar(buscar.value);
-    let cantidad = 0;
-    filas.forEach(fila => {
-      fila.hidden = !(normalizar(fila.querySelector('[data-nombre-correo]').textContent).includes(q)
-        && (!rol.value || fila.dataset.rol === rol.value)
-        && (!empresa.value || fila.dataset.empresa.split(" ").includes(empresa.value)));
-      if (!fila.hidden) cantidad++;
+  const lista = document.querySelector('[data-seccion="USUARIOS"]');
+  if (!lista) return;
+  const parametros = new URLSearchParams(location.search);
+  let rol = parametros.get('rol') || '';
+  const empresa = lista.querySelector('[data-empresa-usuarios]');
+  empresa.value = parametros.get('empresa') || '';
+  function preparar() {
+    lista.querySelectorAll('[data-registro]').forEach(fila => {
+      fila.dataset.filtroExtra = String((!rol || fila.dataset.rol === rol)
+        && (!empresa.value || fila.dataset.empresa.split(' ').includes(empresa.value)));
     });
-    document.querySelector('[data-contador-usuarios]').textContent = `${cantidad} ${cantidad === 1 ? 'cuenta registrada' : 'cuentas registradas'}`;
-    document.querySelector('[data-usuarios-vacios]').hidden = cantidad !== 0;
-  };
-  empresa.value = new URLSearchParams(location.search).get('empresa') || '';
-  actualizar();
-  form.addEventListener('submit', evento => { evento.preventDefault(); actualizar(); });
-  buscar.addEventListener('input', actualizar);
-  rol.addEventListener('change', actualizar);
-  empresa.addEventListener('change', actualizar);
-  form.addEventListener('reset', () => { buscar.value = ''; rol.value = ''; empresa.value = ''; actualizar(); });
+    lista.querySelectorAll('[data-rol-elegir]').forEach(boton => {
+      boton.setAttribute('aria-pressed', String(boton.dataset.rolElegir === rol));
+    });
+    lista.dispatchEvent(new Event('filtros-cambiados'));
+  }
+  lista.querySelectorAll('[data-rol-elegir]').forEach(boton => {
+    boton.onclick = () => { rol = rol === boton.dataset.rolElegir ? '' : boton.dataset.rolElegir; preparar(); };
+  });
+  empresa.onchange = preparar;
+  preparar();
 })();

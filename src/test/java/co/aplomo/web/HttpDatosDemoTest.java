@@ -38,10 +38,12 @@ class HttpDatosDemoTest extends HttpPrueba {
         DatosDemoPrueba.cargar(con, carpetaFotos);
         assertEquals(primera, cantidades());
         int universidad = Sql.uno(con, "SELECT id_empresa FROM empresa WHERE nit=?", fila2 -> fila2.getInt(1),
-                "DEMO-APLOMO-E3");
+                "012345");
         assertEquals(3, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM sede WHERE id_empresa=?", fila3 -> fila3.getInt(1),
                 universidad));
-        assertEquals(7, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM empresa WHERE nit LIKE 'DEMO-APLOMO-E%'",
+        assertEquals(7, Sql.<Integer>uno(con,
+                "SELECT COUNT(*) FROM empresa WHERE nit IN ('900.512.384-1','901.638.205-4','012345','900.782.156-2'," +
+                        "'901.428.603-7','900.315.928-5','901.267.840-3')",
                 fila4 -> fila4.getInt(1)));
         var filas = Sql.listar(con, "SELECT a.id_analisis,a.puntaje_a,a.puntaje_b,a.puntaje_final FROM analisis_r" +
                         "ula a JOIN fotografia f USING(id_foto) JOIN evaluacion e USING(id_evaluacion" +

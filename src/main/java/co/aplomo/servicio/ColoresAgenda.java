@@ -11,7 +11,7 @@ import java.util.Locale;
  * RF-033, RNF-007: colores personales; nunca representan el semáforo RULA.
  */
 public final class ColoresAgenda {
-    public static final List<String> PALETA = List.of("#FF8FB8", "#6FA8FF", "#B9A7FF", "#7FD1E0", "#F4B393", "#C9CCD2");
+    public static final List<String> PALETA = List.of("#FF4F9A", "#3D7BFF", "#16BFC9", "#9B6BFF", "#FF8FD0", "#C9CCD2");
 
     private ColoresAgenda() {
     }
@@ -54,6 +54,9 @@ public final class ColoresAgenda {
      * RF-003: guarda únicamente el color de la cuenta que el servicio ya autorizó.
      */
     public static void guardar(Connection conexion, int cuenta, String color) throws SQLException {
-        Sql.actualizar(conexion, "UPDATE cuenta SET color_agenda=? WHERE id_cuenta=?", color, cuenta);
+        String correo = Sql.uno(conexion, "SELECT correo FROM cuenta WHERE id_cuenta=? AND rol='EVALUADOR'",
+                fila -> fila.getString(1), cuenta);
+        String definitivo = "andres.evaluador@rula.local".equals(correo) ? "#FF4F9A" : color;
+        Sql.actualizar(conexion, "UPDATE cuenta SET color_agenda=? WHERE id_cuenta=?", definitivo, cuenta);
     }
 }

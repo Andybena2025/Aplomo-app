@@ -97,7 +97,7 @@ public final class PaginasReservas {
                 .append(dato("Descripción", reserva.descripcion())).append(dato("Notas", reserva.notas()));
         if (reserva.motivo() != null) html.append(dato("Cancelación", reserva.motivo()));
         html.append("</dl>");
-        if (admin(sesion) && reserva.editable()) {
+        if (sesion.cuenta().rol() == Rol.EVALUADOR && reserva.editable()) {
             html.append("<div class=\"row\">")
                     .append(enlace("/reservas/" + reserva.id() + "/editar", "Editar reserva", false));
             if (reserva.estado().equals("ESPERANDO")) {
@@ -124,7 +124,7 @@ public final class PaginasReservas {
             html.append(enlace("/visitas/" + ficha.visita(), "Ver visita", false));
         }
         html.append("</section>").append(PaginasAgenda.nota(sesion, reserva.id(), nota));
-        return Html.pagina(reserva.codigo(), html.toString(), sesion, "Reservas · Detalle", "");
+        return Html.pagina("Reserva", html.toString(), sesion, "Reservas · Detalle", "");
     }
 
     /**
@@ -151,11 +151,14 @@ public final class PaginasReservas {
                     .append(dato("Sede", ficha.sedeNombre())).append(dato("Salón", ficha.salonNombre()))
                     .append("</dl>");
         }
-        html.append("<div class=\"grid3\">")
+        html.append("<div class=\"grid3\" data-fecha-hora>")
                 .append(campo(datos, "fecha", "Fecha", "date", 10, true).replace(" required",
                         " min=\"" + contexto.hoy() + "\" required"))
                 .append(campo(datos, "inicio", "Hora de inicio", "time", 8, true))
                 .append(campo(datos, "fin", "Hora de fin", "time", 8, true)).append("</div>")
+                .append("<section class=\"horas-libres\"><p class=\"hint\">Horas libres · intervalos de 30 " +
+                        "minutos</p>" +
+                        "<div class=\"chips\" data-horas-libres role=\"status\">Elige una fecha.</div></section>")
                 .append(selector(datos, "categoria", "Categoría",
                         List.of(new Opcion("EVALUACION_INICIAL", "Evaluación inicial"),
                                 new Opcion("SEGUIMIENTO", "Seguimiento"), new Opcion("REEVALUACION", "Reevaluación")),
@@ -216,8 +219,8 @@ public final class PaginasReservas {
      */
     public static String estado(String valor) {
         return switch (valor) {
-            case "ESPERANDO" -> "Esperando";
-            case "EN_COLA" -> "En cola";
+            case "ESPERANDO" -> "Por confirmar";
+            case "EN_COLA" -> "Aceptada";
             case "FINALIZADA" -> "Finalizada";
             case "CANCELADA" -> "Cancelada";
             default -> "No disponible";

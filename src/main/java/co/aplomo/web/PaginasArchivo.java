@@ -25,6 +25,18 @@ public final class PaginasArchivo {
      * RF-024: lista de empresas o árbol histórico con filtros visibles.
      */
     public static String pagina(Sesion sesion, Datos datos, Map<String, String> parametros) {
+        String color = parametros.getOrDefault("color", "");
+        if (!color.isEmpty() && !List.of("VERDE", "AMARILLO", "ROJO").contains(color)) {
+            throw new IllegalArgumentException("Elige un nivel de riesgo válido.");
+        }
+        if (!color.isEmpty()) {
+            List<Fila> filtradas = datos.evaluaciones().stream().filter(fila -> fila.valor("color").equals(color))
+                    .sorted(Comparator.comparingInt((Fila fila) -> Integer.parseInt(fila.valor("puntaje"))).reversed()
+                            .thenComparing(fila -> fila.valor("fecha"))).toList();
+            List<Empresa> companias = datos.empresas().stream().filter(empresa -> filtradas.stream()
+                    .anyMatch(fila -> fila.valor("empresa").equals(Integer.toString(empresa.id())))).toList();
+            datos = new Datos(companias, filtradas, datos.riesgos(), datos.empresasInforme());
+        }
         String elegida = parametros.getOrDefault("empresa", "");
         if (elegida.isEmpty()) return empresas(sesion, datos);
         Empresa empresa = datos.empresas().stream().filter(item -> Integer.toString(item.id()).equals(elegida))
@@ -42,18 +54,53 @@ public final class PaginasArchivo {
 
     private static String empresas(Sesion sesion, Datos datos) {
         StringBuilder html = new StringBuilder(Html.encabezado("Consultas · Archivo", "Archivo", ""));
-        html.append("<div class=\"grid2\">");
+        html.append("<section data-lista data-seccion=\"ARCHIVO\"><div class=\"lista-herramientas\">" +
+                "<input class=\"input\" type=\"search\" aria-label=\"Buscar empresa\" " +
+                "data-lista-buscar placeholder=\"Buscar empresa\"><div class=\"chips\">");
+        for (String[] chip : List.of(new String[]{"ACTIVO", "Activas"}, new String[]{"INACTIVO", "Inactivas"},
+                new String[]{"TODOS", "Todas"})) {
+            long cantidad = datos.empresas().stream()
+                    .filter(empresa -> chip[0].equals("TODOS") || empresa.activa() == chip[0].equals("ACTIVO")).count();
+            html.append("<button class=\"chip\" type=\"button\" data-lista-filtro=\"").append(chip[0])
+                    .append("\" aria-pressed=\"false\">").append(chip[1]).append(" <span>").append(cantidad)
+                    .append("</span></button>");
+        }
+        html.append("</div></div><div class=\"lista-filas\">");
         for (Empresa empresa : datos.empresas()) {
             List<Fila> filas = datos.evaluaciones().stream()
                     .filter(fila -> fila.valor("empresa").equals(Integer.toString(empresa.id()))).toList();
-            html.append("<article class=\"card stack\"><h2><a href=\"/archivo?empresa=").append(empresa.id())
-                    .append("\">").append(Html.escapar(empresa.nombre())).append("</a></h2><span class=\"hint\">")
-                    .append(empresa.activa() ? "Activa" : "Inactiva").append(" · ")
-                    .append(Html.plural(filas.size(), "evaluación")).append(" · ").append(ultima(filas))
-                    .append("</span>").append(barra(filas, datos)).append("</article>");
+            String lugar = empresa.ciudad();
+            if (empresa.sector() != null && !empresa.sector().isBlank()) {
+                lugar += (lugar.isBlank() ? "" : " · ") + empresa.sector();
+            }
+            html.append("<div class=\"lista-fila archivo-empresa\" data-registro data-estado=\"")
+                    .append(empresa.activa() ? "ACTIVO" : "INACTIVO")
+                    .append("\"><a class=\"archivo-identidad\" " + "href=\"/archivo?empresa=").append(empresa.id())
+                    .append("\"><span class=\"iniciales\">").append(Html.escapar(iniciales(empresa.nombre())))
+                    .append("</span><span><strong title=\"").append(Html.escapar(empresa.nombre())).append("\">")
+                    .append(Html.escapar(empresa.nombre())).append("</strong><small class=\"muted\">")
+                    .append(Html.escapar(lugar)).append("</small></span></a>").append("<span>")
+                    .append(Html.plural(filas.size(), "evaluación")).append("</span><small class=\"muted\">")
+                    .append(ultima(filas)).append("</small><span class=\"row riesgo-calma\">");
+            for (String color : List.of("VERDE", "AMARILLO", "ROJO")) {
+                long cantidad = filas.stream().filter(fila -> fila.valor("color").equals(color)).count();
+                html.append("<a href=\"/archivo?empresa=").append(empresa.id()).append("&amp;color=").append(color)
+                        .append("\" aria-label=\"").append(cantidad).append(" ").append(color)
+                        .append("\"><i class=\"riesgo-punto ").append(color.toLowerCase(java.util.Locale.ROOT))
+                        .append("\" aria-hidden=\"true\"></i>").append(cantidad).append("</a>");
+            }
+            html.append("</span>").append(SistemaVisual.estado(empresa.activa() ? "ACTIVO" : "INACTIVO"))
+                    .append("<a href=\"/archivo?empresa=").append(empresa.id()).append("\" aria-label=\"Abrir ")
+                    .append(Html.escapar(empresa.nombre())).append("\">›</a></div>");
         }
-        if (datos.empresas().isEmpty()) html.append(Html.vacio("Aún no hay evaluaciones en tu Archivo.", ""));
-        return Html.pagina("Archivo", html.append("</div>").toString(), sesion, false, false);
+        html.append("</div><p data-lista-vacia hidden>No hay empresas con estos filtros.</p></section>");
+        return Html.pagina("Archivo", html.toString(), sesion, "Consultas · Archivo", "");
+    }
+
+    private static String iniciales(String nombre) {
+        return java.util.Arrays.stream(nombre.trim().split("\\s+")).limit(2).filter(palabra -> !palabra.isEmpty())
+                .map(palabra -> palabra.substring(0, 1)).collect(java.util.stream.Collectors.joining())
+                .toUpperCase(java.util.Locale.ROOT);
     }
 
     private static String selector(Datos datos, String elegida) {
@@ -75,8 +122,8 @@ public final class PaginasArchivo {
         String autor = administrador ? parametros.getOrDefault("evaluador", "") : "";
         String estado = parametros.getOrDefault("estado", "TODOS");
         return filas.stream().filter(fila -> (fila.valor("sede_nombre") + " " + fila.valor("salon_nombre") + " " +
-                        fila.valor("numero") + " " + fila.valor("postura")).toLowerCase(java.util.Locale.ROOT).
-                            contains(buscar))
+                        fila.valor("numero") + " " + fila.valor("postura")).toLowerCase(java.util.Locale.ROOT)
+                        .contains(buscar))
                 .filter(fila -> autor.isBlank() || fila.valor("evaluador").equals(autor))
                 .filter(fila -> estado.equals("TODOS") ||
                         fila.valor("puesto_activo").equals(estado.equals("ACTIVOS") ? "1" : "0")).toList();
@@ -177,29 +224,20 @@ public final class PaginasArchivo {
     }
 
     private static String barra(List<Fila> filas, Datos datos) {
-        StringBuilder html = new StringBuilder("<div class=\"archivo-barra\" aria-label=\"Semáforo de resultados\">");
+        StringBuilder html = new StringBuilder("<div class=\"row riesgo-calma\" aria-label=\"Resumen de riesgo\">");
         for (String color : datos.riesgos().getOrDefault("color", List.of())) {
             long cantidad = filas.stream().filter(fila -> fila.valor("color").equals(color)).count();
-            if (cantidad > 0) html.append("<span class=\"riesgo-").append(color.toLowerCase(java.util.Locale.ROOT))
-                    .append("\" style=\"flex:").append(cantidad).append("\">").append(cantidad).append(" · ")
-                    .append(Html.escapar(color)).append("</span>");
+            html.append("<span><i class=\"riesgo-punto ").append(color.toLowerCase(java.util.Locale.ROOT))
+                    .append("\" aria-hidden=\"true\"></i>").append(cantidad).append(" ").append(Html.escapar(color))
+                    .append("</span>");
         }
-        html.append("</div><p class=\"hint\">");
-        filas.stream().map(PaginasArchivo::resultado).distinct().forEach(valor -> html.append(valor).append(" · "));
-        return html.append("</p>").toString();
+        return html.append("</div>").toString();
     }
 
     private static String resultado(Fila fila) {
         if (fila.valor("puntaje").isBlank()) return "Pendiente";
-        String color = fila.valor("color");
-        if (!List.of("VERDE", "AMARILLO", "ROJO").contains(color)) color = "";
-        String nombreColor = color.isEmpty() ? "" :
-                color.charAt(0) + color.substring(1).toLowerCase(java.util.Locale.ROOT);
-        String etiqueta = fila.valor("puntaje") + " · " + nombreColor + " · Nivel " + fila.valor("nivel");
-        return "<span aria-label=\"" + Html.escapar(etiqueta) + "\" class=\"archivo-resultado riesgo-" +
-                color.toLowerCase(java.util.Locale.ROOT) + "\"><i aria-hidden=\"true\"></i><b>" +
-                Html.escapar(fila.valor("puntaje")) + "</b> · " + Html.escapar(nombreColor) + " · Nivel " +
-                Html.escapar(fila.valor("nivel")) + "</span>";
+        return Html.riesgo(Integer.valueOf(fila.valor("puntaje")), fila.valor("color"),
+                Integer.parseInt(fila.valor("nivel")));
     }
 
     private static String resumen(List<Fila> filas) {

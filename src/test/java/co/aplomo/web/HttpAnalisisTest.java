@@ -48,9 +48,9 @@ class HttpAnalisisTest extends HttpPrueba {
         puesto = new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Ensamble", "ESCRITORIO", "Centro", null, true)).id();
         var reservas = new Reservas(tx, reloj);
-        int cantidad = reservas.guardar(cuenta(admin), 0, solicitud(salon));
-        reservas.aceptar(cuenta(admin), cantidad);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), cantidad);
+        int cantidad = reservas.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        reservas.aceptar(evaluadorReserva(cantidad), cantidad);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(cantidad), cantidad);
         var evaluacion = new Evaluaciones.Datos(puesto, "Ensamble", "MAS_INADECUADA", "Trabajo mantenido", 120, false,
                 false, false, false, false, false, "", true, false);
         eval = evaluaciones.guardar(cuenta(admin), visita, evaluacion,
@@ -118,8 +118,8 @@ class HttpAnalisisTest extends HttpPrueba {
         assertTrue(detalle.body().contains("data-puntaje-final=\"7\""));
         assertTrue(detalle.body().contains("Registró"));
         var inicio = get("/");
-        assertTrue(inicio.body().contains("Puestos en rojo"));
-        assertTrue(inicio.body().contains("color:var(--rojo)"));
+        assertTrue(inicio.body().contains("Pendientes abiertos"));
+        assertFalse(inicio.body().contains("color:var(--rojo)"));
         assertFalse(inicio.body().contains("Total visitas"));
         dao.contrasena(con, usuario, cuenta(usuario).hash(), false);
         cliente = HttpClient.newBuilder().cookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL)).build();
@@ -139,7 +139,7 @@ class HttpAnalisisTest extends HttpPrueba {
         var detalle = get("/evaluaciones/" + eval + "?aviso=An%C3%A1lisis+guardado.");
         assertEquals(200, detalle.statusCode());
         assertFalse(detalle.body().contains("Analizar fotos / añadir análisis"));
-        assertTrue(detalle.body().contains("data-confirmacion"));
+        assertTrue(detalle.body().contains("data-toast"));
         assertEquals(400, get("/evaluaciones/" + eval + "/analizar").statusCode());
         assertEquals(200, get("/evaluaciones/" + eval + "/analisis/" + id).statusCode());
     }

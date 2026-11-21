@@ -28,7 +28,7 @@ final class HorariosDemo {
                         "JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa e USING" +
                         "(id_empresa) " + "JOIN cuenta_empresa ce ON ce.id_empresa=e.id_empresa AND ce.activo=TRUE " +
                         "JOIN cuenta q ON q.id_cuenta=ce.id_cuenta AND q.rol='EVALUADOR' AND q.estado" + "='ACTIVA' " +
-                        "WHERE e.nit IN ('DEMO-APLOMO-E1','DEMO-APLOMO-E2','DEMO-APLOMO-E3') " +
+                        "WHERE e.nit IN ('900.512.384-1','901.638.205-4','012345') " +
                         "AND (r.codigo LIKE 'DEMO-%' OR r.codigo LIKE 'DEMO17-%' OR r.codigo LIKE 'DE" + "MO24-%' " +
                         "OR r.codigo LIKE 'D24-%') AND r.estado<>'CANCELADA' ORDER BY r.fecha,r.id_reserva",
                 fila -> new Cita(fila.getInt(1), fila.getInt(2), fila.getDate(3).toLocalDate(),

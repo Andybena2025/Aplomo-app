@@ -167,6 +167,45 @@ public abstract class BasePrueba {
                 java.time.LocalDateTime.now(reloj), puntaje);
     }
 
+    private final java.util.Map<Integer, Integer> trabajadores = new java.util.HashMap<>();
+
+    /**
+     * Paso 27: las reservas y el inicio pertenecen a un Evaluador real, distinto por empresa.
+     */
+    protected Cuenta evaluadorTrabajo() throws SQLException {
+        return evaluadorTrabajo(empresa);
+    }
+
+    protected Cuenta evaluadorTrabajo(int idEmpresa) throws SQLException {
+        Integer existente = Sql.uno(con, "SELECT id_empresa FROM empresa WHERE id_empresa=?", fila -> fila.getInt(1),
+                idEmpresa);
+        if (existente == null) idEmpresa = empresa;
+        Integer id = trabajadores.get(idEmpresa);
+        if (id == null) {
+            id = insertar("EVALUADOR", null, cuenta(admin).hash(), false);
+            new co.aplomo.dao.CuentaEmpresaDao().sincronizar(con, admin, id, java.util.List.of(idEmpresa), false);
+            trabajadores.put(idEmpresa, id);
+        }
+        return cuenta(id);
+    }
+
+    protected Cuenta evaluadorReserva(int reserva) throws SQLException {
+        Integer idEmpresa = Sql.uno(con, "SELECT s.id_empresa FROM reserva r JOIN salon l USING(id_salon) " +
+                "JOIN sede s USING(id_sede) WHERE r.id_reserva=?", fila -> fila.getInt(1), reserva);
+        return evaluadorTrabajo(idEmpresa == null ? empresa : idEmpresa);
+    }
+
+    /**
+     * Libera solo las asignaciones temporales del constructor de escenarios, sin borrar su historia.
+     */
+    protected void terminarPreparacionTrabajo() throws SQLException {
+        for (int id : trabajadores.values()) {
+            new co.aplomo.dao.CuentaEmpresaDao().sincronizar(con, admin, id, java.util.List.of(), false);
+            Sql.actualizar(con, "UPDATE cuenta SET estado='INACTIVA' WHERE id_cuenta=?", id);
+        }
+        trabajadores.clear();
+    }
+
     protected Cuenta cuenta(int id) throws SQLException {
         return dao.porId(con, id, false);
     }

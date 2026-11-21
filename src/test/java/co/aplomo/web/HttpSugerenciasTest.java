@@ -49,9 +49,9 @@ class HttpSugerenciasTest extends HttpPrueba {
         int puesto = new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Ensamble", "MESA", "Centro", null, true)).id();
         var reserva2 = new Reservas(tx, reloj);
-        int reserva = reserva2.guardar(cuenta(admin), 0, solicitud(salon));
-        reserva2.aceptar(cuenta(admin), reserva);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), reserva);
+        int reserva = reserva2.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        reserva2.aceptar(evaluadorReserva(reserva), reserva);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(reserva), reserva);
         var elemento = new ByteArrayOutputStream();
         ImageIO.write(new java.awt.image.BufferedImage(12, 12, 1), "png", elemento);
         evaluacion = evs.guardar(cuenta(admin), visita,
@@ -117,8 +117,10 @@ class HttpSugerenciasTest extends HttpPrueba {
         for (var sugerencia : servicio.listar(cuenta(admin), evaluacion))
             servicio.estado(cuenta(admin), sugerencia.sugerencia().id(), "HECHA");
         var respuesta = get("/sugerencias/" + id);
-        assertTrue(respuesta.body().contains("Registrar reevaluación"));
+        assertFalse(respuesta.body().contains("Registrar reevaluación"));
         var sugerencia2 = servicio.contexto(cuenta(admin), evaluacion);
+        post("/logout", Map.of("csrf", csrf(get("/"))));
+        entrar(evaluadorTrabajo().id());
         var nueva = get("/reservas/nueva?empresa=" + sugerencia2.empresa() + "&sede=" + sugerencia2.sede() + "&salon=" +
                 sugerencia2.salon() + "&categoria=REEVALUACION");
         assertEquals(200, nueva.statusCode());

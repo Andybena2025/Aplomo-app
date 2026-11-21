@@ -30,7 +30,13 @@ public final class Archivo {
     /**
      * RF-024: empresa visible en el selector, incluso cuando está inactiva.
      */
-    public record Empresa(int id, String nombre, boolean activa) {
+    public record Empresa(int id, String nombre, boolean activa, String ciudad, String sector) {
+        /**
+         * RF-024: compatibilidad con consumidores sin metadatos de ubicación.
+         */
+        public Empresa(int id, String nombre, boolean activa) {
+            this(id, nombre, activa, "", "");
+        }
     }
 
     /**
@@ -50,11 +56,14 @@ public final class Archivo {
             List<Fila> evaluaciones =
                     cuenta.rol() == Cuenta.Rol.EVALUADOR ? consultas.propias(conexion, cuenta.id()) : consultas.filas(
                             conexion, SeccionConsulta.EVALUACIONES, alcance, cuenta.rol() == Cuenta.Rol.USUARIO, 0);
-            List<Empresa> empresas = Sql.listar(conexion, "SELECT id_empresa,nombre,activo FROM empresa em WHERE " +
+            List<Empresa> empresas = Sql.listar(conexion,
+                    "SELECT id_empresa,nombre,activo,COALESCE((SELECT GROUP_CONCAT(DISTINCT se.ciudad " +
+                            "ORDER BY se.ciudad SEPARATOR ', ') FROM sede se WHERE se.id_empresa=em.id_empresa), '') " +
+                            "ciudad,sector FROM empresa em WHERE " +
                             (cuenta.rol() == Cuenta.Rol.EVALUADOR ? "(?=TRUE OR ?=0)" : alcance.sql("em.id_empresa")) +
                             co.aplomo.modelo.Demostracion.filtro("em.id_empresa") + " ORDER BY nombre",
-                    fila -> new Empresa(fila.getInt(1), fila.getString(2), fila.getBoolean(3)),
-                    cuenta.rol() == Cuenta.Rol.EVALUADOR || alcance.todas(),
+                    fila -> new Empresa(fila.getInt(1), fila.getString(2), fila.getBoolean(3), fila.getString(4),
+                            fila.getString(5)), cuenta.rol() == Cuenta.Rol.EVALUADOR || alcance.todas(),
                     cuenta.rol() == Cuenta.Rol.EVALUADOR ? 0 : alcance.valor());
             if (cuenta.rol() == Cuenta.Rol.EVALUADOR) {
                 empresas = empresas.stream().filter(empresa -> evaluaciones.stream()

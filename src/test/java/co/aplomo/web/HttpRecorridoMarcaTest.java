@@ -72,6 +72,14 @@ class HttpRecorridoMarcaTest extends HttpPrueba {
         if (rol == Cuenta.Rol.EVALUADOR) rutas.add("/mis-evaluaciones");
         for (String ruta : rutas) {
             var res = get(ruta);
+            boolean restringida = rol == Cuenta.Rol.ADMINISTRADOR &&
+                    (ruta.equals("/demo/evaluacion") || ruta.equals("/reservas/nueva") ||
+                            ruta.matches("/reservas/[0-9]+/(editar|cancelar)")) ||
+                    rol == Cuenta.Rol.EVALUADOR && ruta.equals("/empresas/" + empresa + "/editar");
+            if (restringida) {
+                assertEquals(403, res.statusCode(), ruta);
+                continue;
+            }
             assertTrue(res.statusCode() == 200 || res.statusCode() == 303, ruta + " → " + res.statusCode());
             verificar(res.body(), ruta);
         }

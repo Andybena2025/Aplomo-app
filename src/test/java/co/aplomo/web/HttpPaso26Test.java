@@ -160,7 +160,7 @@ class HttpPaso26Test extends HttpPrueba {
         var agenda = new Reservas(tx, reloj).agenda();
         var vista = agenda.consultar(cuenta(evaluador), Map.of());
         assertTrue(vista.mes());
-        assertTrue(vista.citas().stream().allMatch(cita -> "#FF8FB8".equals(cita.color())));
+        assertTrue(vista.citas().stream().allMatch(cita -> "#FF4F9A".equals(cita.color())));
         entrar(evaluador);
         assertTrue(get("/agenda").body().contains("color-0"));
         assertEquals("27/11/2026", Html.fecha(LocalDate.of(2026, 11, 27)));
@@ -219,12 +219,12 @@ class HttpPaso26Test extends HttpPrueba {
     @Test
     void colorSeValidaYConservaSinNuevaEleccion() throws Exception {
         int evaluador = evaluador(List.of(empresa));
-        assertEquals("#FF8FB8", cuenta(evaluador).colorAgenda());
+        assertEquals("#FF4F9A", cuenta(evaluador).colorAgenda());
         var cuenta = cuenta(evaluador);
         servicioUsuarios().editar(cuenta(admin), evaluador,
                 new Usuarios.Datos(cuenta.nombre(), cuenta.correo(), "123", "QA", Cuenta.Rol.EVALUADOR, null,
                         List.of(empresa)), "");
-        assertEquals("#FF8FB8", cuenta(evaluador).colorAgenda());
+        assertEquals("#FF4F9A", cuenta(evaluador).colorAgenda());
         assertThrows(IllegalArgumentException.class, () -> ColoresAgenda.validar("red"));
     }
 }

@@ -5,6 +5,7 @@ import co.aplomo.dao.SugerenciaDao.Ficha;
 import co.aplomo.dao.PendienteDao.Cambio;
 import co.aplomo.modelo.Cuenta;
 import co.aplomo.modelo.Sugerencia;
+import co.aplomo.modelo.Cuenta.Rol;
 import co.aplomo.seguridad.Sesiones.Sesion;
 
 import java.util.Arrays;
@@ -102,10 +103,10 @@ public final class PaginasSugerencias {
         contenido.append("</section><p class=\"hint\">Las sugerencias orientan mejoras del puesto; no " +
                 "reemplazan un diagnóstico médico.</p>");
         if (hechas) contenido.append("<section class=\"card stack\"><h2>Mejoras completadas</h2><p>Todas las suger" +
-                        "encias activas de este puesto están Hechas. El Administrador registra una re" +
+                        "encias activas de este puesto están Hechas. El Evaluador registra una re" +
                         "serva de Reevaluación con la fecha y el horario acordados con la empresa.</p" + ">")
-                .append(admin(sesion) ? enlace(reevaluacion(sugerencia3), "Registrar reevaluación", true) : "")
-                .append("</section>");
+                .append(sesion.cuenta().rol() == Rol.EVALUADOR ? enlace(reevaluacion(sugerencia3),
+                        "Registrar reevaluación", true) : "").append("</section>");
         contenido.append("<section class=\"stack\"><h2>Historial</h2>");
         for (var elemento : historia)
             contenido.append("<div class=\"card stack\"><span class=\"eyebrow\">")

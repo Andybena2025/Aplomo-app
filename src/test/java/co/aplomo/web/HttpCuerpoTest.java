@@ -45,9 +45,9 @@ class HttpCuerpoTest extends HttpPrueba {
         puesto = new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Ensamble", "MESA", "Centro", null, true)).id();
         var rs = new Reservas(tx, reloj);
-        int cantidad = rs.guardar(cuenta(admin), 0, solicitud(salon));
-        rs.aceptar(cuenta(admin), cantidad);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), cantidad);
+        int cantidad = rs.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        rs.aceptar(evaluadorReserva(cantidad), cantidad);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(cantidad), cantidad);
         entrar(admin);
         token = csrf(get("/evaluaciones/nueva?visita=" + visita + "&puesto=" + puesto));
     }

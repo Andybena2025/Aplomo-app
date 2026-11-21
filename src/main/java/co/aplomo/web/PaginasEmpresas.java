@@ -42,21 +42,63 @@ public final class PaginasEmpresas {
      * Lista empresas respetando el alcance ya filtrado por el servicio. RNF-011.
      */
     public static String lista(Sesion sesion, List<Empresa> empresas, String aviso) {
-        StringBuilder html = new StringBuilder(
-                Html.aviso(aviso, "Datos guardados.".equals(aviso) || "Registro reactivado.".equals(aviso)));
-        html.append("<div class=\"row between\"><p class=\"muted\">").append(Html.plural(empresas.size(), "empresa"))
-                .append("</p>");
-        if (sesion.cuenta().rol() == Rol.ADMINISTRADOR) html.append(enlace("/empresas/nueva", "Nueva empresa", true));
-        html.append("</div><div class=\"grid2\">");
-        for (Empresa empresa : empresas) {
-            html.append("<article class=\"card stack\"><div class=\"row between\"><h2>")
-                    .append(escapar(empresa.nombre())).append("</h2>").append(estado(empresa.activo())).append("</div>")
-                    .append("<p class=\"muted\">NIT ").append(escapar(empresa.nit())).append("</p>").append("<p>")
-                    .append(escapar(empresa.descripcion())).append("</p>")
-                    .append(enlace("/empresas/" + empresa.id(), "Ver empresa", false)).append("</article>");
+        return listado(sesion,
+                empresas.stream().map(empresa -> new co.aplomo.servicio.Empresas.Resumen(empresa, "", List.of()))
+                        .toList(), aviso);
+    }
+
+    /**
+     * RF-002/004: filas completas con metadatos registrados, búsqueda y estados.
+     */
+    public static String listado(Sesion sesion, List<co.aplomo.servicio.Empresas.Resumen> empresas, String aviso) {
+        return listado(sesion, empresas, aviso, Map.of());
+    }
+
+    /**
+     * RF-024: conserva la búsqueda inicial además de la búsqueda en vivo.
+     */
+    public static String listado(Sesion sesion, List<co.aplomo.servicio.Empresas.Resumen> empresas, String aviso,
+            Map<String, String> filtros) {
+        String consulta = filtros.getOrDefault("q", "");
+        String normalizada = co.aplomo.servicio.Validacion.nombre(consulta);
+        long coincidencias = empresas.stream().filter(resumen -> co.aplomo.servicio.Validacion.nombre(
+                        resumen.empresa().nombre() + " " + resumen.empresa().nit() + " " + resumen.ciudad())
+                .contains(normalizada)).count();
+        StringBuilder html = new StringBuilder(Html.aviso(aviso, aviso != null));
+        html.append("<section data-lista data-seccion=\"EMPRESAS\"><div class=\"lista-herramientas\">" +
+                "<input type=\"search\" class=\"input\" data-lista-buscar aria-label=\"Buscar empresa\" " +
+                "placeholder=\"Buscar empresa\" value=\"").append(escapar(consulta)).append("\"><div class=\"chips\">");
+        for (String[] filtro : List.of(new String[]{"ACTIVO", "Activas"}, new String[]{"INACTIVO", "Inactivas"},
+                new String[]{"TODOS", "Todas"})) {
+            html.append("<button class=\"chip\" type=\"button\" data-lista-filtro=\"").append(filtro[0])
+                    .append("\" aria-pressed=\"false\">").append(filtro[1]).append("</button>");
         }
-        if (empresas.isEmpty()) html.append("<p class=\"muted\">Todavía no hay empresas registradas.</p>");
-        return Html.pagina("Empresas", html.append("</div>").toString(), sesion, true, false);
+        html.append("</div></div><p class=\"muted\" data-lista-contador role=\"status\">").append(coincidencias)
+                .append(" resultados</p><div class=\"lista-filas\">");
+        for (var resumen : empresas) {
+            Empresa empresa = resumen.empresa();
+            String lugar = resumen.ciudad();
+            if (empresa.sector() != null && !empresa.sector().isBlank()) {
+                lugar += (lugar.isBlank() ? "" : " · ") + empresa.sector();
+            }
+            html.append("<a class=\"lista-fila empresa-fila\" href=\"/empresas/").append(empresa.id())
+                    .append("\" data-registro data-estado=\"").append(empresa.activo() ? "ACTIVO" : "INACTIVO")
+                    .append("\"><span class=\"lista-identidad\"><strong title=\"").append(escapar(empresa.nombre()))
+                    .append("\">").append(escapar(empresa.nombre())).append("</strong><small class=\"muted\">")
+                    .append(escapar(lugar)).append("</small></span><span class=\"equipo-empresa\">");
+            for (var persona : resumen.equipo()) {
+                String color = persona.color() != null &&
+                        co.aplomo.servicio.ColoresAgenda.PALETA.contains(persona.color()) ? persona.color() : "#C9CCD2";
+                html.append("<span title=\"").append(escapar(persona.nombre()))
+                        .append("\"><i class=\"persona-color\" " + "style=\"--persona:").append(color)
+                        .append("\" aria-hidden=\"true\"></i>").append(escapar(persona.nombre())).append("</span>");
+            }
+            html.append("</span>").append(SistemaVisual.estado(empresa.activo() ? "ACTIVO" : "INACTIVO"))
+                    .append("<span aria-hidden=\"true\">›</span></a>");
+        }
+        html.append("</div><p data-lista-vacia hidden>No hay empresas con estos filtros.</p></section>");
+        String acciones = admin(sesion) ? enlace("/empresas/nueva", "Nueva empresa", true) : "";
+        return Html.pagina("Empresas", html.toString(), sesion, "Gestión · Empresas", acciones, false);
     }
 
     /**
@@ -72,48 +114,91 @@ public final class PaginasEmpresas {
      */
     public static String empresa(Sesion sesion, Empresa empresa, List<Sede> sedes, List<Area> areas, List<Cargo> cargos,
             String aviso, List<Cuenta> cuentas) {
+        return empresa(sesion, empresa, sedes, areas, cargos, aviso, cuentas, admin(sesion), admin(sesion), List.of());
+    }
+
+    /**
+     * RF-002: recibe capacidades comprobadas en el servidor, sin deducirlas del rol visible.
+     */
+    public static String empresa(Sesion sesion, Empresa empresa, List<Sede> sedes, List<Area> areas, List<Cargo> cargos,
+            String aviso, List<Cuenta> cuentas, boolean edita, boolean espacios, List<Cuenta> transferibles) {
+        return empresa(sesion, empresa, sedes, areas, cargos, aviso, cuentas, edita, espacios, transferibles,
+                cuentas.stream().filter(cuenta -> cuenta.rol() == Rol.EVALUADOR)
+                        .map(cuenta -> new co.aplomo.servicio.Empresas.Persona(cuenta.id(), cuenta.nombre(),
+                                cuenta.colorAgenda())).toList());
+    }
+
+    /**
+     * RF-003/004: datos y equipo en tarjetas separadas, con capacidades comprobadas por el servidor.
+     */
+    public static String empresa(Sesion sesion, Empresa empresa, List<Sede> sedes, List<Area> areas, List<Cargo> cargos,
+            String aviso, List<Cuenta> cuentas, boolean edita, boolean espacios, List<Cuenta> transferibles,
+            List<co.aplomo.servicio.Empresas.Persona> equipo) {
+        return empresa(sesion, empresa, sedes, areas, cargos, aviso, cuentas, edita, espacios, transferibles, equipo,
+                Map.of());
+    }
+
+    /**
+     * RF-005/008: datos, equipo y cantidades comprobadas de cada sede.
+     */
+    public static String empresa(Sesion sesion, Empresa empresa, List<Sede> sedes, List<Area> areas, List<Cargo> cargos,
+            String aviso, List<Cuenta> cuentas, boolean edita, boolean espacios, List<Cuenta> transferibles,
+            List<co.aplomo.servicio.Empresas.Persona> equipo, Map<Integer, List<Integer>> cantidades) {
         String ruta = "/empresas/" + empresa.id();
         StringBuilder html = new StringBuilder(
                 Html.aviso(aviso, "Datos guardados.".equals(aviso) || "Registro reactivado.".equals(aviso)));
         html.append(avisoInactivo(sesion, empresa.activo(), "Esta empresa está desactivada.", "empresa", empresa.id()))
-                .append(enlace("/empresas", "← Empresas", false)).append("<section class=\"card stack\">")
+                .append(enlace("/empresas", "← Empresas", false))
+                .append("<div class=\"grid2 empresa-paneles\"><section class=\"card stack\">")
                 .append(estado(empresa.activo())).append("<dl class=\"datos-cuenta\">")
-                .append(dato("NIT", empresa.nit())).append(dato("Descripción", empresa.descripcion()))
-                .append(dato("Teléfono", empresa.telefono())).append(dato("Correo", empresa.correo()))
-                .append(dato("Contacto", empresa.contacto())).append("</dl>")
-                .append(acciones(sesion, ruta, empresa.activo())).append("</section>");
+                .append(dato("Sector", empresa.sector())).append(dato("NIT", empresa.nit()))
+                .append(dato("Descripción", empresa.descripcion())).append(dato("Teléfono", empresa.telefono()))
+                .append(dato("Correo", empresa.correo())).append(dato("Contacto", empresa.contacto())).append("</dl>")
+                .append(acciones(sesion, ruta, empresa.activo(), edita, edita)).append("</section>");
+
         String accionesPagina = enlace("/calificaciones?empresa=" + empresa.id(), "Ver calificaciones", false);
         if (admin(sesion)) accionesPagina += enlace("/informes/empresa/" + empresa.id(), "Generar informe", true) +
                 enlace("/evaluaciones?empresa=" + empresa.id(), "Ver evaluaciones de la empresa", false);
-        if (sesion.cuenta().rol() == Rol.ADMINISTRADOR) {
-            var evaluador = cuentas.stream()
-                    .filter(cuenta -> cuenta.rol() == Rol.EVALUADOR && cuenta.estado() != Cuenta.Estado.INACTIVA)
-                    .findFirst();
-            long usuarios = cuentas.stream().filter(cuenta -> cuenta.rol() == Rol.USUARIO).count();
-            html.append("<p class=\"hint empresa-cuentas\">Evaluador: ").append(evaluador.map(
-                            cuenta -> "<a href=\"/usuarios/" + cuenta.id() + "/editar\">" + Html.escapar(cuenta.
-                                nombre()) +
-                                    "</a>").orElse("sin asignar")).append(" · <a href=\"/usuarios?empresa=")
-                    .append(empresa.id()).append("\">Usuarios: ").append(usuarios).append("</a></p>");
+        if (sesion.cuenta().rol() != Rol.USUARIO) {
+            html.append("<section class=\"card stack\"><h2>Equipo de evaluación</h2>");
+            for (var persona : equipo) {
+                String color = persona.color() != null &&
+                        co.aplomo.servicio.ColoresAgenda.PALETA.contains(persona.color()) ? persona.color() : "#C9CCD2";
+                html.append("<p class=\"row\"><i class=\"persona-color\" style=\"--persona:").append(color)
+                        .append("\" aria-hidden=\"true\"></i>").append(escapar(persona.nombre())).append("</p>");
+            }
+            if (equipo.isEmpty()) html.append("<p class=\"muted\">Sin Evaluador asignado.</p>");
+            if (sesion.cuenta().rol() == Rol.ADMINISTRADOR) {
+                long usuarios = cuentas.stream().filter(cuenta -> cuenta.rol() == Rol.USUARIO).count();
+                html.append(enlace("/usuarios?empresa=" + empresa.id(), "Cuentas vinculadas · " + usuarios, false));
+            }
+            html.append("</section>");
         }
-        html.append(seccion("Sedes", admin(sesion) && empresa.activo() ? ruta + "/sedes/nuevo" : null, "Nueva sede",
+        html.append("</div>").append(transferencia(sesion, empresa.id(), transferibles));
+        html.append(seccion("Sedes", espacios && empresa.activo() ? ruta + "/sedes/nuevo" : null, "Nueva sede",
                 enlace("/sedes?empresa=" + empresa.id(), "Consultar sedes", false)));
         for (Sede sede : sedes) {
-            html.append(tarjeta(sede.nombre(), sede.ciudad() + " · " + sede.direccion(), sede.activo(),
-                    enlace("/sedes/" + sede.id(), "Ver sede", false)));
+            List<Integer> totales = cantidades.getOrDefault(sede.id(), List.of(0, 0));
+            html.append("<a class=\"card sede-tarjeta\" href=\"/sedes/").append(sede.id()).append("\"><h3>")
+                    .append(escapar(sede.nombre())).append("</h3><p class=\"muted\">")
+                    .append(escapar(sede.ciudad() + " · " + sede.direccion())).append("</p>")
+                    .append("<p class=\"hint\">").append(Html.plural(totales.get(0), "salón")).append(" · ")
+                    .append(Html.plural(totales.get(1), "puesto")).append(" ›</p>")
+                    .append(SistemaVisual.estado(sede.activo() ? "ACTIVA" : "INACTIVA"))
+                    .append("<span aria-hidden=\"true\">›</span></a>");
         }
         html.append(finSeccion(sedes.isEmpty(), "No hay sedes registradas."));
-        html.append(seccion("Áreas", admin(sesion) && empresa.activo() ? ruta + "/areas/nuevo" : null, "Nueva área",
+        html.append(seccion("Áreas", espacios && empresa.activo() ? ruta + "/areas/nuevo" : null, "Nueva área",
                 enlace("/areas?empresa=" + empresa.id(), "Consultar áreas", false)));
         for (Area area : areas)
-            html.append(
-                    tarjeta(area.nombre(), "", area.activo(), acciones(sesion, "/areas/" + area.id(), area.activo())));
+            html.append(catalogo(area.nombre(), area.activo(),
+                    acciones(sesion, "/areas/" + area.id(), area.activo(), espacios, edita)));
         html.append(finSeccion(areas.isEmpty(), "No hay áreas registradas."));
-        html.append(seccion("Cargos", admin(sesion) && empresa.activo() ? ruta + "/cargos/nuevo" : null, "Nuevo cargo",
+        html.append(seccion("Cargos", espacios && empresa.activo() ? ruta + "/cargos/nuevo" : null, "Nuevo cargo",
                 enlace("/cargos?empresa=" + empresa.id(), "Consultar cargos", false)));
         for (Cargo cargo : cargos)
-            html.append(tarjeta(cargo.nombre(), etiqueta(cargo.tipo()), cargo.activo(),
-                    acciones(sesion, "/cargos/" + cargo.id(), cargo.activo())));
+            html.append(catalogo(cargo.nombre(), cargo.activo(),
+                    acciones(sesion, "/cargos/" + cargo.id(), cargo.activo(), espacios, edita)));
         html.append(finSeccion(cargos.isEmpty(), "No hay cargos registrados."));
         return Html.pagina(empresa.nombre(), html.toString(), sesion, "Gestión · Empresas", accionesPagina);
     }
@@ -122,6 +207,14 @@ public final class PaginasEmpresas {
      * Muestra los datos de una sede y sus salones sin perder los registros inactivos. RNF-011.
      */
     public static String sede(Sesion sesion, Sede sede, Empresa empresa, List<Salon> salones, String aviso) {
+        return sede(sesion, sede, empresa, salones, aviso, admin(sesion), sesion.cuenta().rol() == Rol.ADMINISTRADOR);
+    }
+
+    /**
+     * RF-002: respeta la propiedad de la empresa también al presentar sus espacios.
+     */
+    public static String sede(Sesion sesion, Sede sede, Empresa empresa, List<Salon> salones, String aviso,
+            boolean edita, boolean estados) {
         String ruta = "/sedes/" + sede.id();
         StringBuilder html = new StringBuilder(
                 Html.aviso(aviso, "Datos guardados.".equals(aviso) || "Registro reactivado.".equals(aviso)));
@@ -131,8 +224,8 @@ public final class PaginasEmpresas {
                 .append("<dl class=\"datos-cuenta\">").append(dato("Dirección", sede.direccion()))
                 .append(dato("Ciudad", sede.ciudad())).append(dato("Teléfono", sede.telefono()))
                 .append(dato("Horario", sede.horario())).append(dato("Descripción", sede.descripcion())).append("</dl>")
-                .append(acciones(sesion, ruta, sede.activo())).append("</section>").append(seccion("Salones",
-                        admin(sesion) && sede.activo() && empresa.activo() ? ruta + "/salones/nuevo" : null,
+                .append(acciones(sesion, ruta, sede.activo(), edita, estados)).append("</section>")
+                .append(seccion("Salones", edita && sede.activo() && empresa.activo() ? ruta + "/salones/nuevo" : null,
                         "Nuevo " + "salón",
                         enlace("/salones?empresa=" + empresa.id() + "&sede=" + sede.id(), "Consultar salones", false)));
         for (Salon salon : salones)
@@ -147,6 +240,15 @@ public final class PaginasEmpresas {
      */
     public static String salon(Sesion sesion, Salon salon, Sede sede, Empresa empresa, List<Puesto> puestos,
             String aviso) {
+        return salon(sesion, salon, sede, empresa, puestos, aviso, admin(sesion),
+                sesion.cuenta().rol() == Rol.ADMINISTRADOR);
+    }
+
+    /**
+     * RF-002: respeta la propiedad de la empresa también al presentar sus espacios.
+     */
+    public static String salon(Sesion sesion, Salon salon, Sede sede, Empresa empresa, List<Puesto> puestos,
+            String aviso, boolean edita, boolean estados) {
         String ruta = "/salones/" + salon.id();
         StringBuilder html = new StringBuilder(
                 Html.aviso(aviso, "Datos guardados.".equals(aviso) || "Registro reactivado.".equals(aviso)));
@@ -156,9 +258,9 @@ public final class PaginasEmpresas {
                 .append("<dl class=\"datos-cuenta\">").append(dato("Descripción", salon.descripcion()))
                 .append(dato("Piso", Integer.toString(salon.piso())))
                 .append(dato("Capacidad", Integer.toString(salon.capacidad()))).append("</dl>")
-                .append(acciones(sesion, ruta, salon.activo())).append("</section>").append(seccion("Puestos",
-                        admin(sesion) && salon.activo() && sede.activo() && empresa.activo() ? ruta + "/puestos/nuevo"
-                                : null,
+                .append(acciones(sesion, ruta, salon.activo(), edita, estados)).append("</section>")
+                .append(seccion("Puestos",
+                        edita && salon.activo() && sede.activo() && empresa.activo() ? ruta + "/puestos/nuevo" : null,
                         "Nuevo puesto"));
         html.append(enlace("/puestos?empresa=" + empresa.id() + "&sede=" + sede.id() + "&salon=" + salon.id(),
                 "Consultar puestos", false));
@@ -167,7 +269,7 @@ public final class PaginasEmpresas {
                     (puesto.puntaje() == null ? " · Sin evaluar" : "");
             html.append(tarjeta("Puesto " + puesto.numero(), detalle, puesto.activo(),
                     (puesto.puntaje() == null ? "" : Html.riesgo(puesto.puntaje(), puesto.color(), puesto.nivel())) +
-                            acciones(sesion, "/puestos/" + puesto.id(), puesto.activo()) +
+                            acciones(sesion, "/puestos/" + puesto.id(), puesto.activo(), edita, estados) +
                             (admin(sesion) ? enlace("/puestos/" + puesto.id(), "Ver historial", false) : "")));
         }
         html.append(finSeccion(puestos.isEmpty(), "No hay puestos registrados."));
@@ -246,7 +348,8 @@ public final class PaginasEmpresas {
                             texto(datos, "descripcion", "Descripción (opcional)", 255, false) +
                             campo(datos, "telefono", "Teléfono (opcional)", "tel", 20, false) +
                             campo(datos, "correo", "Correo (opcional)", "email", 120, false) +
-                            campo(datos, "persona_contacto", "Persona de contacto (opcional)", "text", 100, false);
+                            campo(datos, "persona_contacto", "Persona de contacto (opcional)", "text", 100, false) +
+                            campo(datos, "sector", "Sector (opcional)", "text", 60, false);
             case "sedes" -> campo(datos, "nombre", "Nombre", "text", 100, true) +
                     campo(datos, "direccion", "Dirección", "text", 150, true) +
                     campo(datos, "ciudad", "Ciudad", "text", 60, true) +
@@ -333,12 +436,36 @@ public final class PaginasEmpresas {
     }
 
     private static String acciones(Sesion sesion, String ruta, boolean activo) {
-        if (!admin(sesion)) return "";
-        return "<div class=\"row\">" + enlace(ruta + "/editar", "Editar", false) +
-                (sesion.cuenta().rol() != Rol.ADMINISTRADOR ? "" :
-                        "<form method=\"post\" action=\"" + ruta + (activo ? "/desactivar" : "/activar") + "\">" +
-                                Html.csrf(sesion) + "<button class=\"btn\">" + (activo ? "Desactivar" : "Reactivar") +
-                        "</button></form>") + "</div>";
+        return acciones(sesion, ruta, activo, admin(sesion), sesion.cuenta().rol() == Rol.ADMINISTRADOR);
+    }
+
+    private static String acciones(Sesion sesion, String ruta, boolean activo, boolean edita, boolean estados) {
+        if (!edita) return "";
+        return "<div class=\"row\">" + enlace(ruta + "/editar", "Editar", false) + (!estados ? "" :
+                "<form method=\"post\" action=\"" + ruta + (activo ? "/desactivar" : "/activar") + "\">" +
+                        Html.csrf(sesion) + "<button class=\"btn\">" + (activo ? "Desactivar" : "Reactivar") +
+                "</button></form>") + "</div>";
+    }
+
+    private static String transferencia(Sesion sesion, int empresa, List<Cuenta> candidatas) {
+        if (candidatas.isEmpty()) return "";
+        StringBuilder opciones = new StringBuilder("<option value=\"\">Elige un Evaluador activo</option>");
+        for (Cuenta cuenta : candidatas) {
+            opciones.append("<option value=\"").append(cuenta.id()).append("\">").append(escapar(cuenta.nombre()))
+                    .append("</option>");
+        }
+        return "<section class=\"card stack\"><h2>Transferir empresa</h2>" +
+                "<p>El dueño está inactivo. Elige al Evaluador que se hará cargo.</p>" +
+                "<form method=\"post\" action=\"/empresas/" + empresa + "/transferir\">" + Html.csrf(sesion) +
+                "<label class=\"field\">Nuevo dueño<select class=\"input\" name=\"evaluador\" required>" + opciones +
+                "</select></label><button class=\"btn\">Transferir empresa</button></form></section>";
+    }
+
+    private static String catalogo(String nombre, boolean activo, String acciones) {
+        return "<div class=\"catalogo-chip\"><span>" + escapar(nombre) + "</span>" +
+                SistemaVisual.estado(activo ? "ACTIVO" : "INACTIVO") + (acciones.isEmpty() ? "" :
+                "<details><summary aria-label=\"Opciones de " + escapar(nombre) + "\">⋯</summary>" + acciones +
+                "</details>") + "</div>";
     }
 
     private static String tarjeta(String nombre, String detalle, boolean activo, String acciones) {
@@ -353,7 +480,8 @@ public final class PaginasEmpresas {
     private static String seccion(String titulo, String nueva, String etiqueta, String consulta) {
         return "<section class=\"stack catalogo-seccion\"><div class=\"pagehead\"><h2>" + escapar(titulo) +
                 "</h2><div class=\"row pagehead-acciones\">" + (nueva == null ? "" : enlace(nueva, etiqueta, false)) +
-                consulta + "</div></div><div class=\"grid2\">";
+                consulta + "</div></div><div class=\"" +
+                (titulo.equals("Áreas") || titulo.equals("Cargos") ? "catalogo-chips" : "grid2") + "\">";
     }
 
     private static String finSeccion(boolean vacio, String aviso) {

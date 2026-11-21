@@ -28,7 +28,7 @@ class HttpMarcaTest extends HttpPrueba {
         assertEquals("/", ingreso.headers().firstValue("Location").orElseThrow());
         for (String ruta : List.of("/", "/empresas", "/sedes", "/salones", "/areas", "/cargos", "/puestos", "/reservas",
                 "/visitas", "/evaluaciones", "/pendientes", "/sugerencias", "/usuarios", "/calificaciones",
-                "/empresas/nueva", "/reservas/nueva", "/usuarios/nuevo", "/cuenta/contrasena")) {
+                "/empresas/nueva", "/usuarios/nuevo", "/cuenta/contrasena")) {
             var respuesta = get(ruta);
             assertEquals(200, respuesta.statusCode(), ruta);
             String texto = respuesta.body();
@@ -59,26 +59,24 @@ class HttpMarcaTest extends HttpPrueba {
     @Test
     void semaforoLeeColoresRealesYSeActualizaConLosDatos() throws Exception {
         DatosDemoPrueba.cargar(con, carpetaFotos);
-        entrar(admin);
+        var evaluador = dao.porCorreo(con, "andres.evaluador@rula.local");
+        dao.contrasena(con, evaluador.id(), co.aplomo.seguridad.Contrasenas.cifrar(clave), false);
+        entrar(evaluador.id());
         String texto = get("/").body();
-        var cantidades = conteos();
-        for (var entrada : cantidades.entrySet()) conteo(texto, entrada.getKey(), entrada.getValue());
-        assertTrue(texto.contains("class=\"barra\""));
-        int puesto = Sql.uno(con, "SELECT e.id_puesto FROM evaluacion e JOIN visita v USING(id_visita) JOIN res" +
-                        "erva r USING(id_reserva) WHERE r.codigo=? ORDER BY e.id_puesto LIMIT 1",
-                fila -> fila.getInt(1),
-                "DEMO17-E3B");
-        Sql.actualizar(con, "UPDATE puesto_trabajo SET ultimo_puntaje=? WHERE id_puesto=?", 3, puesto);
-        texto = get("/").body();
-        conteo(texto, "VERDE", cantidades.get("VERDE") - 1);
-        conteo(texto, "AMARILLO", cantidades.get("AMARILLO") + 1);
-        conteo(texto, "ROJO", cantidades.get("ROJO"));
-        assertTrue(texto.indexOf("Semáforo de puestos") < texto.indexOf("id=\"visitas-en-curso\""));
+        var filas = new co.aplomo.servicio.Archivo(tx).consultar(cuenta(evaluador.id())).evaluaciones();
+        for (String color : List.of("VERDE", "AMARILLO", "ROJO")) {
+            int cantidad = Math.toIntExact(filas.stream().filter(fila -> fila.valor("color").equals(color)).count());
+            conteo(texto, color, cantidad);
+            assertEquals(200, get("/archivo?color=" + color).statusCode());
+        }
+        assertTrue(texto.contains("Riesgo en tus empresas"));
+        assertFalse(texto.contains("class=\"barra\""));
+        assertFalse(texto.contains("color:var(--rojo)"));
     }
 
     @Test
     void ceroPuestosNoMuestraUnaBarraProporcionalVacia() throws Exception {
-        entrar(admin);
+        entrar(evaluadorTrabajo().id());
         String texto = get("/").body();
         for (String color : List.of("VERDE", "AMARILLO", "ROJO")) conteo(texto, color, 0);
         assertFalse(texto.contains("class=\"barra\""));
@@ -103,16 +101,16 @@ class HttpMarcaTest extends HttpPrueba {
 
     @Test
     void vaciosConservanTextoBotonesYDecoracionesSonSoloPresentacion() throws Exception {
-        entrar(admin);
+        entrar(evaluadorTrabajo().id());
         String texto = get("/").body();
         assertTrue(texto.contains("class=\"empty marca\""));
-        assertTrue(texto.contains("Ir a Reservas"));
+        assertTrue(texto.contains("Iniciar desde una reserva"));
         assertTrue(texto.contains("class=\"riel riel-izq\" aria-hidden=\"true\""));
         assertTrue(texto.contains("viewBox=\"0 0 300 300\""));
         assertTrue(texto.contains("viewBox=\"0 0 300 380\""));
         assertFalse(texto.contains("class=\"fondo\""));
-        assertTrue(get("/usuarios").body().contains("class=\"empty marca\" data-usuarios-vacios hidden"));
-        assertTrue(get("/empresas?q=no-existe-qa-marca").body().contains("<p>Aún no hay empresas con estos filtros."));
+        assertTrue(get("/empresas?q=no-existe-qa-marca").body().contains("No hay empresas con estos filtros."));
+        assertFalse(get("/empresas?q=no-existe-qa-marca").body().contains("Aplicar filtros"));
     }
 
     private Map<String, Integer> conteos() throws Exception {

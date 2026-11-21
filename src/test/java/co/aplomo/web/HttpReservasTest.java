@@ -44,7 +44,7 @@ class HttpReservasTest extends co.aplomo.soporte.HttpPrueba {
     @Test
     void crearEditarAceptarYCancelarDesdeLaInterfazHttp() throws Exception {
         Salon salon = crearSalon();
-        entrar(admin);
+        entrar(evaluadorTrabajo().id());
         var nueva = get("/reservas/nueva");
         assertEquals(200, nueva.statusCode());
         var campos = formulario(csrf(nueva), salon);
@@ -79,7 +79,7 @@ class HttpReservasTest extends co.aplomo.soporte.HttpPrueba {
     @Test
     void errorConservaCamposYLasNotasLargasPermitidasSeGuardanCompletas() throws Exception {
         Salon salon = crearSalon();
-        entrar(admin);
+        entrar(evaluadorTrabajo().id());
         var nueva = get("/reservas/nueva");
         var campos = formulario(csrf(nueva), salon);
         campos.put("fin", "08:00");
@@ -96,7 +96,7 @@ class HttpReservasTest extends co.aplomo.soporte.HttpPrueba {
 
     @Test
     void altasEnContextoDevuelvenCatalogosConLosNuevosLugares() throws Exception {
-        entrar(admin);
+        entrar(evaluadorTrabajo().id());
         var nueva = get("/reservas/nueva");
         String token = csrf(nueva);
         var empresa = post("/reservas/crear-empresa", Map.of("csrf", token, "nombre", "Creada en reserva", "nit",
@@ -122,7 +122,7 @@ class HttpReservasTest extends co.aplomo.soporte.HttpPrueba {
     @Test
     void usuarioSoloConsultaSusReservasSinBotonesDeGestion() throws Exception {
         Salon salon = crearSalon();
-        int id = new Reservas(tx, reloj).guardar(cuenta(admin), 0, solicitud(salon));
+        int id = new Reservas(tx, reloj).guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
         dao.contrasena(con, usuario, cuenta(usuario).hash(), false);
         entrar(usuario);
         var detalle = get("/reservas/" + id);

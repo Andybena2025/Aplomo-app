@@ -122,6 +122,7 @@ public final class Visitas {
     public int iniciar(Cuenta actor, int reserva) throws SQLException {
         return tx.ejecutar(con -> {
             Cuenta responsable = administrador(con, actor);
+            Permisos.evaluador(responsable);
             ReservaDao.Ficha ficha = reservas.buscar(con, reserva, AccesoDatos.empresaPermitida(responsable), true);
             if (ficha == null) throw new SecurityException("La reserva no está disponible para tu cuenta.");
             if (!ficha.reserva().estado().equals("EN_COLA")) {

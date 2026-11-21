@@ -40,9 +40,9 @@ class HttpEvaluacionesTest extends co.aplomo.soporte.HttpPrueba {
         puesto = new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Prueba", "ESCRITORIO", "Centro", null, true)).id();
         var reserva = new Reservas(tx, reloj);
-        int id = reserva.guardar(cuenta(admin), 0, solicitud(salon));
-        reserva.aceptar(cuenta(admin), id);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), id);
+        int id = reserva.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        reserva.aceptar(evaluadorReserva(id), id);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(id), id);
     }
 
     private Map<String, String> campos(String token) {

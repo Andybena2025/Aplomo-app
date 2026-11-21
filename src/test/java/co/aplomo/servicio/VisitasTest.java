@@ -40,12 +40,12 @@ class VisitasTest extends BasePrueba {
         salon = crearSalon();
         new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Puesto disponible", "ESCRITORIO", "Centro", null, true));
-        reserva = reservas.guardar(cuenta(admin), 0, solicitud(salon));
+        reserva = reservas.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
     }
 
     private int iniciar() throws Exception {
-        reservas.aceptar(cuenta(admin), reserva);
-        return visitas.iniciar(cuenta(admin), reserva);
+        reservas.aceptar(evaluadorReserva(reserva), reserva);
+        return visitas.iniciar(evaluadorReserva(reserva), reserva);
     }
 
     @Test
@@ -58,15 +58,16 @@ class VisitasTest extends BasePrueba {
         assertNull(ficha.visita().fin());
         assertEquals("EN_COLA", reservas.consultar(cuenta(admin), reserva).reserva().estado());
         assertEquals(id, reservas.consultar(cuenta(admin), reserva).visita());
-        assertThrows(IllegalArgumentException.class, () -> visitas.iniciar(cuenta(admin), reserva));
-        assertThrows(IllegalArgumentException.class, () -> reservas.cancelar(cuenta(admin), reserva, "Intento"));
+        assertThrows(IllegalArgumentException.class, () -> visitas.iniciar(evaluadorReserva(reserva), reserva));
+        assertThrows(IllegalArgumentException.class,
+                () -> reservas.cancelar(evaluadorReserva(reserva), reserva, "Intento"));
         try (var ps = con.prepareStatement(
                 "SELECT id_cuenta, fecha_hora, accion, estado_nuevo FROM bitacora WHERE tabla" +
                         " = 'visita' AND id_registro = ?")) {
             ps.setInt(1, id);
             try (var rs = ps.executeQuery()) {
                 assertTrue(rs.next());
-                assertEquals(admin, rs.getInt(1));
+                assertEquals(evaluadorReserva(reserva).id(), rs.getInt(1));
                 assertEquals(LocalDateTime.now(reloj), rs.getTimestamp(2).toLocalDateTime());
                 assertEquals("CREAR", rs.getString(3));
                 assertEquals("EN_CURSO", rs.getString(4));
@@ -78,10 +79,10 @@ class VisitasTest extends BasePrueba {
     @ParameterizedTest
     @ValueSource(strings = {"ESPERANDO", "CANCELADA", "FINALIZADA"})
     void noIniciaDesdeUnEstadoDistintoDeEnCola(String estado) throws Exception {
-        if (estado.equals("CANCELADA")) reservas.cancelar(cuenta(admin), reserva, "Cambio");
+        if (estado.equals("CANCELADA")) reservas.cancelar(evaluadorReserva(reserva), reserva, "Cambio");
         if (estado.equals("FINALIZADA"))
             Sql.actualizar(con, "UPDATE reserva SET estado = ? WHERE id_reserva = ?", estado, reserva);
-        assertThrows(IllegalArgumentException.class, () -> visitas.iniciar(cuenta(admin), reserva));
+        assertThrows(IllegalArgumentException.class, () -> visitas.iniciar(evaluadorReserva(reserva), reserva));
         assertNull(reservas.consultar(cuenta(admin), reserva).visita());
     }
 
@@ -198,7 +199,7 @@ class VisitasTest extends BasePrueba {
 
     @Test
     void falloDeAuditoriaTambienRevierteElInicio() throws Exception {
-        reservas.aceptar(cuenta(admin), reserva);
+        reservas.aceptar(evaluadorReserva(reserva), reserva);
         BitacoraDao fallo = new BitacoraDao() {
             @Override
             public void registrar(Connection conexion, int actor, LocalDateTime fecha, String tabla, int registro,
@@ -206,7 +207,8 @@ class VisitasTest extends BasePrueba {
                 throw new SQLException("Fallo simulado");
             }
         };
-        assertThrows(SQLException.class, () -> new Visitas(tx, reloj, fallo).iniciar(cuenta(admin), reserva));
+        assertThrows(SQLException.class,
+                () -> new Visitas(tx, reloj, fallo).iniciar(evaluadorReserva(reserva), reserva));
         assertNull(reservas.consultar(cuenta(admin), reserva).visita());
     }
 

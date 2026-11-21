@@ -41,9 +41,9 @@ class HttpRevisionEvaluacionTest extends HttpPrueba {
         puesto = new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Trabajo de prueba", "MESA", "Centro", null, true)).id();
         var rs = new Reservas(tx, reloj);
-        int cantidad2 = rs.guardar(cuenta(admin), 0, solicitud(salon));
-        rs.aceptar(cuenta(admin), cantidad2);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), cantidad2);
+        int cantidad2 = rs.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        rs.aceptar(evaluadorReserva(cantidad2), cantidad2);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(cantidad2), cantidad2);
         entrar(admin);
         token = csrf(get("/evaluaciones/nueva?visita=" + visita + "&puesto=" + puesto));
     }
@@ -333,8 +333,7 @@ class HttpRevisionEvaluacionTest extends HttpPrueba {
                 texto.indexOf("data-paso=\"1\""), texto.indexOf("data-paso=\"2\""));
         assertFalse(cons.contains("Pregúntale"));
         assertFalse(cons.contains("Míralo"));
-        assertTrue(cons.contains(
-                "Confirmo que la persona evaluada aceptó y firmó el consentimiento informado " + "por escrito."));
+        assertTrue(cons.contains("Sí, firmó el consentimiento"));
         assertEquals(4, texto.split("class=\"campo-silueta\"", -1).length - 1);
         assertEquals(1, texto.split("data-postura-aviso", -1).length - 1);
         assertTrue(texto.contains("Resumen del puesto"));

@@ -28,12 +28,58 @@ class DemoTest extends BasePrueba {
     }
 
     @Test
+    void nitCoincidenteSinMarcaNoPermiteCargarNiReiniciarLaDemo() throws Exception {
+        Sql.actualizar(con, "UPDATE empresa SET nit=? WHERE id_empresa=?", DemoIdentidades.NITS.get(0), empresa);
+        assertThrows(IllegalArgumentException.class, this::cargar);
+        assertThrows(IllegalArgumentException.class, () -> Demo.vaciar(con, Demo.CONFIRMACION));
+        assertNotNull(new co.aplomo.dao.EmpresaDao().buscar(con, empresa, 0, false));
+    }
+
+    @Test
+    void nombresSectoresYHorariosSonPresentablesYLasClavesExistentesSeConservan() throws Exception {
+        cargar();
+        var andres = dao.porCorreo(con, "andres.evaluador@rula.local");
+        String hash = andres.hash();
+        cargar();
+        assertEquals(hash, dao.porCorreo(con, andres.correo()).hash());
+        assertEquals("#FF4F9A", dao.porCorreo(con, andres.correo()).colorAgenda());
+        for (String nit : DemoIdentidades.NITS) {
+            var empresaDemo = Sql.uno(con, "SELECT id_empresa,nombre,sector FROM empresa WHERE nit=?",
+                    fila -> List.of(fila.getString(1), fila.getString(2), fila.getString(3)), nit);
+            assertFalse(empresaDemo.get(2).isBlank());
+            assertFalse(empresaDemo.get(1).contains("DEMO"));
+            int id = Integer.parseInt(empresaDemo.get(0));
+            int horariosInvalidos = Sql.uno(con, "SELECT COUNT(*) FROM reserva r JOIN salon l USING(id_salon) " +
+                            "JOIN sede s USING(id_sede) WHERE s.id_empresa=? AND r.estado<>'CANCELADA' AND " +
+                            "(WEEKDAY(r.fecha)>4 OR r.hora_inicio<'08:00' OR r.hora_fin>'16:00' OR " +
+                            "MINUTE(r.hora_inicio) NOT IN(0,30) OR MINUTE(r.hora_fin) NOT IN(0,30))",
+                    fila -> fila.getInt(1),
+                    id);
+            assertEquals(0, horariosInvalidos, nit);
+            int textosAntiguos = Sql.uno(con, "SELECT COUNT(*) FROM reserva r JOIN salon l USING(id_salon) " +
+                    "JOIN sede s USING(id_sede) WHERE s.id_empresa=? AND " +
+                    "(r.descripcion LIKE '%Demostración%' OR r.descripcion LIKE '%APLOMO%' " +
+                    "OR r.descripcion LIKE 'DEMO%' OR l.nombre LIKE 'DEMO%')", fila -> fila.getInt(1), id);
+            assertEquals(0, textosAntiguos, nit);
+            int posturasAntiguas = Sql.uno(con, "SELECT COUNT(*) FROM evaluacion e JOIN visita v USING(id_visita) " +
+                            "JOIN reserva r USING(id_reserva) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede)" +
+                            " " +
+                            "WHERE s.id_empresa=? AND (e.postura LIKE 'DEMO%' " + "OR e.postura LIKE '%Demostración " +
+                            "ALINEO.%')",
+                    fila -> fila.getInt(1), id);
+            assertEquals(0, posturasAntiguas, nit);
+        }
+        assertEquals("Educación",
+                Sql.uno(con, "SELECT sector FROM empresa WHERE nit='012345'", fila -> fila.getString(1)));
+    }
+
+    @Test
     void cadaEmpresaTieneSedesConAmbosTiposYUnaVisitaListaSinDuplicar() throws Exception {
         cargar();
         cargar();
         for (int i = 1; i <= 3; i++) {
             int empresaDemo = Sql.uno(con, "SELECT id_empresa FROM empresa WHERE nit=?", fila2 -> fila2.getInt(1),
-                    "DEMO-APLOMO-E" + i);
+                    java.util.List.of("900.512.384-1", "901.638.205-4", "012345").get(i - 1));
             var sedes = Sql.listar(con, "SELECT id_sede FROM sede WHERE id_empresa=?", fila3 -> fila3.getInt(1),
                     empresaDemo);
             assertTrue(sedes.size() >= 2);
@@ -63,9 +109,9 @@ class DemoTest extends BasePrueba {
         int antes = Sql.uno(con, "SELECT COUNT(*) FROM evaluacion", fila3 -> fila3.getInt(1));
         cargar();
         assertEquals(antes, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM evaluacion", fila4 -> fila4.getInt(1)));
-        assertEquals(cuentas + 6, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM cuenta", fila5 -> fila5.getInt(1)));
+        assertEquals(cuentas + 9, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM cuenta", fila5 -> fila5.getInt(1)));
         for (int i = 1; i <= 3; i++) {
-            String nit = "DEMO-APLOMO-E" + i;
+            String nit = java.util.List.of("900.512.384-1", "901.638.205-4", "012345").get(i - 1);
             var colores = Sql.listar(con,
                     "SELECT DISTINCT n.color FROM analisis_rula a JOIN fotografia f USING(id_foto" +
                             ") JOIN evaluacion e USING(id_evaluacion) JOIN puesto_trabajo p USING(id_pues" +
@@ -80,10 +126,9 @@ class DemoTest extends BasePrueba {
                     fila7 -> fila7.getInt(1), nit) > 0);
         }
         int dobles = Sql.uno(con, "SELECT COUNT(*) FROM (SELECT p.id_puesto FROM evaluacion e JOIN puesto_traba" +
-                        "jo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede" +
-                        ") JOIN empresa em USING(id_empresa) WHERE em.nit IN ('DEMO-APLOMO-E1','DEMO-" +
-                        "APLOMO-E2','DEMO-APLOMO-E3') GROUP BY p.id_puesto HAVING COUNT(DISTINCT e.cr" + "iterio)=2) q",
-                fila8 -> fila8.getInt(1));
+                "jo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede" +
+                ") JOIN empresa em USING(id_empresa) WHERE em.nit IN ('900.512.384-1','901.638.205-4','012345') GROUP" +
+                " BY p.id_puesto HAVING COUNT(DISTINCT e.cr" + "iterio)=2) q", fila8 -> fila8.getInt(1));
         assertTrue(dobles >= 3);
         assertTrue(Files.list(archivos).count() >= 18);
     }
@@ -98,7 +143,7 @@ class DemoTest extends BasePrueba {
     @Test
     void cuentaVinculadaCancelaAntesDeBorrarYNoTocaCuentas() throws Exception {
         cargar();
-        int demo = Sql.uno(con, "SELECT id_empresa FROM empresa WHERE nit='DEMO-APLOMO-E1'", fila2 -> fila2.getInt(1));
+        int demo = Sql.uno(con, "SELECT id_empresa FROM empresa WHERE nit='900.512.384-1'", fila2 -> fila2.getInt(1));
         Sql.actualizar(con, "UPDATE cuenta SET id_empresa=? WHERE id_cuenta=?", demo, usuario);
         int antes = Sql.uno(con, "SELECT COUNT(*) FROM empresa", fila3 -> fila3.getInt(1));
         var error = assertThrows(IllegalArgumentException.class, () -> Demo.vaciar(con, Demo.CONFIRMACION));
@@ -122,7 +167,8 @@ class DemoTest extends BasePrueba {
         Files.writeString(fuera, "ajena");
         Files.createSymbolicLink(fotos.resolve("enlace.jpg"), fuera);
         var salon = crearSalon();
-        int reserva = new co.aplomo.servicio.Reservas(tx, reloj).guardar(cuenta(admin), 0, solicitud(salon));
+        int reserva = new co.aplomo.servicio.Reservas(tx, reloj).guardar(evaluadorTrabajo((solicitud(salon)).empresa()),
+                0, solicitud(salon));
         Sql.actualizar(con, "UPDATE reserva SET estado='EN_COLA' WHERE id_reserva=?", reserva);
         int visita = Sql.insertar(con, "INSERT INTO visita(id_reserva,hora_real_inicio) VALUES (?,NOW())", reserva);
         int ev = evaluacion(visita, salon.id(), 1);
@@ -140,10 +186,11 @@ class DemoTest extends BasePrueba {
     @Test
     void codigoReservadoEnEmpresaAjenaSeRechazaSinCargarDemo() throws Exception {
         var salon = crearSalon();
-        int reserva = new co.aplomo.servicio.Reservas(tx, reloj).guardar(cuenta(admin), 0, solicitud(salon));
+        int reserva = new co.aplomo.servicio.Reservas(tx, reloj).guardar(evaluadorTrabajo((solicitud(salon)).empresa()),
+                0, solicitud(salon));
         Sql.actualizar(con, "UPDATE reserva SET codigo='DEMO-FIN-01' WHERE id_reserva=?", reserva);
         assertThrows(IllegalArgumentException.class, this::cargar);
-        assertEquals(0, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM empresa WHERE nit='DEMO-APLOMO-E1'",
+        assertEquals(0, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM empresa WHERE nit='900.512.384-1'",
                 fila2 -> fila2.getInt(1)));
     }
 
@@ -186,8 +233,7 @@ class DemoTest extends BasePrueba {
                         "WHERE a.estado<>'CANCELADA' AND b.estado<>'CANCELADA'", fila -> fila.getInt(1)));
         assertEquals(0, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM reserva a JOIN reserva b " +
                         "ON a.id_administrador=b.id_administrador AND a.fecha=b.fecha AND a.id_reserv" + "a<b" +
-                        ".id_reserva " + "AND a.hora_inicio<b.hora_fin AND b.hora_inicio<a.hora_fin WHERE a.codigo " +
-                        "LIK" +
+                        ".id_reserva " + "AND a.hora_inicio<b.hora_fin AND b.hora_inicio<a.hora_fin WHERE a.codigo " + "LIK" +
                         "E 'D26%' " + "AND b.codigo LIKE 'D26%' AND a.estado<>'CANCELADA' AND b.estado<>'CANCELADA'",
                 fila -> fila.getInt(1)));
     }

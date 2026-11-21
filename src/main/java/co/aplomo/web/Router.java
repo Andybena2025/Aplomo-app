@@ -191,6 +191,11 @@ public final class Router implements HttpHandler {
         }
         if (metodo.equals("GET") && agenda.atender(intercambio, sesion, Map.of())) return;
         if (archivo.atender(intercambio, sesion)) return;
+        if (ruta.equals("/empresas") && metodo.equals("GET")) {
+            if (sesion.cuenta().temporal()) redirigir(intercambio, "/cuenta/contrasena");
+            else empresas.atender(intercambio, sesion, Map.of());
+            return;
+        }
         if (consultas.atender(intercambio, sesion)) return;
         if (ruta.startsWith("/evaluaciones") || ruta.startsWith("/fotos/")) {
             Permisos.trabajo(sesion.cuenta());

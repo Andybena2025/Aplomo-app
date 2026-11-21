@@ -100,10 +100,79 @@ public final class Empresas {
     }
 
     /**
+     * RF-002/003: nombres y colores del equipo de una empresa autorizada, sin datos de cuenta privados.
+     */
+    public List<Persona> equipo(Cuenta actor, int empresa) throws SQLException {
+        return tx.ejecutar(conexion -> {
+            Cuenta cuenta = AccesoDatos.vigente(conexion, actor);
+            Permisos.trabajo(cuenta);
+            AccesoDatos.exigirEmpresa(conexion, cuenta, empresa);
+            return co.aplomo.db.Sql.listar(conexion,
+                    "SELECT q.id_cuenta,q.nombre,q.color_agenda FROM cuenta_empresa ce " +
+                            "JOIN cuenta q USING(id_cuenta) WHERE ce.id_empresa=? AND ce.activo=TRUE " +
+                            "AND q.rol='EVALUADOR' AND q.estado='ACTIVA' ORDER BY q.nombre",
+                    fila -> new Persona(fila.getInt(1), fila.getString(2), fila.getString(3)), empresa);
+        });
+    }
+
+    /**
      * Lista todas las empresas para Administrador o únicamente la empresa del Usuario. RNF-011.
      */
     public List<Empresa> listar(Cuenta actor) throws SQLException {
         return tx.ejecutar(con -> empresas.buscarTodos(con, 0, alcance(con, actor)));
+    }
+
+    /**
+     * RF-003: identidad pública del Evaluador vinculado; nunca incluye claves ni contacto privado.
+     */
+    public record Persona(int id, String nombre, String color) {
+    }
+
+    /**
+     * RF-004/024: metadatos registrados para la lista de empresas.
+     */
+    public record Resumen(Empresa empresa, String ciudad, List<Persona> equipo) {
+    }
+
+    /**
+     * RF-002/004: la lista y sus metadatos comparten el mismo alcance vigente.
+     */
+    public List<Resumen> resumen(Cuenta actor) throws SQLException {
+        return tx.ejecutar(conexion -> {
+            var acceso = alcance(conexion, actor);
+            var registros = empresas.buscarTodos(conexion, 0, acceso);
+            var ciudades = new java.util.HashMap<Integer, String>();
+            for (var fila : co.aplomo.db.Sql.listar(conexion,
+                    "SELECT em.id_empresa,COALESCE(GROUP_CONCAT(DISTINCT s.ciudad ORDER BY s.ciudad " +
+                            "SEPARATOR ', '),'') ciudad FROM empresa em LEFT JOIN sede s USING(id_empresa) WHERE " +
+                            acceso.sql("em.id_empresa") + " GROUP BY em.id_empresa",
+                    fila -> java.util.Map.entry(fila.getInt(1), fila.getString(2)), acceso.todas(), acceso.valor())) {
+                ciudades.put(fila.getKey(), fila.getValue());
+            }
+            var equipos = new java.util.HashMap<Integer, java.util.ArrayList<Persona>>();
+            for (var fila : co.aplomo.db.Sql.listar(conexion,
+                    "SELECT em.id_empresa,q.id_cuenta,q.nombre,q.color_agenda FROM empresa em " +
+                            "JOIN cuenta_empresa ce USING(id_empresa) JOIN cuenta q USING(id_cuenta) WHERE " +
+                            "ce.activo=TRUE AND q.rol='EVALUADOR' AND q.estado='ACTIVA' AND " +
+                            acceso.sql("em.id_empresa") + " ORDER BY q.nombre",
+                    fila -> java.util.Map.entry(fila.getInt(1),
+                            new Persona(fila.getInt(2), fila.getString(3), fila.getString(4))), acceso.todas(),
+                    acceso.valor())) {
+                equipos.computeIfAbsent(fila.getKey(), ignorado -> new java.util.ArrayList<>()).add(fila.getValue());
+            }
+            return registros.stream().map(empresa -> new Resumen(empresa, ciudades.getOrDefault(empresa.id(), ""),
+                    List.copyOf(equipos.getOrDefault(empresa.id(), new java.util.ArrayList<>())))).toList();
+        });
+    }
+
+    /**
+     * RF-002/024: conserva la validación y el orden de filtros de la consulta existente.
+     */
+    public List<Resumen> resumen(Cuenta actor, java.util.Map<String, String> filtros) throws SQLException {
+        var filas = new Consultas(tx).listar(actor, co.aplomo.modelo.SeccionConsulta.EMPRESAS, filtros).universo();
+        var metadatos = resumen(actor).stream()
+                .collect(java.util.stream.Collectors.toMap(resumen -> resumen.empresa().id(), resumen -> resumen));
+        return filas.stream().map(fila -> metadatos.get(fila.id())).filter(java.util.Objects::nonNull).toList();
     }
 
     /**
@@ -171,6 +240,24 @@ public final class Empresas {
     }
 
     /**
+     * RF-002/005: cantidades del detalle, dentro de la empresa autorizada y sin consultas por sede.
+     */
+    public java.util.Map<Integer, List<Integer>> cantidadesSedes(Cuenta actor, int empresa) throws SQLException {
+        return tx.ejecutar(conexion -> {
+            AccesoDatos.exigirEmpresa(conexion, AccesoDatos.vigente(conexion, actor), empresa);
+            var cantidades = new java.util.HashMap<Integer, List<Integer>>();
+            for (var fila : co.aplomo.db.Sql.listar(conexion,
+                    "SELECT s.id_sede,COUNT(DISTINCT l.id_salon),COUNT(DISTINCT p.id_puesto) FROM sede s " +
+                            "LEFT JOIN salon l USING(id_sede) LEFT JOIN puesto_trabajo p USING(id_salon) " +
+                            "WHERE s.id_empresa=? GROUP BY s.id_sede",
+                    fila -> java.util.Map.entry(fila.getInt(1), List.of(fila.getInt(2), fila.getInt(3))), empresa)) {
+                cantidades.put(fila.getKey(), fila.getValue());
+            }
+            return java.util.Map.copyOf(cantidades);
+        });
+    }
+
+    /**
      * Lista las áreas de una empresa autorizada. RNF-011.
      */
     public List<Area> areas(Cuenta actor, int empresa) throws SQLException {
@@ -209,16 +296,20 @@ public final class Empresas {
     public Guardado guardar(Cuenta actor, Empresa datos) throws SQLException {
         return tx.ejecutar(con -> {
             Cuenta administrador = administrador(con, actor);
-            if (datos.id() == 0) Permisos.administrador(administrador);
+            if (datos.id() != 0) {
+                co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, datos.id(), true, false);
+            }
             Empresa anterior =
                     datos.id() == 0 ? null : exigir(empresas.buscar(con, datos.id(), alcance(con, actor), true));
+            Integer creador = anterior == null ? administrador.id() : Objects.requireNonNullElse(anterior.creador(),
+                    anterior.administrador());
             Empresa dato = new Empresa(datos.id(), anterior == null ? administrador.id() : anterior.administrador(),
                     Validacion.texto(datos.nombre(), "nombre", 120),
                     Validacion.texto(datos.nit(), "NIT", 20).replaceAll("\\s+", ""),
                     Validacion.opcional(datos.descripcion(), "descripción", 255),
                     Validacion.opcional(datos.telefono(), "teléfono", 20), Validacion.correo(datos.correo()),
                     Validacion.opcional(datos.contacto(), "persona de contacto", 100),
-                    anterior == null || anterior.activo());
+                    anterior == null || anterior.activo(), creador, Validacion.opcional(datos.sector(), "sector", 60));
             String aviso = null;
             for (Empresa otra : empresas.buscarTodos(con, 0, alcance(con, actor))) {
                 if (otra.id() == dato.id()) continue;
@@ -233,7 +324,19 @@ public final class Empresas {
                 }
             }
             try {
-                return new Guardado(empresas.guardar(con, dato), aviso);
+                int id = empresas.guardar(con, dato);
+                if (anterior == null) {
+                    if (administrador.rol() == Cuenta.Rol.EVALUADOR) {
+                        new co.aplomo.dao.CuentaEmpresaDao().sincronizar(con, administrador.id(), administrador.id(),
+                                java.util.stream.Stream.concat(
+                                        new co.aplomo.dao.CuentaEmpresaDao().ids(con, administrador.id()).stream(),
+                                        java.util.stream.Stream.of(id)).distinct().toList(), false);
+                    }
+                    new co.aplomo.dao.BitacoraDao().registrar(con, administrador.id(),
+                            java.time.LocalDateTime.now(java.time.ZoneId.of("America/Bogota")), "empresa", id, "CREAR",
+                            null, "ACTIVA", "Empresa registrada");
+                }
+                return new Guardado(id, aviso);
             } catch (SQLIntegrityConstraintViolationException error) {
                 throw new IllegalArgumentException("Ese NIT ya está registrado. Revisa la empresa existente.");
             }
@@ -249,6 +352,7 @@ public final class Empresas {
             Sede anterior = datos.id() == 0 ? null : exigir(sedes.buscar(con, datos.id(), alcance(con, actor), true));
             int empresa = anterior == null ? datos.empresa() : anterior.empresa();
             Empresa padre = exigir(empresas.buscar(con, empresa, alcance(con, actor), true));
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, padre.id(), false, false);
             if (anterior == null) activo(padre.activo(), "la empresa");
             Sede dato = new Sede(datos.id(), empresa, Validacion.texto(datos.nombre(), "nombre", 100),
                     Validacion.texto(datos.direccion(), "dirección", 150),
@@ -273,6 +377,7 @@ public final class Empresas {
             int sede = anterior == null ? datos.sede() : anterior.sede();
             Sede padre = exigir(sedes.buscar(con, sede, alcance(con, actor), true));
             Empresa empresa = exigir(empresas.buscar(con, padre.empresa(), alcance(con, actor), true));
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, empresa.id(), false, false);
             if (anterior == null) {
                 activo(padre.activo(), "la sede");
                 activo(empresa.activo(), "la empresa");
@@ -302,6 +407,7 @@ public final class Empresas {
             Area anterior = datos.id() == 0 ? null : exigir(areas.buscar(con, datos.id(), alcance(con, actor), true));
             int empresa = anterior == null ? datos.empresa() : anterior.empresa();
             Empresa padre = exigir(empresas.buscar(con, empresa, alcance(con, actor), true));
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, padre.id(), false, false);
             if (anterior == null) activo(padre.activo(), "la empresa");
             Area dato = new Area(datos.id(), empresa, Validacion.texto(datos.nombre(), "nombre", 100),
                     anterior == null || anterior.activo());
@@ -325,6 +431,7 @@ public final class Empresas {
             Cargo anterior = datos.id() == 0 ? null : exigir(cargos.buscar(con, datos.id(), alcance(con, actor), true));
             int empresa = anterior == null ? datos.empresa() : anterior.empresa();
             Empresa padre = exigir(empresas.buscar(con, empresa, alcance(con, actor), true));
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, padre.id(), false, false);
             if (anterior == null) activo(padre.activo(), "la empresa");
             Cargo dato = new Cargo(datos.id(), empresa, Validacion.texto(datos.nombre(), "nombre", 100),
                     Validacion.opcion(datos.tipo(), "tipo de cargo", "OPERATIVO", "ADMINISTRATIVO", "OTRO"),
@@ -352,6 +459,7 @@ public final class Empresas {
             Salon padre = exigir(salones.buscar(con, salon, alcance(con, actor), true));
             Sede sede = exigir(sedes.buscar(con, padre.sede(), alcance(con, actor), true));
             Empresa empresa = exigir(empresas.buscar(con, sede.empresa(), alcance(con, actor), true));
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, empresa.id(), false, false);
             if (anterior == null) {
                 activo(padre.activo(), "el salón");
                 activo(sede.activo(), "la sede");
@@ -391,7 +499,7 @@ public final class Empresas {
      */
     public void estadoEmpresa(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            Permisos.administrador(AccesoDatos.vigente(con, actor));
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, id, true, true);
             exigir(empresas.buscar(con, id, 0, true));
             empresas.estado(con, id, activo);
             return null;
@@ -403,7 +511,8 @@ public final class Empresas {
      */
     public void estadoSede(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            Permisos.administrador(AccesoDatos.vigente(con, actor));
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, empresaDelRegistro(con, "sedes", id, 0), true,
+                    true);
             exigir(sedes.buscar(con, id, 0, true));
             sedes.estado(con, id, activo);
             return null;
@@ -415,7 +524,8 @@ public final class Empresas {
      */
     public void estadoSalon(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            Permisos.administrador(AccesoDatos.vigente(con, actor));
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, empresaDelRegistro(con, "salones", id, 0), true,
+                    true);
             exigir(salones.buscar(con, id, 0, true));
             salones.estado(con, id, activo);
             return null;
@@ -427,7 +537,8 @@ public final class Empresas {
      */
     public void estadoArea(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            Permisos.administrador(AccesoDatos.vigente(con, actor));
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, empresaDelRegistro(con, "areas", id, 0), true,
+                    true);
             exigir(areas.buscar(con, id, 0, true));
             areas.estado(con, id, activo);
             return null;
@@ -439,7 +550,8 @@ public final class Empresas {
      */
     public void estadoCargo(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            Permisos.administrador(AccesoDatos.vigente(con, actor));
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, empresaDelRegistro(con, "cargos", id, 0), true,
+                    true);
             exigir(cargos.buscar(con, id, 0, true));
             cargos.estado(con, id, activo);
             return null;
@@ -451,9 +563,105 @@ public final class Empresas {
      */
     public void estadoPuesto(Cuenta actor, int id, boolean activo) throws SQLException {
         tx.ejecutar(con -> {
-            Permisos.administrador(AccesoDatos.vigente(con, actor));
+            co.aplomo.seguridad.PropiedadEmpresa.exigir(con, actor, empresaDelRegistro(con, "puestos", id, 0), true,
+                    true);
             exigir(puestos.buscar(con, id, 0, true));
             puestos.estado(con, id, activo);
+            return null;
+        });
+    }
+
+    /**
+     * RF-002/028: el formulario de edición respeta también la propiedad antes de mostrarse.
+     */
+    public void autorizarEdicion(Cuenta actor, String tipo, int id, int padre) throws SQLException {
+        tx.ejecutar(conexion -> {
+            int empresa = empresaDelRegistro(conexion, tipo, id, padre);
+            if (empresa > 0) {
+                co.aplomo.seguridad.PropiedadEmpresa.exigir(conexion, actor, empresa, tipo.equals("empresas"), false);
+            } else {
+                Permisos.trabajo(AccesoDatos.vigente(conexion, actor));
+            }
+            return null;
+        });
+    }
+
+    private int empresaDelRegistro(Connection conexion, String tipo, int id, int padre) throws SQLException {
+        return switch (tipo) {
+            case "empresas" -> id;
+            case "sedes" -> id == 0 ? padre : exigir(sedes.buscar(conexion, id, 0, false)).empresa();
+            case "areas" -> id == 0 ? padre : exigir(areas.buscar(conexion, id, 0, false)).empresa();
+            case "cargos" -> id == 0 ? padre : exigir(cargos.buscar(conexion, id, 0, false)).empresa();
+            case "salones" -> {
+                int sede = id == 0 ? padre : exigir(salones.buscar(conexion, id, 0, false)).sede();
+                yield exigir(sedes.buscar(conexion, sede, 0, false)).empresa();
+            }
+            case "puestos" -> {
+                int salon = id == 0 ? padre : exigir(puestos.buscar(conexion, id, 0, false)).salon();
+                int sede = exigir(salones.buscar(conexion, salon, 0, false)).sede();
+                yield exigir(sedes.buscar(conexion, sede, 0, false)).empresa();
+            }
+            default -> throw new IllegalArgumentException("El formulario no está disponible.");
+        };
+    }
+
+    /**
+     * RF-002: consulta de presentación; no sustituye los permisos del POST.
+     */
+    public boolean puedeEditar(Cuenta actor, int empresa, boolean raiz) throws SQLException {
+        try {
+            autorizarEdicion(actor, raiz ? "empresas" : "sedes", raiz ? empresa : 0, empresa);
+            return true;
+        } catch (SecurityException error) {
+            return false;
+        }
+    }
+
+    /**
+     * RF-002: ofrece la transferencia únicamente si el dueño Evaluador está inactivo.
+     */
+    public List<Cuenta> candidatosTransferencia(Cuenta actor, int empresa) throws SQLException {
+        return tx.ejecutar(conexion -> {
+            Cuenta actual = AccesoDatos.vigente(conexion, actor);
+            if (actual.rol() != Cuenta.Rol.ADMINISTRADOR) return List.of();
+            Empresa registro = exigir(empresas.buscar(conexion, empresa, 0, false));
+            if (registro.creador() == null) return List.of();
+            var cuentas = new CuentaDao();
+            Cuenta anterior = cuentas.porId(conexion, registro.creador(), false);
+            if (anterior == null || anterior.rol() != Cuenta.Rol.EVALUADOR ||
+                    anterior.estado() != Cuenta.Estado.INACTIVA) return List.of();
+            return cuentas.listar(conexion).stream()
+                    .filter(cuenta -> cuenta.rol() == Cuenta.Rol.EVALUADOR && cuenta.estado() == Cuenta.Estado.ACTIVA)
+                    .toList();
+        });
+    }
+
+    /**
+     * RF-002/028, Andy: solo Admin transfiere una empresa cuyo dueño Evaluador está Inactivo.
+     */
+    public void transferir(Cuenta actor, int empresa, int nuevo) throws SQLException {
+        tx.ejecutar(conexion -> {
+            Cuenta administrador = AccesoDatos.vigente(conexion, actor);
+            Permisos.administrador(administrador);
+            Empresa registro = exigir(empresas.buscar(conexion, empresa, 0, true));
+            var cuentas = new CuentaDao();
+            Cuenta anterior = exigir(
+                    cuentas.porId(conexion, registro.creador() == null ? registro.administrador() : registro.creador(),
+                            true));
+            Cuenta destino = exigir(cuentas.porId(conexion, nuevo, true));
+            if (anterior.rol() != Cuenta.Rol.EVALUADOR || anterior.estado() != Cuenta.Estado.INACTIVA ||
+                    destino.rol() != Cuenta.Rol.EVALUADOR || destino.estado() != Cuenta.Estado.ACTIVA) {
+                throw new SecurityException(
+                        "Solo puedes transferir una empresa de un dueño inactivo " + "a un Evaluador activo.");
+            }
+            co.aplomo.db.Sql.actualizar(conexion, "UPDATE empresa SET id_creador=? WHERE id_empresa=?", nuevo, empresa);
+            var asignaciones = new co.aplomo.dao.CuentaEmpresaDao();
+            asignaciones.sincronizar(conexion, actor.id(), nuevo,
+                    java.util.stream.Stream.concat(asignaciones.ids(conexion, nuevo).stream(),
+                            java.util.stream.Stream.of(empresa)).distinct().toList(), false);
+            new co.aplomo.dao.BitacoraDao().registrar(conexion, actor.id(),
+                    java.time.LocalDateTime.now(java.time.ZoneId.of("America/Bogota")), "empresa", empresa, "EDITAR",
+                    Integer.toString(anterior.id()), Integer.toString(nuevo), "Transferencia de dueño");
             return null;
         });
     }

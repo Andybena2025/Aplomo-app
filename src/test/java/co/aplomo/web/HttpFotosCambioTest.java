@@ -41,9 +41,9 @@ class HttpFotosCambioTest extends HttpPrueba {
                                 true))
                 .id();
         var rs = new Reservas(tx, reloj);
-        int reserva = rs.guardar(cuenta(admin), 0, solicitud(salon));
-        rs.aceptar(cuenta(admin), reserva);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), reserva);
+        int reserva = rs.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        rs.aceptar(evaluadorReserva(reserva), reserva);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(reserva), reserva);
         evaluacion = new Evaluaciones(tx, reloj, new Fotos(carpetaFotos), new BitacoraDao()).guardar(cuenta(admin),
                 visita,
                 new Evaluaciones.Datos(puesto, "Prueba", "MAS_INADECUADA", "", 180, false, false, false, false, false,

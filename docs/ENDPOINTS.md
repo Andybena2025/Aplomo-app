@@ -254,3 +254,26 @@ El contacto sale de config/contacto.properties, nunca de datos del navegador. Si
 | GET | `/nosotros` | 303 a `/login`, sin crear sesión |
 
 El sondeo de notas no renueva la actividad de sesión. Los acuses mantienen el POST con CSRF existente.
+
+## Paso 27A · Propiedad y presentación (21/11/2026)
+
+- Crear o modificar reservas, iniciar visitas y abrir la práctica requiere **E**; **A** conserva la consulta.
+- E puede crear empresa; el servidor fija `empresa.id_creador` y le asigna acceso en la misma transacción.
+- Si el dueño es E, solo él edita y desactiva empresa/sedes/salones/áreas/cargos/puestos. Los demás E asignados
+  y A consultan. En una empresa creada por A se conservan las capacidades anteriores.
+- No se permite quitar el acceso al dueño ni cambiar su rol antes de transferir su empresa.
+
+| Método y ruta | Acceso y comportamiento |
+| --- | --- |
+| POST `/empresas/{id}/transferir` | A, CSRF. `evaluador`: dueño anterior E Inactivo y destino E Activo. Cambio y asignación con bitácora en una transacción. |
+| GET `/cuenta/nombre`, `/cuenta/telefono`, `/cuenta/cargo` | A/E/U vigentes. Un único campo propio. |
+| POST en esas mismas rutas | CSRF y solo el campo indicado por la ruta; rol, correo y relaciones enviados de más se ignoran. |
+| GET `/cuenta/clave` | Formulario propio de contraseña; el POST ya existente conserva su contrato. |
+| GET `/reservas/horas-libres?fecha=yyyy-mm-dd&omitir={id}` | E. Intervalos libres de 30 minutos; si se omite una reserva se comprueba su alcance. HTML sin datos privados de otras citas. |
+| GET `/informes/empresa/{id}?visita={visita}` | A/E autorizados. Valida que la visita pertenezca a esa empresa; resalta una Finalizada e identifica una En curso sin cambiar los promedios. |
+
+La presentación visible usa Por confirmar/Aceptada, pero la base conserva ESPERANDO/EN_COLA.
+El selector colombiano de fecha y hora conserva los valores ISO de los formularios existentes.
+El motor, las tablas RULA y el bloque de POST `/evaluaciones/calcular` se conservan sin cambios.
+
+GET `/reservas/horas-libres`: recibe `fecha` y `omitir` según la tabla del Paso 27A.

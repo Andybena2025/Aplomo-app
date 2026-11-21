@@ -166,6 +166,13 @@ public final class PaginasAnalisis {
     }
 
     /**
+     * RF-014/026: añade análisis con el lugar real y el informe de la empresa autorizada.
+     */
+    public static String continuar(Sesion sesion, Evaluaciones.Consulta evaluacion, Evaluaciones.Contexto contexto) {
+        return ConversacionEvaluacion.continuar(sesion, evaluacion, contexto);
+    }
+
+    /**
      * RNF-011: operación del componente.
      */
     public static String botonesGuardar() {
@@ -190,7 +197,8 @@ public final class PaginasAnalisis {
                 "evision-evaluacion.js\" defer></script><script src=\"/static/js/fotos-campo." +
                 "js\" defer></script><script src=\"/static/js/posturas-campo.js\" defer></scr" +
                 "ipt><script src=\"/static/js/galeria-ejemplos.js\" defer></script><script sr" +
-                "c=\"/static/js/conversacion-evaluacion.js\" defer></script>";
+                "c=\"/static/js/conversacion-evaluacion.js\" defer></script>" +
+                "<script src=\"/static/js/revision-visual.js\" defer></script>";
     }
 
     /**

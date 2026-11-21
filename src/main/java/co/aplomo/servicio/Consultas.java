@@ -30,7 +30,14 @@ public final class Consultas {
      */
     public record Pagina(SeccionConsulta seccion, List<Fila> filas, Map<String, String> filtros,
                          Map<String, List<Opcion>> catalogos, Map<String, List<String>> riesgos,
-                         Fila contextoEvaluacion) {
+                         Fila contextoEvaluacion, List<Fila> universo) {
+        /**
+         * RF-024: conserva consumidores anteriores y sus filas ya autorizadas.
+         */
+        public Pagina(SeccionConsulta seccion, List<Fila> filas, Map<String, String> filtros,
+                Map<String, List<Opcion>> catalogos, Map<String, List<String>> riesgos, Fila contextoEvaluacion) {
+            this(seccion, filas, filtros, catalogos, riesgos, contextoEvaluacion, filas);
+        }
     }
 
     /**
@@ -84,9 +91,15 @@ public final class Consultas {
                     dao.filas(conexion, SeccionConsulta.EVALUACIONES, empresa, usuario,
                             Integer.parseInt(filtros.get("evaluacion"))));
             if (!usuario && seccion.filtros().contains("registros")) filtros.putIfAbsent("registros", "TODOS");
-            var filas = dao.filas(conexion, seccion, empresa, usuario, 0).stream()
-                    .filter(elemento -> coincide(elemento, filtros, seccion)).sorted(comparador(filtros)).toList();
-            return new Pagina(seccion, filas, Map.copyOf(filtros), catalogos, riesgos, contextoEvaluacion);
+            var fuente = dao.filas(conexion, seccion, empresa, usuario, 0);
+            var filas = fuente.stream().filter(fila -> coincide(fila, filtros, seccion)).sorted(comparador(filtros))
+                    .toList();
+            var filtrosLista = new HashMap<>(filtros);
+            filtrosLista.remove("estado");
+            filtrosLista.remove("q");
+            var universo = fuente.stream().filter(fila -> coincide(fila, filtrosLista, seccion))
+                    .sorted(comparador(filtros)).toList();
+            return new Pagina(seccion, filas, Map.copyOf(filtros), catalogos, riesgos, contextoEvaluacion, universo);
         });
     }
 

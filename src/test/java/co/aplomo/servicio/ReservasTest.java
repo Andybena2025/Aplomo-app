@@ -42,20 +42,20 @@ class ReservasTest extends BasePrueba {
 
     @Test
     void creaCodigoUnicoEstadoEsperandoYBitacoraEnLaMismaTransaccion() throws Exception {
-        int id = servicio.guardar(cuenta(admin), 0, solicitud(salon));
+        int id = servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
         Reserva reserva = servicio.consultar(cuenta(admin), id).reserva();
         assertEquals(String.format(Locale.ROOT, "R-%04d", id), reserva.codigo());
         assertTrue(reserva.codigo().length() <= 12);
         assertEquals("ESPERANDO", reserva.estado());
         assertEquals(salon.id(), reserva.salon());
-        assertEquals(admin, reserva.administrador());
+        assertEquals(evaluadorReserva(id).id(), reserva.administrador());
         assertTrue(reserva.notas().contains("\n"));
         try (var ps = con.prepareStatement("SELECT * FROM bitacora WHERE tabla = ? AND id_registro = ?")) {
             ps.setString(1, "reserva");
             ps.setInt(2, id);
             try (var filas = ps.executeQuery()) {
                 assertTrue(filas.next());
-                assertEquals(admin, filas.getInt("id_cuenta"));
+                assertEquals(evaluadorReserva(id).id(), filas.getInt("id_cuenta"));
                 assertEquals(LocalDateTime.now(reloj), filas.getTimestamp("fecha_hora").toLocalDateTime());
                 assertEquals("CREAR", filas.getString("accion"));
                 assertEquals("ESPERANDO", filas.getString("estado_nuevo"));
@@ -66,13 +66,13 @@ class ReservasTest extends BasePrueba {
 
     @Test
     void editaSoloHorarioCategoriaDescripcionYNotas() throws Exception {
-        int id = servicio.guardar(cuenta(admin), 0, solicitud(salon));
+        int id = servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
         Reserva antes = servicio.consultar(cuenta(admin), id).reserva();
-        servicio.aceptar(cuenta(admin), id);
+        servicio.aceptar(evaluadorReserva(id), id);
         var cambio = new Reservas.Datos(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE,
                 LocalDate.now(reloj).plusDays(1), LocalTime.of(11, 0), LocalTime.of(12, 0), "SEGUIMIENTO", "Editada",
                 "Notas nuevas");
-        servicio.guardar(cuenta(admin), id, cambio);
+        servicio.guardar(evaluadorTrabajo((cambio).empresa()), id, cambio);
         Reserva despues = servicio.consultar(cuenta(admin), id).reserva();
         assertEquals(antes.codigo(), despues.codigo());
         assertEquals(antes.salon(), despues.salon());
@@ -84,23 +84,26 @@ class ReservasTest extends BasePrueba {
 
     @Test
     void evitaDuplicadosAunqueLaReservaAnteriorEsteCancelada() throws Exception {
-        int id = servicio.guardar(cuenta(admin), 0, solicitud(salon));
-        assertThrows(IllegalArgumentException.class, () -> servicio.guardar(cuenta(admin), 0, solicitud(salon)));
-        servicio.cancelar(cuenta(admin), id, "Cambio acordado con la empresa");
-        assertThrows(IllegalArgumentException.class, () -> servicio.guardar(cuenta(admin), 0, solicitud(salon)));
+        int id = servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        assertThrows(IllegalArgumentException.class,
+                () -> servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon)));
+        servicio.cancelar(evaluadorReserva(id), id, "Cambio acordado con la empresa");
+        assertThrows(IllegalArgumentException.class,
+                () -> servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon)));
         assertEquals("CANCELADA", servicio.consultar(cuenta(admin), id).reserva().estado());
     }
 
     @Test
     void soloAceptaEsperandoYLosEstadosFinalesNoSeEditanNiReabren() throws Exception {
-        int id = servicio.guardar(cuenta(admin), 0, solicitud(salon));
-        servicio.aceptar(cuenta(admin), id);
-        assertThrows(IllegalArgumentException.class, () -> servicio.aceptar(cuenta(admin), id));
-        assertThrows(IllegalArgumentException.class, () -> servicio.cancelar(cuenta(admin), id, " "));
-        servicio.cancelar(cuenta(admin), id, "Motivo válido");
-        assertThrows(IllegalArgumentException.class, () -> servicio.aceptar(cuenta(admin), id));
-        assertThrows(IllegalArgumentException.class, () -> servicio.cancelar(cuenta(admin), id, "Otra vez"));
-        assertThrows(IllegalArgumentException.class, () -> servicio.guardar(cuenta(admin), id, solicitud(salon)));
+        int id = servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        servicio.aceptar(evaluadorReserva(id), id);
+        assertThrows(IllegalArgumentException.class, () -> servicio.aceptar(evaluadorReserva(id), id));
+        assertThrows(IllegalArgumentException.class, () -> servicio.cancelar(evaluadorReserva(id), id, " "));
+        servicio.cancelar(evaluadorReserva(id), id, "Motivo válido");
+        assertThrows(IllegalArgumentException.class, () -> servicio.aceptar(evaluadorReserva(id), id));
+        assertThrows(IllegalArgumentException.class, () -> servicio.cancelar(evaluadorReserva(id), id, "Otra vez"));
+        assertThrows(IllegalArgumentException.class,
+                () -> servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), id, solicitud(salon)));
         try (var ps = con.prepareStatement(
                 "SELECT accion, estado_anterior, estado_nuevo FROM bitacora WHERE tabla = 're" +
                         "serva' AND id_registro = ? ORDER BY id_bitacora")) {
@@ -121,11 +124,11 @@ class ReservasTest extends BasePrueba {
 
     @Test
     void unaVisitaIniciadaProtegeSuReservaDeCancelacion() throws Exception {
-        int id = servicio.guardar(cuenta(admin), 0, solicitud(salon));
-        servicio.aceptar(cuenta(admin), id);
+        int id = servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        servicio.aceptar(evaluadorReserva(id), id);
         Sql.insertar(con, "INSERT INTO visita (id_reserva, hora_real_inicio) VALUES (?, ?)", id,
                 LocalDateTime.now(reloj));
-        assertThrows(IllegalArgumentException.class, () -> servicio.cancelar(cuenta(admin), id, "Intento"));
+        assertThrows(IllegalArgumentException.class, () -> servicio.cancelar(evaluadorReserva(id), id, "Intento"));
         assertEquals("EN_COLA", servicio.consultar(cuenta(admin), id).reserva().estado());
     }
 
@@ -140,7 +143,8 @@ class ReservasTest extends BasePrueba {
                 caso.equals("igual") ? base.inicio() : caso.equals("anterior") ? base.inicio()
                                                                                  .minusMinutes(1) : base.fin(),
                 caso.equals("categoria") ? "NO_APROBADA" : base.categoria(), base.descripcion(), base.notas());
-        assertThrows(IllegalArgumentException.class, () -> servicio.guardar(cuenta(admin), 0, dato));
+        assertThrows(IllegalArgumentException.class,
+                () -> servicio.guardar(evaluadorTrabajo((dato).empresa()), 0, dato));
     }
 
     @Test
@@ -154,12 +158,13 @@ class ReservasTest extends BasePrueba {
                 .anyMatch(elemento2 -> elemento2.id() == salon.sede()));
         assertFalse(servicio.catalogo(cuenta(admin)).salones().stream()
                 .anyMatch(elemento3 -> elemento3.id() == salon.id()));
-        assertThrows(IllegalArgumentException.class, () -> servicio.guardar(cuenta(admin), 0, solicitud(salon)));
+        assertThrows(IllegalArgumentException.class,
+                () -> servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon)));
     }
 
     @Test
     void usuarioConsultaSuReservaPeroNoCreaNiCambiaEstados() throws Exception {
-        int id = servicio.guardar(cuenta(admin), 0, solicitud(salon));
+        int id = servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
         Empresas empresas = new Empresas(tx);
         int otraEmpresa = empresas.guardar(cuenta(admin),
                 new Empresa(0, 0, "Otra empresa", "R" + UUID.randomUUID().toString().substring(0, 10), "", "", "", "",
@@ -170,7 +175,7 @@ class ReservasTest extends BasePrueba {
                 new Salon(0, otraSede, "Otro salón", "Descripción", 1, 10, true)).id();
         var ajena = new Reservas.Datos(otraEmpresa, otraSede, otroSalon, solicitud(salon).fecha(),
                 solicitud(salon).inicio(), solicitud(salon).fin(), "EVALUACION_INICIAL", "", "");
-        int idAjena = servicio.guardar(cuenta(admin), 0, ajena);
+        int idAjena = servicio.guardar(evaluadorTrabajo((ajena).empresa()), 0, ajena);
         dao.contrasena(con, usuario, cuenta(usuario).hash(), false);
         Cuenta contacto = cuenta(usuario);
         assertEquals(List.of(id), servicio.listar(contacto).stream().map(reserva -> reserva.reserva().id()).toList());
@@ -193,11 +198,12 @@ class ReservasTest extends BasePrueba {
             }
         };
         Reservas defectuosa = new Reservas(tx, reloj, fallada);
-        assertThrows(SQLException.class, () -> defectuosa.guardar(cuenta(admin), 0, solicitud(salon)));
+        assertThrows(SQLException.class,
+                () -> defectuosa.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon)));
         assertTrue(
                 servicio.listar(cuenta(admin)).stream().noneMatch(reserva -> reserva.reserva().salon() == salon.id()));
-        int id = servicio.guardar(cuenta(admin), 0, solicitud(salon));
-        assertThrows(SQLException.class, () -> defectuosa.aceptar(cuenta(admin), id));
+        int id = servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        assertThrows(SQLException.class, () -> defectuosa.aceptar(evaluadorReserva(id), id));
         assertEquals("ESPERANDO", servicio.consultar(cuenta(admin), id).reserva().estado());
     }
 }

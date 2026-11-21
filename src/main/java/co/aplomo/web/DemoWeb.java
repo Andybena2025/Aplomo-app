@@ -27,7 +27,7 @@ public final class DemoWeb {
      */
     public void atender(HttpExchange intercambio, Sesion sesion,
             Map<String, String> parametros) throws SQLException, IOException {
-        Permisos.trabajo(sesion.cuenta());
+        Permisos.evaluador(sesion.cuenta());
         if (!GaleriaDemo.habilitada()) {
             Router.enviar(intercambio, 404, Html.pagina("Demostración no disponible", "", sesion));
             return;

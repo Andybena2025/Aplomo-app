@@ -32,6 +32,16 @@ public final class Permisos {
     }
 
     /**
+     * RF-002, Paso 27: las reservas, visitas y práctica pertenecen solo al Evaluador.
+     */
+    public static void evaluador(Cuenta cuenta) {
+        trabajo(cuenta);
+        if (cuenta.rol() != Rol.EVALUADOR) {
+            throw new SecurityException("Acceso denegado. Esta acción corresponde al Evaluador.");
+        }
+    }
+
+    /**
      * RF-002: autorización de empresa con fuente cuenta_empresa, nunca la relación anterior.
      */
     public static boolean empresa(java.sql.Connection conexion, Cuenta cuenta,

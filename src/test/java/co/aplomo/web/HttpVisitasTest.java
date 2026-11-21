@@ -21,15 +21,15 @@ class HttpVisitasTest extends co.aplomo.soporte.HttpPrueba {
                 new co.aplomo.modelo.Puesto(0, salon.id(), null, null, 1, "Puesto disponible", "ESCRITORIO", "Centro",
                         null, true));
         var servicio = new Reservas(tx, reloj);
-        int id = servicio.guardar(cuenta(admin), 0, solicitud(salon));
-        servicio.aceptar(cuenta(admin), id);
+        int id = servicio.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        servicio.aceptar(evaluadorReserva(id), id);
         return id;
     }
 
     @Test
     void iniciaPorPostYNoPermiteFinalizarSinEvaluacionesNiCancelarDespues() throws Exception {
         int reserva = reserva(crearSalon());
-        entrar(admin);
+        entrar(evaluadorTrabajo().id());
         var ficha = get("/reservas/" + reserva);
         String token = csrf(ficha);
         assertTrue(ficha.body().contains("Iniciar visita"));
@@ -56,9 +56,9 @@ class HttpVisitasTest extends co.aplomo.soporte.HttpPrueba {
     void finalizaConNotasEscapadasYPromedioDelServidorAunqueSeManipuleElFormulario() throws Exception {
         Salon salon = crearSalon();
         int reserva = reserva(salon);
-        int visita = new Visitas(tx, reloj).iniciar(cuenta(admin), reserva);
+        int visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(reserva), reserva);
         analisis(foto(evaluacion(visita, salon.id(), 1)), 4);
-        entrar(admin);
+        entrar(evaluadorTrabajo().id());
         var pagina = get("/visitas/" + visita + "/finalizar");
         assertEquals(200, pagina.statusCode());
         assertEquals(403, post("/visitas/" + visita + "/finalizar", Map.of("notas", "Sin token")).statusCode());
@@ -81,7 +81,7 @@ class HttpVisitasTest extends co.aplomo.soporte.HttpPrueba {
         Salon salon = crearSalon();
         int reserva = reserva(salon);
         var servicio = new Visitas(tx, reloj);
-        int visita = servicio.iniciar(cuenta(admin), reserva);
+        int visita = servicio.iniciar(evaluadorReserva(reserva), reserva);
         analisis(foto(evaluacion(visita, salon.id(), 1)), 3);
         dao.contrasena(con, usuario, cuenta(usuario).hash(), false);
         entrar(usuario);

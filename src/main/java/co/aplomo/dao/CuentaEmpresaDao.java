@@ -70,6 +70,14 @@ public final class CuentaEmpresaDao {
     public void sincronizar(Connection conexion, int responsable, int cuenta, Collection<Integer> deseadas,
             boolean cambiaRol) throws SQLException {
         Set<Integer> nuevas = new TreeSet<>(deseadas);
+        var propias = Sql.listar(conexion,
+                "SELECT e.id_empresa FROM empresa e JOIN cuenta q ON q.id_cuenta=e.id_creador " +
+                        "WHERE e.id_creador=? AND q.rol='EVALUADOR' ORDER BY e.id_empresa FOR UPDATE",
+                fila -> fila.getInt(1), cuenta);
+        if (!nuevas.containsAll(propias)) {
+            throw new IllegalArgumentException("El dueño debe conservar el acceso a su empresa. " +
+                    "Si su cuenta está inactiva, transfiere primero la empresa a otro Evaluador activo.");
+        }
         var antes = ids(conexion, cuenta);
         var ahora = LocalDateTime.now(ZoneId.of("America/Bogota"));
         var elemento = new BitacoraDao();

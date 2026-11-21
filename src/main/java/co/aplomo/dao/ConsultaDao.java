@@ -149,6 +149,8 @@ public final class ConsultaDao {
                         "o,r.fecha,r.hora_inicio inicio,r.hora_fin fin,r.categoria tipo,r.descripcion" +
                         ",r.notas,r.motivo_cancelacion motivo,r.estado,em.nombre empresa_nombre,s.nom" +
                         "bre sede_nombre,l.nombre salon_nombre,NULL puntaje";
+                select += ",COALESCE((SELECT vx.estado FROM visita vx WHERE vx.id_reserva=r.id_reserva LIMIT 1), '') " +
+                        "visita_estado";
                 desde = "reserva r JOIN salon l ON l.id_salon=r.id_salon JOIN sede s ON s.id_sede=l.i" +
                         "d_sede JOIN empresa em ON em.id_empresa=s.id_empresa";
             }

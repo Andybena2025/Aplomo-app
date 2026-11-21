@@ -27,6 +27,7 @@ public final class EscenarioInformes {
     public final int empresaAjena, empresaSola, empresaVacia;
     public final Calificaciones calificaciones;
     private final BasePrueba elemento;
+    private final java.util.Map<String, Integer> horarios = new java.util.HashMap<>();
 
     /**
      * Prepara cifras conocidas sin tocar registros existentes ni archivos.
@@ -112,11 +113,13 @@ public final class EscenarioInformes {
     private int visita(Salon elemento2) throws Exception {
         int empresa = new SedeDao().buscar(elemento.con, elemento2.sede(), 0, false).empresa();
         var reserva = new Reservas(elemento.tx, elemento.reloj);
-        int id = reserva.guardar(elemento.cuenta(elemento.admin), 0,
-                new Reservas.Datos(empresa, elemento2.sede(), elemento2.id(), LocalDate.now(elemento.reloj),
-                        LocalTime.of(9, 0), LocalTime.of(10, 0), "REEVALUACION", "Visita de prueba", ""));
-        reserva.aceptar(elemento.cuenta(elemento.admin), id);
-        return new Visitas(elemento.tx, elemento.reloj).iniciar(elemento.cuenta(elemento.admin), id);
+        LocalDate fecha = LocalDate.now(elemento.reloj);
+        int hora = horarios.merge(empresa + ":" + fecha, 1, Integer::sum) + 8;
+        int id = reserva.guardar(elemento.evaluadorTrabajo(empresa), 0,
+                new Reservas.Datos(empresa, elemento2.sede(), elemento2.id(), fecha, LocalTime.of(hora, 0),
+                        LocalTime.of(hora + 1, 0), "REEVALUACION", "Visita de prueba", ""));
+        reserva.aceptar(elemento.evaluadorReserva(id), id);
+        return new Visitas(elemento.tx, elemento.reloj).iniciar(elemento.evaluadorReserva(id), id);
     }
 
     private int evaluacion(int visita, int puesto, int... puntajes) throws Exception {

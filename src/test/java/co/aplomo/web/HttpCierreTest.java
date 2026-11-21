@@ -60,9 +60,9 @@ class HttpCierreTest extends HttpPrueba {
                 new Puesto(0, salon.id(), null, null, 3, "Inactivo", "MESA", "Centro", null, true)).id();
         empresas.estadoPuesto(cuenta(admin), inactivo, false);
         var rs = new Reservas(tx, reloj);
-        int reserva = rs.guardar(cuenta(admin), 0, solicitud(salon));
-        rs.aceptar(cuenta(admin), reserva);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), reserva);
+        int reserva = rs.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        rs.aceptar(evaluadorReserva(reserva), reserva);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(reserva), reserva);
         servicio = new Evaluaciones(tx, reloj, new Fotos(carpetaFotos), new BitacoraDao());
         var elemento = new ByteArrayOutputStream();
         ImageIO.write(new java.awt.image.BufferedImage(200, 400, 1), "png", elemento);
@@ -107,7 +107,7 @@ class HttpCierreTest extends HttpPrueba {
         assertFalse(texto2.contains("Suma los ratos de este trabajo durante el día."));
         assertFalse(texto2.contains("Ayuda · cómo reconocer las condiciones"));
         assertTrue(texto2.contains("Consentimiento"));
-        assertTrue(texto2.contains("Permiso de fotos"));
+        assertTrue(texto2.contains("¿Permite que le tomemos fotos?"));
         assertTrue(texto2.contains("Sí, permite fotos"));
         assertTrue(texto2.contains("No permite fotos"));
     }

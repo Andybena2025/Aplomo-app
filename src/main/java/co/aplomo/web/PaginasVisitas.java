@@ -109,7 +109,7 @@ public final class PaginasVisitas {
             if (evaluaciones.isEmpty()) html.append(
                     "<p class=\"hint\">Guarda al menos una evaluación para poder finalizar la vis" + "ita.</p>");
         }
-        return Html.pagina("Visita · " + ficha.codigoReserva(), html.toString(), sesion);
+        return Html.pagina("Visita", html.toString(), sesion);
     }
 
     private static String puestos(Ficha ficha, List<co.aplomo.modelo.Puesto> puestos, List<Evaluacion> evaluaciones) {
@@ -143,7 +143,7 @@ public final class PaginasVisitas {
     public static String finalizar(Sesion sesion, Ficha ficha, List<Evaluacion> evaluaciones, String notas,
             String error) {
         boolean sinEvaluaciones = evaluaciones.isEmpty();
-        return Html.pagina("Finalizar visita · " + ficha.codigoReserva(),
+        return Html.pagina("Finalizar visita",
                 enlace("/visitas/" + ficha.visita().id(), "← Volver a la visita", false) + Html.aviso(error, false) +
                         (sinEvaluaciones ? Html.aviso("Guarda al menos una evaluación antes de finalizar la visita.",
                                 false) : "") +
@@ -153,7 +153,9 @@ public final class PaginasVisitas {
                         "rán disponibles para la empresa.</p>" +
                         Formularios.texto(Map.of("notas", notas == null ? "" : notas), "notas", "Notas de la visita",
                                 65535, false) + "<button class=\"btn p\"" + (sinEvaluaciones ? " disabled" : "") +
-                        ">Finalizar visita</button></form>", sesion);
+                        ">Finalizar visita</button> " +
+                        enlace("/informes/empresa/" + ficha.empresa() + "?visita=" + ficha.visita().id(),
+                                "Exportar PDF", false) + "</form>", sesion);
     }
 
     private static String fecha(LocalDateTime valor) {

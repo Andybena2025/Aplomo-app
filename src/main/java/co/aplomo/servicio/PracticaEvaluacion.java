@@ -47,7 +47,7 @@ public final class PracticaEvaluacion {
      */
     public Integer enCurso(Cuenta actor) throws SQLException {
         return tx.ejecutar(conexion -> {
-            Permisos.trabajo(AccesoDatos.vigente(conexion, actor));
+            Permisos.evaluador(AccesoDatos.vigente(conexion, actor));
             return Sql.uno(conexion, "SELECT v.id_visita FROM visita v JOIN reserva r USING(id_reserva) JOIN salon" +
                             " l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa e USING(id_empres" +
                             "a) WHERE e.nit=? AND (?=TRUE OR r.id_administrador=?) AND v.estado='EN_CURSO" +
@@ -64,7 +64,7 @@ public final class PracticaEvaluacion {
             throw new IllegalArgumentException("Elige Oficina o Planta para practicar.");
         return tx.ejecutar(con -> {
             Cuenta admin = AccesoDatos.vigente(con, actor);
-            Permisos.trabajo(admin);
+            Permisos.evaluador(admin);
 
             // El NIT único y el bloqueo de empresa serializan también dos clics simultáneos.
             Sql.actualizar(con, "INSERT INTO empresa (id_administrador,nombre,nit,descripcion) VALUES (?,?,?," +

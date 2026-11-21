@@ -65,8 +65,8 @@ class HttpAyudaTest extends HttpPrueba {
         var respuesta = get("/ayuda");
         assertEquals(200, respuesta.statusCode());
         String texto2 = respuesta.body();
-        assertTrue(texto2.contains("data-tema=\"1\""));
-        assertTrue(texto2.contains("data-tema=\"10\""));
+        assertTrue(texto2.contains("id=\"entrar\""));
+        assertTrue(texto2.contains("id=\"acerca\""));
         for (int i = 2; i <= 9; i++) assertFalse(texto2.contains("data-tema=\"" + i + "\""));
         assertTrue(texto2.contains("Escríbele al Administrador de tu cuenta."));
         assertFalse(texto2.contains("mailto:"));
@@ -89,15 +89,22 @@ class HttpAyudaTest extends HttpPrueba {
         }
         entrar(id);
         String texto2 = get("/ayuda").body();
-        Set<Integer> esperados = switch (rol) {
-            case ADMINISTRADOR -> Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-            case EVALUADOR -> Set.of(1, 2, 3, 4, 5, 6, 7, 8, 10);
-            case USUARIO -> Set.of(1, 2, 5, 6, 8, 10);
+        Set<String> esperados = switch (rol) {
+            case ADMINISTRADOR ->
+                    Set.of("cuentas", "asignaciones", "empresas", "estados", "agenda", "notas", "acceso", "resultados",
+                            "archivo", "entrar");
+            case EVALUADOR ->
+                    Set.of("agenda", "solicitudes", "evaluacion", "durante", "fotos", "resultados", "practicar",
+                            "archivo", "entrar");
+            case USUARIO -> Set.of("resultados", "semaforo", "solicitudes", "proximas", "archivo", "entrar", "acerca");
         };
-        for (int n = 1; n <= 10; n++)
-            assertEquals(esperados.contains(n), texto2.contains("data-tema=\"" + n + "\""), "Tema " + n);
+        for (String tema : Set.of("cuentas", "asignaciones", "empresas", "estados", "agenda", "notas", "acceso",
+                "resultados", "archivo", "entrar", "solicitudes", "evaluacion", "durante", "fotos", "practicar",
+                "semaforo", "proximas", "acerca")) {
+            assertEquals(esperados.contains(tema), texto2.contains("id=\"" + tema + "\""), tema);
+        }
         assertFalse(texto2.contains("aria-label=\"Atrás\""));
-        assertTrue(texto2.contains("class=\"btn ayuda-cabecera\""));
+        assertTrue(texto2.contains("class=\"ayuda-layout\""));
     }
 
     @Test
@@ -122,7 +129,7 @@ class HttpAyudaTest extends HttpPrueba {
                 "tacto.whatsapp=+57 300 123 4567\n");
         System.setProperty("aplomo.contacto.archivo", archivo.toString());
         String texto2 = get("/ayuda").body();
-        assertTrue(texto2.contains("Laura Gabriella Romero Gómez"));
+        assertTrue(texto2.contains("Laura Gabriella Romero"));
         assertTrue(texto2.contains("mailto:soporte@prueba.invalid"));
         assertTrue(texto2.contains("https://wa.me/573001234567"));
         assertFalse(texto2.contains("Escríbele al Administrador de tu cuenta.</p>"));

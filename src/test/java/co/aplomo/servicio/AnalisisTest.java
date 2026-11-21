@@ -54,9 +54,9 @@ class AnalisisTest extends BasePrueba {
         puesto = new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, salon.id(), null, null, 1, "Ensamble", "ESCRITORIO", "Centro", null, true)).id();
         var rs = new Reservas(tx, reloj);
-        int cantidad2 = rs.guardar(cuenta(admin), 0, solicitud(salon));
-        rs.aceptar(cuenta(admin), cantidad2);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), cantidad2);
+        int cantidad2 = rs.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        rs.aceptar(evaluadorReserva(cantidad2), cantidad2);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(cantidad2), cantidad2);
         eval = evaluaciones.guardar(cuenta(admin), visita, datos(false), List.of(imagen()));
         foto = new EvaluacionDao().fotos(con, eval).get(0).id();
     }

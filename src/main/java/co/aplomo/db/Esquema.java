@@ -26,6 +26,13 @@ public final class Esquema {
                 fila4 -> fila4.getInt(1));
         int color = Sql.uno(conexion, "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() " +
                 "AND table_name='cuenta' AND column_name='color_agenda'", fila -> fila.getInt(1));
+        int empresa = Sql.uno(conexion,
+                "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() " +
+                        "AND table_name='empresa' AND column_name IN ('id_creador','sector')", fila -> fila.getInt(1));
+        if (empresa != 2) {
+            throw new IllegalStateException("Falta actualizar la base. Ejecuta scripts/migrar_paso27.sh " +
+                    "(Mac) o migrar_paso27.bat (Windows).");
+        }
         if (color != 1) {
             throw new IllegalStateException("Falta actualizar la base de datos. Corre " +
                     "scripts/migrar_paso26.sh (Mac) o migrar_paso26.bat (Windows).");

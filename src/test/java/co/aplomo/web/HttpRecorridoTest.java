@@ -52,9 +52,9 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
                 new Puesto(0, salon.id(), null, null, 3, "No mostrar", "OTRO", "Centro", null, true)).id();
         empresas.estadoPuesto(cuenta(admin), inactivo, false);
         var reservas = new Reservas(tx, reloj);
-        reserva = reservas.guardar(cuenta(admin), 0, solicitud(salon));
-        reservas.aceptar(cuenta(admin), reserva);
-        visita = new Visitas(tx, reloj).iniciar(cuenta(admin), reserva);
+        reserva = reservas.guardar(evaluadorTrabajo((solicitud(salon)).empresa()), 0, solicitud(salon));
+        reservas.aceptar(evaluadorReserva(reserva), reserva);
+        visita = new Visitas(tx, reloj).iniciar(evaluadorReserva(reserva), reserva);
         entrar(admin);
     }
 
@@ -127,8 +127,10 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
                 new Empresas(tx).guardar(cuenta(admin), new Salon(0, salon.sede(), "Otro salón", "Prueba", 1, 20, true))
                         .id());
         var rs = new Reservas(tx, reloj);
-        int id = rs.guardar(cuenta(admin), 0, solicitud(otro));
-        rs.aceptar(cuenta(admin), id);
+        reloj.avanzar(java.time.Duration.ofDays(1));
+        int id = rs.guardar(evaluadorTrabajo((solicitud(otro)).empresa()), 0, solicitud(otro));
+        rs.aceptar(evaluadorReserva(id), id);
+        entrar(evaluadorTrabajo().id());
         var pagina = get("/reservas/" + id);
         assertTrue(pagina.body().contains("disabled aria-describedby=\"sin-puestos\""));
         assertTrue(pagina.body().contains("Este salón no tiene puestos activos"));
@@ -138,11 +140,11 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
         int cantidad2 = new Empresas(tx).guardar(cuenta(admin),
                 new Puesto(0, otro.id(), null, null, 1, "Inactivo", "MESA", "Centro", null, true)).id();
         new Empresas(tx).estadoPuesto(cuenta(admin), cantidad2, false);
-        assertThrows(IllegalArgumentException.class, () -> new Visitas(tx, reloj).iniciar(cuenta(admin), id));
+        assertThrows(IllegalArgumentException.class, () -> new Visitas(tx, reloj).iniciar(evaluadorReserva(id), id));
         assertNull(rs.consultar(cuenta(admin), id).visita());
         new Empresas(tx).estadoPuesto(cuenta(admin), cantidad2, true);
         assertFalse(get("/reservas/" + id).body().contains("id=\"sin-puestos\""));
-        assertTrue(new Visitas(tx, reloj).iniciar(cuenta(admin), id) > 0);
+        assertTrue(new Visitas(tx, reloj).iniciar(evaluadorReserva(id), id) > 0);
     }
 
     @ParameterizedTest
@@ -152,8 +154,7 @@ class HttpRecorridoTest extends co.aplomo.soporte.HttpPrueba {
         String texto2 = get("/evaluaciones/nueva?visita=" + visita + "&puesto=" + id).body();
         assertTrue(texto2.contains("data-modo>" + modo));
         assertTrue(texto2.contains("name=\"puesto\" value=\"" + id + "\""));
-        assertTrue(texto2.contains(
-                "Confirmo que la persona evaluada aceptó y firmó el consentimiento informado " + "por escrito."));
+        assertTrue(texto2.contains("Sí, firmó el consentimiento"));
         assertTrue(texto2.contains("class=\"campo-respuesta\""));
         assertFalse(texto2.contains("data-cambiar-tarea"));
         assertTrue(texto2.contains("name=\"ninguna\""));

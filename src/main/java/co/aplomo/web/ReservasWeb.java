@@ -55,12 +55,34 @@ public final class ReservasWeb {
             Map<String, String> datos) throws IOException, SQLException {
         String ruta = intercambio.getRequestURI().getPath();
         boolean post = intercambio.getRequestMethod().equals("POST");
+        if (ruta.equals("/reservas/horas-libres") && !post) {
+            Permisos.evaluador(sesion.cuenta());
+            Map<String, String> consulta = Router.consulta(intercambio);
+            java.time.LocalDate fecha;
+            try {
+                fecha = java.time.LocalDate.parse(consulta.getOrDefault("fecha", ""));
+            } catch (java.time.format.DateTimeParseException error) {
+                Router.enviar(intercambio, 400, "Elige una fecha válida para ver las horas libres.");
+                return;
+            }
+            int omitir = co.aplomo.servicio.Validacion.entero(consulta.getOrDefault("omitir", "0"), "reserva", 0,
+                    Integer.MAX_VALUE);
+            if (omitir > 0) reservas.consultar(sesion.cuenta(), omitir);
+            StringBuilder horas = new StringBuilder();
+            for (java.time.LocalTime hora : reservas.horasLibres(sesion.cuenta(), fecha, omitir)) {
+                horas.append("<button class=\"chip\" type=\"button\" data-hora-libre=\"").append(hora).append("\">")
+                        .append(hora.format(java.time.format.DateTimeFormatter.ofPattern("H:mm"))).append("</button>");
+            }
+            Router.enviar(intercambio, 200,
+                    horas.isEmpty() ? "No hay horas libres entre las 8:00 y las 16:00." : horas.toString());
+            return;
+        }
         if (ruta.equals("/reservas") && !post) {
             Router.enviar(intercambio, 200, PaginasReservas.lista(sesion, reservas.listar(sesion.cuenta())));
             return;
         }
         if (ruta.equals("/reservas/catalogo") && !post) {
-            Permisos.trabajo(sesion.cuenta());
+            Permisos.evaluador(sesion.cuenta());
             Router.enviar(intercambio, 200,
                     PaginasReservas.selectores(reservas.catalogo(sesion.cuenta()), Router.consulta(intercambio)));
             return;
@@ -70,12 +92,12 @@ public final class ReservasWeb {
                 noDisponible(intercambio, sesion);
                 return;
             }
-            Permisos.trabajo(sesion.cuenta());
+            Permisos.evaluador(sesion.cuenta());
             alta(intercambio, sesion, ruta.substring("/reservas/crear-".length()), datos);
             return;
         }
         if (ruta.equals("/reservas") || ruta.equals("/reservas/nueva")) {
-            Permisos.trabajo(sesion.cuenta());
+            Permisos.evaluador(sesion.cuenta());
             if (ruta.endsWith("nueva") && post) {
                 noDisponible(intercambio, sesion);
                 return;
@@ -102,7 +124,7 @@ public final class ReservasWeb {
             noDisponible(intercambio, sesion);
             return;
         }
-        Permisos.trabajo(sesion.cuenta());
+        Permisos.evaluador(sesion.cuenta());
         if (accion.equals("editar")) {
             if (!ficha.reserva().editable())
                 throw new IllegalArgumentException("Una reserva finalizada o cancelada no se puede editar.");
