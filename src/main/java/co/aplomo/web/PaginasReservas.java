@@ -51,12 +51,12 @@ public final class PaginasReservas {
     public static String detalle(Sesion sesion, Ficha ficha, String aviso, boolean exito,
             co.aplomo.servicio.Agenda.Nota nota) {
         Reserva reserva = ficha.reserva();
-        StringBuilder html = new StringBuilder(enlace("/reservas", "← Reservas", false));
-        html.append(Html.aviso(aviso, exito)).append("<section class=\"card stack\"><div class=\"row between\"><h2>")
-                .append(escapar(ficha.empresaNombre())).append("</h2><span class=\"")
-                .append(claseEstado(reserva.estado())).append("\">").append(escapar(estado(reserva.estado())))
-                .append("</span></div><p class=\"muted\">").append(escapar(ficha.sedeNombre())).append(" · ")
-                .append(escapar(ficha.salonNombre())).append("</p><dl class=\"datos-cuenta\">")
+        String estado = "<span class=\"" + claseEstado(reserva.estado()) + "\">" + escapar(estado(reserva.estado())) +
+                "</span>";
+        String meta = escapar(ficha.sedeNombre() + " · " + ficha.salonNombre() + " · " + Html.fecha(reserva.fecha()));
+        StringBuilder html = new StringBuilder(
+                Html.detalle("Reservas", "/reservas", ficha.empresaNombre(), estado, meta, ""));
+        html.append(Html.aviso(aviso, exito)).append("<section class=\"card stack\"><dl class=\"datos-cuenta\">")
                 .append(dato("Fecha", Html.fecha(reserva.fecha())))
                 .append(dato("Horario", reserva.inicio() + "–" + reserva.fin()))
                 .append(dato("Categoría", categoria(reserva.categoria())))
@@ -91,7 +91,7 @@ public final class PaginasReservas {
             html.append(enlace("/visitas/" + ficha.visita(), "Ver visita", false));
         }
         html.append("</section>").append(PaginasAgenda.nota(sesion, reserva.id(), nota));
-        return Html.pagina("Reserva", html.toString(), sesion, "Reservas · Detalle", "");
+        return Html.pagina("Reserva", html.toString(), sesion, false, false);
     }
 
     /**

@@ -63,8 +63,8 @@ final class CentroAyuda {
         String nombre = Html.nombreSinTitulo(sesion.cuenta().nombre()).split("\\s+")[0];
         StringBuilder html = new StringBuilder(
                 "<section class=\"ayuda-inicio\"><label class=\"ayuda-buscador\">").append(
-                        "<span class=\"sr-only\">Buscar ayuda</span><input type=\"search\" class=\"input " +
-                                "ayuda-buscar\" ")
+                        "<span class=\"sr-only\">Buscar ayuda</span><input type=\"search\" class=\"input " + "ayuda" +
+                                "-buscar\" ")
                 .append("data-ayuda-buscar aria-label=\"Buscar ayuda\" placeholder=\"¿Qué necesitas hacer?\"></label>")
                 .append("<nav class=\"chips ayuda-populares\" aria-label=\"Temas populares\">");
         for (String id : GuiaAyuda.populares(sesion.cuenta().rol())) {
@@ -80,7 +80,7 @@ final class CentroAyuda {
                     .append("<path d=\"M4 3h12l4 4v14H4z M8 9h8 M8 13h8 M8 17h5\"/></svg><strong>")
                     .append(Html.escapar(tarea[1])).append("</strong><span class=\"muted\" title=\"")
                     .append(Html.escapar(tarea[2])).append("\">").append(Html.escapar(tarea[2])).append("</span></a>");
-        html.append("</div></section><h2>Todos los temas</h2><div class=\"ayuda-todos\">");
+        html.append("</div></section><h2 class=\"ayuda-todos-titulo\">Todos los temas</h2><div class=\"ayuda-todos\">");
         for (String grupo : GuiaAyuda.SECCIONES) {
             html.append("<section data-ayuda-grupo><h3>").append(Html.escapar(grupo)).append("</h3>");
             for (Articulo articulo : articulos)
@@ -197,9 +197,8 @@ final class CentroAyuda {
         }
         lista.add(articulo("pendientes", "Pendientes", "Revisa las mejoras que siguen abiertas.",
                 "Abre Pendientes y elige Abiertos, Arreglados o Todos.", "Busca el puesto y abre su seguimiento.",
-                rol ==
-                        Cuenta.Rol.USUARIO ? "Consulta los datos de las visitas Finalizadas de tu empresa." : "Revisa" +
-                            " prioridad, plazo y acciones del pendiente antes de actualizarlo."));
+                rol == Cuenta.Rol.USUARIO ? "Consulta los datos de las visitas Finalizadas de tu empresa." :
+                        "Revisa" + " prioridad, plazo y acciones del pendiente antes de actualizarlo."));
         lista.add(articulo("cuenta", "Mi cuenta", "Mantén tus datos y tu contraseña al día.",
                 "Abre tu avatar y entra en Mi cuenta.", "Elige el dato que quieres editar y guarda.",
                 "Para cambiar la contraseña, abre Seguridad y elige Cambiar contraseña."));

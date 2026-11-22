@@ -333,3 +333,24 @@ Luego ESPERA el OK de Andy.
   6 pendientes abiertos; sin reiniciar demo ni cambiar datos. Motor, cálculo protegido, IA, imágenes y esquema
   idénticos. Al entregar: segundo commit «Paso 30B», push a origin/main verificado y app recompilada/reiniciada
   en 8080. Detenerse y esperar revisión de Andy; no empezar un Paso 31.
+
+
+### Paso 31 · contacto y detalles
+- Encargo de Andy en adjunto 89c29d38-1689-489c-922c-2e4a1d8e0c29: un commit «Paso 31» y push a main.
+- Contacto local reescrito con los cinco datos ficticios autorizados; dos líneas contacto.empresa.* conservadas.
+  Sigue ignorado. Contacto.leer respalda por campo vacío/ejemplo y usa datos del contacto, no los de empresa.
+  Avisos: correo → nombre Gabriela/Gabriella → primer Administrador activo, siempre en servidor.
+- Html.detalle compartido por Archivo empresa/puesto, Visita, Reserva, Empresa y Mi cuenta: franja solo sección,
+  título/estado/meta/acciones en main, un regreso; Mi cuenta vuelve a Inicio. Rol solo Inicio; enfoque intacto.
+  Visita añade nombre/color del evaluador a SELECT autorizado; permisos y datos originales conservados.
+- Archivo con cuatro métricas, cifras 32/etiquetas 13, periodo único, leyenda en una línea y filtros 44.
+  Usuarios primera empresa +N, ayuda logo 56/margen 16, pista de puesto debajo, un punto administrativo <1180.
+  Historial de puesto marca Archivo como pestaña activa, conservando Empresas para su gestión.
+- 48 combinaciones DOM a 1920/1366/1180/1024/820/390 sin desborde. Riel visible 470,65/474,45 px (0,81 %),
+  centros Y 540,00/540,01; no se confundieron los contenedores 520 con los dibujos. Cero errores de consola.
+- 1121 casos Maven verificados: suite única con 1119 aprobados y dos de historial corregidos/aprobados
+  en cierre dirigido 27/27; 150/150 JS en suite única. Siete casos Maven y tres JS nuevos.
+  QA en pruebas con ROLLBACK; sin reiniciar demo real, capturas, descargas, motor/cálculo/IA/imágenes/esquema.
+  Hardware físico, navegadores externos y 810/1080 exactos no repetidos. Informe docs/informe_paso31.md.
+- Al entregar: app normal reiniciada en 8080, /ayuda comprobada con curl; commit/push a origin/main verificado.
+  Detenerse y esperar revisión de Andy.

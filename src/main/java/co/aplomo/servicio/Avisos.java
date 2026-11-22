@@ -56,12 +56,9 @@ public final class Avisos {
                 java.nio.file.Path.of(System.getProperty("aplomo.contacto.archivo", "config/contacto.properties")));
         Integer id = co.aplomo.db.Sql.uno(con,
                 "SELECT id_cuenta FROM cuenta WHERE rol='ADMINISTRADOR' AND estado='ACTIVA' " +
-                        "AND (correo=? OR (?<>'' AND nombre=?) OR (?=TRUE AND " +
-                        "REPLACE(LOWER(nombre),'gabriella','gabriela') LIKE ?)) " +
-                        "ORDER BY (correo=?) DESC,id_cuenta LIMIT 1", f -> f.getInt(1), contacto.correo(),
-                contacto.nombre(), contacto.nombre(), contacto.nombre().equals("Laura Gabriela Romero") &&
-                        contacto.correo().equals("gabriela.romero@alineo.co"), "%laura gabriela romero%",
-                contacto.correo());
+                        "ORDER BY (correo=?) DESC, " +
+                        "(LOWER(nombre) LIKE ? OR LOWER(nombre) LIKE ?) DESC,id_cuenta LIMIT 1", f -> f.getInt(1),
+                contacto.correo(), "%gabriela%", "%gabriella%");
         if (id == null) throw new IllegalArgumentException("No está disponible el contacto de la Administradora.");
         return new co.aplomo.dao.CuentaDao().porId(con, id, false);
     }

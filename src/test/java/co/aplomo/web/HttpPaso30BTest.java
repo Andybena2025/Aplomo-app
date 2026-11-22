@@ -54,7 +54,7 @@ class HttpPaso30BTest extends HttpPrueba {
         Contacto contacto = Contacto.leer(archivo);
         assertEquals("Contacto local", contacto.nombre());
         assertEquals("local@prueba.invalid", contacto.correo());
-        assertEquals("", contacto.whatsapp());
+        assertEquals("573000000000", contacto.whatsapp());
     }
 
     @ParameterizedTest

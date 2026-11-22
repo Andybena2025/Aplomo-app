@@ -231,11 +231,14 @@ class HttpHistorialInactivosTest extends HttpPrueba {
         for (String ruta : List.of("/", "/empresas", "/usuarios", "/reservas", "/visitas", "/pendientes",
                 "/evaluaciones"))
             assertFalse(get(ruta).body().contains("aria-label=\"Atrás\""), ruta);
-        for (String ruta : List.of("/puestos/" + escenario.puesto1, "/cuenta/contrasena",
-                "/empresas/" + escenario.empresaA))
-            assertTrue(get(ruta).body().contains("aria-label=\"Atrás\""), ruta);
+        assertTrue(get("/cuenta/contrasena").body().contains("aria-label=\"Atrás\""));
+        for (String ruta : List.of("/puestos/" + escenario.puesto1, "/empresas/" + escenario.empresaA)) {
+            String detalle = get(ruta).body();
+            assertFalse(detalle.contains("aria-label=\"Atrás\""), ruta);
+            assertTrue(detalle.contains("class=\"detalle-volver\""), ruta);
+        }
         Sql.actualizar(con, "UPDATE empresa SET nombre=? WHERE id_empresa=?", "Empresas", escenario.empresaA);
-        assertTrue(get("/empresas/" + escenario.empresaA).body().contains("aria-label=\"Atrás\""));
+        assertTrue(get("/empresas/" + escenario.empresaA).body().contains("class=\"detalle-volver\""));
         dao.contrasena(con, admin, cuenta(admin).hash(), true);
         cliente = HttpClient.newBuilder().cookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL)).build();
         entrar(admin);

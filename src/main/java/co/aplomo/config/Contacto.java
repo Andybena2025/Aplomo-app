@@ -14,22 +14,23 @@ public record Contacto(String nombre, String cargo, String correo, String telefo
                        boolean incompleto) {
 
     /**
-     * Lee UTF-8; omite campos ausentes e impide enlaces con esquemas o consultas inesperados. RNF-011.
+     * Lee UTF-8; respalda cada campo vacío o de ejemplo e impide enlaces con esquemas o consultas inesperados.
+     * RNF-011.
      */
     public static Contacto leer(Path archivo) {
-        if (Files.notExists(archivo))
-            return new Contacto("Laura Gabriela Romero", "Administradora principal", "gabriela.romero@alineo.co",
-                    "+57 300 000 0000", "573000000000", false);
         var elemento = new Properties();
-        try (var in = Files.newBufferedReader(archivo, StandardCharsets.UTF_8)) {
-            elemento.load(in);
-        } catch (IOException | IllegalArgumentException error) {
-            return new Contacto("", "", "", "", "", true);
+        if (Files.exists(archivo)) {
+            try (var in = Files.newBufferedReader(archivo, StandardCharsets.UTF_8)) {
+                elemento.load(in);
+            } catch (IOException | IllegalArgumentException error) {
+                elemento.clear();
+            }
         }
-        String nombre = texto(elemento, "nombre"), cargo = texto(elemento, "cargo"), correo = texto(elemento,
-                "empresa.correo").isBlank() ? texto(elemento, "correo") : texto(elemento,
-                "empresa.correo"), telefono = texto(elemento, "empresa.telefono").isBlank() ? texto(elemento,
-                "telefono") : texto(elemento, "empresa.telefono"), wa = texto(elemento, "whatsapp");
+        String nombre = respaldo(texto(elemento, "nombre"), "Laura Gabriela Romero");
+        String cargo = respaldo(texto(elemento, "cargo"), "Administradora principal");
+        String correo = respaldo(texto(elemento, "correo"), "gabriela.romero@alineo.co");
+        String telefono = respaldo(texto(elemento, "telefono"), "+57 300 000 0000");
+        String wa = respaldo(texto(elemento, "whatsapp"), "573000000000");
         if (!correo.matches("[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}")) correo = "";
         wa = wa.replaceAll("[+\\s()\\-]", "");
         if (!wa.matches("[1-9][0-9]{6,14}")) wa = "";
@@ -53,6 +54,11 @@ public record Contacto(String nombre, String cargo, String correo, String telefo
      */
     public String enlaceCorreo() {
         return correo.isBlank() ? "" : "mailto:" + correo + "?subject=Ayuda%20con%20ALINEO";
+    }
+
+    private static String respaldo(String valor, String predeterminado) {
+        return valor.isBlank() || List.of("Persona de ejemplo", "Responsable de ejemplo", "correo@ejemplo.com").stream()
+                .anyMatch(valor::equalsIgnoreCase) ? predeterminado : valor;
     }
 
     private static String texto(Properties elemento, String campo) {

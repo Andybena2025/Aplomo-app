@@ -2367,3 +2367,47 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
  .ayuda-populares{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.ayuda-pie{text-align:center}}
 @media(max-width:379px){.ayuda-tareas,.ayuda-todos{grid-template-columns:1fr}}
 .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* Paso 31 · Detalles con título propio, métricas legibles y marcas del mismo alto visible. */
+.cabecera-seccion{font:40px/1.1 var(--serif);margin:0}
+.cabecera-titulo>.eyebrow:empty{display:none}
+.alineo main.wrap:has(>.detalle-cabecera){padding-top:24px}
+.detalle-cabecera{margin:0 0 32px;min-width:0}
+.detalle-volver{display:inline-flex;align-items:center;min-height:44px;color:var(--muted);font-size:15px;
+ text-decoration:none;margin-bottom:8px}
+.detalle-titulo{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 24px;align-items:center}
+.detalle-identidad{display:flex;align-items:center;gap:16px;min-width:0;flex-wrap:wrap}
+.detalle-identidad h1{font:40px/1.1 var(--serif);margin:0;overflow-wrap:anywhere}
+.detalle-meta{grid-column:1;grid-row:2;display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+ font-size:16px;color:var(--muted);min-width:0;overflow-wrap:anywhere}
+.detalle-acciones{grid-column:2;grid-row:1/3;justify-content:flex-end;max-width:460px}
+.detalle-acciones .btn{height:44px;min-height:44px}
+.detalle-acciones .cambiar-empresa{order:2}
+.cambiar-empresa[open]{z-index:3}.cambiar-empresa[open]>a{max-width:300px;overflow-wrap:anywhere}
+.archivo-indicadores{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(280px,1.4fr);margin:0 0 24px}
+.archivo-indicadores .card{display:flex;flex-direction:column;justify-content:space-between;gap:12px}
+.archivo-indicadores .card>div{margin:0;font-size:15px}
+.archivo-numero{font:32px/1 var(--serif);font-weight:400}
+.archivo-etiqueta{font-size:13px;color:var(--muted)}
+.archivo-indicadores .resumen-riesgo{display:flex;flex-direction:column;gap:10px;width:100%}
+.archivo-indicadores .leyenda-riesgo{display:flex;flex-wrap:nowrap;gap:4px;font-size:13px;white-space:nowrap}
+.archivo-indicadores .leyenda-riesgo>span+span::before{content:'· ';color:var(--muted)}
+.archivo-filtros select{height:44px;min-height:44px}
+.empresas-resumen{display:flex;align-items:center;gap:6px;max-width:100%;min-width:0}
+.empresas-resumen>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empresas-cantidad{flex:none;border:1px solid var(--line2);border-radius:999px;padding:2px 6px;font-size:13px}
+.ayuda-logo-publico{height:56px}.ayuda-todos-titulo{margin-bottom:16px!important}
+.inicio-columnas .resultado-puesto{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px}
+.resultado-puesto .lista-identidad{min-width:0;display:grid;gap:6px}
+.resultado-puesto .lista-identidad strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.resultado-puesto .lista-identidad small{display:block;white-space:nowrap;font-size:15px;color:var(--muted)}
+@media(max-width:1179px){.inicio-columnas .lista-fila .persona-lista{display:none}}
+@media(max-width:767px){.detalle-titulo{grid-template-columns:minmax(0,1fr)}
+ .detalle-acciones{grid-column:1;grid-row:3;justify-content:flex-start;max-width:none}
+ .archivo-indicadores{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .archivo-indicadores .card:last-child{grid-column:auto}}
+@media(max-width:480px){.archivo-indicadores{grid-template-columns:minmax(0,1fr)}
+ .detalle-identidad h1{font-size:36px}}
+
+.detalle-identidad{flex-wrap:nowrap}.detalle-identidad h1{flex:1;min-width:0}
+/* Centrar el trazo visible, no el espacio vacío del viewBox de la marca. */
+.alineo .riel-izq .marca-v,.alineo .deco-der{top:calc(50% - min(12.26px,1.226vh))}

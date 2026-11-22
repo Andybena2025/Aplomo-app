@@ -35,7 +35,8 @@ public final class Marca {
     public static String lateral() {
         String inicio = "<line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"64\"";
         String fin = "<circle cx=\"50\" cy=\"10\"";
-        return MONOGRAMA.replace(inicio, "<g class=\"lg-a-plomo\">" + inicio).replace(fin, "</g>" + fin);
+        return MONOGRAMA.replace("viewBox=\"0 0 108 180\"", "viewBox=\"0 43.02 90 100\"")
+                .replace(inicio, "<g class=\"lg-a-plomo\">" + inicio).replace(fin, "</g>" + fin);
     }
 
     private static String monograma() {

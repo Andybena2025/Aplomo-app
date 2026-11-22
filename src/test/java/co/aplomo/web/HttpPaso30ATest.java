@@ -37,11 +37,11 @@ class HttpPaso30ATest extends HttpPrueba {
             String html = get(ruta).body();
             String antesDeMain = html.substring(0, html.indexOf("<main"));
             assertEquals(1, Pattern.compile("<header\\b").matcher(antesDeMain).results().count(), ruta);
-            assertTrue(antesDeMain.contains("<h1>"), ruta);
+            assertTrue(antesDeMain.contains("<h1>") || antesDeMain.contains("cabecera-seccion"), ruta);
             assertTrue(antesDeMain.contains("aria-label=\"Menú principal\""), ruta);
             assertFalse(html.contains("Administración de ALINEO"));
             assertFalse(html.contains("Tu jornada de evaluación"));
-            if (rol == Cuenta.Rol.USUARIO)
+            if (rol == Cuenta.Rol.USUARIO && ruta.equals("/"))
                 assertTrue(antesDeMain.contains("<span class=\"cabecera-rol\">Empresa de prueba sin confirmar</span>"));
         }
         String cuenta = get("/cuenta").body();

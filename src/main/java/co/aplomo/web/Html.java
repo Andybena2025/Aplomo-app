@@ -206,6 +206,21 @@ public final class Html {
         return pagina(titulo, encabezado(seccion, titulo, acciones) + contenido, sesion2, false, atras);
     }
 
+    /**
+     * RF-024, RNF-002/007: encabezado único de detalle con regreso al listado y acciones propias. Estado, metadatos y
+     * acciones son fragmentos escapados por sus presentadores.
+     */
+    public static String detalle(String seccion, String volver, String titulo, String estado, String meta,
+            String acciones) {
+        String etiqueta = seccion.equals("Mi cuenta") ? "Inicio" : seccion;
+        return "<section class=\"detalle-cabecera\" data-detalle-seccion=\"" + escapar(seccion) +
+                "\"><a class=\"detalle-volver\" href=\"" + escapar(volver) + "\">← " + escapar(etiqueta) +
+                "</a><div class=\"detalle-titulo\"><div class=\"detalle-identidad\"><h1>" + escapar(titulo) + "</h1>" +
+                estado + "</div><div class=\"detalle-meta\">" + meta + "</div>" +
+                (acciones.isBlank() ? "" : "<div class=\"row detalle-acciones\">" + acciones + "</div>") +
+                "</div></section>";
+    }
+
     private static String seccion(String titulo) {
         String texto2 = titulo.toLowerCase(java.util.Locale.ROOT);
         if (texto2.contains("usuario")) return "Gestión · Usuarios";
@@ -245,14 +260,20 @@ public final class Html {
         boolean unificada = !enfoque && sesion2 != null && sesion2.cuenta() != null;
         CabeceraPagina.Datos datos = unificada ? CabeceraPagina.extraer(titulo,
                 pagehead + contenido) : new CabeceraPagina.Datos(contenido, "", escapar(titulo), "", "");
-        String cabecera = enfoque ? cabeceraEnfoque(contenido) : cabecera(sesion2, atras, datos);
+        var detalle = java.util.regex.Pattern.compile("data-detalle-seccion=\"([^\"]*)\"").matcher(contenido);
+        boolean esDetalle = !enfoque && detalle.find();
+        if (esDetalle) {
+            datos = new CabeceraPagina.Datos(contenido, "", detalle.group(1), "", "");
+        }
+        String cabecera = enfoque ? cabeceraEnfoque(contenido) : cabecera(sesion2, atras && !esDetalle, datos,
+                esDetalle, titulo.equals("Inicio"));
         if (unificada) {
             contenido = datos.cuerpo();
             pagehead = "";
         }
 
         // Una sola salida de navegación; los pasos internos del asistente se conservan.
-        if (!cabecera.isEmpty())
+        if (!cabecera.isEmpty() && !esDetalle)
             contenido = contenido.replaceAll("<a\\b[^>]*>\\s*(?:←[^<]*|Volver (?:a |al )[^<]*)</a>", "");
         return "<!doctype html><html lang=\"es\"><head><meta charset=\"UTF-8\">" +
                 "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewpor" + "t-fit=cover\">" +
@@ -282,7 +303,8 @@ public final class Html {
                 "</span><a class=\"btn\" href=\"" + volver + "\">Salir</a></div></header>";
     }
 
-    private static String cabecera(Sesion sesion2, boolean atras, CabeceraPagina.Datos datos) {
+    private static String cabecera(Sesion sesion2, boolean atras, CabeceraPagina.Datos datos, boolean detalle,
+            boolean inicio) {
         String cabecera = "";
         if (sesion2 != null && sesion2.cuenta() != null) {
             Cuenta cuenta = sesion2.cuenta();
@@ -298,8 +320,9 @@ public final class Html {
             cabecera = "<header class=\"top cabecera-unica\"><div class=\"wrap\">" + "<div class=\"cabecera-titulo\">" +
                     (atras ? "<button class=\"btn cabecera-atras\" onclick=\"history.back()\" aria-label=\"Atrás\">← " +
                              "Atrás</button>" : "") + "<span class=\"eyebrow\">" + datos.rotulo() +
-                    "</span><div class=\"titulo-con-rol\"><h1>" + datos.titulo() +
-                    "</h1><span class=\"cabecera-rol\">" + etiqueta + "</span></div></div>" +
+                    "</span><div class=\"titulo-con-rol\">" + (detalle ?
+                    "<p class=\"cabecera-seccion\">" + datos.titulo() + "</p>" : "<h1>" + datos.titulo() + "</h1>") +
+                    (inicio ? "<span class=\"cabecera-rol\">" + etiqueta + "</span>" : "") + "</div></div>" +
                     "<nav class=\"nav\" aria-label=\"Menú principal\">" + nav + "</nav>" +
                     "<a class=\"marca-cabecera\" href=\"/\" aria-label=\"ALINEO.\">" + Marca.logo() + "</a>"
 

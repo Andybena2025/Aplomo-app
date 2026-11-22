@@ -43,14 +43,12 @@ public final class PaginasArchivo {
                 "<a class=\"btn p\" href=\"/informes/empresa/" + empresa.id() + "\">Informe PDF</a>" : "");
         String lugar = empresa.ciudad() + (empresa.sector() == null || empresa.sector().isBlank() ? "" :
                 (empresa.ciudad().isBlank() ? "" : " · ") + empresa.sector());
-        StringBuilder html = new StringBuilder("<p class=\"migas\"><a href=\"/archivo\">‹ Archivo</a> / ").append(
-                        Html.escapar(empresa.nombre())).append("</p>")
-                .append(Html.encabezado("Consultas · Archivo", empresa.nombre(), acciones))
-                .append("<div class=\"row\">").append(SistemaVisual.estado(empresa.activa() ? "ACTIVO" : "INACTIVO"))
-                .append("<span class=\"muted\">").append(Html.escapar(lugar)).append("</span></div>")
-                .append(indicadores(visibles)).append(filtros(sesion, todas, parametros, empresa.id()))
+        String meta = Html.escapar(lugar) + (todas.isEmpty() ? "" : " · " + personas(todas));
+        StringBuilder html = new StringBuilder(Html.detalle("Archivo", "/archivo", empresa.nombre(),
+                SistemaVisual.estado(empresa.activa() ? "ACTIVA" : "INACTIVA"), meta, acciones)).append(
+                        indicadores(visibles)).append(filtros(sesion, todas, parametros, empresa.id()))
                 .append(arbol(sesion, visibles));
-        return Html.pagina("Archivo", html.toString(), sesion, false, true);
+        return Html.pagina("Archivo", html.toString(), sesion, false, false);
     }
 
     private static String empresas(Sesion sesion, Datos datos) {
@@ -109,19 +107,21 @@ public final class PaginasArchivo {
     }
 
     private static String indicadores(List<Fila> filas) {
-        String periodo = filas.isEmpty() ? "Sin evaluaciones" :
-                TextoLista.fecha(ordenadas(filas).get(filas.size() - 1).valor("fecha")) + " – " +
-                        TextoLista.fecha(ordenadas(filas).get(0).valor("fecha"));
+        String primera = filas.isEmpty() ? "" : TextoLista.fecha(ordenadas(filas).get(filas.size() - 1).valor("fecha"));
+        String ultima = filas.isEmpty() ? "" : TextoLista.fecha(ordenadas(filas).get(0).valor("fecha"));
+        String periodo = filas.isEmpty() ? "Sin evaluaciones" : primera.equals(ultima) ? primera :
+                                                                primera + " – " + ultima;
         return "<div class=\"archivo-indicadores\">" +
-                indicador("Evaluaciones", Html.plural(filas.size(), "evaluación")) +
-                indicador("Puestos evaluados", Html.plural(agrupar(filas, "puesto").size(), "puesto")) +
-                indicador("Periodo", periodo) + indicador("Evaluador(a)", personas(filas)) +
-                indicador("Resultado", TextoLista.barra(filas)) + "</div>";
+                indicador("Evaluaciones", "<strong class=\"archivo-numero\">" + filas.size() + "</strong>") +
+                indicador("Puestos evaluados",
+                        "<strong class=\"archivo-numero\">" + agrupar(filas, "puesto").size() + "</strong>") +
+                indicador("Periodo", Html.escapar(periodo)) + indicador("Resultado", TextoLista.barra(filas)) +
+                "</div>";
     }
 
     private static String indicador(String titulo, String contenido) {
-        return "<article class=\"card\"><span class=\"eyebrow\">" + titulo + "</span><div>" + contenido +
-                "</div></article>";
+        return "<article class=\"card\"><div>" + contenido + "</div><span class=\"archivo-etiqueta\">" + titulo +
+                "</span></article>";
     }
 
     private static String cambiarEmpresa(Datos datos, int seleccionada) {
@@ -160,7 +160,7 @@ public final class PaginasArchivo {
             Map<String, String> datos) {
         StringBuilder html = new StringBuilder("<label class=\"field\">").append(etiqueta)
                 .append("<select class=\"input\" name=\"").append(nombre)
-                .append("\"><option value=\"\">Todos</option>");
+                .append("\"><option value=\"\">" + (nombre.equals("lugar") ? "Todas" : "Todos") + "</option>");
         opciones.forEach((id, titulo) -> html.append("<option value=\"").append(Html.escapar(id)).append("\"")
                 .append(id.equals(datos.get(nombre)) ? " selected" : "").append(">").append(Html.escapar(titulo))
                 .append("</option>"));
@@ -230,14 +230,15 @@ public final class PaginasArchivo {
     public static String historial(Sesion sesion, List<Fila> filas) {
         if (filas.isEmpty()) throw new SecurityException("El puesto no está disponible para tu cuenta.");
         Fila puesto = ordenadas(filas).get(0);
-        StringBuilder html = new StringBuilder("<p class=\"migas\"><a href=\"/archivo?empresa=").append(
-                        puesto.valor("empresa")).append("\">‹ Archivo</a></p>")
-                .append(Html.encabezado("Archivo · Puesto", TextoLista.puesto(puesto), ""))
-                .append("<p class=\"hint\">Historial del puesto · ")
-                .append(Html.escapar(puesto.valor("area_nombre") + " · " + puesto.valor("cargo_nombre"))).append(" · ")
-                .append(puesto.valor("puesto_activo").equals("0") ? "Inactivo" : "Activo").append(" · Sede ")
-                .append(puesto.valor("sede_activa").equals("0") ? "Inactiva" : "Activa")
-                .append("</p><ol class=\"archivo-tiempo\">");
+        boolean activo = !puesto.valor("puesto_activo").equals("0");
+        String estado = "<span class=\"pill estado-" + (activo ? "activa" : "inactiva") +
+                "\"><i aria-hidden=\"true\"></i>" + (activo ? "Activo" : "Inactivo") + "</span>";
+        String meta = Html.escapar(puesto.valor("sede_nombre") + " · Sede " +
+                (puesto.valor("sede_activa").equals("0") ? "Inactiva" : "Activa") + " · " +
+                puesto.valor("salon_nombre") + " · " + puesto.valor("area_nombre")) + " · " + personas(filas);
+        StringBuilder html = new StringBuilder(
+                Html.detalle("Archivo", "/archivo?empresa=" + puesto.valor("empresa"), TextoLista.puesto(puesto),
+                        estado, meta, "")).append("<ol class=\"archivo-tiempo\">");
         for (Fila f : ordenadas(filas)) {
             html.append("<li class=\"card row between\" data-evaluacion=\"").append(f.id()).append("\"><span>")
                     .append(TextoLista.fecha(f.valor("fecha"))).append(" · ").append(resultado(f)).append(" · ")
@@ -245,7 +246,7 @@ public final class PaginasArchivo {
                     .append(f.valor("estado").equals("EN_CURSO") ? "En curso" : "Finalizada").append("</span>")
                     .append("<a class=\"btn\" href=\"/evaluaciones/").append(f.id()).append("\">Ver</a></li>");
         }
-        return Html.pagina("Historial del puesto", html.append("</ol>").toString(), sesion, false, true);
+        return Html.pagina("Historial del puesto", html.append("</ol>").toString(), sesion, false, false);
     }
 
     private static Map<String, List<Fila>> agrupar(List<Fila> filas, String clave) {

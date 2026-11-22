@@ -109,12 +109,11 @@ public final class PaginasEmpresas {
         StringBuilder html = new StringBuilder(
                 Html.aviso(aviso, "Datos guardados.".equals(aviso) || "Registro reactivado.".equals(aviso)));
         html.append(avisoInactivo(sesion, empresa.activo(), "Esta empresa está desactivada.", "empresa", empresa.id()))
-                .append(enlace("/empresas", "← Empresas", false))
                 .append("<div class=\"grid2 empresa-paneles\"><section class=\"card stack\">")
-                .append(estado(empresa.activo())).append("<dl class=\"datos-cuenta\">")
-                .append(dato("Sector", empresa.sector())).append(dato("NIT", empresa.nit()))
-                .append(dato("Descripción", empresa.descripcion())).append(dato("Teléfono", empresa.telefono()))
-                .append(dato("Correo", empresa.correo())).append(dato("Contacto", empresa.contacto())).append("</dl>")
+                .append("<dl class=\"datos-cuenta\">").append(dato("Sector", empresa.sector()))
+                .append(dato("NIT", empresa.nit())).append(dato("Descripción", empresa.descripcion()))
+                .append(dato("Teléfono", empresa.telefono())).append(dato("Correo", empresa.correo()))
+                .append(dato("Contacto", empresa.contacto())).append("</dl>")
                 .append(acciones(sesion, ruta, empresa.activo(), edita, edita)).append("</section>");
 
         String accionesPagina = enlace("/calificaciones?empresa=" + empresa.id(), "Ver calificaciones", false);
@@ -161,7 +160,14 @@ public final class PaginasEmpresas {
             html.append(catalogo(cargo.nombre(), cargo.activo(),
                     acciones(sesion, "/cargos/" + cargo.id(), cargo.activo(), espacios, edita)));
         html.append(finSeccion(cargos.isEmpty(), "No hay cargos registrados."));
-        return Html.pagina(empresa.nombre(), html.toString(), sesion, "Gestión · Empresas", accionesPagina);
+        String ciudad = sedes.stream().map(Sede::ciudad).distinct().collect(java.util.stream.Collectors.joining(" · "));
+        String meta = escapar(ciudad + (empresa.sector() == null || empresa.sector().isBlank() ? "" :
+                (ciudad.isBlank() ? "" : " · ") + empresa.sector()));
+        for (var persona : equipo) meta += " · " + TextoLista.persona(persona.nombre(), persona.color());
+        return Html.pagina(empresa.nombre(),
+                Html.detalle("Empresas", "/empresas", empresa.nombre(),
+                        SistemaVisual.estado(empresa.activo() ? "ACTIVA" : "INACTIVA"), meta,
+                        accionesPagina) + html, sesion, false, false);
     }
 
     /**

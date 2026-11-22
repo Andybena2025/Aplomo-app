@@ -61,12 +61,16 @@ public final class PaginasVisitas {
      */
     public static String detalle(Sesion sesion, Ficha ficha, List<Evaluacion> evaluaciones,
             List<co.aplomo.modelo.Puesto> puestos, String aviso, boolean exito) {
-        StringBuilder html = new StringBuilder(enlace("/visitas", "← Visitas", false));
-        html.append(Html.aviso(aviso, exito)).append("<section class=\"card stack\"><div class=\"row between\"><h2>")
-                .append(escapar(ficha.empresaNombre())).append("</h2><span class=\"")
-                .append(claseEstado(ficha.visita().estado())).append("\">").append(estado(ficha.visita().estado()))
-                .append("</span></div><p class=\"muted\">").append(escapar(ficha.sedeNombre())).append(" · ")
-                .append(escapar(ficha.salonNombre())).append("</p><dl class=\"datos-cuenta\">")
+        String estado =
+                "<span class=\"" + claseEstado(ficha.visita().estado()) + "\">" + estado(ficha.visita().estado()) +
+                        "</span>";
+        String meta = escapar(ficha.sedeNombre() + " · " + ficha.salonNombre() + " · " +
+                Html.fecha(ficha.visita().inicio().toLocalDate()));
+        if (ficha.evaluadorNombre() != null && !ficha.evaluadorNombre().isBlank())
+            meta += " · " + TextoLista.persona(ficha.evaluadorNombre(), ficha.evaluadorColor());
+        StringBuilder html = new StringBuilder(
+                Html.detalle("Visitas", "/visitas", ficha.empresaNombre(), estado, meta, ""));
+        html.append(Html.aviso(aviso, exito)).append("<section class=\"card stack\"><dl class=\"datos-cuenta\">")
                 .append(dato("Horario real", Html.fecha(ficha.visita().inicio().toLocalDate()) + " · " +
                         TextoLista.hora(ficha.visita().inicio().toString()) +
                         (ficha.visita().fin() == null ? "" : " a " + TextoLista.hora(ficha.visita().fin().toString()))))
@@ -120,7 +124,7 @@ public final class PaginasVisitas {
             if (evaluaciones.isEmpty()) html.append(
                     "<p class=\"hint\">Guarda al menos una evaluación para poder finalizar la vis" + "ita.</p>");
         }
-        return Html.pagina("Visita", html.toString(), sesion);
+        return Html.pagina("Visita", html.toString(), sesion, false, false);
     }
 
     private static String puestos(Ficha ficha, List<co.aplomo.modelo.Puesto> puestos, List<Evaluacion> evaluaciones) {

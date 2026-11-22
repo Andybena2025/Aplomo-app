@@ -23,7 +23,9 @@ window.addEventListener('pageshow',()=>{
   var path = location.pathname;
   document.querySelectorAll('.nav-tab').forEach(function(tab){
     var href = tab.getAttribute('href');
-    const seccion = /^\/(sedes|salones|areas|cargos|puestos)(?:\/|$)/.test(path) ? '/empresas' : path;
+    const archivo = document.querySelector('[data-detalle-seccion="Archivo"]');
+    const seccion = archivo ? '/archivo' :
+      /^\/(sedes|salones|areas|cargos|puestos)(?:\/|$)/.test(path) ? '/empresas' : path;
     if (href === '/' ? path === '/' : seccion.startsWith(href)) { tab.classList.add('on'); tab.setAttribute('aria-current', 'page'); }
   });
 })();

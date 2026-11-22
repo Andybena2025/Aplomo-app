@@ -19,16 +19,25 @@ import java.util.List;
 public final class VisitaDao {
     private static final String CONTEXTO =
             "SELECT v.*, r.codigo AS reserva_codigo, s.id_empresa, l.id_sede, l.id_salon, " +
-                    "e.nombre AS empresa_nombre, s.nombre AS sede_nombre, l.nombre AS salon_nombre " +
+                    "e.nombre AS empresa_nombre, s.nombre AS sede_nombre, l.nombre AS salon_nombre, c.nombre AS " +
+                    "evaluador_nombre, c.color_agenda AS evaluador_color " +
                     "FROM visita v JOIN reserva r ON r.id_reserva = v.id_reserva JOIN salon l ON " +
                     "l.id_salon = r.id_salon " +
-                    "JOIN sede s ON s.id_sede = l.id_sede JOIN empresa e ON e.id_empresa = s.id_empresa";
+                    "JOIN sede s ON s.id_sede = l.id_sede JOIN empresa e ON e.id_empresa = s.id_empresa " +
+                    "LEFT JOIN cuenta c ON c.id_cuenta=r.id_evaluador";
 
     /**
      * Contexto de la visita sin fotografías ni información de otra empresa. RNF-011.
      */
     public record Ficha(Visita visita, int empresa, int sede, int salon, String codigoReserva, String empresaNombre,
-                        String sedeNombre, String salonNombre) {
+                        String sedeNombre, String salonNombre, String evaluadorNombre, String evaluadorColor) {
+        /**
+         * RNF-011: compatibilidad de presentadores sin un evaluador registrado.
+         */
+        public Ficha(Visita visita, int empresa, int sede, int salon, String codigoReserva, String empresaNombre,
+                String sedeNombre, String salonNombre) {
+            this(visita, empresa, sede, salon, codigoReserva, empresaNombre, sedeNombre, salonNombre, "", "");
+        }
     }
 
     /**
@@ -189,6 +198,6 @@ public final class VisitaDao {
                 fila.getString("notas"), fila.getBigDecimal("calificacion_final"), fila.getString("estado"));
         return new Ficha(visita, fila.getInt("id_empresa"), fila.getInt("id_sede"), fila.getInt("id_salon"),
                 fila.getString("reserva_codigo"), fila.getString("empresa_nombre"), fila.getString("sede_nombre"),
-                fila.getString("salon_nombre"));
+                fila.getString("salon_nombre"), fila.getString("evaluador_nombre"), fila.getString("evaluador_color"));
     }
 }

@@ -103,10 +103,13 @@ public final class CuentaWeb {
         Cuenta cuenta = sesion.cuenta();
         List<String> empresas = perfil.empresas(cuenta);
         String inicial = Html.iniciales(cuenta.nombre());
-        StringBuilder html = new StringBuilder(Html.aviso(mensaje, "Datos guardados.".equals(mensaje)));
+        StringBuilder html = new StringBuilder(
+                Html.detalle("Mi cuenta", "/", cuenta.nombre(), SistemaVisual.estado(cuenta.estado().name()),
+                        Html.escapar(cuenta.correo()), ""));
+        html.append(Html.aviso(mensaje, "Datos guardados.".equals(mensaje)));
         html.append("<div class=\"cuenta-ajustes\"><section class=\"card cuenta-perfil\"><span class=\"iniciales\">")
-                .append(Html.escapar(inicial)).append("</span><div><h2>").append(Html.escapar(cuenta.nombre()))
-                .append("</h2><p class=\"muted\">").append(Formularios.etiqueta(cuenta.rol().name())).append("</p><p>")
+                .append(Html.escapar(inicial)).append("</span><div><p class=\"muted\">")
+                .append(Formularios.etiqueta(cuenta.rol().name())).append("</p><p>")
                 .append(Html.escapar(cuenta.correo())).append("</p></div></section>")
                 .append("<section class=\"card stack\"><h2>Datos personales</h2>")
                 .append(ajuste("nombre", "Nombre", cuenta.nombre()))
@@ -121,7 +124,7 @@ public final class CuentaWeb {
                         cuenta.rol() == Cuenta.Rol.ADMINISTRADOR ? "Todas las empresas" : String.join(" · ", empresas)))
                 .append("</p></section><form method=\"post\" action=\"/logout\">").append(Html.csrf(sesion))
                 .append("<button class=\"btn\">Cerrar sesión</button></form></div>");
-        return Html.pagina("Mi cuenta", html.toString(), sesion, "Cuenta · Ajustes", "");
+        return Html.pagina("Mi cuenta", html.toString(), sesion, false, false);
     }
 
     private static String ajuste(String nombre, String etiqueta, String valor) {

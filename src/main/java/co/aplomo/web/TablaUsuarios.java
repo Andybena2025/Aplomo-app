@@ -51,10 +51,16 @@ final class TablaUsuarios {
                 "<th scope=\"col\">Acciones</th></tr></thead><tbody>");
         for (Cuenta cuenta : cuentas) {
             var ids = asignadas.getOrDefault(cuenta.id(), List.of());
+            var nombresEmpresas = ids.stream().map(nombres::get).filter(java.util.Objects::nonNull).toList();
             String vinculadas =
-                    cuenta.rol() == Rol.ADMINISTRADOR ? "Todas las empresas" : ids.stream().map(nombres::get)
-                                                                               .filter(java.util.Objects::nonNull)
-                                                                               .collect(Collectors.joining(" · "));
+                    cuenta.rol() == Rol.ADMINISTRADOR ? "Todas las empresas" : String.join(" · ", nombresEmpresas);
+            String primera = cuenta.rol() ==
+                    Rol.ADMINISTRADOR ? vinculadas : nombresEmpresas.isEmpty() ? "" : nombresEmpresas.get(0);
+            String resumen = "<span class=\"empresas-resumen\" title=\"" + Html.escapar(vinculadas) + "\"><span>" +
+                    Html.escapar(primera) + "</span>" +
+                    (cuenta.rol() != Rol.ADMINISTRADOR && nombresEmpresas.size() > 1 ?
+                            "<small class=\"empresas-cantidad\">+" + (nombresEmpresas.size() - 1) + "</small>" : "") +
+                    "</span>";
             html.append("<tr data-registro=\"").append(cuenta.id()).append("\" data-estado=\"")
                     .append(cuenta.estado().name()).append("\" data-rol=\"").append(cuenta.rol().name())
                     .append("\" data-empresa=\"")
@@ -65,7 +71,7 @@ final class TablaUsuarios {
                     .append("\">").append(Html.escapar(cuenta.nombre())).append("</strong><small>")
                     .append(Html.escapar(cuenta.correo())).append("</small></a></td><td data-label=\"Rol\">")
                     .append(Formularios.etiqueta(cuenta.rol().name())).append("</td><td data-label=\"Empresa\">")
-                    .append(Html.escapar(vinculadas)).append("</td><td data-label=\"Estado\">")
+                    .append(resumen).append("</td><td data-label=\"Estado\">")
                     .append(SistemaVisual.estado(cuenta.estado().name())).append("</td><td data-label=\"Acciones\">")
                     .append("<a class=\"btn\" href=\"/usuarios/").append(cuenta.id())
                     .append("/editar\">Editar</a></td></tr>");

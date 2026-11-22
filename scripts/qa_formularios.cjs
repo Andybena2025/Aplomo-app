@@ -13,3 +13,13 @@ test('un segundo clic no duplica el envío ni el campo de selección',()=>{const
 test('volver con historial limpia la selección temporal y permite elegir otro puesto',()=>{const e=entorno();e.submit(e.botones[0]);e.volver();assert.equal(e.botones[0].disabled,false);assert.equal(e.botones[0].textContent,'Probar PLANTA');assert.equal(e.campos.filter(c=>c.name==='tipo').length,0);e.submit(e.botones[1]);assert.deepEqual(e.entradas(e.botones[1]),[['csrf','token-de-prueba'],['tipo','OFICINA']]);});
 test('un formulario atendido por otro script no cambia ni agrega campos',()=>{const e=entorno();e.submit(e.botones[0],true);assert.equal(e.botones[0].disabled,false);assert.equal(e.campos.length,1);});
 test('botón sin nombre no agrega datos ajenos al formulario',()=>{const e=entorno();e.botones[0].name='';e.submit(e.botones[0]);assert.deepEqual(e.entradas(e.botones[0]),[['csrf','token-de-prueba']]);});
+for(const [ruta,archivo,activa] of [['/puestos/7',true,'/archivo'],['/puestos/7',false,'/empresas'],['/visitas/7',false,'/visitas']]){
+ test('el menú distingue historial y gestión: '+ruta+' archivo='+archivo,()=>{
+  const tabs=['/','/archivo','/empresas','/visitas'].map(href=>({href,classes:[],getAttribute(){return href;},
+   classList:{add(){}},setAttribute(k,v){this[k]=v;}}));
+  const document={querySelectorAll:s=>s==='.nav-tab'?tabs:[],querySelector:s=>
+   s==='[data-detalle-seccion="Archivo"]'&&archivo?{}:null};
+  vm.runInNewContext(codigo,{document,window:{addEventListener(){}},location:{pathname:ruta}});
+  assert.deepEqual(tabs.filter(t=>t['aria-current']==='page').map(t=>t.href),[activa]);
+ });
+}
