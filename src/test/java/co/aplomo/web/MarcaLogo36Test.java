@@ -47,13 +47,18 @@ class MarcaLogo36Test {
     }
 
     @Test
-    void brilloDoradoEmpiezaDespuesDeLosPuntos() throws Exception {
+    void destellosEmpiezanDespuesDeLosPuntos() throws Exception {
         String css;
         try (var entrada = MarcaLogo36Test.class.getResourceAsStream("/static/css/aplomo.css")) {
             css = new String(entrada.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
         }
-        assertTrue(css.contains("animation:marcaBrillo 20s ease-in-out 7.5s infinite"));
-        assertTrue(600 + maximo(Marca.logo()) + 300 < 7500, "el brillo sale cuando los puntos ya terminaron");
+        assertFalse(css.contains("marcaBrillo"), "ya no hay onda dorada");
+        assertTrue(css.contains("animation:destello 12s ease-in-out infinite"));
+        assertTrue(css.contains("animation-delay:calc(7.5s + var(--d))"));
+        assertTrue(css.contains(".destellos{display:none}.marca-llegada .destellos{display:inline}"));
+        assertEquals(5, Pattern.compile("class=\"destello\"").matcher(Marca.logo()).results().count());
+        assertFalse(Marca.icono().contains("destello"), "el monograma no lleva destellos");
+        assertTrue(600 + maximo(Marca.logo()) + 300 < 7500, "los destellos salen cuando los puntos ya terminaron");
     }
 
     private static String seccion(String svg, String clase) {

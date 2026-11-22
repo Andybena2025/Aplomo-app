@@ -2077,11 +2077,16 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
 .marca-llegada .lg-a>path[stroke-dasharray]{display:none}.marca-llegada .lg-sec-a{display:inline}
 .marca-llegada .lg-sec [style*="--t"]{animation:marcaPunto .3s ease-out both;animation-delay:calc(600ms + var(--t)*1ms)}
 @keyframes marcaPunto{from{opacity:0}to{opacity:1}}
-/* Paso 36B: el brillo dorado espera a que terminen los puntos (~6.9 s) y luego se repite cada 20 s. */
-.marca-llegada::after{content:"";pointer-events:none;position:absolute;inset:18% auto 26% 0;width:12%;
- background:linear-gradient(90deg,transparent,#E3CDA02B,transparent);opacity:0;mix-blend-mode:screen;
- animation:marcaBrillo 20s ease-in-out 7.5s infinite}
-@keyframes marcaBrillo{0%{left:0;opacity:0}3%{opacity:.7}17%{left:88%;opacity:.7}20%,100%{left:88%;opacity:0}}
+/* Destellos tipo joya (reemplazan la onda dorada): empiezan a los 7.5 s, cuando ya terminaron los puntos,
+   y se repiten suave cada 12 s con un leve resplandor champán. Solo en .marca-llegada. */
+.destellos{display:none}.marca-llegada .destellos{display:inline}
+.destello{opacity:0;transform-box:fill-box;transform-origin:center;animation:destello 12s ease-in-out infinite;
+ animation-delay:calc(7.5s + var(--d))}
+.destello .rayo{stroke:#FFF6E2;stroke-width:.6;stroke-linecap:round;opacity:.55}
+@keyframes destello{0%{opacity:0;transform:scale(.15) rotate(0deg)}3%{opacity:1;transform:scale(1) rotate(30deg)}
+ 7%{opacity:0;transform:scale(.25) rotate(70deg)}100%{opacity:0;transform:scale(.15) rotate(70deg)}}
+.marca-llegada .lg-texto,.marca-llegada .lg-a{animation:marcaAura 12s ease-in-out 7.5s infinite}
+@keyframes marcaAura{0%,30%,100%{filter:none}12%{filter:drop-shadow(0 0 3px rgba(227,205,160,.45))}}
 .riel-izq .marca-v::after{content:"";position:absolute;left:3%;top:73%;width:5px;height:5px;border-radius:50%;
  background:var(--marca);box-shadow:0 0 9px 3px #E3CDA066;opacity:0;animation:marcaLuz 14s linear infinite}
 .riel-izq .lg-regla>line:not(:first-child){animation:marcaRespira 14s ease-out infinite;
@@ -2120,9 +2125,9 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
  .login-nuevo .login-marca .logo-alineo{width:100%;height:auto}.login-nuevo .login-ideas{grid-template-columns:1fr}
  .login-nuevo .login-marca .tagline{font-size:13px!important}.saludo-linea{gap:10px}}
 @media(min-width:1400px){.riel-izq .lema-v{display:block}}
-@media(prefers-reduced-motion:reduce){.marca-llegada *,.marca-llegada::after,.riel-izq .marca-v::after,
+@media(prefers-reduced-motion:reduce){.marca-llegada *,.riel-izq .marca-v::after,
  .riel-izq .logo-alineo *,.deco-der .lg-a-plomo{animation:none!important;stroke-dashoffset:0}
- .marca-llegada::after,.riel-izq .marca-v::after{display:none}
+ .marca-llegada .destellos,.riel-izq .marca-v::after{display:none}
  .deco-der .lg-a-plomo{transform:none}}
 @media print{.nivel-impreso{position:static!important;width:auto!important;height:auto!important;clip:auto!important;
  overflow:visible!important;white-space:normal!important}.avisos-saludo,.aviso-modal{display:none!important}}
