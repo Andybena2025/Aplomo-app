@@ -2074,24 +2074,23 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
 .marca-llegada .lg-regla>line:first-child{stroke-dasharray:319;animation:marcaRegla 2.1s ease-out both}
 .marca-llegada .lg-regla>line:not(:first-child){animation:marcaMarca .4s ease-out both;
  animation-delay:calc(var(--i)*.02s)}
-.marca-llegada .lg-iplomo{transform-origin:129.9px 33px;animation:marcaEntrada 2.5s ease-out both}
+.lg-sec-a{display:none}
+/* Paso 36: secuencia punteada A -> L -> eje X (se divide en la E) -> centro de la O -> arco. */
+.marca-llegada .lg-a>path[stroke-dasharray]{display:none}.marca-llegada .lg-sec-a{display:inline}
+.marca-llegada .lg-sec [style*="--t"]{animation:marcaPunto .18s ease-out both;animation-delay:calc(2000ms + var(--t)*1ms)}
+@keyframes marcaPunto{from{opacity:0}to{opacity:1}}
 .marca-llegada::after{content:"";pointer-events:none;position:absolute;inset:18% auto 26% 0;width:12%;
  background:linear-gradient(90deg,transparent,#E3CDA02B,transparent);opacity:0;mix-blend-mode:screen;
  animation:marcaBrillo 20s ease-in-out 3s infinite}
 @keyframes marcaRegla{from{stroke-dashoffset:319}to{stroke-dashoffset:0}}
 @keyframes marcaMarca{from{opacity:0}to{opacity:1}}
-@keyframes marcaEntrada{0%{opacity:0;transform:translateY(-25px) rotate(0)}25%{opacity:1;transform:rotate(6deg)}
- 43%{transform:rotate(-5deg)}61%{transform:rotate(3deg)}79%{transform:rotate(-1.2deg)}100%{transform:none}}
 @keyframes marcaBrillo{0%{left:0;opacity:0}3%{opacity:.7}17%{left:88%;opacity:.7}20%,100%{left:88%;opacity:0}}
 .riel-izq .marca-v::after{content:"";position:absolute;left:3%;top:73%;width:5px;height:5px;border-radius:50%;
  background:var(--marca);box-shadow:0 0 9px 3px #E3CDA066;opacity:0;animation:marcaLuz 14s linear infinite}
 .riel-izq .lg-regla>line:not(:first-child){animation:marcaRespira 14s ease-out infinite;
  animation-delay:calc(var(--i)*.044s)}
-.riel-izq .lg-iplomo{transform-origin:129.9px 33px;animation:marcaIRespira 14s ease-in-out infinite}
 @keyframes marcaLuz{0%{left:3%;opacity:0}2%{opacity:.9}28%{left:93%;opacity:.9}30%,100%{left:93%;opacity:0}}
 @keyframes marcaRespira{0%,8%,100%{opacity:.6}2%,4%{opacity:1}}
-@keyframes marcaIRespira{0%,10%,30%,100%{transform:rotate(0)}13%{transform:rotate(4deg)}
- 18%{transform:rotate(-3deg)}23%{transform:rotate(1.5deg)}27%{transform:rotate(-.5deg)}}
 .inicio-marca{width:170px;flex-shrink:0;align-self:center}.saludo-linea{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .avisos-saludo{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--marca);border-radius:15px 15px 15px 2px;
  background:var(--bg);padding:2px 6px;color:var(--marca)}
@@ -2127,7 +2126,7 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
 @media(prefers-reduced-motion:reduce){.marca-llegada *,.marca-llegada::after,.riel-izq .marca-v::after,
  .riel-izq .logo-alineo *,.deco-der .lg-a-plomo{animation:none!important;stroke-dashoffset:0}
  .marca-llegada::after,.riel-izq .marca-v::after{display:none}
- .marca-llegada .lg-iplomo,.riel-izq .lg-iplomo,.deco-der .lg-a-plomo{transform:none}}
+ .deco-der .lg-a-plomo{transform:none}}
 @media print{.nivel-impreso{position:static!important;width:auto!important;height:auto!important;clip:auto!important;
  overflow:visible!important;white-space:normal!important}.avisos-saludo,.aviso-modal{display:none!important}}
 /* El SVG llena la columna, incluso con el antiguo contenedor de marca en cuadrícula. */

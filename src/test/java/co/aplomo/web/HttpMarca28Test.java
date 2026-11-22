@@ -19,7 +19,7 @@ class HttpMarca28Test extends HttpPrueba {
         assertTrue(logo.contains("viewBox=\"0 0 352 180\""));
         assertTrue(logo.contains("translate(-2.4,44) scale(0.9)"));
         assertTrue(logo.contains("M31.2,54.2 A48,48 0 0 0 68.8,54.2"));
-        assertTrue(logo.contains("x1=\"129.9\" y1=\"33\" x2=\"129.9\" y2=\"155\""));
+        assertFalse(logo.contains("129.9"));
         assertEquals(92, Pattern.compile("style=\"--i:").matcher(logo).results().count());
         assertTrue(logo.contains("x1=\"326.9\""));
         assertTrue(Marca.icono().contains("viewBox=\"0 0 108 180\""));
@@ -31,7 +31,8 @@ class HttpMarca28Test extends HttpPrueba {
     void loginFaviconYRecursoUsanLaMarcaNuevaYConservanLaFoto() throws Exception {
         String login = get("/login").body();
         assertTrue(login.contains("marca-llegada"));
-        assertTrue(login.contains("lg-iplomo"));
+        assertFalse(login.contains("lg-iplomo"));
+        assertTrue(login.contains("lg-ejes"));
         assertTrue(login.contains("id=\"pzOverlay\""));
         assertTrue(login.contains("x1=\"988\" y1=\"20\""));
         assertTrue(login.contains("mostrar-clave.js"));
