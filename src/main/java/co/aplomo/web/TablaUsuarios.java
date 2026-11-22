@@ -86,7 +86,7 @@ final class TablaUsuarios {
     }
 
     /**
-     * RF-003, RNF-007: el rol se reconoce por su color (Administrador marfil, Evaluador lila, Usuario aguamarina).
+     * RF-003, RNF-007: el rol se reconoce por su color (Administrador champán, Evaluador lila, Usuario aguamarina).
      */
     static String rolPill(Rol rol) {
         return "<span class=\"rol-pill rol-pill-" + rol.name().toLowerCase(java.util.Locale.ROOT) +
