@@ -11,12 +11,15 @@ import java.util.List;
  * RF-002/003 (propuesta): datos de contacto pendientes de revisión, sin credenciales.
  */
 public final class SolicitudAccesoDao {
+    /** RF-002/003: el destino de la solicitud lo determina la ruta pública, no el navegador. */
+    public enum Tipo { EMPRESA, EVALUADOR }
+
     /**
      * RF-002: formulario original y resolución; no contiene contraseña en ningún estado.
      */
     public record Solicitud(int id, String nombre, String cargo, String correo, String telefono, String empresa,
                             String nit, String ciudad, String sector, String necesidad, String estado,
-                            LocalDateTime creada, Integer empresaId, Integer solicitante) {
+                            LocalDateTime creada, Integer empresaId, Integer solicitante, Tipo tipo) {
     }
 
     /**
@@ -24,10 +27,10 @@ public final class SolicitudAccesoDao {
      */
     public int crear(Connection con, Solicitud s) throws SQLException {
         return Sql.insertar(con, "INSERT INTO solicitud_acceso(nombre,cargo,correo,telefono,empresa,nit,ciudad," +
-                        "sector,necesidad,creada,id_empresa,id_solicitante) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
+                        "sector,necesidad,creada,id_empresa,id_solicitante,tipo) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 s.nombre(),
                 s.cargo(), s.correo(), s.telefono(), s.empresa(), s.nit(), s.ciudad(), s.sector(), s.necesidad(),
-                s.creada(), s.empresaId(), s.solicitante());
+                s.creada(), s.empresaId(), s.solicitante(), s.tipo().name());
     }
 
     /**
@@ -61,6 +64,6 @@ public final class SolicitudAccesoDao {
                 f.getString("correo"), f.getString("telefono"), f.getString("empresa"), f.getString("nit"),
                 f.getString("ciudad"), f.getString("sector"), f.getString("necesidad"), f.getString("estado"),
                 f.getTimestamp("creada").toLocalDateTime(), Sql.enteroOpcional(f, "id_empresa"),
-                Sql.enteroOpcional(f, "id_solicitante"));
+                Sql.enteroOpcional(f, "id_solicitante"), Tipo.valueOf(f.getString("tipo")));
     }
 }

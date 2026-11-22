@@ -7,6 +7,7 @@ import co.aplomo.dao.EmpresaDao;
 import co.aplomo.dao.MensajeDao;
 import co.aplomo.dao.SolicitudAccesoDao;
 import co.aplomo.dao.SolicitudAccesoDao.Solicitud;
+import co.aplomo.dao.SolicitudAccesoDao.Tipo;
 import co.aplomo.db.Sql;
 import co.aplomo.db.Transacciones;
 import co.aplomo.modelo.Cuenta;
@@ -44,8 +45,16 @@ public final class SolicitudesAcceso {
      * RF-003: valores reales de la persona; sin rol, estado ni empresa autorizada recibidos del cliente.
      */
     public record Datos(String nombre, String cargo, String correo, String telefono, String empresa, String nit,
-                        String ciudad, String sector, String necesidad) {
+                        String ciudad, String sector, String necesidad, Tipo tipo) {
+        /** RF-003: conserva sin cambios el formulario original de empresas. */
+        public Datos(String nombre, String cargo, String correo, String telefono, String empresa, String nit,
+                String ciudad, String sector, String necesidad) {
+            this(nombre, cargo, correo, telefono, empresa, nit, ciudad, sector, necesidad, Tipo.EMPRESA);
+        }
+
+        /** RNF-004: valida ambos formularios antes de guardar cualquier solicitud. */
         public Datos {
+            if (tipo == null) throw new IllegalArgumentException("Elige una solicitud válida.");
             nombre = Validacion.texto(nombre, "nombre", 100);
             cargo = Validacion.texto(cargo, "cargo", 80);
             correo = Validacion.correo(Validacion.texto(correo, "correo", 120));
@@ -53,8 +62,15 @@ public final class SolicitudesAcceso {
             if (!telefono.matches("[+0-9 ()-]{7,20}")) {
                 throw new IllegalArgumentException("Escribe un teléfono de contacto válido.");
             }
-            empresa = Validacion.texto(empresa, "empresa", 120);
-            nit = Validacion.texto(nit, "NIT", 20).replaceAll("\\s+", "");
+            if (tipo == Tipo.EMPRESA) {
+                empresa = Validacion.texto(empresa, "empresa", 120);
+                nit = Validacion.texto(nit, "NIT", 20).replaceAll("\\s+", "");
+            } else {
+                empresa = Validacion.opcional(empresa, "empresa u organización", 120);
+                if (empresa.isEmpty()) empresa = null;
+                nit = null;
+                sector = null;
+            }
             ciudad = Validacion.texto(ciudad, "ciudad", 60);
             sector = Validacion.opcional(sector, "sector", 60);
             necesidad = Validacion.opcional(necesidad, "qué necesitas", 500);
@@ -64,7 +80,7 @@ public final class SolicitudesAcceso {
     /**
      * RF-001/003: clave efímera devuelta una sola vez; nunca persiste ni aparece en toString.
      */
-    public record Aprobacion(int cuenta, int empresa, String correo, String temporal, String telefono) {
+    public record Aprobacion(int cuenta, Integer empresa, String correo, String temporal, String telefono) {
         @Override
         public String toString() {
             return "Aprobacion[cuenta=" + cuenta + ", empresa=" + empresa + "]";
@@ -146,6 +162,7 @@ public final class SolicitudesAcceso {
             Cuenta actual = administrador(con, actor);
             Solicitud s = exigir(con, id, true);
             pendiente(s);
+            if (s.tipo() == Tipo.EVALUADOR) return aprobarEvaluador(con, actual, s);
             if (evaluador != null) {
                 Cuenta ingeniero = new CuentaDao().porId(con, evaluador, true);
                 if (ingeniero == null || ingeniero.rol() != Cuenta.Rol.EVALUADOR ||
@@ -195,18 +212,34 @@ public final class SolicitudesAcceso {
         });
     }
 
+    private Aprobacion aprobarEvaluador(Connection con, Cuenta actor, Solicitud s) throws SQLException {
+        String temporal = co.aplomo.instalacion.CrearCuentas.temporal();
+        int cuenta = new Usuarios(tx, new CuentaDao(), new EmpresaDao()).crearEn(con, actor,
+                new Usuarios.Datos(s.nombre(), s.correo(), s.telefono(), s.cargo(), Cuenta.Rol.EVALUADOR, null),
+                temporal);
+        dao.resolver(con, s.id(), actor.id(), "APROBADA", null, null, LocalDateTime.now(reloj));
+        auditar(con, actor.id(), s.id(), "APROBADA");
+        new BitacoraDao().registrar(con, actor.id(), LocalDateTime.now(reloj), "cuenta", cuenta, "CREAR", null,
+                "EVALUADOR", "Solicitud de evaluador aprobada");
+        return new Aprobacion(cuenta, null, s.correo(), temporal, s.telefono());
+    }
+
     private int registrar(Connection con, Datos d, Integer empresa, Integer solicitante) throws SQLException {
         int id = dao.crear(con,
                 new Solicitud(0, d.nombre(), d.cargo(), d.correo(), d.telefono(), d.empresa(), d.nit(), d.ciudad(),
-                        d.sector(), d.necesidad(), "PENDIENTE", LocalDateTime.now(reloj), empresa, solicitante));
+                        d.sector(), d.necesidad(), "PENDIENTE", LocalDateTime.now(reloj), empresa, solicitante,
+                        d.tipo()));
         List<Integer> administradores = Sql.listar(con,
                 "SELECT id_cuenta FROM cuenta " + "WHERE rol='ADMINISTRADOR' AND estado='ACTIVA' ORDER BY id_cuenta",
                 f -> f.getInt(1));
         if (administradores.isEmpty()) throw new IllegalStateException("No hay Administrador disponible para revisar.");
         int remitente = solicitante == null ? administradores.get(0) : solicitante;
+        String texto = d.tipo() == Tipo.EVALUADOR ?
+                "Solicitud de evaluador · " + d.nombre() + " · " + d.correo() :
+                "Solicitud de " + d.nombre() + " · " + d.empresa() + " · " + d.correo();
         for (int administrador : administradores) {
             int mensaje = new MensajeDao().enviar(con, null, remitente, administrador, "SOLICITUD_ACCESO",
-                    "Solicitud de " + d.nombre() + " · " + d.empresa() + " · " + d.correo(), LocalDateTime.now(reloj));
+                    texto, LocalDateTime.now(reloj));
             new BitacoraDao().registrar(con, remitente, LocalDateTime.now(reloj), "mensaje", mensaje, "CREAR", null,
                     null, "ACCESO:" + id);
         }

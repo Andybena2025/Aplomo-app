@@ -170,4 +170,92 @@ class SolicitudesAccesoTest extends BasePrueba {
                 "SELECT COUNT(*) FROM solicitud_acceso", f -> f.getInt(1)));
     }
 
+
+    private SolicitudesAcceso.Datos evaluador(String correo, String organizacion) {
+        return new SolicitudesAcceso.Datos("Ingeniera <script>", "Ingeniería industrial", correo, "3005556789",
+                organizacion, "NIT ignorado", "Armenia", "Sector ignorado", "Evaluar posturas",
+                co.aplomo.dao.SolicitudAccesoDao.Tipo.EVALUADOR);
+    }
+
+    @Test
+    void evaluadorSolicitaSinCrearCuentaYNotificaConTipoNombreYCorreo() throws Exception {
+        var datos = evaluador(UUID.randomUUID() + "@prueba.invalid", "");
+        int empresas = Sql.uno(con, "SELECT COUNT(*) FROM empresa", f -> f.getInt(1));
+        int id = servicio().solicitar(datos);
+        assertNull(dao.porCorreo(con, datos.correo()));
+        var solicitud = servicio().consultar(cuenta(admin), id);
+        assertEquals(co.aplomo.dao.SolicitudAccesoDao.Tipo.EVALUADOR, solicitud.tipo());
+        assertNull(solicitud.nit());
+        assertNull(solicitud.empresa());
+        assertEquals(empresas, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM empresa", f -> f.getInt(1)));
+        assertTrue(new Avisos(tx, reloj).listar(cuenta(admin)).stream().anyMatch(m ->
+                Integer.valueOf(id).equals(m.solicitudAcceso()) && m.texto().equals(
+                        "Solicitud de evaluador · " + datos.nombre() + " · " + datos.correo())));
+    }
+
+    @Test
+    void aprobarEvaluadorCreaCuentaActivaTemporalSinEmpresasYConColorAutomatico() throws Exception {
+        var datos = evaluador(UUID.randomUUID() + "@prueba.invalid", "Organización solicitante");
+        int empresas = Sql.uno(con, "SELECT COUNT(*) FROM empresa", f -> f.getInt(1));
+        int id = servicio().solicitar(datos);
+        var aprobada = servicio().aprobar(cuenta(admin), id, usuario);
+        var nueva = dao.porCorreo(con, datos.correo());
+        assertEquals(Cuenta.Rol.EVALUADOR, nueva.rol());
+        assertEquals(Cuenta.Estado.ACTIVA, nueva.estado());
+        assertTrue(nueva.temporal());
+        assertNull(nueva.empresa());
+        assertNull(aprobada.empresa());
+        assertTrue(new CuentaEmpresaDao().ids(con, nueva.id()).isEmpty());
+        assertTrue(ColoresAgenda.PALETA.contains(nueva.colorAgenda()));
+        assertTrue(aprobada.temporal().length() >= 12);
+        assertDoesNotThrow(() -> Contrasenas.validar(aprobada.temporal()));
+        assertNotNull(auth.ingresar(datos.correo(), aprobada.temporal()));
+        assertEquals("APROBADA", servicio().consultar(cuenta(admin), id).estado());
+        assertEquals(empresas, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM empresa", f -> f.getInt(1)));
+        assertEquals(1, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM bitacora WHERE tabla='cuenta' " +
+                "AND id_registro=? AND accion='CREAR'", f -> f.getInt(1), nueva.id()));
+        assertThrows(IllegalArgumentException.class, () -> servicio().aprobar(cuenta(admin), id, null));
+    }
+
+    @Test
+    void correoRepetidoDeEvaluadorConservaCuentaYDejaSolicitudPendiente() throws Exception {
+        var anterior = cuenta(admin);
+        int cuentas = Sql.uno(con, "SELECT COUNT(*) FROM cuenta", f -> f.getInt(1));
+        int empresas = Sql.uno(con, "SELECT COUNT(*) FROM empresa", f -> f.getInt(1));
+        int id = servicio().solicitar(evaluador(anterior.correo(), null));
+        var error = assertThrows(IllegalArgumentException.class,
+                () -> servicio().aprobar(cuenta(admin), id, null));
+        assertTrue(error.getMessage().contains("correo"));
+        assertEquals(anterior, cuenta(admin));
+        assertEquals("PENDIENTE", servicio().consultar(cuenta(admin), id).estado());
+        assertEquals(cuentas, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM cuenta", f -> f.getInt(1)));
+        assertEquals(empresas, Sql.<Integer>uno(con, "SELECT COUNT(*) FROM empresa", f -> f.getInt(1)));
+    }
+
+    @Test
+    void rechazarEvaluadorExigeMotivoYNoCreaCuenta() throws Exception {
+        var datos = evaluador(UUID.randomUUID() + "@prueba.invalid", "");
+        int id = servicio().solicitar(datos);
+        assertThrows(IllegalArgumentException.class, () -> servicio().rechazar(cuenta(admin), id, " "));
+        assertEquals("PENDIENTE", servicio().consultar(cuenta(admin), id).estado());
+        servicio().rechazar(cuenta(admin), id, "Falta confirmar la experiencia.");
+        assertEquals("RECHAZADA", servicio().consultar(cuenta(admin), id).estado());
+        assertNull(dao.porCorreo(con, datos.correo()));
+        assertEquals("Falta confirmar la experiencia.", Sql.uno(con,
+                "SELECT motivo_rechazo FROM solicitud_acceso WHERE id_solicitud=?", f -> f.getString(1), id));
+    }
+
+    @Test
+    void solicitudEvaluadorValidaCamposYLimiteDelMotivo() {
+        assertThrows(IllegalArgumentException.class, () -> evaluador("correo-invalido", ""));
+        assertThrows(IllegalArgumentException.class, () -> new SolicitudesAcceso.Datos("Ana", "Ingeniera",
+                "ana@prueba.invalid", "3005556789", "", null, "Armenia", null, "x".repeat(501),
+                co.aplomo.dao.SolicitudAccesoDao.Tipo.EVALUADOR));
+        assertThrows(IllegalArgumentException.class, () -> new SolicitudesAcceso.Datos("Ana", "",
+                "ana@prueba.invalid", "3005556789", "", null, "Armenia", null, "",
+                co.aplomo.dao.SolicitudAccesoDao.Tipo.EVALUADOR));
+        assertThrows(IllegalArgumentException.class, () -> new SolicitudesAcceso.Datos("Ana", "Ingeniera",
+                "ana@prueba.invalid", "3005556789", "", null, "", null, "",
+                co.aplomo.dao.SolicitudAccesoDao.Tipo.EVALUADOR));
+    }
 }

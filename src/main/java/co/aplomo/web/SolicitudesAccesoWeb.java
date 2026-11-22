@@ -1,6 +1,7 @@
 package co.aplomo.web;
 
 import co.aplomo.dao.SolicitudAccesoDao.Solicitud;
+import co.aplomo.dao.SolicitudAccesoDao.Tipo;
 import co.aplomo.seguridad.Sesiones;
 import co.aplomo.seguridad.Sesiones.Sesion;
 import co.aplomo.servicio.LimiteSolicitudes;
@@ -33,7 +34,9 @@ public final class SolicitudesAccesoWeb {
      * RNF-004: CSRF, validación y cinco envíos por conexión antes de guardar una solicitud pública.
      */
     public boolean publica(HttpExchange intercambio, Sesion sesion) throws IOException, SQLException {
-        if (!intercambio.getRequestURI().getPath().equals("/solicitar-acceso")) return false;
+        String ruta = intercambio.getRequestURI().getPath();
+        boolean evaluador = ruta.equals("/solicitar-evaluador");
+        if (!evaluador && !ruta.equals("/solicitar-acceso")) return false;
         if (sesion == null) {
             sesion = sesiones.crear(null);
             Router.ponerCookie(intercambio, sesion.id());
@@ -53,7 +56,8 @@ public final class SolicitudesAccesoWeb {
                     servicio.solicitar(
                             new SolicitudesAcceso.Datos(datos.get("nombre"), datos.get("cargo"), datos.get("correo"),
                                     datos.get("telefono"), datos.get("empresa"), datos.get("nit"), datos.get("ciudad"),
-                                    datos.get("sector"), datos.get("necesidad")));
+                                    datos.get("sector"), datos.get("necesidad"),
+                                    evaluador ? Tipo.EVALUADOR : Tipo.EMPRESA));
                     Router.enviar(intercambio, 200, Html.pagina("Solicitud recibida",
                             Html.aviso("Recibimos tu solicitud. Te contactaremos pronto.", true) +
                                     "<a class=\"btn\" href=\"/login\">Volver al inicio de sesión</a>", null));
@@ -70,7 +74,7 @@ public final class SolicitudesAccesoWeb {
             Router.enviar(intercambio, 405, "Método no permitido.");
             return true;
         }
-        Router.enviar(intercambio, codigo, formulario(sesion, datos, mensaje));
+        Router.enviar(intercambio, codigo, formulario(sesion, datos, mensaje, evaluador));
         return true;
     }
 
@@ -88,9 +92,14 @@ public final class SolicitudesAccesoWeb {
             var pendientes = servicio.pendientes(sesion.cuenta());
             if (pendientes.isEmpty()) html.append(Html.vacio("No hay solicitudes de acceso pendientes.", ""));
             for (Solicitud solicitud : pendientes) {
+                boolean evaluador = solicitud.tipo() == Tipo.EVALUADOR;
+                String titulo = evaluador ? solicitud.nombre() : solicitud.empresa();
+                String resumen = (evaluador ? solicitud.cargo() : solicitud.nombre()) + " · " + solicitud.ciudad();
                 html.append("<a class=\"lista-fila\" href=\"/solicitudes-acceso/").append(solicitud.id())
-                        .append("\"><strong>").append(Html.escapar(solicitud.empresa())).append("</strong><span>")
-                        .append(Html.escapar(solicitud.nombre() + " · " + solicitud.ciudad())).append("</span>")
+                        .append("\"><strong>").append(Html.escapar(titulo)).append("</strong><span>")
+                        .append(Html.escapar(resumen)).append("</span>")
+                        .append(TablaUsuarios.rolPill(evaluador ? co.aplomo.modelo.Cuenta.Rol.EVALUADOR :
+                                co.aplomo.modelo.Cuenta.Rol.USUARIO))
                         .append(SistemaVisual.estado("PENDIENTE")).append("</a>");
             }
             html.append("</section>");
@@ -107,7 +116,8 @@ public final class SolicitudesAccesoWeb {
             try {
                 if (ruta.endsWith("/aprobar")) {
                     String elegido = datos.getOrDefault("evaluador", "");
-                    Integer evaluador = elegido.isBlank() ? null : Validacion.entero(elegido, "Evaluador", 1,
+                    Integer evaluador = solicitud.tipo() == Tipo.EVALUADOR || elegido.isBlank() ? null :
+                            Validacion.entero(elegido, "Evaluador", 1,
                             Integer.MAX_VALUE);
                     var resultado = servicio.aprobar(sesion.cuenta(), id, evaluador);
                     Router.enviar(intercambio, 200, aprobada(sesion, resultado, origen(intercambio)));
@@ -127,28 +137,48 @@ public final class SolicitudesAccesoWeb {
         return true;
     }
 
-    private static String formulario(Sesion sesion, Map<String, String> datos, String mensaje) {
+    private static String formulario(Sesion sesion, Map<String, String> datos, String mensaje, boolean evaluador) {
+        String ruta = evaluador ? "/solicitar-evaluador" : "/solicitar-acceso";
         StringBuilder html = new StringBuilder(
                 "<div class=\"acceso-volver\"><a class=\"btn\" href=\"/login\">← Volver a iniciar sesión</a></div>" +
                         Html.aviso(mensaje, false));
-        html.append("<p class=\"muted\">Cuéntanos de tu empresa. La Administradora revisará la solicitud antes de " +
-                "habilitar el acceso.</p><form class=\"card stack solicitar-visita tarjeta-dorada\" method=\"post\" " +
-                "action=\"/solicitar-acceso\">").append(Html.csrf(sesion));
-        for (String[] campo : new String[][]{{"nombre", "Nombre", "100"}, {"cargo", "Cargo", "80"}, {"correo",
-                "Correo", "120"}, {"telefono", "Teléfono", "20"}, {"empresa", "Empresa", "120"}, {"nit", "NIT", "20"}
-                , {"ciudad", "Ciudad", "60"}, {"sector", "Sector (opcional)", "60"}}) {
+        html.append("<p class=\"muted\">Cuéntanos de ").append(evaluador ? "ti" : "tu empresa")
+                .append(". La Administradora revisará la solicitud antes de habilitar el acceso.</p>")
+                .append("<form class=\"card stack solicitar-visita tarjeta-dorada\" method=\"post\" action=\"")
+                .append(ruta).append("\">").append(Html.csrf(sesion));
+        String[][] campos = evaluador ? new String[][]{
+                {"nombre", "Nombre", "100"}, {"cargo", "Cargo o profesión", "80"}, {"correo", "Correo", "120"},
+                {"telefono", "Teléfono", "20"}, {"ciudad", "Ciudad", "60"},
+                {"empresa", "Empresa u organización (opcional)", "120"}} : new String[][]{
+                {"nombre", "Nombre", "100"}, {"cargo", "Cargo", "80"}, {"correo", "Correo", "120"},
+                {"telefono", "Teléfono", "20"}, {"empresa", "Empresa", "120"}, {"nit", "NIT", "20"},
+                {"ciudad", "Ciudad", "60"}, {"sector", "Sector (opcional)", "60"}};
+        for (String[] campo : campos) {
             String tipo = campo[0].equals("correo") ? "email" : campo[0].equals("telefono") ? "tel" : "text";
-            html.append(Formularios.campo(datos, campo[0], campo[1], tipo, Integer.parseInt(campo[2]),
-                    !campo[0].equals("sector")));
+            boolean obligatorio = !campo[0].equals("sector") && !(evaluador && campo[0].equals("empresa"));
+            html.append(Formularios.campo(datos, campo[0], campo[1], tipo, Integer.parseInt(campo[2]), obligatorio));
         }
-        html.append(Formularios.texto(datos, "necesidad", "¿Qué necesitas? (opcional)", 500, false))
+        String pregunta = evaluador ? "¿Por qué quieres evaluar con ALINEO? (opcional)" : "¿Qué necesitas? (opcional)";
+        html.append(Formularios.texto(datos, "necesidad", pregunta, 500, false))
                 .append("<button class=\"btn p\">Enviar solicitud</button></form>");
-        return Html.pagina("Solicitar acceso", html.toString(), null, "Tu empresa · Solicitud", "");
+        return Html.pagina(evaluador ? "Quiero ser evaluador" : "Solicitar acceso", html.toString(), null,
+                evaluador ? "Evaluadores · Solicitud" : "Tu empresa · Solicitud", "");
     }
 
     private String detalle(Sesion sesion, Solicitud s, String error, Map<String, String> datos) throws SQLException {
         StringBuilder html = new StringBuilder(Html.aviso(error, false));
-        html.append("<section class=\"card stack\"><h2>").append(Html.escapar(s.empresa())).append("</h2><p>")
+        boolean evaluador = s.tipo() == Tipo.EVALUADOR;
+        html.append("<section class=\"card stack\"><h2>");
+        if (evaluador) {
+            html.append(Html.escapar(s.nombre())).append("</h2><p>")
+                    .append(Html.escapar(s.cargo() + " · " + s.ciudad())).append("</p>");
+            if (s.empresa() != null && !s.empresa().isBlank())
+                html.append("<p>").append(Html.escapar(s.empresa())).append("</p>");
+            html.append("<p>").append(Html.escapar(s.correo())).append("</p><p>")
+                    .append(Html.escapar(s.necesidad())).append("</p>")
+                    .append(TablaUsuarios.rolPill(co.aplomo.modelo.Cuenta.Rol.EVALUADOR))
+                    .append(SistemaVisual.estado(s.estado()));
+        } else html.append(Html.escapar(s.empresa())).append("</h2><p>")
                 .append(Html.escapar(s.nit() + " · " + s.ciudad())).append("</p><p>").append(Html.escapar(s.sector()))
                 .append("</p><p>").append(Html.escapar(s.nombre() + " · " + s.cargo() + " · " + s.correo()))
                 .append("</p><p>").append(Html.escapar(s.necesidad())).append("</p>")
@@ -159,13 +189,15 @@ public final class SolicitudesAccesoWeb {
         if (s.estado().equals("PENDIENTE")) {
             html.append("<form class=\"stack\" method=\"post\" action=\"/solicitudes-acceso/").append(s.id())
                     .append("/aprobar\">").append(Html.csrf(sesion));
-            var opciones = new java.util.ArrayList<Formularios.Opcion>();
-            opciones.add(new Formularios.Opcion("", "Sin ingeniero"));
-            for (var e : servicio.evaluadores(sesion.cuenta())) {
-                opciones.add(new Formularios.Opcion(Integer.toString(e.id()), e.nombre()));
+            if (!evaluador) {
+                var opciones = new java.util.ArrayList<Formularios.Opcion>();
+                opciones.add(new Formularios.Opcion("", "Sin ingeniero"));
+                for (var e : servicio.evaluadores(sesion.cuenta())) {
+                    opciones.add(new Formularios.Opcion(Integer.toString(e.id()), e.nombre()));
+                }
+                html.append(Formularios.selector(datos, "evaluador", "Ingeniero (opcional)", opciones, false));
             }
-            html.append(Formularios.selector(datos, "evaluador", "Ingeniero (opcional)", opciones, false))
-                    .append("<button class=\"btn p\">Aprobar</button></form>")
+            html.append("<button class=\"btn p\">Aprobar</button></form>")
                     .append("<form class=\"stack\" method=\"post\" action=\"/solicitudes-acceso/").append(s.id())
                     .append("/rechazar\">").append(Html.csrf(sesion))
                     .append(Formularios.texto(datos, "motivo", "Motivo de rechazo", 255, true))

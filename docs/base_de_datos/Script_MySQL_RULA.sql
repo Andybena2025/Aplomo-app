@@ -478,12 +478,14 @@ CREATE TABLE IF NOT EXISTS mensaje (
 -- Paso 27C: solicitudes públicas o remitidas por el dueño Evaluador; no crea cuentas sin aprobación.
 CREATE TABLE IF NOT EXISTS solicitud_acceso (
  id_solicitud INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ -- Paso 38B: solicitudes aprobadas por Administrador; no es registro libre.
+ tipo ENUM('EMPRESA','EVALUADOR') NOT NULL DEFAULT 'EMPRESA',
  nombre VARCHAR(100) NOT NULL,
  cargo VARCHAR(80) NOT NULL,
  correo VARCHAR(120) NOT NULL,
  telefono VARCHAR(20) NOT NULL,
- empresa VARCHAR(120) NOT NULL,
- nit VARCHAR(20) NOT NULL,
+ empresa VARCHAR(120) NULL,
+ nit VARCHAR(20) NULL,
  ciudad VARCHAR(60) NOT NULL,
  sector VARCHAR(60) NULL,
  necesidad VARCHAR(500) NULL,
