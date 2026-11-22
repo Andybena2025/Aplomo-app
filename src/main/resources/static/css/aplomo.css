@@ -2077,9 +2077,10 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
 .marca-llegada .lg-a>path[stroke-dasharray]{display:none}.marca-llegada .lg-sec-a{display:inline}
 .marca-llegada .lg-sec [style*="--t"]{animation:marcaPunto .3s ease-out both;animation-delay:calc(600ms + var(--t)*1ms)}
 @keyframes marcaPunto{from{opacity:0}to{opacity:1}}
+/* Paso 36B: el brillo dorado espera a que terminen los puntos (~6.9 s) y luego se repite cada 20 s. */
 .marca-llegada::after{content:"";pointer-events:none;position:absolute;inset:18% auto 26% 0;width:12%;
  background:linear-gradient(90deg,transparent,#E3CDA02B,transparent);opacity:0;mix-blend-mode:screen;
- animation:marcaBrillo 20s ease-in-out 3s infinite}
+ animation:marcaBrillo 20s ease-in-out 7.5s infinite}
 @keyframes marcaBrillo{0%{left:0;opacity:0}3%{opacity:.7}17%{left:88%;opacity:.7}20%,100%{left:88%;opacity:0}}
 .riel-izq .marca-v::after{content:"";position:absolute;left:3%;top:73%;width:5px;height:5px;border-radius:50%;
  background:var(--marca);box-shadow:0 0 9px 3px #E3CDA066;opacity:0;animation:marcaLuz 14s linear infinite}

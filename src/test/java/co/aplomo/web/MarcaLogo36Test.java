@@ -46,6 +46,16 @@ class MarcaLogo36Test {
         assertEquals(21, Pattern.compile("style=\"--i:").matcher(icono).results().count());
     }
 
+    @Test
+    void brilloDoradoEmpiezaDespuesDeLosPuntos() throws Exception {
+        String css;
+        try (var entrada = MarcaLogo36Test.class.getResourceAsStream("/static/css/aplomo.css")) {
+            css = new String(entrada.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        }
+        assertTrue(css.contains("animation:marcaBrillo 20s ease-in-out 7.5s infinite"));
+        assertTrue(600 + maximo(Marca.logo()) + 300 < 7500, "el brillo sale cuando los puntos ya terminaron");
+    }
+
     private static String seccion(String svg, String clase) {
         int desde = svg.indexOf("class=\"lg-sec " + clase);
         if (desde < 0) desde = svg.indexOf("class=\"lg-sec lg-sec-a");
