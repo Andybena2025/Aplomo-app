@@ -6,6 +6,8 @@ import java.util.Locale;
 
 /**
  * RNF-002/011: identidad IV aprobada por Andy; una sola fuente SVG y marcas generadas en Java.
+ * Paso 36: A = compás, L = ángulo de 90°, eje Y en la E, eje X de la N al centro de la O,
+ * O = círculo trazado, regla debajo. Cada punto lleva --t (ms) para la secuencia del login.
  */
 public final class Marca {
     private static final String PLANTILLA = cargar();
