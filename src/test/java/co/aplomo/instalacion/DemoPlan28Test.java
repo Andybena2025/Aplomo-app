@@ -45,23 +45,24 @@ class DemoPlan28Test extends BasePrueba {
         assertEquals(5, contar("SELECT COUNT(*) FROM pendiente_arreglo pa JOIN evaluacion e USING(id_evaluacion) " +
                 "JOIN puesto_trabajo p USING(id_puesto) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) " +
                 "JOIN empresa em USING(id_empresa) WHERE em.nit IN " + nits() + " AND pa.estado='ABIERTO'"));
-        var distribucion = Sql.listar(con, "SELECT ultimo_puntaje,COUNT(*) FROM puesto_trabajo p " +
-                        "JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa em USING(id_empresa) " +
-                        "WHERE em.nit IN " + nits() + " GROUP BY ultimo_puntaje ORDER BY ultimo_puntaje",
-                f -> List.of(f.getInt(1), f.getInt(2)));
-        int verdes = 0, amarillos = 0, rojos = 0, sietes = 0;
-        for (var grupo : distribucion) {
-            if (grupo.get(0) <= 2) verdes += grupo.get(1);
-            else if (grupo.get(0) <= 4) amarillos += grupo.get(1);
-            else rojos += grupo.get(1);
-            if (grupo.get(0) == 7) sietes += grupo.get(1);
-        }
-        assertEquals(16, verdes);
-        assertEquals(14, amarillos);
-        assertEquals(10, rojos);
-        assertTrue(sietes <= 2);
-        System.out.println("DEMO28: 40 puestos; 16 Verde, 14 Amarillo, 10 Rojo; " + sietes +
-                " con 7; 5 pendientes abiertos; 24 citas mensuales.");
+        var distribucion = Sql.listar(con, "SELECT MAX(a.puntaje_final) FROM visita v " +
+                "JOIN reserva r USING(id_reserva) JOIN evaluacion e USING(id_visita) " +
+                "JOIN fotografia f USING(id_evaluacion) JOIN analisis_rula a USING(id_foto) " +
+                "WHERE v.estado='FINALIZADA' AND r.codigo LIKE 'D28-%' GROUP BY v.id_visita", f -> f.getInt(1));
+        long verdes = distribucion.stream().filter(p -> p <= 2).count();
+        long amarillos = distribucion.stream().filter(p -> p >= 3 && p <= 4).count();
+        long rojos = distribucion.stream().filter(p -> p >= 5).count();
+        assertEquals(23, distribucion.size());
+        assertEquals(9, verdes);
+        assertEquals(7, amarillos);
+        assertEquals(7, rojos);
+        assertTrue(distribucion.containsAll(List.of(2, 3, 4, 5, 6, 7)));
+        assertEquals(5,
+                contar("SELECT COUNT(DISTINCT fecha_limite) FROM pendiente_arreglo " + "WHERE estado='ABIERTO'"));
+        assertEquals(0, contar("SELECT COUNT(*) FROM (SELECT fecha FROM reserva WHERE fecha='2026-11-30' " +
+                "AND codigo LIKE 'D28-%' GROUP BY fecha HAVING COUNT(DISTINCT id_evaluador)>1) q"));
+        System.out.println("DEMO29: 23 visitas; 9 Verde, 7 Amarillo, 7 Rojo; puntajes 2–7; " +
+                "5 pendientes abiertos con fechas diferentes; 24 citas mensuales.");
     }
 
     private int contar(String sql) throws Exception {

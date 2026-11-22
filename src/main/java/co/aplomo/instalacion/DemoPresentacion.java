@@ -17,8 +17,8 @@ import java.util.List;
  */
 final class DemoPresentacion {
     private static final int[][] EMPRESAS = {{2, 1}, {0, 3}, {4, 5}};
-    private static final int[][] DIAS = {{3, 5, 12, 12, 18, 24, 27, 30}, {2, 6, 10, 13, 19, 25, 27, 30}, {4, 6, 11,
-            16, 20, 23, 27, 30}};
+    private static final int[][] DIAS = {{3, 5, 12, 12, 18, 24, 27, 30}, {2, 6, 10, 13, 19, 25, 27, 26}, {4, 6, 11,
+            16, 20, 23, 27, 25}};
     private static final int[][] MINUTOS = {{450, 600, 480, 780, 570, 840, 480, 690}, {660, 510, 780, 600, 420, 540,
             570, 840}, {480, 810, 600, 450, 660, 540, 660, 870}};
     private static final int[] DURACION = {1, 2, 2, 1, 3, 1, 2, 1};

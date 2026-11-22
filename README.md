@@ -60,6 +60,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 26B | Código Java ordenado y prueba de 120 columnas con exclusiones explícitas | ✅ 1036 Maven y 122 JS; [informe](docs/informe_paso26b.md) |
 | 27 | Sistema visual completo, propiedad de empresas y demo realista; avisos y solicitudes | ✅ 27A/B/C: 1090 Maven y 136 JS verificados; sistema visual, avisos y solicitudes; nueve cuentas activas ([informe](docs/informe_paso27.md)) |
 | 28 | Pulido final: listas, demo, identidad y login | ✅ 28A/B/C: listas, demo planeada, logo IV, login y avisos; 1101 Maven y 139 JS verificados ([informe](docs/informe_paso28.md)) |
+| 29 | Listas cortas, escala común y reinicio que conserva cuentas | ✅ 1105 Maven y 142 JS verificados; demo real pendiente de confirmación ([informe](docs/informe_paso29.md)) |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 
@@ -131,7 +132,7 @@ Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuent
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**1101 pruebas Maven y 139 pruebas JS verificadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**1105 pruebas Maven y 142 pruebas JS verificadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 

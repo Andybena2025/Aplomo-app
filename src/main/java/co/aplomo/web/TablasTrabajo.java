@@ -24,7 +24,9 @@ final class TablasTrabajo {
 
     static String pagina(Sesion sesion, Pagina pagina, Contexto contexto) {
         var seccion = pagina.seccion();
-        java.util.Set<Integer> visibles = pagina.filas().stream().map(Fila::id).collect(Collectors.toSet());
+        java.util.Set<Integer> visibles = pagina.filas().stream()
+                .filter(f -> inicial(f, seccion, pagina.filtros().getOrDefault("estado", "TODOS"))).map(Fila::id)
+                .collect(Collectors.toSet());
         boolean evaluador = sesion.cuenta().rol() == Rol.EVALUADOR;
         String titulo = seccion == SeccionConsulta.PENDIENTES ? "Pendientes" :
                 seccion == SeccionConsulta.RESERVAS && evaluador ? "Mis reservas" : seccion.titulo();
@@ -69,7 +71,7 @@ final class TablasTrabajo {
         } else html.append(tabla(sesion, seccion, visibles, filas));
         html.append("<p class=\"vacio-lista\" data-lista-vacia hidden>No hay resultados con estos filtros.</p>");
         if (lateral) html.append("</div>").append(PanelAgenda.mostrar(sesion, filas)).append("</div>");
-        html.append("</section>");
+        html.append(ListasCortas.boton()).append("</section>");
         String contenido = html.toString();
         if (contexto != null) contenido = contenido.replace("<th scope=\"col\">Puesto</th>", "")
                 .replaceAll("<td data-puesto data-label=\"Puesto\">.*?</td>", "");
@@ -92,17 +94,28 @@ final class TablasTrabajo {
         StringBuilder html = new StringBuilder("<div class=\"lista-herramientas\"><label class=\"field\">" +
                 "Buscar<input class=\"input\" type=\"search\" data-lista-buscar placeholder=\"Nombre o lugar\" " +
                 "value=\"").append(Html.escapar(pagina.filtros().getOrDefault("q", ""))).append("\"></label>")
-                .append("<a class=\"btn\" data-lista-limpiar hidden href=\"").append(pagina.seccion().ruta())
-                .append(contexto ? "?evaluacion=" + pagina.filtros().getOrDefault("evaluacion", "") : "")
-                .append("\">Limpiar filtros</a></div>").append(chips(pagina.seccion()));
-        if (sesion.cuenta().rol() == Rol.ADMINISTRADOR) html.append(leyenda(filas));
-        if (pagina.seccion() == SeccionConsulta.PENDIENTES && sesion.cuenta().rol() != Rol.USUARIO) {
-            html.append(
-                    "<label class=\"chip\"><input type=\"checkbox\" data-incluir-inactivas>Incluir inactivas</label>");
+                .append(FiltrosLista.mostrar(sesion, pagina, contexto));
+        if (pagina.seccion() == SeccionConsulta.PENDIENTES && sesion.cuenta().rol() != Rol.ADMINISTRADOR) {
+            html.append("<label class=\"field\">Estado<select class=\"input\" data-incluir-estado>" +
+                    "<option value=\"\">Empresas activas</option><option value=\"TODOS\">Incluir inactivas</option>" +
+                    "<option value=\"INACTIVAS\">Solo inactivas</option></select></label>");
         }
-        return html.append(FiltrosLista.mostrar(sesion, pagina, contexto))
-                .append("<p class=\"hint\" data-lista-contador role=\"status\">")
+        html.append("<a class=\"btn\" data-lista-limpiar hidden href=\"").append(pagina.seccion().ruta())
+                .append(contexto ? "?evaluacion=" + pagina.filtros().getOrDefault("evaluacion", "") : "")
+                .append("\">Limpiar filtros</a></div><div class=\"fila-chips\">").append(chips(pagina.seccion()));
+        if (sesion.cuenta().rol() == Rol.ADMINISTRADOR) html.append(leyenda(filas));
+        return html.append("</div><p class=\"hint\" data-lista-contador role=\"status\">")
                 .append(Html.plural(pagina.filas().size(), pagina.seccion().singular())).append("</p>").toString();
+    }
+
+    private static boolean inicial(Fila f, SeccionConsulta seccion, String estado) {
+        if (!estado.equals("TODOS")) return true;
+        if (seccion == SeccionConsulta.VISITAS)
+            return f.valor("fecha").startsWith(Html.hoy().toString().substring(0, 7));
+        if (seccion != SeccionConsulta.RESERVAS) return true;
+        return List.of("EN_COLA", "EN_CURSO").contains(FilasTrabajo.estado(f)) &&
+                f.valor("fecha").compareTo(Html.hoy().toString()) >= 0 &&
+                f.valor("fecha").compareTo(Html.hoy().plusDays(14).toString()) <= 0;
     }
 
     private static String chips(SeccionConsulta seccion) {
@@ -111,7 +124,8 @@ final class TablasTrabajo {
                     new String[][]{{"ESPERANDO", "Por confirmar"}, {"PROXIMAS", "Próximas"}, {"PASADAS", "Pasadas"},
                             {"CANCELADA", "Canceladas"}};
             case VISITAS ->
-                    new String[][]{{"TODOS", "Todas"}, {"ESTE_MES", "Este mes"}, {"ROJO", "Con puestos en rojo"}};
+                    new String[][]{{"ESTE_MES", "Este mes"}, {"MES_ANTERIOR", "Mes anterior"}, {"TODOS", "Todas"}, {
+                        "ROJO", "Con puestos en rojo"}};
             case PENDIENTES -> new String[][]{{"ABIERTO", "Abiertos"}, {"ARREGLADO", "Arreglados"}, {"TODOS", "Todos"}};
             case SUGERENCIAS ->
                     new String[][]{{"PENDIENTE", "Pendientes"}, {"EN_PROCESO", "En proceso"}, {"HECHA", "Hechas"}, {
@@ -145,11 +159,9 @@ final class TablasTrabajo {
     private static List<Fila> ordenar(List<Fila> filas, SeccionConsulta seccion, boolean evaluador) {
         Comparator<Fila> orden = Comparator.comparing(f -> f.valor("fecha"));
         if (seccion == SeccionConsulta.PENDIENTES) {
-            orden = Comparator.comparingInt((Fila f) -> Integer.parseInt(f.valor("puntaje"))).reversed()
-                    .thenComparing(f -> f.valor("fecha_limite").isBlank() ? "9999" : f.valor("fecha_limite"));
-            if (evaluador) orden = Comparator.comparing(
-                            (Fila f) -> f.valor("proxima_visita").isBlank() ? "9999" : f.valor("proxima_visita"))
-                    .thenComparing(orden);
+            orden = Comparator.comparing(
+                    (Fila f) -> f.valor("fecha_limite").isBlank() ? "9999" : f.valor("fecha_limite")).thenComparing(
+                    Comparator.comparingInt((Fila f) -> Integer.parseInt(f.valor("puntaje"))).reversed());
         }
         if (seccion == SeccionConsulta.RESERVAS) orden = orden.thenComparing(f -> f.valor("inicio"));
         return filas.stream().sorted(orden).toList();
@@ -177,25 +189,34 @@ final class TablasTrabajo {
     }
 
     private static String enCurso(Sesion sesion, List<Fila> filas) {
-        StringBuilder html = new StringBuilder("<section class=\"visitas-destacadas\">");
-        for (Fila f : filas)
-            if (f.valor("estado").equals("EN_CURSO")) {
-                int total = Integer.parseInt(f.valor("puestos_total"));
-                int hechos = Integer.parseInt(f.valor("puestos_evaluados"));
-                html.append("<article class=\"card visita-destacada stack\"><h2>")
-                        .append(Html.escapar(f.valor("empresa_nombre"))).append("</h2><p>")
-                        .append(Html.escapar(f.valor("sede_nombre") + " · " + f.valor("salon_nombre")))
-                        .append(" · desde las ").append(TextoLista.hora(f.valor("fecha"))).append("</p><p>")
-                        .append(hechos).append(" de ").append(total).append(" puestos evaluados</p>")
-                        .append("<progress max=\"").append(Math.max(1, total)).append("\" value=\"").append(hechos)
-                        .append("\" aria-label=\"Puestos evaluados\"></progress><a class=\"btn p\" href=\"/visitas/")
-                        .append(f.id()).append("\">")
-                        .append(sesion.cuenta().rol() == Rol.EVALUADOR ? "Continuar evaluación ›" : "Ver visita")
-                        .append("</a></article>");
-            }
-        return html.append("</section><h2>Finalizadas · " +
+        var abiertas = filas.stream().filter(f -> f.valor("estado").equals("EN_CURSO")).toList();
+        StringBuilder html = new StringBuilder(
+                "<section class=\"visitas-destacadas\" id=\"en-curso\"><h2>En curso</h2>");
+        int indice = 0;
+        for (Fila f : abiertas) {
+            int total = Integer.parseInt(f.valor("puestos_total"));
+            int hechos = Integer.parseInt(f.valor("puestos_evaluados"));
+            html.append("<article class=\"visita-en-curso\" data-en-curso").append(indice++ < 3 ? "" : " hidden")
+                    .append("><div><strong title=\"").append(Html.escapar(f.valor("empresa_nombre"))).append("\">")
+                    .append(Html.escapar(f.valor("empresa_nombre"))).append("</strong><small>")
+                    .append(Html.escapar(f.valor("sede_nombre") + " · " + f.valor("salon_nombre")))
+                    .append(" · desde las ").append(TextoLista.hora(f.valor("fecha"))).append("</small></div><span>")
+                    .append(hechos).append(" de ").append(total).append(" puestos</span>").append("<progress max=\"")
+                    .append(Math.max(1, total)).append("\" value=\"").append(hechos)
+                    .append("\" aria-label=\"Avance de puestos\"></progress><a class=\"btn p\" href=\"/visitas/")
+                    .append(f.id()).append("\">")
+                    .append(sesion.cuenta().rol() == Rol.EVALUADOR ? "Continuar evaluación ›" : "Ver visita")
+                    .append("</a></article>");
+        }
+        if (abiertas.size() > 3)
+            html.append("<button class=\"btn\" type=\"button\" data-ver-curso>" + "Ver todas las en curso (")
+                    .append(abiertas.size()).append(")</button>");
+        int finalizadas = (int) filas.stream().filter(f -> f.valor("estado").equals("FINALIZADA") &&
+                f.valor("fecha").startsWith(Html.hoy().toString().substring(0, 7))).count();
+        return html.append("</section><h2 data-visitas-titulo>Finalizadas · " +
                 Html.hoy().format(DateTimeFormatter.ofPattern("MMMM yyyy", java.util.Locale.forLanguageTag("es-CO"))) +
-                "</h2>").toString();
+                "</h2><p class=\"hint\" data-visitas-total>" + Html.plural(finalizadas, "visita") + " este " +
+                "mes</p>").toString();
     }
 
     private static String accion(Sesion sesion, SeccionConsulta seccion) {

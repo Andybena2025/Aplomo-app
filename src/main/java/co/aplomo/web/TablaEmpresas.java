@@ -45,14 +45,13 @@ final class TablaEmpresas {
         html.append("<p class=\"hint\" data-lista-contador role=\"status\"></p><div class=\"table-scroll\">" +
                 "<table class=\"resp alineo-table\"><thead><tr><th scope=\"col\">Empresa</th>" +
                 (sesion.cuenta().rol() == Rol.EVALUADOR ? "" : "<th scope=\"col\">Evaluador(es)</th>") +
-                "<th scope=\"col\">Estado</th>" +
-                "<th scope=\"col\"><span class=\"sr-only\">Abrir</span></th></tr></thead><tbody>");
+                "<th scope=\"col\">Estado</th>" + "<th scope=\"col\"></th></tr></thead><tbody>");
         for (Resumen r : empresas.stream()
                 .sorted(java.util.Comparator.comparing(x -> x.empresa().nombre(), String.CASE_INSENSITIVE_ORDER))
                 .toList())
             html.append(fila(r, sesion.cuenta().rol() != Rol.EVALUADOR));
-        html.append(
-                "</tbody></table></div><p data-lista-vacia hidden>No hay empresas con estos filtros.</p></section>");
+        html.append("</tbody></table></div><p data-lista-vacia hidden>No hay empresas con estos filtros.</p>" +
+                ListasCortas.boton() + "</section>");
         return Html.pagina("Empresas", html.toString(), sesion, "Gestión · Empresas", accion, false);
     }
 

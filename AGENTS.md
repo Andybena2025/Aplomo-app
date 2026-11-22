@@ -255,3 +255,28 @@ Luego ESPERA el OK de Andy.
 
 - App normal recompilada/reiniciada en 8080: login y /nosotros 200 directos. Observación para despliegue:
   /salud redirige 303 al login en esta rama; no se modificó fuera del alcance del 28. Demo real no reiniciada.
+
+
+### Paso 29 · cierre de código; reinicio real pendiente
+- Encargo completo en Paso_29_Codex.txt, base main ce274cb; un solo commit «Paso 29» y push autorizados.
+  No capturas, descargas, migraciones ni cambios de motor, cálculo protegido, IA o imágenes. Main sigue 1180 px.
+- Escala compartida: filas 18/15, encabezados 13, menú 15, hora/puntaje 26, botones 44/36 y chips 32.
+  Tablas fijas; filtros compactos y selector Estado; diez filas iniciales, más de diez bajo petición y reinicio
+  al filtrar. Visitas por mes; Reservas próximas 14 días; pendientes por vencimiento. Historial inactivo conservado.
+- Rieles grandes desde 1440; sin logo extra junto al saludo/pie ni bloque nombre/rol en cabecera. Avatar con
+  title/aria, saludo primer nombre y AB sin prefijos. Inicio U reúne posturas por puesto con peor resultado.
+- Demo de pruebas: 23 visitas Finalizadas, máximos 9 Verde / 7 Amarillo / 7 Rojo, puntajes 2–7; 24 citas de
+  noviembre, ocho por Evaluador; cinco pendientes con fechas hoy−2/+3/+8/+15/+25. Cálculo por servicios existentes.
+- Demo.reiniciar/VinculosDemo conserva cuentas, claves y vínculos por NIT en la misma transacción, con savepoint.
+  Probado con root SOLO en rula_ergonomia_pruebas, Usuario vinculado y asignación externa; ROLLBACK final.
+- Suite completa única: 1105 Maven, un fallo por selector de registros de Pendientes; repuesto y comprobado con
+  22/22 dirigidas. Total 1105 casos distintos verificados. JS completo único 142/142. Rendimiento P95 listas
+  886,39 ms, guardar 12,62 ms, informe 237,31 ms; no repetir suites completas. Ver docs/informe_paso29.md.
+- Navegador integrado: 76 combinaciones iniciales A/E/U, 1920/1180/1024/390×1080, 0 px de desborde exterior
+  y de tablas; correcciones de celdas verificadas. Visitas 10→13 y mes anterior vuelve a diez fechas de octubre.
+  QA temporal revertida. No QA física nueva de iPad, Safari, Windows ni navegadores externos.
+- OBLIGATORIO después del commit: preguntar exactamente «¿Reinicio ahora la demo en tu base rula_ergonomia?
+  Escribe REINICIAR DEMO para confirmar». Solo la respuesta exacta REINICIAR DEMO autoriza ejecutar
+  bash scripts/reiniciar_demo.sh, root sin contraseña, manteniendo la confirmación del script. Hasta entonces,
+  no reiniciar demo real ni dar los conteos de pruebas como reales. Tras confirmar: recuentos SQL solicitados,
+  reiniciar app normal y entregar cifras en el chat. No hace falta otro commit para datos de la base real.

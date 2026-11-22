@@ -110,7 +110,9 @@ class DemoTest extends BasePrueba {
                             "to) JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa em " +
                             "USING(id_empresa) JOIN nivel_riesgo n USING(id_nivel) WHERE em.nit=?",
                     fila6 -> fila6.getString(1), nit);
-            assertTrue(colores.containsAll(List.of("VERDE", "AMARILLO", "ROJO")), colores.toString());
+            // Paso 29: la mezcla se controla por visita, sin forzar un Rojo en cada empresa.
+            assertFalse(colores.isEmpty());
+            assertTrue(List.of("VERDE", "AMARILLO", "ROJO").containsAll(colores));
             assertTrue(Sql.<Integer>uno(con,
                     "SELECT COUNT(*) FROM visita v JOIN reserva r USING(id_reserva) JOIN salon l " +
                             "USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa em USING(id_empresa)" +

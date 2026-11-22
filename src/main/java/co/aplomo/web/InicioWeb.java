@@ -63,12 +63,7 @@ public final class InicioWeb {
     }
 
     private void saludo(Cuenta cuenta, List<Empresa> companias, StringBuilder html) {
-        String nombre = cuenta.nombre().replaceFirst("(?i)^(Ing\\.|Rep\\.)\\s*", "").split("\\s+")[0];
-        String trato = switch (cuenta.rol()) {
-            case ADMINISTRADOR -> cuenta.correo().equals("gabby@rula.local") ? "Administradora " : "Administrador ";
-            case EVALUADOR -> "Ing. ";
-            case USUARIO -> "Representante ";
-        };
+        String nombre = Html.nombreSinTitulo(cuenta.nombre()).split("\\s+")[0];
         String subtitulo = cuenta.rol() == Cuenta.Rol.ADMINISTRADOR ? "Administración de ALINEO" :
                 cuenta.rol() == Cuenta.Rol.EVALUADOR ? "Tu jornada de evaluación" : companias.stream()
                                                                                     .map(Empresa::nombre)
@@ -76,15 +71,13 @@ public final class InicioWeb {
         String fecha = reservas.hoy().format(DateTimeFormatter.ofPattern("EEEE dd/MM/yyyy", new Locale("es", "CO")));
         html.append("<div class=\"pagehead\"><div><span class=\"eyebrow\">")
                 .append(Html.escapar(fecha.toUpperCase(Locale.ROOT)))
-                .append("</span><div class=\"saludo-linea\"><h1>Hola, ").append(Html.escapar(trato + nombre))
-                .append("</h1>").append(cuenta.rol() == Cuenta.Rol.EVALUADOR ?
+                .append("</span><div class=\"saludo-linea\"><h1>Hola, ").append(Html.escapar(nombre)).append("</h1>")
+                .append(cuenta.rol() == Cuenta.Rol.EVALUADOR ?
                         "<aside class=\"avisos-saludo\" data-avisos-saludo hidden aria-live=\"polite\">" +
                         "<button type=\"button\" data-ver-aviso-saludo></button>" +
                         "<button type=\"button\" data-ocultar-aviso aria-label=\"Ocultar aviso\">×</button></aside>"
                         : "")
-                .append("</div><p class=\"muted\">").append(Html.escapar(subtitulo))
-                .append("</p></div><div class=\"marca-llegada inicio-marca\">").append(Marca.logo())
-                .append("</div></div>");
+                .append("</div><p class=\"muted\">").append(Html.escapar(subtitulo)).append("</p></div></div>");
     }
 
     private List<Fila> filas(Cuenta cuenta, SeccionConsulta seccion) throws SQLException {
@@ -172,7 +165,8 @@ public final class InicioWeb {
     private void representante(Cuenta cuenta, List<Empresa> companias, StringBuilder html) throws SQLException {
         List<Fila> puestos = filas(cuenta, SeccionConsulta.PUESTOS);
         List<Fila> resultados = filas(cuenta, SeccionConsulta.EVALUACIONES);
-        html.append(enlace("/solicitar-visita", "Solicitar una visita", true));
+        html.append("<div class=\"solicitar-desde-inicio\">")
+                .append(enlace("/solicitar-visita", "Solicitar una visita", true)).append("</div>");
         html.append("<h2>").append(companias.size() == 1 ? "Tu empresa" : "Tus empresas").append("</h2>");
         for (Empresa empresa : companias) {
             html.append("<a class=\"lista-fila\" href=\"/empresas/").append(empresa.id()).append("\"><strong>")
@@ -185,11 +179,23 @@ public final class InicioWeb {
                     "/puestos?color=" + color));
         }
         html.append("</div><div class=\"inicio-columnas\"><section class=\"stack\"><h2>Últimos resultados</h2>");
-        resultados.stream().sorted(Comparator.comparing((Fila fila) -> fila.valor("fecha")).reversed()).limit(4)
-                .forEach(fila -> html.append("<a class=\"lista-fila\" href=\"/evaluaciones/").append(fila.id())
-                        .append("\"><strong>").append(Html.escapar(fila.valor("empresa_nombre")))
-                        .append("</strong><span>").append(Html.escapar(fila.valor("puesto_descripcion")))
-                        .append("</span>").append(riesgo(fila)).append("</a>"));
+        var porPuesto = resultados.stream().collect(Collectors.groupingBy(f -> f.valor("puesto")));
+        var ultimos = new java.util.ArrayList<Fila>();
+        for (var grupo : porPuesto.values()) {
+            var reciente = grupo.stream()
+                    .max(Comparator.comparing((Fila f) -> f.valor("fecha")).thenComparingInt(Fila::id)).orElseThrow();
+            ultimos.add(grupo.stream().filter(f -> f.valor("visita").equals(reciente.valor("visita")))
+                    .max(Comparator.comparingInt(
+                            f -> f.valor("puntaje").isBlank() ? 0 : Integer.parseInt(f.valor("puntaje"))))
+                    .orElseThrow());
+        }
+        ultimos.stream().sorted(Comparator.comparing((Fila f) -> f.valor("fecha")).reversed()).limit(4).forEach(
+                f -> html.append("<a class=\"lista-fila\" href=\"/evaluaciones/").append(f.id())
+                        .append("\"><strong title=\"").append(Html.escapar(TextoLista.puesto(f))).append("\">")
+                        .append(Html.escapar(TextoLista.puesto(f))).append("</strong><small>").append(Html.escapar(
+                                (companias.size() == 1 ? "" : f.valor("empresa_nombre") + " · ") +
+                                        f.valor("sede_nombre") + " · " + f.valor("salon_nombre"))).append("</small>")
+                        .append(riesgo(f)).append("</a>"));
         if (resultados.isEmpty()) html.append(Html.vacio("Aún no hay resultados de visitas Finalizadas.", ""));
         html.append("</section><section class=\"stack\"><h2>Próximas visitas</h2>");
         proximas(reservas.listar(cuenta), html);

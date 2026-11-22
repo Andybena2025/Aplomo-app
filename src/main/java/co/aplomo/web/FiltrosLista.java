@@ -5,46 +5,31 @@ import co.aplomo.modelo.SeccionConsulta;
 import co.aplomo.seguridad.Sesiones.Sesion;
 import co.aplomo.servicio.Consultas.Pagina;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
- * RF-024: conserva filtros avanzados y orden sin un botón Aplicar filtros.
+ * RF-024: muestra los selectores principales en una fila sin un botón Aplicar filtros.
  */
 final class FiltrosLista {
     private FiltrosLista() {
     }
 
     static String mostrar(Sesion sesion, Pagina pagina, boolean contexto) {
-        StringBuilder html = new StringBuilder("<details class=\"filtros-extra\"><summary>Más filtros</summary>" +
-                "<form method=\"get\" class=\"grid3\" data-filtros-vivos action=\"").append(pagina.seccion().ruta())
-                .append("\">");
-        for (String clave : pagina.seccion().filtros()) {
-            if (clave.equals("estado") || clave.equals("registros") && sesion.cuenta().rol() != Rol.ADMINISTRADOR) {
-                continue;
-            }
-            if (clave.equals("evaluador") && !pagina.catalogos().containsKey(clave)) continue;
-            if (contexto && !Set.of("desde", "hasta", "registros").contains(clave)) continue;
-            html.append(PaginasConsultas.filtro(pagina, clave));
+        StringBuilder html = new StringBuilder(
+                "<form method=\"get\" class=\"filtros-linea\" data-filtros-vivos action=\"").append(
+                pagina.seccion().ruta()).append("\">");
+        List<String> campos = contexto ? List.of() : List.of("empresa", "sede");
+        for (String clave : campos) {
+            if (pagina.seccion().filtros().contains(clave)) html.append(PaginasConsultas.filtro(pagina, clave));
         }
-        var ordenes = new ArrayList<>(
-                pagina.seccion().columnas().stream().filter(columna -> !contexto || !columna.clave().equals("numero"))
-                        .map(columna -> new Formularios.Opcion(columna.clave(), columna.titulo())).toList());
-        if (pagina.seccion() == SeccionConsulta.PENDIENTES) {
-            ordenes.addAll(List.of(new Formularios.Opcion("prioridad", "Prioridad"),
-                    new Formularios.Opcion("fecha_limite", "Fecha límite")));
+        if (sesion.cuenta().rol() == Rol.ADMINISTRADOR &&
+                pagina.seccion().filtros().contains("registros"))
+            html.append(PaginasConsultas.filtro(pagina, "registros").replace(">Registros<", ">Estado<"));
+        for (String clave : List.of("evaluacion", "visita", "q")) {
+            if (pagina.filtros().containsKey(clave))
+                html.append("<input type=\"hidden\" name=\"").append(clave).append("\" value=\"")
+                        .append(Html.escapar(pagina.filtros().get(clave))).append("\">");
         }
-        html.append(Formularios.selector(pagina.filtros(), "orden", "Ordenar por", ordenes, true))
-                .append(Formularios.selector(pagina.filtros(), "direccion", "Dirección",
-                        List.of(new Formularios.Opcion("asc", "Ascendente"),
-                                new Formularios.Opcion("desc", "Descendente")), true));
-        for (String clave : List.of("evaluacion", "visita", "q", "estado")) {
-            if (!pagina.filtros().containsKey(clave)) continue;
-            html.append("<input type=\"hidden\" name=\"").append(clave).append("\" value=\"")
-                    .append(Html.escapar(pagina.filtros().get(clave))).append("\">");
-        }
-        return html.append("<p class=\"hint\">Los filtros se actualizan al elegir una opción.</p></form></details>")
-                .toString();
+        return html.append("</form>").toString();
     }
 }

@@ -63,7 +63,7 @@ public final class Demo {
             String confirmacion = "";
             if (reiniciar) {
                 terminal.printf("Se reiniciarán SOLO las siete empresas identificadas de la demo. Las cuentas nunca " +
-                        "se borran. Si alguna está vinculada, el reinicio se cancela.%n");
+                        "se borran. Sus empresas asignadas se conservan por NIT.%n");
                 confirmacion = terminal.readLine("Escribe %s para continuar: ", CONFIRMACION);
                 if (!CONFIRMACION.equals(confirmacion)) {
                     terminal.printf("Cancelado. No se cambió ningún dato.%n");
@@ -73,8 +73,9 @@ public final class Demo {
             con.setAutoCommit(false);
             List<String> fotos = List.of();
             try {
-                if (reiniciar) fotos = vaciar(con, confirmacion);
-                cargar(con, Path.of("docs/base_de_datos/datos_demo.sql"));
+                if (reiniciar) fotos = reiniciar(con, confirmacion, Path.of("docs/base_de_datos/datos_demo.sql"),
+                        Config.carpetaFotos());
+                else cargar(con, Path.of("docs/base_de_datos/datos_demo.sql"));
                 con.commit();
             } catch (Exception error) {
                 con.rollback();
@@ -177,6 +178,28 @@ public final class Demo {
                 "La demo conserva cargas anteriores. Ejecuta scripts/reiniciar_demo.sh y confirma el reinicio.");
         DemoRoles.cargar(con, fotos, admin);
         DemoIdentidades.completar(con, admin);
+    }
+
+    /**
+     * RNF-009: desvincula y restaura las mismas cuentas por NIT, sin confirmar fuera de la transacción.
+     */
+    public static List<String> reiniciar(Connection con, String confirmacion, Path sql,
+            Path fotos) throws SQLException, IOException {
+        if (!CONFIRMACION.equals(confirmacion))
+            throw new IllegalArgumentException("Falta la confirmación REINICIAR DEMO.");
+        if (con.getAutoCommit()) throw new IllegalArgumentException("El reinicio requiere una transacción.");
+        var punto = con.setSavepoint();
+        try {
+            var vinculos = VinculosDemo.guardar(con);
+            vinculos.desvincular(con);
+            List<String> anteriores = vaciar(con, confirmacion);
+            cargar(con, sql, fotos);
+            vinculos.restaurar(con);
+            return anteriores;
+        } catch (SQLException | IOException | RuntimeException error) {
+            con.rollback(punto);
+            throw error;
+        }
     }
 
     /**

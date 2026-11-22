@@ -134,10 +134,10 @@ class HttpConsultasTest extends HttpPrueba {
         assertEquals(200, respuesta.statusCode());
         assertEquals(1, contarFilas(respuesta.body()));
         assertTrue(respuesta.body().contains("data-registro=\"" + escenario.evalRojo + "\""));
-        assertTrue(respuesta.body().contains("name=\"orden\""));
-        assertTrue(respuesta.body().contains("name=\"color\""));
+        assertTrue(respuesta.body().contains("filtros-linea"));
+        assertFalse(respuesta.body().contains("Más filtros"));
         assertTrue(respuesta.body().contains("value=\"ensamble\""));
-        assertTrue(respuesta.body().contains("name=\"numero\""));
+        assertTrue(respuesta.body().contains("name=\"empresa\""));
         assertEquals(200, get(ruta + "&orden=fecha&direccion=desc").statusCode());
         assertEquals(1, contarFilas(get(ruta + "&orden=fecha&direccion=desc").body()));
     }

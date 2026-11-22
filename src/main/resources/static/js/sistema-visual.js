@@ -3,13 +3,18 @@
   'use strict';
   const normalizar = texto => texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es');
   const hoy = new Intl.DateTimeFormat('sv-SE', {timeZone: 'America/Bogota'}).format(new Date());
+  const fin = new Date(hoy + 'T12:00:00Z'); fin.setUTCDate(fin.getUTCDate()+14);
+  const finProximas = fin.toISOString().slice(0,10);
+  const mes = new Date(hoy.slice(0,7) + '-01T12:00:00Z'); mes.setUTCMonth(mes.getUTCMonth()-1);
+  const anterior = mes.toISOString().slice(0,7);
   function coincide(fila, filtro) {
     const estado = fila.dataset.estado;
     if (filtro === 'TODOS') return true;
     if (filtro === 'ACTIVA') return estado !== 'INACTIVA';
     if (filtro === 'ABIERTOS') return !['ARREGLADO', 'HECHA'].includes(estado);
-    if (filtro === 'PROXIMAS') return ['EN_COLA','EN_CURSO'].includes(estado) && fila.dataset.fecha >= hoy;
+    if (filtro === 'PROXIMAS') return ['EN_COLA','EN_CURSO'].includes(estado) && fila.dataset.fecha >= hoy && fila.dataset.fecha.slice(0,10) <= finProximas;
     if (filtro === 'PASADAS') return estado !== 'CANCELADA' && fila.dataset.fecha < hoy;
+    if (filtro === 'MES_ANTERIOR') return (fila.dataset.fecha || '').slice(0,7) === anterior;
     if (filtro === 'ESTE_MES') return (fila.dataset.fecha || '').slice(0,7) === hoy.slice(0,7);
     if (filtro === 'ROJO') return fila.dataset.color === 'ROJO';
     return filtro === estado;
@@ -20,7 +25,7 @@
     const buscar = lista.querySelector('[data-lista-buscar]');
     const parametros = new URLSearchParams(location.search);
     if (buscar && parametros.has('q')) buscar.value = parametros.get('q');
-    const defecto = {RESERVAS:'PROXIMAS',VISITAS:'TODOS',PENDIENTES:'ABIERTO'};
+    const defecto = {RESERVAS:'PROXIMAS',VISITAS:'ESTE_MES',PENDIENTES:'ABIERTO'};
     let filtro = parametros.get('filtro_lista') || parametros.get('estado') ||
       (lista.dataset.inicial !== 'TODOS' ? lista.dataset.inicial : '');
     if (!filtro && parametros.has('registros')) filtro = {ACTIVOS:'ACTIVO',INACTIVOS:'INACTIVO',TODOS:'TODOS'}[parametros.get('registros')];
@@ -29,12 +34,23 @@
     let persona = '';
     const personas = [...lista.querySelectorAll('[data-lista-persona]')];
     const incluir = lista.querySelector('[data-incluir-inactivas]');
+    const estadoEmpresa = lista.querySelector('[data-incluir-estado]');
+    const mas = lista.querySelector('[data-lista-mas]');
+    let limite = 10;
+    const gruposChips = [...lista.querySelectorAll(':scope > nav.chips, :scope > div.chips, :scope > .leyenda-personas')];
+    if (!lista.querySelector('.fila-chips') && gruposChips.length) {
+      const filaChips = document.createElement('div'); filaChips.className = 'fila-chips';
+      lista.querySelector('.lista-herramientas')?.after(filaChips);
+      gruposChips.forEach(g => filaChips.append(g));
+    }
     const selectores = [...lista.querySelectorAll('[data-filtro-local]')];
     function actualizar() {
       const texto = normalizar(buscar?.value || '');
       const coincideTexto = fila => fila.dataset.filtroExtra !== 'false'
         && (!persona || (fila.dataset.evaluadores || fila.dataset.evaluador || '').split(/[ ,]+/).includes(persona))
         && (!incluir || incluir.checked || fila.dataset.empresaActiva !== 'false')
+        && (!estadoEmpresa || estadoEmpresa.value === 'TODOS' ||
+          (estadoEmpresa.value === 'INACTIVAS' ? fila.dataset.empresaActiva === 'false' : fila.dataset.empresaActiva !== 'false'))
         && selectores.every(c => !c.value || (c.value === '__SIN__' ? !fila.dataset[c.dataset.filtroLocal]
           : (fila.dataset[c.dataset.filtroLocal] || '') === c.value))
         && normalizar(fila.dataset.busqueda || fila.textContent).includes(texto);
@@ -42,8 +58,9 @@
       filas.forEach(fila => {
         const responder = lista.dataset.seccion === 'RESERVAS' &&
           fila.closest?.('.respuestas-reservas') && filtro === 'PROXIMAS' && fila.dataset.estado === 'ESPERANDO';
-        fila.hidden = !(coincideTexto(fila) && (coincide(fila, filtro) || responder));
-        if (!fila.hidden) visibles++;
+        const cumple = coincideTexto(fila) && (coincide(fila, filtro) || responder);
+        fila.hidden = !cumple || visibles >= limite;
+        if (cumple) visibles++;
       });
       chips.forEach(chip => {
         chip.setAttribute('aria-pressed', String(chip.dataset.listaFiltro === filtro));
@@ -66,26 +83,39 @@
         const plural = unidad.endsWith('ón') ? unidad.replace(/ón$/, 'ones') : unidad + 's';
         contador.textContent = `${visibles} ${visibles === 1 ? unidad : plural}`;
       }
+      if (mas) { mas.hidden = visibles <= limite; mas.textContent = `Ver 10 más · quedan ${Math.max(0,visibles-limite)}`; }
+      const tituloVisitas = lista.querySelector('[data-visitas-titulo]');
+      if (tituloVisitas) {
+        const periodo = filtro === 'MES_ANTERIOR' ? anterior : hoy.slice(0,7);
+        const nombreMes = new Intl.DateTimeFormat('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'})
+          .format(new Date(periodo+'-02T12:00:00Z'));
+        tituloVisitas.textContent = `Finalizadas · ${['TODOS','ROJO'].includes(filtro) ? 'Todas' : nombreMes}`;
+        const total = lista.querySelector('[data-visitas-total]');
+        if (total) total.textContent = `${visibles} ${visibles === 1 ? 'visita' : 'visitas'}${filtro === 'ESTE_MES' ? ' este mes' : filtro === 'MES_ANTERIOR' ? ' el mes anterior' : ''}`;
+      }
       const limpiar = lista.querySelector('[data-lista-limpiar]');
       if (limpiar) limpiar.hidden = !texto && !persona && !selectores.some(c => c.value)
         && filtro === (defecto[lista.dataset.seccion] || chips[0]?.dataset.listaFiltro || 'TODOS')
-        && !location.search && !filas.some(f => f.dataset.filtroExtra === 'false');
+        && !estadoEmpresa?.value && !location.search && !filas.some(f => f.dataset.filtroExtra === 'false');
       const vacia = lista.querySelector('[data-lista-vacia]');
       if (vacia) vacia.hidden = visibles !== 0;
     }
-    chips.forEach(chip => chip.addEventListener('click', () => { filtro = chip.dataset.listaFiltro; actualizar(); }));
-    buscar?.addEventListener('input', actualizar);
+    function reiniciar() { limite = 10; actualizar(); }
+    mas?.addEventListener('click', () => { limite += 10; actualizar(); });
+    chips.forEach(chip => chip.addEventListener('click', () => { filtro = chip.dataset.listaFiltro; reiniciar(); }));
+    buscar?.addEventListener('input', reiniciar);
     personas.forEach(chip => chip.addEventListener('click', () => {
       persona = chip.dataset.listaPersona;
       personas.forEach(c => c.setAttribute('aria-pressed', String(c.dataset.listaPersona === persona)));
-      actualizar();
+      reiniciar();
     }));
-    incluir?.addEventListener('change', actualizar);
-    selectores.forEach(c => c.addEventListener('change', actualizar));
+    incluir?.addEventListener('change', reiniciar);
+    estadoEmpresa?.addEventListener('change', reiniciar);
+    selectores.forEach(c => c.addEventListener('change', reiniciar));
     lista.querySelectorAll('[data-abrir-historial]').forEach(b => b.addEventListener('click', () => {
-      filtro = b.dataset.abrirHistorial; actualizar();
+      filtro = b.dataset.abrirHistorial; reiniciar();
     }));
-    lista.addEventListener('filtros-cambiados', actualizar);
+    lista.addEventListener('filtros-cambiados', reiniciar);
     const avanzados = lista.querySelector('[data-filtros-vivos]');
     if (avanzados) avanzados.addEventListener('change', evento => {
       const campo = evento.target;
@@ -101,12 +131,18 @@
       avanzados.requestSubmit();
     });
     lista.querySelector('[data-lista-orden]')?.addEventListener('change', e => {
-      const ordenadas = [...filas].sort((a,b) => e.target.value === 'recientes'
+      const ordenadas = filas.sort((a,b) => e.target.value === 'recientes'
         ? Number(b.dataset.registro) - Number(a.dataset.registro)
         : normalizar(a.dataset.busqueda || '').localeCompare(normalizar(b.dataset.busqueda || ''),'es'));
-      ordenadas.forEach(f => f.parentElement.append(f)); actualizar();
+      ordenadas.forEach(f => f.parentElement.append(f)); reiniciar();
     });
     actualizar();
+  });
+  document.querySelectorAll('[data-ver-curso]').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-en-curso]').forEach(f => { f.hidden = false; }); b.hidden = true;
+  }));
+  document.querySelectorAll('.fila-enlace small,.persona-lista,.alineo-table td[data-label="Empresa"]').forEach(e => {
+    if (!e.title) e.title = e.textContent.trim();
   });
   document.querySelectorAll('[data-auto-filtros]').forEach(form => form.addEventListener('change', () => {
     if (form.checkValidity()) form.requestSubmit();

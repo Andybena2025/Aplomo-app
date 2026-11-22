@@ -86,7 +86,8 @@ public final class TextoLista {
      */
     public static String persona(String nombre, String color) {
         return "<span class=\"persona-lista\" style=\"--persona:" + color(color) + "\"><i aria-hidden=\"true\"></i>" +
-                Html.escapar(nombre == null || nombre.isBlank() ? "Sin evaluador" : nombre) + "</span>";
+                Html.escapar(nombre == null || nombre.isBlank() ? "Sin evaluador" : Html.nombreSinTitulo(nombre)) +
+                "</span>";
     }
 
     /**

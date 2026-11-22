@@ -15,16 +15,16 @@ function entorno(seccion, datos, busqueda = '') {
     : seccion === 'USUARIOS' ? ['ACTIVA','INACTIVA','TODOS'] : ['ABIERTOS','ABIERTO','ARREGLADO','TODOS'];
   const chips = opciones.map(valor => nodo(valor + ' · 0', {listaFiltro: valor}));
   const buscar = nodo(); buscar.value = '';
-  const contador = nodo(), vacia = nodo();
+  const contador = nodo(), vacia = nodo(), mas = nodo();
   const lista = {dataset: {seccion}, addEventListener() {},
     querySelectorAll(selector) { return selector === '[data-registro]' ? filas :
       selector === '[data-lista-filtro]' ? chips : []; },
     querySelector(selector) { return {'[data-lista-buscar]': buscar, '[data-lista-contador]': contador,
-      '[data-lista-vacia]': vacia}[selector] || null; }};
+      '[data-lista-vacia]': vacia, '[data-lista-mas]': mas}[selector] || null; }};
   class FechaFija extends Date { constructor(...args) { super(...(args.length ? args : ['2026-11-27T15:00:00Z'])); } }
   vm.runInNewContext(fuente, {document: {querySelectorAll: selector => selector === '[data-lista]' ? [lista] : []},
     location: {search: busqueda}, URLSearchParams, Intl, Date: FechaFija, setTimeout() {}});
-  return {filas, chips, buscar, contador, vacia,
+  return {filas, chips, buscar, contador, vacia, mas,
     elegir(valor) { chips.find(chip => chip.dataset.listaFiltro === valor).eventos.click(); }};
 }
 test('Próximas excluye citas pasadas, finalizadas y canceladas; el contador cuenta lo visible', () => {
@@ -69,4 +69,30 @@ test('el contador de un chip no se duplica al alternar y buscar', () => {
   assert.equal(e.chips[2].textContent, 'TODOS · 2');
   e.buscar.value = 'andres'; e.buscar.eventos.input();
   assert.equal(e.chips[2].textContent, 'TODOS · 1');
+});
+
+test('50 registros: abre 10, muestra 20 al pedir más y reinicia a 10 al filtrar', () => {
+  const e = entorno('USUARIOS', Array.from({length:50}, (_,i)=>({estado:'ACTIVA',busqueda:'Persona '+i})));
+  assert.equal(e.filas.filter(f=>!f.hidden).length,10);
+  assert.equal(e.contador.textContent,'50 resultados');
+  assert.equal(e.mas.textContent,'Ver 10 más · quedan 40');
+  e.mas.eventos.click();
+  assert.equal(e.filas.filter(f=>!f.hidden).length,20);
+  e.elegir('TODOS');
+  assert.equal(e.filas.filter(f=>!f.hidden).length,10);
+  assert.equal(e.chips[2].textContent,'TODOS · 50');
+});
+test('Próximas excluye reservas a más de 14 días', () => {
+  const e=entorno('RESERVAS',[{estado:'EN_COLA',fecha:'2026-12-11'},
+    {estado:'EN_COLA',fecha:'2026-12-12'}]);
+  assert.deepEqual(e.filas.map(f=>f.hidden),[false,true]);
+});
+
+test('ningún selector de chip de filtro declara más de 32 px de alto mínimo', () => {
+  const css=fs.readFileSync('src/main/resources/static/css/aplomo.css','utf8');
+  for(const regla of css.matchAll(/([^{}]+)\{([^{}]+)\}/g)) {
+    if(!/(?:^|[^\w-])\.chip(?![\w-])/.test(regla[1])) continue;
+    for(const altura of regla[2].matchAll(/min-height\s*:\s*(\d+)px/g))
+      assert.ok(+altura[1]<=32,regla[1]);
+  }
 });

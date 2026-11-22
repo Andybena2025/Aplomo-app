@@ -25,7 +25,9 @@ import java.util.List;
  */
 final class ResultadosDemo {
     private static final ZoneId ZONA = ZoneId.of("America/Bogota");
-    private static final int[] CASOS = {0, 1, 2, 0, 1, 3, 4, 2, 0, 1, 3, 2, 0, 1, 2, 3, 4, 2, 0, 1};
+    private static final int[] CASOS = {3, 1, 2, 3, 4, 6, 3, 1, 5, 3, 4, 3, 2, 1, 3, 6, 3, 4, 5, 3, 1, 2, 3};
+    private static final int[][] DIAS_OCTUBRE = {{2, 7, 13, 19, 22, 28}, {1, 6, 9, 14, 20, 26}, {5, 8, 15, 21, 23, 29}};
+    private static final int[] DESFASES_LIMITE = {-2, 3, 8, 15, 25};
 
     private ResultadosDemo() {
     }
@@ -33,21 +35,23 @@ final class ResultadosDemo {
     static void preparar(Connection con, Path fotos, int admin, List<Integer> empresas,
             List<Integer> evaluadores) throws SQLException, IOException {
         int[] responsables = {1, 0, 0, 1, 2, 2, 1};
-        int dia = 5;
+        int[] turnos = new int[3];
         for (int i = 0; i < empresas.size(); i++) {
             int evaluador = evaluadores.get(responsables[i]);
             if (i == 6) new co.aplomo.dao.CuentaEmpresaDao().sincronizar(con, admin, evaluador,
                     List.of(empresas.get(0), empresas.get(3), empresas.get(6)), false);
             for (int salon : Sql.listar(con, "SELECT l.id_salon FROM salon l JOIN sede s USING(id_sede) " +
                     "WHERE s.id_empresa=? ORDER BY l.id_salon", f -> f.getInt(1), empresas.get(i))) {
-                LocalDate fecha = LocalDate.of(2026, 10, dia++);
-                while (fecha.getDayOfWeek().getValue() > 5) fecha = fecha.plusDays(1);
-                LocalTime hora = LocalTime.of(8 + i, 0);
+                int persona = responsables[i];
+                int turno = turnos[persona]++;
+                LocalDate fecha = LocalDate.of(2026, 10, DIAS_OCTUBRE[persona][turno]);
+                LocalTime hora = LocalTime.ofSecondOfDay((420 + ((turno * 5 + persona * 7) % 18) * 30) * 60L);
+                int duracion = 1 + (turno + persona) % 3;
                 int reserva = Sql.insertar(con, "INSERT INTO reserva(id_salon,id_administrador,id_evaluador," +
                                 "codigo,fecha,hora_inicio,hora_fin,categoria,descripcion,estado) " +
                                 "VALUES(?,?,?,?,?,?,?,'EVALUACION_INICIAL',?,'EN_COLA')", salon, evaluador, evaluador,
-                        "D28-H-" + salon, fecha, hora, hora.plusHours(1), "Revisión de las tareas del turno");
-                finalizar(con, fotos, evaluador, reserva, salon, fecha, hora, 1);
+                        "D28-H-" + salon, fecha, hora, hora.plusHours(duracion), "Revisión de las tareas del turno");
+                finalizar(con, fotos, evaluador, reserva, salon, fecha, hora, duracion);
             }
             if (i == 6) new co.aplomo.dao.CuentaEmpresaDao().sincronizar(con, admin, evaluador,
                     List.of(empresas.get(0), empresas.get(3)), false);
@@ -55,12 +59,9 @@ final class ResultadosDemo {
     }
 
     static int caso(Connection con, int puesto) throws SQLException {
-        var todos = Sql.listar(con, "SELECT p.id_puesto FROM puesto_trabajo p JOIN salon l USING(id_salon) " +
-                "JOIN sede s USING(id_sede) JOIN empresa em USING(id_empresa) WHERE em.nit IN " +
-                "('900.512.384-1','901.638.205-4','012345','900.782.156-2','901.428.603-7'," +
-                "'900.315.928-5','901.267.840-3') ORDER BY p.id_puesto", f -> f.getInt(1));
-        int indice = todos.indexOf(puesto);
-        return indice == 2 || indice == 22 ? 5 : CASOS[Math.floorMod(indice, CASOS.length)];
+        int anteriores = Sql.uno(con, "SELECT COUNT(*) FROM visita v JOIN reserva r USING(id_reserva) " +
+                "WHERE v.estado='FINALIZADA' AND (r.codigo LIKE 'D28-%' OR r.codigo LIKE 'V2%')", f -> f.getInt(1));
+        return CASOS[Math.floorMod(anteriores, CASOS.length)];
     }
 
     static void finalizar(Connection con, Path fotos, int evaluador, int reserva, int salon, LocalDate fecha,
@@ -112,8 +113,10 @@ final class ResultadosDemo {
         for (var fila : filas) {
             boolean abierto = abiertos.size() < 5 && abiertos.add(fila[1]);
             Sql.actualizar(con, "UPDATE pendiente_arreglo SET estado=?,prioridad=?,fecha_limite=?,descripcion=? " +
-                            "WHERE id_pendiente=?", abierto ? "ABIERTO" : "ARREGLADO", abierto ? "ALTA" : "MEDIA",
-                    LocalDate.of(2026, 11, 26), "Revisar el alcance y los apoyos del puesto", fila[0]);
+                            "WHERE id_pendiente=?", abierto ? "ABIERTO" : "ARREGLADO",
+                    abierto && abiertos.size() % 2 == 1 ? "ALTA" : "MEDIA",
+                    LocalDate.now(ZONA).plusDays(DESFASES_LIMITE[Math.max(0, abiertos.size() - 1)]),
+                    "Revisar el alcance y los apoyos del puesto", fila[0]);
             new BitacoraDao().registrar(con, admin, java.time.LocalDateTime.now(ZONA), "pendiente_arreglo", fila[0],
                     "EDITAR", null, abierto ? "ABIERTO" : "ARREGLADO", "Seguimiento inicial de la demo planeada");
         }

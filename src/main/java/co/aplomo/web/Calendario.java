@@ -40,9 +40,8 @@ public final class Calendario {
         for (LocalDate fecha = desde; fecha.isBefore(hasta); fecha = fecha.plusDays(1)) {
             html.append(dia(vista, fecha));
         }
-        return html.append(
-                "</div><p class=\"hint cal-leyenda\">✓ Día pasado</p><section class=\"cal-dia-seleccionado " +
-                        "stack\" hidden ").append("aria-live=\"polite\"></section>").toString();
+        return html.append("</div><section class=\"cal-dia-seleccionado " + "stack\" hidden ")
+                .append("aria-live=\"polite\"></section>").toString();
     }
 
     private static String dia(Vista vista, LocalDate fecha) {

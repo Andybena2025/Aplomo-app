@@ -54,9 +54,7 @@ final class TablaUsuarios {
             String vinculadas =
                     cuenta.rol() == Rol.ADMINISTRADOR ? "Todas las empresas" : ids.stream().map(nombres::get)
                                                                                .filter(java.util.Objects::nonNull)
-                                                                               .collect(
-                                                                                       Collectors.joining(
-                                                                                               " · "));
+                                                                               .collect(Collectors.joining(" · "));
             html.append("<tr data-registro=\"").append(cuenta.id()).append("\" data-estado=\"")
                     .append(cuenta.estado().name()).append("\" data-rol=\"").append(cuenta.rol().name())
                     .append("\" data-empresa=\"")
@@ -72,8 +70,8 @@ final class TablaUsuarios {
                     .append("<a class=\"btn\" href=\"/usuarios/").append(cuenta.id())
                     .append("/editar\">Editar</a></td></tr>");
         }
-        html.append("</tbody></table></div><p data-lista-vacia hidden>No hay cuentas con estos filtros.</p></section>" +
-                "<script src=\"/static/js/usuarios.js\" defer></script>");
+        html.append("</tbody></table></div><p data-lista-vacia hidden>No hay cuentas con estos filtros.</p>" +
+                ListasCortas.boton() + "</section>" + "<script src=\"/static/js/usuarios.js\" defer></script>");
         return Html.pagina("Usuarios", html.toString(), sesion, "Gestión · Usuarios",
                 "<a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a>", false);
     }

@@ -229,6 +229,7 @@ public final class Html {
      * Permite que Inicio omita Atrás sin afectar el resto de páginas. RNF-011.
      */
     public static String pagina(String titulo, String contenido, Sesion sesion2, boolean conPagehead, boolean atras) {
+        contenido = ListasCortas.preparar(contenido);
         contenido += notas(sesion2);
         String rolPagina = sesion2 == null || sesion2.cuenta() == null ? "publica" : sesion2.cuenta().rol().name()
                                                                                      .toLowerCase(Locale.ROOT);
@@ -289,16 +290,15 @@ public final class Html {
                     + "<nav class=\"nav\" aria-label=\"Menú principal\">" + nav + "</nav>"
 
                     // Nombre + rol + avatar + Salir (Cambiar contraseña dentro del menú de cuenta)
-                    + "<div class=\"who\"><div class=\"meta\" style=\"text-align:right\"><div>" +
-                    escapar(cuenta.nombre()) + "</div><div class=\"muted small\">" + escapar(rolTexto) +
-                    "</div></div>" + "<a class=\"btn ayuda-cabecera\" href=\"/ayuda\">Ayuda</a>" +
+                    + "<div class=\"who\"><a class=\"btn ayuda-cabecera\" href=\"/ayuda\">Ayuda</a>" +
                     "<a class=\"avatar bandeja-boton\" href=\"/avisos\" data-abrir-avisos aria-label=\"Avisos\">" +
                     "<svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" " +
                     "aria-hidden=\"true\"><path d=\"M4 4h16v16H4z M4 14h5l1 3h4l1-3h5\"/></svg>" +
                     "<span class=\"avisos-contador\" data-contador-avisos hidden></span></a>" +
-                    "<a href=\"/cuenta\" class=\"avatar\" title=\"Mi cuenta\">" + escapar(iniciales) + "</a>" +
-                    "<form method=\"post\" action=\"/logout\" style=\"margin:0\">" + csrf(sesion2) +
-                    "<button class=\"btn\">Salir</button></form></div>" + "</div></header>";
+                    "<a href=\"/cuenta\" class=\"avatar\" title=\"" + escapar(cuenta.nombre() + " · " + rolTexto) +
+                    "\" aria-label=\"Mi cuenta · " + escapar(cuenta.nombre() + " · " + rolTexto) + "\">" +
+                    escapar(iniciales) + "</a>" + "<form method=\"post\" action=\"/logout\" style=\"margin:0\">" +
+                    csrf(sesion2) + "<button class=\"btn\">Salir</button></form></div>" + "</div></header>";
         }
 
         return cabecera;
@@ -345,9 +345,8 @@ public final class Html {
     }
 
     private static String pie() {
-        return "<footer class=\"pie\"><div class=\"wrap\"><span class=\"marca\">" + Marca.logo() +
-                "</span><span class=\"lema\">Ergonomía con precisión · Método RULA</span>" +
-                "<span>© 2026 ALINEO</span></div></footer>";
+        return "<footer class=\"pie\"><div class=\"wrap\"><span class=\"lema\">Ergonomía con precisión · Método " +
+                "RULA</span>" + "<span>© 2026 ALINEO</span></div></footer>";
     }
 
     private static String laterales() {
@@ -368,14 +367,21 @@ public final class Html {
      */
     public static String iniciales(String nombre) {
         if (nombre == null || nombre.isBlank()) return "?";
-        String limpio = nombre.strip()
-                .replaceFirst("(?iu)^(?:(?:Ing\\.?|Ingenier[oa]|Dr\\.?|Dra\\.?|Arq\\.?|Lic\\.?)\\s+)+", "");
+        String limpio = nombreSinTitulo(nombre);
         String[] partes = limpio.split("\\s+");
         StringBuilder ini = new StringBuilder();
         for (int i = 0; i < Math.min(2, partes.length); i++) {
             if (!partes[i].isEmpty()) ini.appendCodePoint(partes[i].codePointAt(0));
         }
         return ini.toString().toUpperCase(Locale.ROOT);
+    }
+
+    /**
+     * RNF-007: nombre compartido sin títulos de profesión ni de representación.
+     */
+    public static String nombreSinTitulo(String nombre) {
+        return nombre == null ? "" : nombre.strip().replaceFirst(
+                "(?iu)^(?:(?:Ing\\.?|Ingenier[oa]|Dr\\.?|Dra\\.?|Arq\\.?|Lic\\.?|Rep\\.?|Representante)\\s+)+", "");
     }
 
     /**

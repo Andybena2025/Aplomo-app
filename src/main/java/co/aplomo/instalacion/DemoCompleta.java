@@ -27,11 +27,12 @@ final class DemoCompleta {
      */
     static Entrada entrada(int caso) {
         double[] grados = caso == 0 || caso == 3 ? new double[]{0, 90, 0, 0, 0} : new double[]{61, 47, 0, 37, 17};
+        if (caso == 6) grados[0] = 0;
         var mediciones = new EnumMap<Segmento, Medicion>(Segmento.class);
         for (Segmento segmento : Segmento.values()) {
             mediciones.put(segmento, new Medicion(List.of(), grados[segmento.ordinal()]));
         }
-        Carga carga = caso == 2 ? Carga.DE_2_A_10KG_ESTATICA_O_REPETITIVA :
+        Carga carga = caso == 2 || caso == 6 ? Carga.DE_2_A_10KG_ESTATICA_O_REPETITIVA :
                 caso == 5 ? Carga.MAS_10KG_INTERMITENTE : Carga.MENOS_2KG_INTERMITENTE;
         return new Entrada(Lado.DERECHO, 200, 400, mediciones, Ajustes.sinAjustes(),
                 caso == 3 || caso == 4 || caso == 5, carga);

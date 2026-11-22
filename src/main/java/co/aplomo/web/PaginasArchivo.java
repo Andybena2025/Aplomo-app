@@ -75,7 +75,7 @@ public final class PaginasArchivo {
         if (sesion.cuenta().rol() != Rol.EVALUADOR) html.append("<th scope=\"col\">Evaluador</th>");
         html.append(
                 "<th scope=\"col\">Evaluaciones</th><th scope=\"col\">Resultados</th><th scope=\"col\">Estado</th>" +
-                        "<th scope=\"col\"><span class=\"sr-only\">Abrir</span></th></tr></thead><tbody>");
+                        "<th scope=\"col\"></th></tr></thead><tbody>");
         for (Empresa empresa : datos.empresas()) {
             var filas = datos.evaluaciones().stream()
                     .filter(f -> f.valor("empresa").equals(Integer.toString(empresa.id()))).toList();
@@ -103,8 +103,8 @@ public final class PaginasArchivo {
                     .append(SistemaVisual.estado(empresa.activa() ? "ACTIVO" : "INACTIVO"))
                     .append("</td><td aria-hidden=\"true\">›</td></tr>");
         }
-        html.append(
-                "</tbody></table></div><p data-lista-vacia hidden>No hay empresas con estos filtros.</p></section>");
+        html.append("</tbody></table></div><p data-lista-vacia hidden>No hay empresas con estos filtros.</p>" +
+                ListasCortas.boton() + "</section>");
         return Html.pagina("Archivo", html.toString(), sesion, false, false);
     }
 
@@ -197,7 +197,7 @@ public final class PaginasArchivo {
                                 "<th scope=\"col\">Puesto</th><th scope=\"col\">Último resultado</th>" +
                                 "<th scope=\"col\">Última evaluación</th>");
                 if (sesion.cuenta().rol() != Rol.EVALUADOR) html.append("<th scope=\"col\">Evaluador</th>");
-                html.append("<th scope=\"col\"><span class=\"sr-only\">Abrir</span></th></tr></thead><tbody>");
+                html.append("<th scope=\"col\"></th></tr></thead><tbody>");
                 for (var puesto : agrupar(salon, "puesto").values()) {
                     Fila f = ordenadas(puesto).get(0);
                     html.append("<tr data-registro=\"").append(f.id()).append("\" style=\"--persona:")

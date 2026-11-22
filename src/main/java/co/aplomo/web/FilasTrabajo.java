@@ -17,7 +17,7 @@ final class FilasTrabajo {
     static String cabecera(SeccionConsulta seccion, Rol rol) {
         List<String> columnas = switch (seccion) {
             case RESERVAS -> List.of("Hora", "Empresa y lugar", "Evaluador", "Estado");
-            case VISITAS -> List.of("Fecha", "Empresa y lugar", "Puestos", "Resultado más alto", "Evaluador");
+            case VISITAS -> List.of("Fecha", "Empresa y lugar", "Puestos", "Resultado", "Evaluador");
             case PENDIENTES -> List.of("Puesto", "Resultado", "Prioridad", "Fecha límite", "Evaluador", "Estado");
             case PUESTOS -> List.of("Puesto", "Empresa y lugar", "Resultado", "Estado");
             case EVALUACIONES -> List.of("Puesto", "Fecha", "Resultado", "Evaluador", "Estado");
@@ -33,7 +33,7 @@ final class FilasTrabajo {
         if (seccion == SeccionConsulta.RESERVAS && rol == Rol.EVALUADOR) {
             html.append("<th scope=\"col\">Respuesta</th>");
         }
-        return html.append("<th scope=\"col\"><span class=\"sr-only\">Abrir</span></th></tr></thead>").toString();
+        return html.append("<th scope=\"col\"></th></tr></thead>").toString();
     }
 
     static String fila(Sesion sesion, Fila f, SeccionConsulta seccion, boolean visible) {
@@ -43,13 +43,14 @@ final class FilasTrabajo {
             default -> f.valor("nombre");
         };
         String detalle = String.join(" · ",
-                List.of(f.valor("empresa_nombre"), f.valor("sede_nombre"), f.valor("salon_nombre")).stream()
+                List.of((seccion == SeccionConsulta.RESERVAS || seccion == SeccionConsulta.VISITAS) ? "" : f.valor(
+                                "empresa_nombre"), f.valor("sede_nombre"), f.valor("salon_nombre")).stream()
                         .filter(t -> !t.isBlank()).toList());
         String marcas = sesion.cuenta().rol() == Rol.ADMINISTRADOR ? inactivos(f) : "";
         String enlace =
                 "<a class=\"fila-enlace\" title=\"" + Html.escapar(titulo) + "\" href=\"" + seccion.ruta() + "/" +
-                        f.id() + "\"><strong>" + Html.escapar(titulo) + "</strong>" + "<small>" +
-                        Html.escapar(detalle) +
+                        f.id() + "\"><strong>" + Html.escapar(titulo) + "</strong>" + "<small title=\"" +
+                        Html.escapar(detalle) + "\">" + Html.escapar(detalle) +
                         (f.valor("numero").isBlank() ? "" : " · Puesto " + Html.escapar(f.valor("numero"))) +
                         "</small>" + marcas + "</a>";
         StringBuilder html = new StringBuilder("<tr data-registro=\"").append(f.id()).append("\" data-filtro-extra=\"")
@@ -74,14 +75,14 @@ final class FilasTrabajo {
             }
             case VISITAS -> {
                 html.append(td("Fecha", TextoLista.fecha(f.valor("fecha")))).append(td("Empresa y lugar", enlace))
-                        .append(td("Puestos", f.valor("puestos_evaluados") + " evaluados"))
-                        .append(td("Resultado más alto", riesgo(f)));
+                        .append(td("Puestos", Html.plural(numero(f.valor("puestos_evaluados")), "puesto")))
+                        .append(td("Resultado", riesgo(f)));
                 persona(html, sesion, f);
             }
             case PENDIENTES -> {
                 String posturas = numero(f.valor("posturas")) > 1 ?
                         "<span class=\"pill\">" + f.valor("posturas") + " posturas</span>" : "";
-                String proxima = f.valor("proxima_visita").isBlank() ? "" :
+                String proxima = sesion.cuenta().rol() != Rol.EVALUADOR || f.valor("proxima_visita").isBlank() ? "" :
                         "<small>Próxima visita " + TextoLista.fecha(f.valor("proxima_visita")) + "</small>";
                 html.append(td("Puesto", enlace + posturas + proxima)).append(td("Resultado", riesgo(f)))
                         .append(td("Prioridad", TextoLista.prioridad(f.valor("prioridad"))))

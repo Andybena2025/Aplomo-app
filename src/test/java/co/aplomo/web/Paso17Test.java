@@ -81,14 +81,13 @@ class Paso17Test extends HttpPrueba {
     }
 
     @Test
-    void pestañasYOrdenDentroDeMasFiltros() throws Exception {
+    void pestañasYFiltrosEnUnaFilaCompacta() throws Exception {
         entrar(admin);
         String texto = get("/evaluaciones").body();
         assertFalse(texto.contains("Ver otras secciones"));
         assertTrue(texto.contains("data-lista-filtro"));
-        int inicio = texto.indexOf("Más filtros"), orden = texto.indexOf("Ordenar por", inicio);
-        int fin = texto.indexOf("</details>", inicio);
-        assertTrue(inicio > 0 && orden > inicio && orden < fin);
+        assertFalse(texto.contains("Más filtros"));
+        assertTrue(texto.contains("filtros-linea"));
         assertFalse(texto.contains("Aplicar filtros"));
     }
 
