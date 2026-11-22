@@ -19,45 +19,113 @@ final class CentroAyuda {
     }
 
     static String pagina(Sesion sesion, Contenido contenido) {
+        return pagina(sesion, contenido, "");
+    }
+
+    static String pagina(Sesion sesion, Contenido contenido, String tema) {
+        if (sesion == null || sesion.cuenta() == null || sesion.cuenta().temporal()) {
+            if (!tema.isBlank() && !List.of("entrar", "acerca").contains(tema))
+                throw new SecurityException("Tema no disponible.");
+            return AyudaPublica.pagina(sesion, contenido);
+        }
         List<Articulo> articulos = articulos(sesion);
+        if (tema.isBlank()) return inicio(sesion, contenido, articulos);
+        Articulo elegido = articulos.stream().filter(a -> a.id().equals(tema)).findFirst()
+                .orElseThrow(() -> new SecurityException("Este tema no está disponible para tu cuenta."));
+        StringBuilder html = new StringBuilder("<div class=\"ayuda-layout ayuda-articulo-layout\"><aside>").append(
+                        indice(articulos, tema)).append("</aside><article class=\"ayuda-articulo\" data-articulo id=\"")
+                .append(elegido.id()).append("\"><a href=\"/ayuda\">‹ Centro de ayuda</a><h2>")
+                .append(Html.escapar(elegido.titulo())).append("</h2><p class=\"muted\">")
+                .append(Html.escapar(elegido.intro())).append("</p><ol class=\"ayuda-pasos\">");
+        for (int i = 0; i < elegido.pasos().size(); i++)
+            html.append("<li><p>").append(Html.escapar(elegido.pasos().get(i)))
+                    .append("</p><p class=\"muted ayuda-veras\">Verás: ")
+                    .append(Html.escapar(GuiaAyuda.veras(elegido.id(), i))).append("</p></li>");
+        html.append("</ol>");
+        if (List.of("resultados", "semaforo").contains(tema)) html.append(riesgos(contenido));
+        html.append("<aside class=\"ayuda-consejo\"><strong>Consejo</strong><p>")
+                .append(Html.escapar(elegido.consejo())).append("</p></aside>")
+                .append("<div class=\"ayuda-util row\"><span>¿Te sirvió?</span><button class=\"btn\" type=\"button\" " +
+                        "data-util aria-pressed=\"false\">Sí</button>")
+                .append("<button class=\"btn\" type=\"button\" data-util " +
+                        "aria-pressed=\"false\">No</button></div></article>")
+                .append("<aside class=\"ayuda-relacionados stack\"><section class=\"card stack\"><h2>Temas " +
+                        "relacionados</h2>");
+        articulos.stream().filter(a -> !a.id().equals(tema)).sorted(java.util.Comparator.comparingInt(
+                        a -> GuiaAyuda.seccion(a.id()).equals(GuiaAyuda.seccion(tema)) ? 0 : 1)).limit(3)
+                .forEach(a -> html.append(enlace(a, false)));
+        html.append("</section>").append(ContactoAyuda.tarjeta(contenido.contacto(), sesion))
+                .append("</aside></div><script src=\"/static/js/centro-ayuda.js\" defer></script>");
+        return Html.pagina("Centro de ayuda", html.toString(), sesion, "Ayuda · Artículo", "", false);
+    }
+
+    private static String inicio(Sesion sesion, Contenido contenido, List<Articulo> articulos) {
+        String nombre = Html.nombreSinTitulo(sesion.cuenta().nombre()).split("\\s+")[0];
         StringBuilder html = new StringBuilder(
-                "<h1>Centro de ayuda</h1><div class=\"ayuda-layout\"><aside><nav class=\"ayuda-navegacion\" " +
-                        "aria-label=\"Temas de ayuda\">");
-        for (Articulo articulo : articulos) {
-            html.append("<a href=\"#").append(articulo.id()).append("\" data-articulo-enlace>")
-                    .append(Html.escapar(articulo.titulo())).append("</a>");
+                "<section class=\"ayuda-inicio\"><label class=\"ayuda-buscador\">").append(
+                        "<span class=\"sr-only\">Buscar ayuda</span><input type=\"search\" class=\"input " +
+                                "ayuda-buscar\" ")
+                .append("data-ayuda-buscar aria-label=\"Buscar ayuda\" placeholder=\"¿Qué necesitas hacer?\"></label>")
+                .append("<nav class=\"chips ayuda-populares\" aria-label=\"Temas populares\">");
+        for (String id : GuiaAyuda.populares(sesion.cuenta().rol())) {
+            Articulo a = articulos.stream().filter(t -> t.id().equals(id)).findFirst().orElseThrow();
+            html.append("<a class=\"chip\" href=\"/ayuda?tema=").append(id).append("\">")
+                    .append(Html.escapar(a.titulo())).append("</a>");
         }
-        html.append("</nav>");
-        html.append(contacto(contenido.contacto(), sesion));
-        html.append("</aside><div>");
-        for (Articulo articulo : articulos) {
-            html.append("<article class=\"ayuda-articulo\" id=\"").append(articulo.id())
-                    .append("\" data-articulo><p class=\"migas\">Centro de ayuda › ")
-                    .append(Html.escapar(articulo.titulo())).append("</p><h2>").append(Html.escapar(articulo.titulo()))
-                    .append("</h2><p class=\"muted\">").append(Html.escapar(articulo.intro())).append("</p><ol>");
-            for (String paso : articulo.pasos()) html.append("<li>").append(paso).append("</li>");
-            html.append("</ol>");
-            if (articulo.id().equals("resultados") || articulo.id().equals("semaforo")) {
-                html.append("<dl class=\"ayuda-riesgos\">");
-                for (var nivel : contenido.riesgos()) {
-                    html.append("<div><dt>").append(Html.riesgo(nivel.minimo(), nivel.color(), nivel.nivel()))
-                            .append(" · ").append(Html.escapar(nivel.nombre())).append("</dt><dd>")
-                            .append(Html.escapar(nivel.accion())).append("</dd></div>");
+        html.append("</nav><section data-ayuda-grupo><h2>¿Qué quieres hacer?</h2><div class=\"ayuda-tareas\">");
+        for (String[] tarea : GuiaAyuda.tareas(sesion.cuenta().rol()))
+            html.append("<a class=\"card ayuda-tarea\" data-ayuda-pregunta href=\"/ayuda?tema=").append(tarea[0])
+                    .append("\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" " +
+                            "stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\">")
+                    .append("<path d=\"M4 3h12l4 4v14H4z M8 9h8 M8 13h8 M8 17h5\"/></svg><strong>")
+                    .append(Html.escapar(tarea[1])).append("</strong><span class=\"muted\" title=\"")
+                    .append(Html.escapar(tarea[2])).append("\">").append(Html.escapar(tarea[2])).append("</span></a>");
+        html.append("</div></section><h2>Todos los temas</h2><div class=\"ayuda-todos\">");
+        for (String grupo : GuiaAyuda.SECCIONES) {
+            html.append("<section data-ayuda-grupo><h3>").append(Html.escapar(grupo)).append("</h3>");
+            for (Articulo articulo : articulos)
+                if (GuiaAyuda.seccion(articulo.id()).equals(grupo)) html.append(enlace(articulo, true));
+            html.append("</section>");
+        }
+        html.append("</div><p data-ayuda-vacia hidden role=\"status\">No encontramos temas con esas palabras.</p>")
+                .append(ContactoAyuda.tarjeta(contenido.contacto(), sesion)).append("</section>")
+                .append("<script src=\"/static/js/ayuda.js\" defer></script><script src=\"/static/js/centro-ayuda" +
+                        ".js\" defer></script>");
+        return Html.pagina("¿En qué te ayudamos, " + nombre + "?", html.toString(), sesion, "Ayuda · Inicio", "",
+                false);
+    }
+
+    private static String indice(List<Articulo> articulos, String actual) {
+        StringBuilder html = new StringBuilder("<nav class=\"ayuda-navegacion\" aria-label=\"Temas de ayuda\">");
+        for (String seccion : GuiaAyuda.SECCIONES) {
+            html.append("<section><h3>").append(Html.escapar(seccion)).append("</h3>");
+            for (Articulo articulo : articulos)
+                if (GuiaAyuda.seccion(articulo.id()).equals(seccion)) {
+                    html.append("<a href=\"/ayuda?tema=").append(articulo.id()).append("\"")
+                            .append(articulo.id().equals(actual) ? " aria-current=\"page\"" : "").append(">")
+                            .append(Html.escapar(articulo.titulo())).append("</a>");
                 }
-                html.append("</dl>");
-            }
-            html.append("<p class=\"ayuda-consejo\"><strong>Consejo</strong> ").append(Html.escapar(articulo.consejo()))
-                    .append("</p><h2>Relacionado</h2><div class=\"row\">");
-            articulos.stream().filter(otro -> !otro.id().equals(articulo.id())).limit(2).forEach(
-                    otro -> html.append("<a href=\"#").append(otro.id()).append("\" data-articulo-enlace>")
-                            .append(Html.escapar(otro.titulo())).append("</a>"));
-            html.append("</div><div class=\"ayuda-util row\"><span>¿Te sirvió?</span>" +
-                    "<button class=\"btn\" type=\"button\" data-util aria-pressed=\"false\">Sí</button>" +
-                    "<button class=\"btn\" type=\"button\" data-util " +
-                    "aria-pressed=\"false\">No</button></div></article>");
+            html.append("</section>");
         }
-        html.append("</div></div><script src=\"/static/js/centro-ayuda.js\" defer></script>");
-        return Html.pagina("Centro de ayuda", html.toString(), sesion, false, false);
+        return html.append("</nav>").toString();
+    }
+
+    private static String enlace(Articulo articulo, boolean buscar) {
+        return "<a href=\"/ayuda?tema=" + articulo.id() + "\" data-tema-id=\"" + articulo.id() + "\" id=\"" +
+                articulo.id() + "\"" + (buscar ? " data-ayuda-pregunta" : "") + ">" + Html.escapar(articulo.titulo()) +
+                "</a>";
+    }
+
+    private static String riesgos(Contenido contenido) {
+        StringBuilder html = new StringBuilder("<dl class=\"ayuda-riesgos\">");
+        for (var nivel : contenido.riesgos()) {
+            String color = Formularios.etiqueta(nivel.color());
+            html.append("<div><dt>").append(Html.escapar(color)).append(" · Nivel ").append(nivel.nivel())
+                    .append("</dt><dd>");
+            if (!nivel.nombre().equalsIgnoreCase(color)) html.append(Html.escapar(nivel.nombre())).append(". ");
+            html.append(Html.escapar(nivel.accion())).append("</dd></div>");
+        }
+        return html.append("</dl>").toString();
     }
 
     private static List<Articulo> articulos(Sesion sesion) {
@@ -121,23 +189,34 @@ final class CentroAyuda {
                 "Abre Archivo y elige una empresa.", "Despliega la sede, el salón y el puesto.", rol ==
                         Cuenta.Rol.EVALUADOR ? "El Archivo conserva tus evaluaciones aunque cambie tu asignación." :
                         "Abre una evaluación para consultar su resultado y seguimiento."));
-        lista.add(
-                articulo("entrar", "Entrar y contraseña", "Tu acceso es personal.", "Entra con tu correo y contraseña.",
-                        "Si es temporal, cámbiala antes de continuar.",
-                        "Después puedes cambiarla desde Mi cuenta. Si la olvidas, pide una temporal al Administrador" +
-                                "."));
         if (rol == null || rol == Cuenta.Rol.USUARIO) {
             lista.add(articulo("acerca", "Acerca de ALINEO", "Ergonomía con precisión · Método RULA.",
                     "ALINEO acompaña la observación y evaluación de posturas de trabajo.",
                     "El Evaluador revisa las propuestas de la foto; el servidor calcula el resultado RULA.",
                     "Proyecto Nuclear 2026-2 · Andrés Benavides, Johan Zapata y Laura Gabriella Romero."));
         }
+        lista.add(articulo("pendientes", "Pendientes", "Revisa las mejoras que siguen abiertas.",
+                "Abre Pendientes y elige Abiertos, Arreglados o Todos.", "Busca el puesto y abre su seguimiento.",
+                rol ==
+                        Cuenta.Rol.USUARIO ? "Consulta los datos de las visitas Finalizadas de tu empresa." : "Revisa" +
+                            " prioridad, plazo y acciones del pendiente antes de actualizarlo."));
+        lista.add(articulo("cuenta", "Mi cuenta", "Mantén tus datos y tu contraseña al día.",
+                "Abre tu avatar y entra en Mi cuenta.", "Elige el dato que quieres editar y guarda.",
+                "Para cambiar la contraseña, abre Seguridad y elige Cambiar contraseña."));
+        if (rol == Cuenta.Rol.EVALUADOR) {
+            lista.add(articulo("iniciar", "Iniciar una visita", "Empieza al llegar al lugar reservado.",
+                    "Abre una reserva Aceptada de tu agenda.", "Revisa empresa, sede, salón y horario.",
+                    "Pulsa Iniciar visita y elige un puesto pendiente para evaluar."));
+            lista.add(
+                    articulo("proximas", "Mis reservas", "Consulta tus citas y responde las que esperan confirmación.",
+                            "Abre Reservas y revisa Tu próxima cita.", "Usa los chips para consultar otros estados.",
+                            "Abre una reserva para revisar sus datos y las acciones disponibles."));
+        }
         return List.copyOf(lista);
     }
 
     private static Articulo articulo(String id, String titulo, String intro, String... pasos) {
-        return new Articulo(id, titulo, intro, List.of(pasos),
-                "Confirma los datos antes de guardar y conserva tu acceso personal.");
+        return new Articulo(id, titulo, intro, List.of(pasos), GuiaAyuda.consejo(id));
     }
 
     private static Articulo resultados(String titulo) {
@@ -154,23 +233,4 @@ final class CentroAyuda {
                 "Consulta la respuesta en Avisos y en el estado de la reserva.");
     }
 
-    private static String contacto(Contacto contacto, Sesion sesion) {
-        StringBuilder html = new StringBuilder("<section class=\"ayuda-contacto\"><h2>Tu Administradora</h2>");
-        if (!contacto.nombre().isBlank()) html.append("<p>").append(Html.escapar(contacto.nombre())).append("</p>");
-        if (!contacto.cargo().isBlank())
-            html.append("<p class=\"hint\">").append(Html.escapar(contacto.cargo())).append("</p>");
-        html.append("<div class=\"row\">");
-        if (sesion != null && sesion.cuenta() != null && !contacto.correo().isBlank()) {
-            html.append("<a class=\"btn\" data-lista-avisos href=\"/avisos/nuevo\">Enviarle un mensaje</a>");
-        }
-        if (!contacto.whatsapp().isBlank())
-            html.append("<a class=\"btn\" href=\"https://wa.me/").append(Html.escapar(contacto.whatsapp()))
-                    .append("\" target=\"_blank\" rel=\"noopener\">WhatsApp</a>");
-        String telefono = contacto.telefono().replaceAll("[^+0-9]", "");
-        if (!telefono.isBlank()) html.append("<a class=\"btn\" href=\"tel:").append(telefono).append("\">Llamar</a>");
-        if (!contacto.correo().isBlank())
-            html.append("<a class=\"btn\" href=\"mailto:").append(Html.escapar(contacto.correo()))
-                    .append("\">Correo</a>");
-        return html.append("</div></section>").toString();
-    }
 }

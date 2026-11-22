@@ -50,6 +50,8 @@ public final class AvisosWeb {
                             Formularios.texto(datos, "texto", "Mensaje", 500, true) +
                             "<button class=\"btn p\">Enviar mensaje</button></form>";
             boolean panel = "1".equals(intercambio.getRequestHeaders().getFirst("X-Alineo-Panel"));
+            if (panel) contenido = "<div class=\"row between\"><span>Nuevo mensaje</span>" +
+                    "<button class=\"btn\" type=\"button\" data-cerrar-avisos>Cerrar</button></div>" + contenido;
             Router.enviar(intercambio, error.isEmpty() ? 200 : 400,
                     panel ? contenido : Html.pagina("Nuevo mensaje", contenido, sesion));
             return true;

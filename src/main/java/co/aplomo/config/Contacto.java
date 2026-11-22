@@ -17,6 +17,9 @@ public record Contacto(String nombre, String cargo, String correo, String telefo
      * Lee UTF-8; omite campos ausentes e impide enlaces con esquemas o consultas inesperados. RNF-011.
      */
     public static Contacto leer(Path archivo) {
+        if (Files.notExists(archivo))
+            return new Contacto("Laura Gabriela Romero", "Administradora principal", "gabriela.romero@alineo.co",
+                    "+57 300 000 0000", "573000000000", false);
         var elemento = new Properties();
         try (var in = Files.newBufferedReader(archivo, StandardCharsets.UTF_8)) {
             elemento.load(in);
@@ -32,6 +35,24 @@ public record Contacto(String nombre, String cargo, String correo, String telefo
         if (!wa.matches("[1-9][0-9]{6,14}")) wa = "";
         return new Contacto(nombre, cargo, correo, telefono, wa,
                 List.of(nombre, cargo, correo, telefono, wa).stream().anyMatch(String::isBlank));
+    }
+
+    /**
+     * RNF-007: enlace de contacto con mensaje sencillo y parámetros codificados, sin datos de la evaluación.
+     */
+    public String enlaceWhatsapp() {
+        if (whatsapp.isBlank()) return "";
+        String saludo = nombre.isBlank() ? "Hola" : "Hola " + nombre.split("\\s+")[0];
+        return "https://wa.me/" + whatsapp + "?text=" +
+                java.net.URLEncoder.encode(saludo + ", necesito ayuda con ALINEO.", StandardCharsets.UTF_8)
+                        .replace("+", "%20");
+    }
+
+    /**
+     * RNF-007: correo de ayuda con asunto, sin adjuntar datos personales ni enviar mensajes automáticamente.
+     */
+    public String enlaceCorreo() {
+        return correo.isBlank() ? "" : "mailto:" + correo + "?subject=Ayuda%20con%20ALINEO";
     }
 
     private static String texto(Properties elemento, String campo) {

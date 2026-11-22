@@ -124,13 +124,15 @@ public final class Html {
 
             // Reemplazar solo huecos originales impide interpretar texto del usuario como plantilla.
             String plantilla = new String(entrada.readAllBytes(), StandardCharsets.UTF_8);
-            var patron = java.util.regex.Pattern.compile("\\{\\{(mensaje|csrf|correo|contacto|logo)\\}\\}");
+            var patron = java.util.regex.Pattern.compile(
+                    "\\{\\{(mensaje|csrf|correo|contacto|contacto_botones|logo)\\}\\}");
             var matcher = patron.matcher(plantilla);
             return matcher.replaceAll(elemento -> java.util.regex.Matcher.quoteReplacement(switch (elemento.group(1)) {
                 case "logo" -> Marca.logo();
                 case "mensaje" -> aviso(mensaje, false);
                 case "csrf" -> escapar(sesion2.csrf());
                 case "contacto" -> contactoLogin();
+                case "contacto_botones" -> ContactoAyuda.botones(contactoConfigurado(), null);
                 default -> escapar(correo);
             }));
         }
@@ -163,10 +165,14 @@ public final class Html {
                 "<script src=\"/static/js/notas.js\" defer></script>";
     }
 
-    private static String contactoLogin() {
-        var contacto = co.aplomo.config.Contacto.leer(
+    private static co.aplomo.config.Contacto contactoConfigurado() {
+        return co.aplomo.config.Contacto.leer(
                 java.nio.file.Path.of(System.getProperty("aplomo.contacto.archivo", "config/contacto.properties")));
-        return contacto.whatsapp().isBlank() ? "/ayuda" : "https://wa.me/" + contacto.whatsapp();
+    }
+
+    private static String contactoLogin() {
+        String whatsapp = contactoConfigurado().enlaceWhatsapp();
+        return whatsapp.isBlank() ? "/ayuda" : escapar(whatsapp);
     }
 
     /**

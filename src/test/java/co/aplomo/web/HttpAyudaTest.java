@@ -70,8 +70,8 @@ class HttpAyudaTest extends HttpPrueba {
         assertTrue(texto2.contains("id=\"acerca\""));
         for (int i = 2; i <= 9; i++) assertFalse(texto2.contains("data-tema=\"" + i + "\""));
         assertTrue(texto2.contains("Tu Administradora"));
-        assertFalse(texto2.contains("mailto:"));
-        assertFalse(texto2.contains("wa.me"));
+        assertTrue(texto2.contains("mailto:gabriela.romero@alineo.co"));
+        assertTrue(texto2.contains("wa.me/573000000000"));
         assertTrue(respuesta.headers().allValues("Set-Cookie").isEmpty());
     }
 
@@ -93,11 +93,13 @@ class HttpAyudaTest extends HttpPrueba {
         Set<String> esperados = switch (rol) {
             case ADMINISTRADOR ->
                     Set.of("cuentas", "asignaciones", "empresas", "estados", "agenda", "notas", "acceso", "resultados",
-                            "archivo", "entrar");
+                            "archivo", "pendientes", "cuenta");
             case EVALUADOR ->
                     Set.of("agenda", "solicitudes", "evaluacion", "durante", "fotos", "resultados", "practicar",
-                            "archivo", "entrar");
-            case USUARIO -> Set.of("resultados", "semaforo", "solicitudes", "proximas", "archivo", "entrar", "acerca");
+                            "archivo", "pendientes", "cuenta", "iniciar", "proximas");
+            case USUARIO ->
+                    Set.of("resultados", "semaforo", "solicitudes", "proximas", "archivo", "pendientes", "cuenta",
+                            "acerca");
         };
         for (String tema : Set.of("cuentas", "asignaciones", "empresas", "estados", "agenda", "notas", "acceso",
                 "resultados", "archivo", "entrar", "solicitudes", "evaluacion", "durante", "fotos", "practicar",
@@ -105,18 +107,18 @@ class HttpAyudaTest extends HttpPrueba {
             assertEquals(esperados.contains(tema), texto2.contains("id=\"" + tema + "\""), tema);
         }
         assertFalse(texto2.contains("aria-label=\"Atrás\""));
-        assertTrue(texto2.contains("class=\"ayuda-layout\""));
+        assertTrue(texto2.contains("class=\"ayuda-tareas\""));
     }
 
     @Test
     void nivelesYAccionesVienenDeMysql() throws Exception {
         entrar(admin);
-        String antes = get("/ayuda").body();
+        String antes = get("/ayuda?tema=resultados").body();
         int id = Sql.uno(con, "SELECT id_nivel FROM nivel_riesgo ORDER BY puntaje_minimo LIMIT 1",
                 fila -> fila.getInt(1));
         Sql.actualizar(con, "UPDATE nivel_riesgo SET nombre=?,accion=? WHERE id_nivel=?", "Nombre de QA",
                 "Acción diferente <script>", id);
-        String despues = get("/ayuda").body();
+        String despues = get("/ayuda?tema=resultados").body();
         assertNotEquals(antes, despues);
         assertTrue(despues.contains("Nombre de QA"));
         assertTrue(despues.contains("Acción diferente &lt;script&gt;"));

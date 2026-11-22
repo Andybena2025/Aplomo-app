@@ -54,3 +54,52 @@ Commit «Paso 30A» y push autorizados antes de iniciar B.
 Para revisar: refrescar tras la entrega final; abrir Archivo y pulsar la primera empresa, volver y filtrar Inactivas;
 abrir Mi cuenta; abrir una visita finalizada con dos posturas del mismo puesto; entrar como Usuario y confirmar que
 solo ve sus resultados finalizados, sin fotos. En Mis reservas revisar próxima cita y lista sin repetición.
+
+## 30B · Partes 5–6
+
+30A subido a origin/main como **008cf17** antes de empezar este bloque.
+
+| Punto / RF-RNF | Archivo y método | Comprobación |
+|---|---|---|
+| 5 · RF-002/033, RNF-007/011 | Contacto.leer usa los cinco datos ficticios de Andy solo si el archivo no existe. enlaceWhatsapp/enlaceCorreo codifican el mensaje/asunto; configuración privada existente conserva prioridad, validación y escapado. ContactoAyuda comparte ficha y botones con ayuda/login. Avisos.principalEn conserva destinataria del servidor y, únicamente para el contacto ficticio, reconoce a la Administradora Laura existente por nombre normalizado Gabriella/Gabriela. No crea cuentas ni cambia datos. AvisosWeb añade Cerrar al panel nuevo. | HttpPaso30BTest: datos exactos, cuatro preguntas, configuración privada prioritaria, destinataria existente y cierre del panel; HttpAyudaTest: datos parciales, enlaces inválidos y escapado; HttpAvisos27Test: permisos y CSRF. Apertura/cierre reales del panel en QA, sin enviar mensajes. |
+| 6a · RF-001/002, RNF-002/007 | AyudaPublica.pagina: marca de 36 px, volver a login, cuatro preguntas de acceso, contacto, Quiénes somos y pie. Cuentas temporales reciben esta ayuda de acceso. Sin crear sesión anónima. | HttpPaso30BTest, HttpAyudaTest y cinco medidas DOM: logo 36 px, summaries 56 px, 0 px de desborde. Pregunta abierta/cerrada y vuelta al login comprobadas. |
+| 6b · RF-002, RNF-002/007 | CentroAyuda.inicio + GuiaAyuda.tareas/populares/seccion: saludo por primer nombre, búsqueda 52/18, cuatro temas populares, seis tarjetas por rol y cuatro grupos de temas. Entrar y contraseña retirado de la ayuda con sesión; sigue el contenido de acceso en ayuda pública y Seguridad/Mi cuenta. | HttpPaso30BTest recorre tareas y todos los artículos A/E/U; pruebas de búsqueda sin tildes de qa_ayuda. DOM: seis tarjetas, búsqueda 52 px, búsqueda real «asignar» y vacío con búsqueda sin coincidencias. |
+| 6c · RF-002/027, RNF-007 | CentroAyuda.pagina/indice/riesgos: query tema validada en servidor contra lista del rol; navegación por sección, tres pasos con Verás, un consejo específico por tema, tres relacionados y contacto. Color/nivel leídos de MySQL una vez por fila, sin repetir el nombre del color. GuiaAyuda mantiene consejo y orientación específicos. | HttpPaso30BTest solicita cada artículo permitido, exige tres Verás/un consejo/tres relacionados y prueba 403 de temas de otro rol. HttpAyudaTest cambia nombre/acción en MySQL de pruebas y comprueba actualización/escapado. qa_centro_ayuda prueba enlaces anteriores y utilidad local. |
+
+### Medidas y límites de 30B
+
+- Ayuda pública: 1920/1180/1024/820/390 × 1080, 0 px de desborde; logo 36 y cuatro summaries 56 px.
+- Centro y dos artículos (Resultados/Mi cuenta) en A/E/U: 45 combinaciones a esos cinco anchos; 0 px de desborde.
+  Seis tarjetas en Inicio y un consejo/tres relacionados en cada artículo comprobado. Ningún texto visible <13 px
+  en los artículos medidos. Buscador 52 px. Semáforo: Verde · Nivel 1 / Amarillo · Nivel 2 / Rojo · Nivel 3 / Rojo · Nivel 4.
+- Confirmación adicional del riel común tras centrarlo: izquierda y derecha con centro Y=540 a 1920×1080.
+- Login después de añadir contacto: 0 px de desborde a 390×844, 820×1100 y 1920×1080; Entrar termina en
+  Y=779,66 / 1002,46 / 692,46 respectivamente, dentro de la ventana.
+- Contacto interno abrió Mensaje para Laura Gabriella Romero y cerró con Cerrar; no se envió ningún mensaje.
+  WhatsApp y correo comprobados por sus enlaces, sin contactar a nadie ni abrir servicios externos.
+- Cero errores de consola durante las comprobaciones de artículos. Ensayos en rula_ergonomia_pruebas,
+  revertidos al terminar. No se ejecutó ningún reinicio/carga sobre rula_ergonomia.
+- Sin capturas ni descargas. Safari, Chrome/Edge/Firefox externos, iPad físico, dedo y Windows no comprobados.
+
+### Pruebas y cierre de 30B
+
+Maven 1109 → 1114: suite completa única 1114/1114, 0 fallos, errores u omitidas (3 min 00 s).
+JavaScript 144 → 147: suite completa única 147/147, 0 fallos u omitidas. No se repitieron suites completas.
+Commit «Paso 30B» y push autorizados; después se reinicia únicamente la app normal en 8080.
+Comprobación real de solo lectura antes de actualizar la app: 13 cuentas, 25 visitas, 23 Finalizadas,
+13 Finalizadas de noviembre y 6 pendientes abiertos; mismos conteos posteriores al reinicio del Paso 29.
+
+### Lo que NO se hizo y checklist final
+
+- ✅ Centro público completo, seis tareas por rol, artículos con permisos y contactos configurables.
+- ✅ Datos ficticios exactos de Andy y configuración privada con prioridad; sin contraseñas en Git.
+- ✅ Semáforo desde MySQL sin color duplicado; tres relacionados y un consejo específico por artículo.
+- ✅ Mensaje nuevo abierto/cerrado sin enviar; destinataria resuelta en servidor y CSRF conservado.
+- ✅ Pruebas en base de pruebas y QA revertida; sin motor/cálculo/IA/imágenes/demo/esquema modificados.
+- ✅ Suites finales completas aprobadas; commit/push B y reinicio de app autorizados, sin reiniciar demo.
+- ❌ Comprobación física de dedo, iPad, Windows y otros navegadores: no se realizó; solo navegador integrado.
+
+Cómo revisar: sin sesión, abrir /ayuda, desplegar las cuatro preguntas y volver al login. Con cada rol, abrir Ayuda,
+buscar un tema y comprobar seis tareas. Abrir Semáforo/Resultados y Mi cuenta; recorrer un artículo y sus relacionados.
+Abrir Enviar mensaje en ALINEO y cerrar; no hace falta enviar. Los enlaces de WhatsApp/Correo usan los datos de
+contacto privados cuando existen; los mostrados en ausencia del archivo son ficticios y no son un servicio real.

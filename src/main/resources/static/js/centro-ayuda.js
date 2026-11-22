@@ -1,23 +1,15 @@
-/* RNF-007: navegación entre artículos autorizados, con enlaces utilizables sin JavaScript. */
+/* RNF-007: enlaces a artículos utilizables sin JS; conserva enlaces anteriores y respuesta local de utilidad. */
 (() => {
-  const articulos = [...document.querySelectorAll('[data-articulo]')];
-  const enlaces = [...document.querySelectorAll('[data-articulo-enlace]')];
-  if (!articulos.length) return;
-  function mostrar() {
-    const elegida = articulos.find(articulo => `#${articulo.id}` === location.hash) || articulos[0];
-    articulos.forEach(articulo => { articulo.hidden = articulo !== elegida; });
-    enlaces.forEach(enlace => {
-      if (enlace.hash === `#${elegida.id}`) enlace.setAttribute('aria-current', 'page');
-      else enlace.removeAttribute('aria-current');
-    });
+  if (!location.search && /^#[a-z-]+$/.test(location.hash)) {
+    const tema = location.hash.slice(1);
+    const enlace = document.querySelector(`[data-tema-id="${tema}"]`);
+    if (enlace) location.replace(enlace.href);
   }
-  addEventListener('hashchange', mostrar);
   document.querySelectorAll('[data-util]').forEach(boton => {
-    boton.onclick = () => {
+    boton.addEventListener('click', () => {
       boton.parentElement.querySelectorAll('[data-util]').forEach(otro => {
         otro.setAttribute('aria-pressed', String(otro === boton));
       });
-    };
+    });
   });
-  mostrar();
 })();

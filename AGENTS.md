@@ -308,3 +308,28 @@ Luego ESPERA el OK de Andy.
   QA en pruebas revertida; no capturas/descargas. Hardware físico y navegadores externos no comprobados.
 - 1109/1109 Maven en suite única; 144 JS distintos verificados (143 completos + caso de búsqueda, 12/12 dirigidos). Ver docs/informe_paso30.md. Motor/cálculo/IA/imágenes/demo/esquema sin cambios.
   Después de subir A, continuar B; al finalizar B, reiniciar app normal sin reiniciar demo.
+
+
+### Paso 30B · cierre de las partes 5–6
+- 30A se subió como 008cf17 antes de empezar B. No pedir otro OK; ambos bloques estaban autorizados.
+- Contacto predeterminado exacto de Andy si no existe config/contacto.properties; si existe, prevalece.
+  WhatsApp y correo con mensaje/asunto codificados, ficha completa en ayuda y botones también en login.
+  Contacto ficticio corresponde a Laura; el mensaje interno busca su cuenta Administrador activa existente,
+  con equivalencia de nombre Gabriella/Gabriela solo para la ficha ficticia. No crea cuentas ni cambia la demo.
+- Ayuda pública: marca 36 px, volver a login, cuatro preguntas 56 px, contacto y Quiénes somos. Con sesión:
+  seis tareas y cuatro temas populares por rol, buscador 52/18, todos los temas en cuatro grupos. Artículo por
+  /ayuda?tema= validado en servidor; navegación, tres Verás, un consejo específico y tres relacionados.
+  Entrar y contraseña retirado de ayuda autenticada; contenido de acceso sigue en ayuda pública/Mi cuenta.
+  Semáforo desde MySQL sin nombre de color repetido. Enlaces anteriores por ancla conservados.
+- Panel de nuevo mensaje añade Cerrar, usable en iPad; abrir/cerrar comprobado sin enviar mensajes.
+- Suites completas una vez en B: 1114/1114 Maven y 147/147 JS, cero fallos/errores/omitidas. A tuvo
+  1109/1109 Maven y 144 casos JS distintos verificados. Ver docs/informe_paso30.md para trazabilidad y límites.
+- Medidas B: cinco ventanas de ayuda pública; 45 combinaciones de centro/artículos A/E/U y tres de login,
+  todas sin desbordamiento; seis tarjetas, buscador 52 px, logo público 36 y summaries 56. Búsqueda real,
+  semáforo y cierre de contacto comprobados; cero errores de consola. Marcas comunes con centro Y=540.
+  QA reversible en rula_ergonomia_pruebas; no capturas ni descargas. Hardware físico y navegadores externos
+  no comprobados. No hay pruebas nuevas con dedo ni Windows.
+- Base real solo leída para verificar conteos: 13 cuentas, 25 visitas, 23 Finalizadas, 13 de noviembre,
+  6 pendientes abiertos; sin reiniciar demo ni cambiar datos. Motor, cálculo protegido, IA, imágenes y esquema
+  idénticos. Al entregar: segundo commit «Paso 30B», push a origin/main verificado y app recompilada/reiniciada
+  en 8080. Detenerse y esperar revisión de Andy; no empezar un Paso 31.

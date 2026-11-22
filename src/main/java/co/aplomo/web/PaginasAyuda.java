@@ -21,6 +21,13 @@ public final class PaginasAyuda {
         return CentroAyuda.pagina(sesion, elemento);
     }
 
+    /**
+     * RF-002, RNF-007: el tema pedido se comprueba contra los artículos permitidos para la sesión.
+     */
+    public static String pagina(Sesion sesion, Contenido elemento, java.util.Map<String, String> parametros) {
+        return CentroAyuda.pagina(sesion, elemento, parametros.getOrDefault("tema", ""));
+    }
+
     private static void tema(int numero, Sesion sesion, Contenido elemento, StringBuilder contenido2) {
         switch (numero) {
             case 1 -> temaEntrar(contenido2);

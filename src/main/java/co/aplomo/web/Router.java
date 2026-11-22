@@ -194,7 +194,8 @@ public final class Router implements HttpHandler {
         }
         if (ruta.equals("/ayuda") && metodo.equals("GET")) {
             enviar(intercambio, 200, PaginasAyuda.pagina(sesion != null && sesion.cuenta() != null ? sesion : null,
-                    evaluaciones.servicio().ayuda().consultar(sesion == null ? null : sesion.cuenta())));
+                    evaluaciones.servicio().ayuda().consultar(sesion == null ? null : sesion.cuenta()),
+                    consulta(intercambio)));
             return;
         }
         if (sesion == null || sesion.cuenta() == null) {
