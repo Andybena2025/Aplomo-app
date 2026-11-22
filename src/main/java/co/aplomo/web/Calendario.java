@@ -104,7 +104,7 @@ public final class Calendario {
     }
 
     /**
-     * RF-033: filtros del equipo antes del título, sin panel lateral.
+     * RF-033: filtros compactos del equipo con acceso al panel de mensajes.
      */
     public static String filtros(Sesion sesion, Vista vista) {
         if (sesion.cuenta().rol() != Rol.ADMINISTRADOR) return "";
@@ -112,7 +112,7 @@ public final class Calendario {
                 "<button class=\"chip\" type=\"button\" data-todos-evaluadores aria-pressed=\"true\">Todos · " +
                 vista.citas().size() + "</button>");
         for (Evaluador persona : vista.evaluadores()) {
-            if (persona.activo()) html.append(evaluador(persona, vista));
+            if (persona.activo()) html.append(evaluador(persona));
         }
         return html.append("</div>").toString();
     }
@@ -125,7 +125,7 @@ public final class Calendario {
         if (sesion.cuenta().rol() == Rol.ADMINISTRADOR) {
             html.append("<h2>Evaluadores</h2>");
             for (Evaluador evaluador : vista.evaluadores()) {
-                if (evaluador.activo()) html.append(evaluador(evaluador, vista));
+                if (evaluador.activo()) html.append(evaluador(evaluador));
             }
             html.append(
                     "<p class=\"hint\">Solo lectura. Desde una cita puedes dejarle una nota al ev" + "aluador.</p>");
@@ -139,15 +139,20 @@ public final class Calendario {
         return html.append("</aside>").toString();
     }
 
-    private static String evaluador(Evaluador evaluador, Vista vista) {
-        long cantidad = vista.citas().stream().filter(cita -> Integer.valueOf(evaluador.id()).equals(cita.evaluador()))
-                .count();
-        return "<div class=\"cal-equipo-persona\"><label class=\"cal-evaluador color-" +
-                (evaluador.color() == null ? -1 : ColoresAgenda.PALETA.indexOf(evaluador.color())) +
-                "\"><input type=\"checkbox\" data-filtrar-evaluador=\"" + evaluador.id() + "\" checked><i></i><span>" +
-                Html.escapar(evaluador.nombre()) + "<small>" + Html.plural(Math.toIntExact(cantidad), "cita") +
-                "</small></span></label><a class=\"btn sm\" data-agenda-evaluador=\"" + evaluador.id() +
-                "\" href=\"/agenda/evaluadores/" + evaluador.id() + "\">Escribir</a></div>";
+    private static String evaluador(Evaluador evaluador) {
+        String completo = evaluador.nombre();
+        String[] partes = Html.nombreSinTitulo(completo).split("\\s+");
+        String corto = partes[0] +
+                (partes.length < 2 ? "" : " " + partes[partes.length > 3 ? partes.length - 2 : partes.length - 1]);
+        String nombre = Html.escapar(corto);
+        String escribir = Html.escapar("Escribir a " + corto);
+        int color = evaluador.color() == null ? -1 : ColoresAgenda.PALETA.indexOf(evaluador.color());
+        return "<div class=\"cal-equipo-persona color-" + color + "\"><label class=\"cal-evaluador\" title=\"" +
+                Html.escapar(completo) + "\"><input type=\"checkbox\" data-filtrar-evaluador=\"" + evaluador.id() +
+                "\" aria-label=\"Filtrar por " + nombre + "\" checked><i aria-hidden=\"true\"></i><span>" + nombre +
+                "</span></label><a class=\"cal-escribir\" data-agenda-evaluador=\"" + evaluador.id() +
+                "\" href=\"/agenda/evaluadores/" + evaluador.id() + "\" aria-label=\"" + escribir + "\" title=\"" +
+                escribir + "\"><span aria-hidden=\"true\">✉</span></a></div>";
     }
 
     private static String proxima(Cita cita) {

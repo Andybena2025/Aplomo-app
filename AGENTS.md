@@ -379,3 +379,18 @@ Luego ESPERA el OK de Andy.
   intactos. Tacto y Safari/iPad/iPhone físicos, Windows y otros navegadores no certificados.
   Informe docs/informe_paso30c.md; ENDPOINTS y solo fila 30/número de pruebas de README actualizados.
 - Al entregar: commit/push verificado, app normal reiniciada en 8080 sin tocar la demo; esperar revisión de Andy.
+
+
+### Paso 31B · filtros compactos de Agenda
+- Encargo de Andy en Downloads/Paso_31B_Codex.txt; un commit «Paso 31B» y push a main sobre 6c939fc.
+- Calendario: chip 32 px, punto 8 px, nombre corto sin prefijo, title completo; input visualmente oculto,
+  conservado para teclado/foco. Sobre 24 px en área 32, fuera del label y dentro del chip; abre el mismo
+  panel general sin cambiar el filtro. La fila desplaza internamente, sin barra ni salto de línea.
+- 1920×1080: offsetTop 174/174/174; 1180×820: 180/180/180; chips 32/32/32. A 390, fila 343/contenido621,
+  sin desborde exterior. Sobre de Laura abrió el panel y mantuvo la selección; Space/Todos comprobados.
+- Inicio no usa este componente y ya conserva nombres cortos/puntos; sin cambios allí ni en JavaScript.
+  Dos casos Maven nuevos; 1131 Maven y 161 JS aprobados, suites completas una sola vez al cierre.
+- QA en base de pruebas, ROLLBACK; sin capturas ni carga/reinicio de demo. Cero errores de consola capturados.
+  Hardware físico/tacto y otros navegadores no comprobados. Motor/cálculo/IA/esquema/credenciales intactos.
+  Informe docs/informe_paso31b.md; solo fila 31 y número de pruebas del README actualizados.
+- Al entregar: commit/push verificados y app normal reiniciada en 8080; esperar revisión de Andy.
