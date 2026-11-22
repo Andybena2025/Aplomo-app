@@ -57,14 +57,22 @@ public final class Avisos {
     }
 
     /**
-     * RF-033: destinos activos por rol; el Usuario recibe únicamente la Administradora principal.
+     * RF-033: destinos activos por rol; Usuario ve sus Evaluadores y la Administradora principal.
      */
     public List<Destinatario> destinatarios(Cuenta actor) throws SQLException {
         return tx.ejecutar(con -> {
             Cuenta actual = AccesoDatos.vigente(con, actor);
             Cuenta principal = actual.rol() == Cuenta.Rol.ADMINISTRADOR ? null : principalEn(con);
-            if (actual.rol() == Cuenta.Rol.USUARIO)
-                return List.of(new Destinatario(principal.id(), principal.nombre(), true));
+            if (actual.rol() == Cuenta.Rol.USUARIO) {
+                var destinos = new java.util.ArrayList<Destinatario>(co.aplomo.db.Sql.listar(con,
+                        "SELECT DISTINCT q.id_cuenta,q.nombre FROM cuenta q JOIN cuenta_empresa ev " +
+                                "ON ev.id_cuenta=q.id_cuenta JOIN cuenta_empresa u ON u.id_empresa=ev.id_empresa " +
+                                "WHERE u.id_cuenta=? AND u.activo=TRUE AND ev.activo=TRUE " +
+                                "AND q.rol='EVALUADOR' AND q.estado='ACTIVA' ORDER BY q.nombre,q.id_cuenta",
+                        f -> new Destinatario(f.getInt(1), f.getString(2), false), actual.id()));
+                destinos.add(new Destinatario(principal.id(), principal.nombre(), true));
+                return List.copyOf(destinos);
+            }
             String rol = actual.rol() == Cuenta.Rol.ADMINISTRADOR ? "EVALUADOR" : "ADMINISTRADOR";
             int primero = principal == null ? 0 : principal.id();
             return co.aplomo.db.Sql.listar(con, "SELECT id_cuenta,nombre FROM cuenta WHERE estado='ACTIVA' AND rol=? " +
@@ -74,14 +82,19 @@ public final class Avisos {
     }
 
     /**
-     * RF-033: mensaje nuevo con destino validado por rol; el Usuario ignora cualquier elección enviada.
+     * RF-033: mensaje nuevo con destino validado por rol y asignación vigente del Usuario.
      */
     public Cuenta enviarNuevo(Cuenta actor, Integer para, String texto) throws SQLException {
         return tx.ejecutar(con -> {
             Cuenta actual = AccesoDatos.vigente(con, actor);
             Cuenta destino;
-            if (actual.rol() == Cuenta.Rol.USUARIO) destino = principalEn(con);
-            else if (actual.rol() == Cuenta.Rol.ADMINISTRADOR) {
+            if (actual.rol() == Cuenta.Rol.USUARIO) {
+                if (para == null || destinatarios(actual).stream().noneMatch(d -> d.id() == para))
+                    throw new SecurityException("El destinatario no está disponible.");
+                destino = new co.aplomo.dao.CuentaDao().porId(con, para, true);
+                if (destino == null || destino.estado() != Cuenta.Estado.ACTIVA)
+                    throw new SecurityException("El destinatario no está disponible.");
+            } else if (actual.rol() == Cuenta.Rol.ADMINISTRADOR) {
                 if (para == null) throw new SecurityException("Elige un evaluador activo.");
                 destino = evaluadorEn(con, para);
             } else {
@@ -152,7 +165,7 @@ public final class Avisos {
     }
 
     private void enviarEquipo(java.sql.Connection con, Cuenta actor, Cuenta destino, String tipo,
-            String texto) throws SQLException {
+                              String texto) throws SQLException {
         int id = dao.enviar(con, null, actor.id(), destino.id(), tipo, Validacion.texto(texto, "mensaje", 500),
                 LocalDateTime.now(reloj));
         new BitacoraDao().registrar(con, actor.id(), LocalDateTime.now(reloj), "mensaje", id, "CREAR", null, null,
@@ -196,7 +209,8 @@ public final class Avisos {
         tx.ejecutar(con -> {
             Cuenta actual = AccesoDatos.vigente(con, actor);
             Mensaje mensaje = dao.exigir(con, id, actual.id());
-            if (actual.rol() != Cuenta.Rol.USUARIO) {
+            if (actual.rol() != Cuenta.Rol.USUARIO || mensaje.reserva() == null &&
+                    List.of("AVISO", "RESPUESTA").contains(mensaje.tipo())) {
                 responderEquipoEn(con, actual, mensaje, texto);
                 return null;
             }
@@ -215,8 +229,21 @@ public final class Avisos {
     }
 
     private void responderEquipoEn(java.sql.Connection con, Cuenta actor, Mensaje mensaje,
-            String texto) throws SQLException {
+                                   String texto) throws SQLException {
         Cuenta origen = new co.aplomo.dao.CuentaDao().porId(con, mensaje.remitente(), true);
+        boolean parejaUsuario = mensaje.reserva() == null && List.of("AVISO", "RESPUESTA").contains(mensaje.tipo()) &&
+                ((actor.rol() == Cuenta.Rol.USUARIO &&
+                        destinatarios(actor).stream().anyMatch(d -> d.id() == origen.id())) ||
+                        (actor.rol() == Cuenta.Rol.EVALUADOR && origen.rol() == Cuenta.Rol.USUARIO &&
+                                destinatarios(origen).stream().anyMatch(d -> d.id() == actor.id())) ||
+                        (actor.rol() == Cuenta.Rol.ADMINISTRADOR && origen.rol() == Cuenta.Rol.USUARIO &&
+                                principalEn(con).id() == actor.id()));
+        if (parejaUsuario) {
+            if (origen.estado() != Cuenta.Estado.ACTIVA) throw new SecurityException("Acceso denegado.");
+            enviarEquipo(con, actor, origen, "RESPUESTA", texto);
+            dao.entender(con, mensaje);
+            return;
+        }
         boolean evaluador = actor.rol() == Cuenta.Rol.EVALUADOR && origen.rol() == Cuenta.Rol.ADMINISTRADOR &&
                 (mensaje.tipo().equals("AVISO") || mensaje.tipo().equals("NOTA_ADMIN"));
         boolean administrador = actor.rol() == Cuenta.Rol.ADMINISTRADOR && origen.rol() == Cuenta.Rol.EVALUADOR &&

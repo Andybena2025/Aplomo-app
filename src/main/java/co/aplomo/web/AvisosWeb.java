@@ -27,7 +27,7 @@ public final class AvisosWeb {
      * RF-002: sondeo mínimo, panel y respuesta solo para el destinatario vigente.
      */
     public boolean atender(HttpExchange intercambio, Sesion sesion,
-            Map<String, String> datos) throws SQLException, IOException {
+                           Map<String, String> datos) throws SQLException, IOException {
         String ruta = intercambio.getRequestURI().getPath();
         if (!ruta.equals("/avisos") && !ruta.startsWith("/avisos/")) return false;
         if (sesion.cuenta().temporal()) throw new SecurityException("Cambia tu contraseña para continuar.");
@@ -38,13 +38,11 @@ public final class AvisosWeb {
             if (post) {
                 try {
                     Integer para = null;
-                    if (sesion.cuenta().rol() != co.aplomo.modelo.Cuenta.Rol.USUARIO) {
-                        try {
-                            para = Integer.valueOf(datos.getOrDefault("para", ""));
-                            if (para < 1) throw new NumberFormatException();
-                        } catch (NumberFormatException fallo) {
-                            throw new SecurityException("El destinatario no está disponible.");
-                        }
+                    try {
+                        para = Integer.valueOf(datos.getOrDefault("para", ""));
+                        if (para < 1) throw new NumberFormatException();
+                    } catch (NumberFormatException fallo) {
+                        throw new SecurityException("El destinatario no está disponible.");
                     }
                     var destino = servicio.enviarNuevo(sesion.cuenta(), para, datos.get("texto"));
                     String aviso = "Mensaje enviado a " + destino.nombre();
@@ -58,7 +56,9 @@ public final class AvisosWeb {
                     error = fallo.getMessage();
                 }
             }
-            String contenido = nuevo(sesion, servicio.destinatarios(sesion.cuenta()), datos, error, panel);
+            String contenido =
+                    nuevo(sesion, servicio.destinatarios(sesion.cuenta()), post ? datos : Router.consulta(intercambio),
+                            error, panel);
             Router.enviar(intercambio, error.isEmpty() ? 200 : 400,
                     panel ? contenido : Html.pagina("Nuevo mensaje", contenido, sesion));
             return true;
@@ -98,32 +98,30 @@ public final class AvisosWeb {
     }
 
     private static String nuevo(Sesion sesion, List<Avisos.Destinatario> destinos, Map<String, String> datos,
-            String error, boolean panel) {
+                                String error, boolean panel) {
         StringBuilder html = new StringBuilder("<div class=\"row between\"><h2>Nuevo mensaje</h2>");
         if (panel) html.append("<button class=\"btn\" type=\"button\" data-cerrar-avisos>Cerrar</button>");
         html.append("</div>").append(Html.aviso(error, false))
                 .append("<form class=\"stack nuevo-aviso\" method=\"post\" action=\"/avisos/nuevo\" data-nuevo-aviso>")
                 .append(Html.csrf(sesion));
-        if (sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.USUARIO) {
-            var contacto = co.aplomo.config.Contacto.leer(
-                    java.nio.file.Path.of(System.getProperty("aplomo.contacto.archivo", "config/contacto.properties")));
-            html.append("<p>Para: ").append(Html.escapar(contacto.nombre())).append(" · Administradora principal</p>");
-        } else {
-            String defecto = destinos.stream().filter(Avisos.Destinatario::principal).map(d -> Integer.toString(d.id()))
-                    .findFirst().orElse("");
-            String elegida = datos.getOrDefault("para", defecto);
-            html.append("<label class=\"field\">Para<select class=\"input\" name=\"para\" required>");
-            if (sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.ADMINISTRADOR)
-                html.append("<option value=\"\">Elige un evaluador</option>");
-            for (var destino : destinos) {
-                html.append("<option value=\"").append(destino.id()).append("\"")
-                        .append(elegida.equals(Integer.toString(destino.id())) ? " selected" : "").append(">")
-                        .append(Html.escapar(destino.nombre()))
-                        .append(destino.principal() ? " (Administradora principal)" : "").append("</option>");
-            }
-            html.append("</select></label>");
-            if (destinos.isEmpty()) html.append("<p class=\"hint\">No hay evaluadores activos para escribirles.</p>");
+        String defecto = sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.USUARIO ?
+                destinos.stream().findFirst().map(d -> Integer.toString(d.id())).orElse("") :
+                destinos.stream().filter(Avisos.Destinatario::principal).map(d -> Integer.toString(d.id()))
+                .findFirst().orElse("");
+        String elegida = datos.getOrDefault("para", defecto);
+        html.append("<label class=\"field\">Para<select class=\"input\" name=\"para\" required>");
+        if (sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.ADMINISTRADOR)
+            html.append("<option value=\"\">Elige un evaluador</option>");
+        for (var destino : destinos) {
+            html.append("<option value=\"").append(destino.id()).append("\"")
+                    .append(elegida.equals(Integer.toString(destino.id())) ? " selected" : "").append(">")
+                    .append(Html.escapar(destino.nombre())).append(destino.principal() ?
+                            " (Administradora principal)" :
+                            sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.USUARIO ?
+                                                            " · Tu evaluador asignado" : "").append("</option>");
         }
+        html.append("</select></label>");
+        if (destinos.isEmpty()) html.append("<p class=\"hint\">No hay destinatarios activos para escribirles.</p>");
         String texto = datos.getOrDefault("texto", "");
         String contador = panel ? "nuevo-aviso-contador-panel" : "nuevo-aviso-contador";
         return html.append("<label class=\"field\">Mensaje<textarea class=\"input\" name=\"texto\" maxlength=\"500\" ")
@@ -184,7 +182,11 @@ public final class AvisosWeb {
                         sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.ADMINISTRADOR &&
                                 m.rol().equals("EVALUADOR") &&
                                 (m.tipo().equals("RESPUESTA") || m.tipo().equals("AVISO") && m.reserva() == null);
-        if (equipo || m.tipo().equals("PEDIR_INFORMACION") && !m.respondido()) {
+        boolean usuarioEquipo = m.reserva() == null && List.of("AVISO", "RESPUESTA").contains(m.tipo()) &&
+                (sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.USUARIO &&
+                        List.of("EVALUADOR", "ADMINISTRADOR").contains(m.rol()) ||
+                        sesion.cuenta().rol() != co.aplomo.modelo.Cuenta.Rol.USUARIO && m.rol().equals("USUARIO"));
+        if (equipo || usuarioEquipo || m.tipo().equals("PEDIR_INFORMACION") && !m.respondido()) {
             html.append("<details class=\"aviso-responder\"><summary class=\"btn\">Responder</summary>" +
                             "<form method=\"post\" action=\"/avisos/").append(m.id()).append("/responder\">")
                     .append(Html.csrf(sesion)).append("<label class=\"field\">Tu respuesta<textarea class=\"input\" " +

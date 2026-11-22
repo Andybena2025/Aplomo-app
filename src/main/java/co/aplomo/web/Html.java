@@ -202,7 +202,7 @@ public final class Html {
      * RF-002: distingue listas de detalles sin depender del nombre de la empresa.
      */
     public static String pagina(String titulo, String contenido, Sesion sesion2, String seccion, String acciones,
-            boolean atras) {
+                                boolean atras) {
         return pagina(titulo, encabezado(seccion, titulo, acciones) + contenido, sesion2, false, atras);
     }
 
@@ -211,7 +211,7 @@ public final class Html {
      * acciones son fragmentos escapados por sus presentadores.
      */
     public static String detalle(String seccion, String volver, String titulo, String estado, String meta,
-            String acciones) {
+                                 String acciones) {
         String etiqueta = seccion.equals("Mi cuenta") ? "Inicio" : seccion;
         return "<section class=\"detalle-cabecera\" data-detalle-seccion=\"" + escapar(seccion) +
                 "\"><a class=\"detalle-volver\" href=\"" + escapar(volver) + "\">← " + escapar(etiqueta) +
@@ -304,7 +304,7 @@ public final class Html {
     }
 
     private static String cabecera(Sesion sesion2, boolean atras, CabeceraPagina.Datos datos, boolean detalle,
-            boolean inicio) {
+                                   boolean inicio) {
         String cabecera = "";
         if (sesion2 != null && sesion2.cuenta() != null) {
             Cuenta cuenta = sesion2.cuenta();
@@ -322,9 +322,11 @@ public final class Html {
                              "Atrás</button>" : "") + "<span class=\"eyebrow\">" + datos.rotulo() +
                     "</span><div class=\"titulo-con-rol\">" + (detalle ?
                     "<p class=\"cabecera-seccion\">" + datos.titulo() + "</p>" : "<h1>" + datos.titulo() + "</h1>") +
-                    (inicio ? "<span class=\"cabecera-rol\">" + etiqueta + "</span>" : "") + "</div></div>" +
+                    (inicio && cuenta.rol() != Rol.USUARIO ?
+                            "<span class=\"cabecera-rol\">" + etiqueta + "</span>" : "") + "</div></div>" +
                     "<nav class=\"nav\" aria-label=\"Menú principal\">" + nav + "</nav>" +
-                    "<a class=\"marca-cabecera\" href=\"/\" aria-label=\"ALINEO.\">" + Marca.logo() + "</a>"
+                    "<a class=\"marca-cabecera\" href=\"/\" aria-label=\"ALINEO.\">" + Marca.logo() + "</a>" +
+                    "<a class=\"marca-cabecera-a\" href=\"/\" aria-label=\"ALINEO. Inicio\">" + Marca.lateral() + "</a>"
 
                     // Nombre + rol + avatar + Salir (Cambiar contraseña dentro del menú de cuenta)
                     + "<div class=\"who\"><a class=\"btn ayuda-cabecera\" href=\"/ayuda\">Ayuda</a>" +
@@ -393,7 +395,8 @@ public final class Html {
     private static String laterales() {
         return "<div class=\"riel riel-izq\" aria-hidden=\"true\"><span class=\"marca-v\">" + Marca.logo() +
                 "</span><span class=\"lema-v\">Ergonomía con precisión</span></div>" +
-                "<div class=\"deco deco-der\" aria-hidden=\"true\">" + Marca.lateral() + "</div>";
+                "<img class=\"deco-herramientas\" src=\"/static/img/herramientas_mesa.svg\" alt=\"\" " +
+                        "aria-hidden=\"true\">";
     }
 
     /**

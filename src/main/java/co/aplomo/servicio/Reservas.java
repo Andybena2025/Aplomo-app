@@ -125,6 +125,13 @@ public final class Reservas {
     }
 
     /**
+     * RF-013a: saludo con el mismo reloj y hora de Colombia que la agenda.
+     */
+    public LocalDateTime ahora() {
+        return LocalDateTime.now(reloj.withZone(ZoneId.of("America/Bogota")));
+    }
+
+    /**
      * Lista reservas con su empresa filtrada por SQL según la cuenta vigente. RNF-011.
      */
     public List<Ficha> listar(Cuenta actor) throws SQLException {

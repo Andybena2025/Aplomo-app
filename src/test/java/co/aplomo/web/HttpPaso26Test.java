@@ -150,7 +150,8 @@ class HttpPaso26Test extends HttpPrueba {
         String html = get("/archivo?empresa=" + empresa).body();
         assertTrue(html.contains("/puestos/" + escenario.puesto1 + "\""), html);
         assertFalse(html.contains("/puestos/" + escenario.puesto2 + "\""));
-        assertFalse(html.contains("<img"));
+        assertFalse(html.contains("src=\"/fotos/"));
+        assertTrue(html.contains("src=\"/static/img/herramientas_mesa.svg\""));
         assertEquals(403, get("/archivo?empresa=" + escenario.empresaB).statusCode());
         String historial = get("/puestos/" + escenario.puesto1).body();
         assertTrue(historial.contains("/evaluaciones/" + escenario.evalVerde + "\""));

@@ -64,10 +64,17 @@ public final class InicioWeb {
 
     private void saludo(Cuenta cuenta, List<Empresa> companias, StringBuilder html) {
         String nombre = Html.nombreSinTitulo(cuenta.nombre()).split("\\s+")[0];
+        if (cuenta.rol() == Cuenta.Rol.USUARIO) {
+            html.append(Html.encabezado(InicioUsuario.rotulo(reservas.ahora()), "Bienvenido, " + nombre, ""));
+            html.append("<p class=\"inicio-gracias\">Gracias por confiar en ALINEO para cuidar a tu equipo en ")
+                    .append(companias.size() == 1 ? "<strong>" + Html.escapar(companias.get(0).nombre()) + "</strong>" :
+                            "tus empresas").append(".</p>");
+            return;
+        }
         String etiqueta = cuenta.rol() == Cuenta.Rol.USUARIO && companias.size() == 1 ? companias.get(0)
                                                                                         .nombre() :
                 Formularios.etiqueta(
-                cuenta.rol().name());
+                        cuenta.rol().name());
         String fecha = reservas.hoy().format(DateTimeFormatter.ofPattern("EEEE dd/MM/yyyy", new Locale("es", "CO")));
         html.append(Html.encabezado(fecha.toUpperCase(Locale.ROOT), "Hola, " + nombre, "").replace("class=\"pagehead\"",
                 "class=\"pagehead\" data-cabecera-etiqueta=\"" + Html.escapar(etiqueta) + "\""));
@@ -158,22 +165,23 @@ public final class InicioWeb {
     private void representante(Cuenta cuenta, List<Empresa> companias, StringBuilder html) throws SQLException {
         List<Fila> puestos = filas(cuenta, SeccionConsulta.PUESTOS);
         List<Fila> resultados = filas(cuenta, SeccionConsulta.EVALUACIONES);
-        html.append("<div class=\"solicitar-desde-inicio\">")
-                .append(enlace("/solicitar-visita", "Solicitar una visita", true)).append("</div>");
-        if (companias.size() > 1) {
-            html.append("<h2>Tus empresas</h2>");
-            for (Empresa empresa : companias) {
-                html.append("<a class=\"lista-fila\" href=\"/empresas/").append(empresa.id()).append("\"><strong>")
-                        .append(Html.escapar(empresa.nombre())).append("</strong>")
-                        .append(SistemaVisual.estado(empresa.activo() ? "ACTIVO" : "INACTIVO")).append("</a>");
-            }
+        var destinos = reservas.avisos().destinatarios(cuenta);
+        var personas = new java.util.LinkedHashMap<Integer, co.aplomo.servicio.SolicitudesVisita.Ingeniero>();
+        for (Empresa empresa : companias) {
+            for (var persona : reservas.solicitudes().ingenieros(cuenta, empresa.id()))
+                personas.merge(persona.id(), persona, (a, b) -> a.asignado() ? a : b);
         }
+        InicioUsuario.proxima(futuras(reservas.listar(cuenta)), personas, reservas.hoy(), html);
         html.append("<div class=\"inicio-indicadores\">").append(kpi("Puestos", puestos.size(), "/puestos"));
         for (String color : List.of("VERDE", "AMARILLO", "ROJO")) {
             html.append(kpi(nombreColor(color), puestos.stream().filter(p -> p.valor("color").equals(color)).count(),
-                    "/puestos?color=" + color));
+                    "/puestos?color=" + color).replace("class=\"inicio-indicador\"",
+                    "class=\"inicio-indicador kpi-riesgo\" style=\"--riesgo:var(--" +
+                            color.toLowerCase(Locale.ROOT) + ")\""));
         }
-        html.append("</div><div class=\"inicio-columnas\"><section class=\"stack\"><h2>Últimos resultados</h2>");
+        html.append("</div>");
+        InicioUsuario.tendencia(filas(cuenta, SeccionConsulta.VISITAS), html);
+        html.append("<div class=\"inicio-columnas\"><section class=\"stack\"><h2>Últimos resultados</h2>");
         var porPuesto = resultados.stream().collect(Collectors.groupingBy(f -> f.valor("puesto")));
         var ultimos = new java.util.ArrayList<Fila>();
         for (var grupo : porPuesto.values()) {
@@ -197,7 +205,8 @@ public final class InicioWeb {
         if (resultados.isEmpty()) html.append(Html.vacio("Aún no hay resultados de visitas Finalizadas.", ""));
         html.append("</section><section class=\"stack\"><h2>Próximas visitas</h2>");
         proximas(reservas.listar(cuenta), html);
-        html.append("</section></div>");
+        InicioUsuario.ayuda(destinos, personas, html);
+        html.append("</section></div><script src=\"/static/js/inicio-usuario.js\" defer></script>");
     }
 
     private void visitasEnCurso(Cuenta cuenta, StringBuilder html) throws SQLException {

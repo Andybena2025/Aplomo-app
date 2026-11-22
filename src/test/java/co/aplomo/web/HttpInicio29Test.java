@@ -24,8 +24,8 @@ class HttpInicio29Test extends HttpPrueba {
         assertEquals(1, resultados.split("href=\"/evaluaciones/", -1).length - 1);
         assertTrue(resultados.contains("href=\"/evaluaciones/" + datos.evalRojo + "\""));
         assertFalse(resultados.contains("Empresa de prueba sin confirmar"));
-        assertTrue(html.contains("Hola, Andrés"));
-        assertTrue(html.contains("solicitar-desde-inicio"));
+        assertTrue(html.contains("Bienvenido, Andrés"));
+        assertTrue(html.contains("usuario-proxima"));
         assertTrue(html.contains("class=\"avatar\" title=\"Rep. Andrés Benavides · Usuario\""));
         assertEquals("AB", Html.iniciales("Rep. Andrés Benavides"));
     }

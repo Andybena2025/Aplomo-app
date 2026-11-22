@@ -411,3 +411,15 @@ Luego ESPERA el OK de Andy.
 - Hardware/tacto, Safari/iPad/iPhone y otros navegadores no certificados. Motor/cálculo/IA/esquema/demo intactos.
   Informe docs/informe_paso31c.md; ENDPOINTS y solo fila 31/número de pruebas del README actualizados.
 - Al entregar: commit/push verificados, app normal reiniciada en 8080; esperar revisión de Andy.
+
+### Paso 32A · herramientas, mensajes e Inicio del Usuario
+- Encargo de Andy: dos commits/push; A contiene puntos 1/2/4/5, B sigue autorizado para 3/6 sin otro OK.
+- SVG exacto de herramientas, sin riel derecho A; monograma en cabecera >=1440; riel izquierdo conservado.
+- U elige Evaluadores activos asignados a sus empresas o principal; para ajeno 403, ida/vuelta con autorización
+  actualizada y escape/CSRF/bitácora. Esto sustituye ignorar para y destino fijo del Paso 31C.
+- Inicio U con reloj de Colombia, próxima visita, semáforo de MySQL, últimos cuatro máximos de visitas
+  Finalizadas y ayuda con destinos válidos/ocultamiento por sesión. Sin fotos ni resultados En curso.
+- Cinco medidas DOM 2240/1920/1180/820/390 sin desborde positivo, herramientas solo escritorio, cero deco-der.
+  Ayuda cerrada conserva estado al recargar. Sin capturas ni descargas; tacto/otros navegadores pendientes.
+- 1141 casos Maven distintos verificados y 168 JS; suite A una vez, fallos corregidos con cierre dirigido.
+  Informe docs/informe_paso32.md. QA visual en pruebas revertida; demo real reservada para B.

@@ -42,7 +42,7 @@ class HttpPaso30ATest extends HttpPrueba {
             assertFalse(html.contains("Administración de ALINEO"));
             assertFalse(html.contains("Tu jornada de evaluación"));
             if (rol == Cuenta.Rol.USUARIO && ruta.equals("/"))
-                assertTrue(antesDeMain.contains("<span class=\"cabecera-rol\">Empresa de prueba sin confirmar</span>"));
+                assertFalse(antesDeMain.contains("class=\"cabecera-rol\""));
         }
         String cuenta = get("/cuenta").body();
         assertTrue(cuenta.contains("class=\"iniciales\">AB</span>"));

@@ -88,8 +88,8 @@ class HttpPaso31Test extends HttpPrueba {
         var formulario = get("/avisos/nuevo");
         assertEquals(200, formulario.statusCode());
         assertEquals(303, post("/avisos/nuevo",
-                Map.of("csrf", csrf(formulario), "texto", "Mensaje QA reversible", "destinatario",
-                        Integer.toString(usuario))).statusCode());
+                Map.of("csrf", csrf(formulario), "texto", "Mensaje QA reversible", "para",
+                        Integer.toString(primero))).statusCode());
         int destino = Sql.uno(con, "SELECT id_destinatario FROM mensaje WHERE texto=? ORDER BY id_mensaje DESC LIMIT 1",
                 f -> f.getInt(1), "Mensaje QA reversible");
         assertEquals(primero, destino);

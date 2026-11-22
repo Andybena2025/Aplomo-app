@@ -117,17 +117,34 @@ class HttpPaso31CTest extends HttpPrueba {
     }
 
     @Test
-    void usuarioIgnoraCualquierParaYConservaLaPrincipalSinDesplegable() throws Exception {
+    void usuarioSoloEligeSuEvaluadorOLaPrincipalYConversa() throws Exception {
         cambiar(usuario);
-        String html = get("/avisos/nuevo").body();
-        assertTrue(html.contains("Para: Laura Gabriela Romero · Administradora principal"));
-        assertFalse(html.contains("<select"));
+        String html = get("/avisos/nuevo?para=" + evaluador).body();
+        assertTrue(html.contains("value=\"" + evaluador + "\" selected"));
+        assertTrue(html.contains("Tu evaluador asignado"));
+        assertTrue(html.contains("Administradora principal"));
         String token = csrf(get("/avisos/nuevo"));
-        for (String para : List.of("" + otroAdmin, "" + evaluador, "" + usuario, "texto malicioso")) {
-            assertEquals(303, post("/avisos/nuevo",
-                    Map.of("csrf", token, "para", para, "texto", "Consulta de Usuario")).statusCode());
-            assertEquals(admin, new MensajeDao().exigir(con, ultimo(usuario), admin).destinatario());
+        for (String para : List.of("" + otroAdmin, "" + usuario, "texto malicioso", "2147483647")) {
+            assertEquals(403, post("/avisos/nuevo",
+                    Map.of("csrf", token, "para", para, "texto", "No permitido")).statusCode());
         }
+        assertEquals(303, post("/avisos/nuevo", Map.of("csrf", token, "para", "" + evaluador,
+                "texto", "Consulta <script>alert(1)</script>")).statusCode());
+        int mensaje = ultimo(usuario);
+        cambiar(evaluador);
+        String bandeja = get("/avisos").body();
+        assertTrue(bandeja.contains("Consulta &lt;script&gt;alert(1)&lt;/script&gt;"));
+        assertTrue(bandeja.contains(">Responder</summary>"));
+        assertEquals(303, post("/avisos/" + mensaje + "/responder",
+                Map.of("csrf", csrf(get("/")), "texto", "Respuesta de Evaluador")).statusCode());
+        int respuesta = ultimo(evaluador);
+        cambiar(usuario);
+        assertTrue(get("/avisos").body().contains("Respuesta de Evaluador"));
+        assertEquals(303, post("/avisos/" + respuesta + "/responder",
+                Map.of("csrf", csrf(get("/")), "texto", "Gracias de Usuario")).statusCode());
+        Sql.actualizar(con, "UPDATE cuenta_empresa SET activo=FALSE WHERE id_cuenta=?", evaluador);
+        assertEquals(403, post("/avisos/nuevo", Map.of("csrf", token, "para", "" + evaluador,
+                "texto", "Sin asignación")).statusCode());
     }
 
     @Test
@@ -166,6 +183,20 @@ class HttpPaso31CTest extends HttpPrueba {
         assertTrue(valida.body().contains("data-bandeja-avisos"));
         assertTrue(valida.body().contains("Mensaje enviado a Otro administrador QA"));
         assertFalse(valida.body().contains("<main"));
+    }
+
+    @Test
+    void usuarioNoPuedeEscribirAEvaluadorDeOtraEmpresa() throws Exception {
+        int ajeno = insertar("EVALUADOR", null, cuenta(admin).hash(), false);
+        int otra = Sql.insertar(con, "INSERT INTO empresa(id_administrador,nombre,nit) VALUES(?,?,?)",
+                admin, "Otra empresa QA", java.util.UUID.randomUUID().toString().substring(0,20));
+        Sql.insertar(con, "INSERT INTO cuenta_empresa(id_cuenta,id_empresa,fecha_asignacion) VALUES(?,?,NOW())",
+                ajeno, otra);
+        cambiar(usuario);
+        String html = get("/avisos/nuevo").body();
+        assertFalse(html.contains("value=\"" + ajeno + "\""));
+        assertEquals(403, post("/avisos/nuevo", Map.of("csrf", csrf(get("/")), "para", "" + ajeno,
+                "texto", "Ajeno")).statusCode());
     }
 
     private int ultimo(int remitente) throws Exception {
