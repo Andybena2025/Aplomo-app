@@ -394,3 +394,20 @@ Luego ESPERA el OK de Andy.
   Hardware físico/tacto y otros navegadores no comprobados. Motor/cálculo/IA/esquema/credenciales intactos.
   Informe docs/informe_paso31b.md; solo fila 31 y número de pruebas del README actualizados.
 - Al entregar: commit/push verificados y app normal reiniciada en 8080; esperar revisión de Andy.
+
+
+### Paso 31C · nuevo mensaje desde bandeja
+- Andy autorizó un commit «Paso 31C» y push a main sobre 0ade6bf; sin capturas, migración ni demo.
+- Nuevo mensaje en bandeja y panel. E elige A activo, principal primero y por defecto; A elige E activo;
+  U ve contacto configurado sin selector e ignora cualquier para enviado. Validación de rol/estado en servidor.
+- Enviar crea AVISO sin reserva, remitente de sesión y bitácora; confirma a quién se envió. Panel usa fetch/CSRF
+  y vuelve a la bandeja; conserva texto/selector al fallar. Contador dinámico, doble clic bloqueado y eventos
+  en captura para no activar navegación global. Identificadores de contador distintos en página/panel.
+- A puede responder AVISO general iniciado por E; historial general lo incluye. Citas y PEDIR_INFORMACION
+  conservados. Dos pruebas previas adaptadas al nuevo formulario A y a principal desde U.
+- 1137 Maven / 166 JS aprobados; suites completas una vez. Seis casos HTTP y cinco JS nuevos. Ida/vuelta
+  con A no principal comprobada en navegador integrado; ocho medidas a 1366/1080/810/390, 0 px de desborde,
+  select 44/16 y Enviar 44. Cero errores de consola capturados; QA en pruebas y ROLLBACK, sin cargar demo.
+- Hardware/tacto, Safari/iPad/iPhone y otros navegadores no certificados. Motor/cálculo/IA/esquema/demo intactos.
+  Informe docs/informe_paso31c.md; ENDPOINTS y solo fila 31/número de pruebas del README actualizados.
+- Al entregar: commit/push verificados, app normal reiniciada en 8080; esperar revisión de Andy.

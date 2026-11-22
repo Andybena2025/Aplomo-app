@@ -65,6 +65,9 @@
     }
     doc.addEventListener('click', event => {
       const objetivo = event.target;
+      if (event.defaultPrevented) return;
+      if (objetivo.closest('a[href]') && (event.button > 0 || event.ctrlKey || event.metaKey ||
+          event.shiftKey || event.altKey)) return;
       if (objetivo.closest('[data-aviso-entendido]')) { entender(); return; }
       if (objetivo.closest('[data-aviso-cerrar]')) { modal.close(); lanzador?.focus(); return; }
       if (objetivo.closest('[data-ocultar-aviso]')) { oculta = true; pintar(); return; }
@@ -91,9 +94,39 @@
         abrir(enlace ? enlace.getAttribute('href') : '/avisos').catch(() => {});
       }
       if (objetivo.closest('[data-cerrar-avisos]')) { panel.close(); lanzador?.focus(); }
+    }, true);
+    doc.addEventListener('input', event => {
+      const texto = event.target.closest('[data-nuevo-aviso-texto]');
+      if (texto) texto.closest('form').querySelector('[data-nuevo-aviso-contador]').textContent =
+        `${texto.value.length} / 500`;
     });
-    doc.addEventListener('submit', event => {
+    doc.addEventListener('submit', async event => {
       const form = event.target;
+      if (form.matches('[data-nuevo-aviso]') && panel.open && panel.contains(form)) {
+        event.preventDefault();
+        if (guardando) return;
+        guardando = true;
+        const boton = form.querySelector('button[type="submit"]');
+        const error = form.querySelector('[data-nuevo-aviso-error]');
+        boton.disabled = true; boton.textContent = 'Enviando…'; error.textContent = '';
+        try {
+          const respuesta = await obtener('/avisos/nuevo', {method:'POST', credentials:'same-origin',
+            headers:{'Content-Type':'application/x-www-form-urlencoded', 'X-Alineo-Panel':'1'},
+            body:new URLSearchParams(new FormData(form)).toString()});
+          if (!respuesta.ok && respuesta.status !== 400) throw new Error('No enviado');
+          const html = await respuesta.text();
+          const fragmento = new DOMParser().parseFromString(html, 'text/html');
+          if (!fragmento.querySelector('[data-bandeja-avisos],[data-nuevo-aviso]')) throw new Error('No disponible');
+          if (!panel.open || !panel.contains(form)) return;
+          panel.querySelector('[data-contenido-avisos]').innerHTML = html;
+          panel.querySelector('button')?.focus();
+          revision++;
+        } catch (_) {
+          if (panel.open && panel.contains(form))
+            error.textContent = 'No pudimos enviar el mensaje. Conservamos el texto: revisa el destinatario o inténtalo de nuevo.';
+        } finally { guardando = false; boton.disabled = false; boton.textContent = 'Enviar mensaje'; }
+        return;
+      }
       const ruta = form.getAttribute('action') || '';
       if (/^\/avisos\/[1-9][0-9]*\/entendido$/.test(ruta)) {
         event.preventDefault();
@@ -101,7 +134,7 @@
         const nota = notas.find(n => String(n.id) === id);
         if (nota) { abrirNota(nota); entender(); }
       }
-    });
+    }, true);
     async function consultar() {
       if (doc.hidden || ocupado || guardando) return;
       ocupado = true;

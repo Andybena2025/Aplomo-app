@@ -2453,3 +2453,5 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
 .cal-escribir>span{display:flex;align-items:center;justify-content:center;width:24px;height:24px;font-size:20px}
 .cal-equipo-persona:has(input:focus-visible){outline:2px solid var(--ivory);outline-offset:2px}
 .cal-escribir:focus-visible{outline:2px solid var(--ivory);outline-offset:-2px}
+/* RF-033 · Destinatario del nuevo mensaje, con la misma área de toque que Enviar. */
+.alineo .nuevo-aviso select.input{height:44px;min-height:44px;font-size:16px!important}

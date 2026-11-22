@@ -45,9 +45,53 @@ public final class Avisos {
         tx.ejecutar(con -> {
             Cuenta actual = AccesoDatos.vigente(con, actor);
             Cuenta destino = principalEn(con);
-            dao.enviar(con, null, actual.id(), destino.id(), "AVISO", Validacion.texto(texto, "mensaje", 500),
-                    LocalDateTime.now(reloj));
+            enviarEquipo(con, actual, destino, "AVISO", texto);
             return null;
+        });
+    }
+
+    /**
+     * RF-033: opción mínima de destinatario; nunca se entrega la cuenta ni su contraseña al navegador.
+     */
+    public record Destinatario(int id, String nombre, boolean principal) {
+    }
+
+    /**
+     * RF-033: destinos activos por rol; el Usuario recibe únicamente la Administradora principal.
+     */
+    public List<Destinatario> destinatarios(Cuenta actor) throws SQLException {
+        return tx.ejecutar(con -> {
+            Cuenta actual = AccesoDatos.vigente(con, actor);
+            Cuenta principal = actual.rol() == Cuenta.Rol.ADMINISTRADOR ? null : principalEn(con);
+            if (actual.rol() == Cuenta.Rol.USUARIO)
+                return List.of(new Destinatario(principal.id(), principal.nombre(), true));
+            String rol = actual.rol() == Cuenta.Rol.ADMINISTRADOR ? "EVALUADOR" : "ADMINISTRADOR";
+            int primero = principal == null ? 0 : principal.id();
+            return co.aplomo.db.Sql.listar(con, "SELECT id_cuenta,nombre FROM cuenta WHERE estado='ACTIVA' AND rol=? " +
+                            "ORDER BY (id_cuenta=?) DESC,nombre,id_cuenta",
+                    f -> new Destinatario(f.getInt(1), f.getString(2), f.getInt(1) == primero), rol, primero);
+        });
+    }
+
+    /**
+     * RF-033: mensaje nuevo con destino validado por rol; el Usuario ignora cualquier elección enviada.
+     */
+    public Cuenta enviarNuevo(Cuenta actor, Integer para, String texto) throws SQLException {
+        return tx.ejecutar(con -> {
+            Cuenta actual = AccesoDatos.vigente(con, actor);
+            Cuenta destino;
+            if (actual.rol() == Cuenta.Rol.USUARIO) destino = principalEn(con);
+            else if (actual.rol() == Cuenta.Rol.ADMINISTRADOR) {
+                if (para == null) throw new SecurityException("Elige un evaluador activo.");
+                destino = evaluadorEn(con, para);
+            } else {
+                destino = para == null ? null : new co.aplomo.dao.CuentaDao().porId(con, para, true);
+                if (destino == null || destino.rol() != Cuenta.Rol.ADMINISTRADOR ||
+                        destino.estado() != Cuenta.Estado.ACTIVA)
+                    throw new SecurityException("El destinatario no está disponible.");
+            }
+            enviarEquipo(con, actual, destino, "AVISO", texto);
+            return destino;
         });
     }
 
@@ -176,7 +220,7 @@ public final class Avisos {
         boolean evaluador = actor.rol() == Cuenta.Rol.EVALUADOR && origen.rol() == Cuenta.Rol.ADMINISTRADOR &&
                 (mensaje.tipo().equals("AVISO") || mensaje.tipo().equals("NOTA_ADMIN"));
         boolean administrador = actor.rol() == Cuenta.Rol.ADMINISTRADOR && origen.rol() == Cuenta.Rol.EVALUADOR &&
-                mensaje.tipo().equals("RESPUESTA");
+                (mensaje.tipo().equals("RESPUESTA") || mensaje.tipo().equals("AVISO") && mensaje.reserva() == null);
         if (!evaluador && !administrador) throw new SecurityException("Acceso denegado.");
         if (mensaje.reserva() != null) {
             var agenda = new Agenda(tx, reloj);

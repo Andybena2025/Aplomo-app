@@ -96,7 +96,8 @@ class HttpPaso30BTest extends HttpPrueba {
         entrar(admin);
         var respuesta = get("/avisos/nuevo");
         assertEquals(200, respuesta.statusCode());
-        assertTrue(respuesta.body().contains("Mensaje para Ing. Laura Gabriella Romero"));
+        assertTrue(respuesta.body().contains("Nuevo mensaje"));
+        assertTrue(respuesta.body().contains("Elige un evaluador"));
         assertTrue(respuesta.body().contains("name=\"csrf\""));
         var panel = cliente.send(java.net.http.HttpRequest.newBuilder(java.net.URI.create(raiz + "/avisos/nuevo"))
                 .header("X-Alineo-Panel", "1").GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());

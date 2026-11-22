@@ -321,8 +321,8 @@ remitente de solicitudes externas, y la interfaz lo rotula «Solicitud recibida 
 
 | Método | Ruta | Alcance y respuesta |
 |---|---|---|
-| GET | `/avisos/nuevo` | Cuenta vigente con sesión; formulario privado dirigido al contacto principal configurado. |
-| POST | `/avisos/nuevo` | Misma cuenta y CSRF; destinatario resuelto en servidor, texto de hasta 500 caracteres. Respuesta HTML o panel de bandeja. |
+| GET | `/avisos/nuevo` | Cuenta vigente; destinatarios según rol (Paso 31C): E a A, A a E, U a principal. |
+| POST | `/avisos/nuevo` | Misma cuenta y CSRF; destinatario activo validado por rol, texto hasta 500, bitácora y confirmación. HTML o panel. |
 
 Guardar una nota de reserva conserva el detalle y muestra confirmación; permisos y sesión siguen vigentes.
 
@@ -348,3 +348,13 @@ sin ese encabezado conserva la redirección de formularios. Solo el destinatario
 Los POST requieren CSRF. Los mensajes se registran en bitácora y su texto se escapa al mostrarlo.
 El sondeo usa `X-Alineo-Sondeo: 1` solo para GET de estos paneles y POST de acuse: consulta la sesión sin prolongarla.
 El envío y la apertura por interacción conservan la renovación normal. El cierre por inactividad sigue siendo 30 minutos.
+
+### Paso 31C · nuevo mensaje por rol (RF-033)
+
+GET `/avisos/nuevo`: E recibe Administradores activos (principal primero/seleccionada); A recibe Evaluadores activos;
+U ve el contacto principal sin selector. Desde el panel se solicita el fragmento con X-Alineo-Panel: 1.
+POST en la misma ruta: CSRF, texto obligatorio hasta 500; `para` es un id de cuenta y se valida el rol/estado en servidor.
+U ignora cualquier para y usa principal. E solo envía a A activo; A solo envía a E activo. Id inválido/inactivo: 403.
+Guarda AVISO, id_reserva NULL y bitácora. Formulario normal: 303 a bandeja con confirmación escapada.
+Panel: 200 con bandeja y confirmación; 400 conserva selector y texto. GET nunca envía ni acusa mensajes.
+`POST /avisos/{id}/responder` añade A destinatario de AVISO general de E, conservando las reglas del Paso 30C.

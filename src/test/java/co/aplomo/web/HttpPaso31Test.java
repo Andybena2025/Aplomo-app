@@ -83,7 +83,8 @@ class HttpPaso31Test extends HttpPrueba {
         int primero = Sql.uno(con, "SELECT MIN(id_cuenta) FROM cuenta WHERE rol='ADMINISTRADOR' AND estado='ACTIVA'",
                 f -> f.getInt(1));
         assertEquals(primero, avisos.principal(cuenta(admin)).id());
-        entrar(admin);
+        dao.contrasena(con, usuario, cuenta(usuario).hash(), false);
+        entrar(usuario);
         var formulario = get("/avisos/nuevo");
         assertEquals(200, formulario.statusCode());
         assertEquals(303, post("/avisos/nuevo",

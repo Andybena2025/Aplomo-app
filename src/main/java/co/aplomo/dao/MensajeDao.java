@@ -89,7 +89,7 @@ public final class MensajeDao {
     public List<Mensaje> general(Connection con, int administrador, int evaluador) throws SQLException {
         return Sql.listar(con, SELECT + "WHERE m.id_reserva IS NULL AND " +
                 "((m.tipo='AVISO' AND m.id_remitente=? AND m.id_destinatario=?) OR " +
-                "(m.tipo='RESPUESTA' AND m.id_remitente=? AND m.id_destinatario=?)) " +
+                "(m.tipo IN ('RESPUESTA','AVISO') AND m.id_remitente=? AND m.id_destinatario=?)) " +
                 "ORDER BY m.creado,m.id_mensaje", MensajeDao::leer, administrador, evaluador, evaluador, administrador);
     }
 

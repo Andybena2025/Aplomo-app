@@ -33,25 +33,32 @@ public final class AvisosWeb {
         if (sesion.cuenta().temporal()) throw new SecurityException("Cambia tu contraseña para continuar.");
         boolean post = intercambio.getRequestMethod().equals("POST");
         if (ruta.equals("/avisos/nuevo")) {
-            var destinataria = servicio.principal(sesion.cuenta());
+            boolean panel = "1".equals(intercambio.getRequestHeaders().getFirst("X-Alineo-Panel"));
             String error = "";
             if (post) {
                 try {
-                    servicio.escribirPrincipal(sesion.cuenta(), datos.get("texto"));
-                    Router.redirigir(intercambio, "/avisos?enviado=1");
+                    Integer para = null;
+                    if (sesion.cuenta().rol() != co.aplomo.modelo.Cuenta.Rol.USUARIO) {
+                        try {
+                            para = Integer.valueOf(datos.getOrDefault("para", ""));
+                            if (para < 1) throw new NumberFormatException();
+                        } catch (NumberFormatException fallo) {
+                            throw new SecurityException("El destinatario no está disponible.");
+                        }
+                    }
+                    var destino = servicio.enviarNuevo(sesion.cuenta(), para, datos.get("texto"));
+                    String aviso = "Mensaje enviado a " + destino.nombre();
+                    if (panel) {
+                        Router.enviar(intercambio, 200,
+                                Html.aviso(aviso, true) + panel(sesion, servicio.listar(sesion.cuenta()), false));
+                    } else Router.redirigir(intercambio, "/avisos?aviso=" +
+                            java.net.URLEncoder.encode(aviso, java.nio.charset.StandardCharsets.UTF_8));
                     return true;
                 } catch (IllegalArgumentException fallo) {
                     error = fallo.getMessage();
                 }
             }
-            String contenido =
-                    "<h2>Mensaje para " + Html.escapar(destinataria.nombre()) + "</h2>" + Html.aviso(error, false) +
-                            "<form method=\"post\" action=\"/avisos/nuevo\" class=\"stack\">" + Html.csrf(sesion) +
-                            Formularios.texto(datos, "texto", "Mensaje", 500, true) +
-                            "<button class=\"btn p\">Enviar mensaje</button></form>";
-            boolean panel = "1".equals(intercambio.getRequestHeaders().getFirst("X-Alineo-Panel"));
-            if (panel) contenido = "<div class=\"row between\"><span>Nuevo mensaje</span>" +
-                    "<button class=\"btn\" type=\"button\" data-cerrar-avisos>Cerrar</button></div>" + contenido;
+            String contenido = nuevo(sesion, servicio.destinatarios(sesion.cuenta()), datos, error, panel);
             Router.enviar(intercambio, error.isEmpty() ? 200 : 400,
                     panel ? contenido : Html.pagina("Nuevo mensaje", contenido, sesion));
             return true;
@@ -78,7 +85,8 @@ public final class AvisosWeb {
         if (ruta.equals("/avisos") && !post) {
             List<Mensaje> mensajes = servicio.listar(sesion.cuenta());
             boolean leidos = Router.consulta(intercambio).getOrDefault("leidos", "0").equals("1");
-            String html = panel(sesion, mensajes, leidos);
+            String html = Html.aviso(Router.consulta(intercambio).getOrDefault("aviso", ""), true) +
+                    panel(sesion, mensajes, leidos);
             if (!"1".equals(intercambio.getRequestHeaders().getFirst("X-Alineo-Panel"))) {
                 html = Html.pagina("Avisos", html, sesion, "Cuenta · Avisos", "");
             }
@@ -89,14 +97,55 @@ public final class AvisosWeb {
         return true;
     }
 
+    private static String nuevo(Sesion sesion, List<Avisos.Destinatario> destinos, Map<String, String> datos,
+            String error, boolean panel) {
+        StringBuilder html = new StringBuilder("<div class=\"row between\"><h2>Nuevo mensaje</h2>");
+        if (panel) html.append("<button class=\"btn\" type=\"button\" data-cerrar-avisos>Cerrar</button>");
+        html.append("</div>").append(Html.aviso(error, false))
+                .append("<form class=\"stack nuevo-aviso\" method=\"post\" action=\"/avisos/nuevo\" data-nuevo-aviso>")
+                .append(Html.csrf(sesion));
+        if (sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.USUARIO) {
+            var contacto = co.aplomo.config.Contacto.leer(
+                    java.nio.file.Path.of(System.getProperty("aplomo.contacto.archivo", "config/contacto.properties")));
+            html.append("<p>Para: ").append(Html.escapar(contacto.nombre())).append(" · Administradora principal</p>");
+        } else {
+            String defecto = destinos.stream().filter(Avisos.Destinatario::principal).map(d -> Integer.toString(d.id()))
+                    .findFirst().orElse("");
+            String elegida = datos.getOrDefault("para", defecto);
+            html.append("<label class=\"field\">Para<select class=\"input\" name=\"para\" required>");
+            if (sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.ADMINISTRADOR)
+                html.append("<option value=\"\">Elige un evaluador</option>");
+            for (var destino : destinos) {
+                html.append("<option value=\"").append(destino.id()).append("\"")
+                        .append(elegida.equals(Integer.toString(destino.id())) ? " selected" : "").append(">")
+                        .append(Html.escapar(destino.nombre()))
+                        .append(destino.principal() ? " (Administradora principal)" : "").append("</option>");
+            }
+            html.append("</select></label>");
+            if (destinos.isEmpty()) html.append("<p class=\"hint\">No hay evaluadores activos para escribirles.</p>");
+        }
+        String texto = datos.getOrDefault("texto", "");
+        String contador = panel ? "nuevo-aviso-contador-panel" : "nuevo-aviso-contador";
+        return html.append("<label class=\"field\">Mensaje<textarea class=\"input\" name=\"texto\" maxlength=\"500\" ")
+                .append("rows=\"4\" required data-nuevo-aviso-texto aria-describedby=\"").append(contador).append("\">")
+                .append(Html.escapar(texto)).append("</textarea></label>").append("<small id=\"").append(contador)
+                .append("\" class=\"muted\" data-nuevo-aviso-contador>").append(texto.length())
+                .append(" / 500</small><p class=\"hint\" role=\"alert\" data-nuevo-aviso-error></p>")
+                .append("<button class=\"btn p\" type=\"submit\"").append(destinos.isEmpty() ? " disabled" : "")
+                .append(">Enviar mensaje</button></form>").toString();
+    }
+
     private static String panel(Sesion sesion, List<Mensaje> mensajes, boolean leidos) {
         long nuevos = mensajes.stream().filter(m -> !m.leido()).count();
-        StringBuilder html = new StringBuilder("<div class=\"row between\"><h2>Avisos</h2>" +
-                "<button type=\"button\" class=\"btn\" data-cerrar-avisos aria-label=\"Cerrar " +
-                "avisos\">Cerrar</button>" +
-                "</div><nav class=\"chips\" aria-label=\"Mensajes\"><a class=\"chip\" data-lista-avisos " +
-                "href=\"/avisos\">Nuevos · " + nuevos + "</a><a class=\"chip\" data-lista-avisos " +
-                "href=\"/avisos?leidos=1\">Leídos · " + (mensajes.size() - nuevos) + "</a></nav>");
+        StringBuilder html = new StringBuilder(
+                "<div class=\"row between\" data-bandeja-avisos><h2>Avisos</h2><div class=\"row\">" +
+                        "<a class=\"btn p\" data-lista-avisos href=\"/avisos/nuevo\">Nuevo mensaje</a>" +
+                        "<button type=\"button\" class=\"btn\" data-cerrar-avisos aria-label=\"Cerrar " +
+                        "avisos\">Cerrar</button>" +
+                        "</div></div><nav class=\"chips\" aria-label=\"Mensajes\"><a class=\"chip\" data-lista-avisos" +
+                        " " +
+                        "href=\"/avisos\">Nuevos · " + nuevos + "</a><a class=\"chip\" data-lista-avisos " +
+                        "href=\"/avisos?leidos=1\">Leídos · " + (mensajes.size() - nuevos) + "</a></nav>");
         for (Mensaje mensaje : mensajes) {
             if (mensaje.leido() == leidos) html.append(tarjeta(sesion, mensaje));
         }
@@ -133,7 +182,8 @@ public final class AvisosWeb {
                 sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.EVALUADOR && m.rol().equals("ADMINISTRADOR") &&
                         (m.tipo().equals("AVISO") || m.tipo().equals("NOTA_ADMIN")) ||
                         sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.ADMINISTRADOR &&
-                                m.rol().equals("EVALUADOR") && m.tipo().equals("RESPUESTA");
+                                m.rol().equals("EVALUADOR") &&
+                                (m.tipo().equals("RESPUESTA") || m.tipo().equals("AVISO") && m.reserva() == null);
         if (equipo || m.tipo().equals("PEDIR_INFORMACION") && !m.respondido()) {
             html.append("<details class=\"aviso-responder\"><summary class=\"btn\">Responder</summary>" +
                             "<form method=\"post\" action=\"/avisos/").append(m.id()).append("/responder\">")
