@@ -97,7 +97,7 @@ public final class Router implements HttpHandler {
     public Router(Autenticacion auth, Sesiones sesiones, co.aplomo.servicio.Usuarios usuarios,
             co.aplomo.servicio.Empresas empresas, co.aplomo.servicio.Reservas reservas,
             co.aplomo.servicio.Visitas visitas, co.aplomo.servicio.Evaluaciones evaluaciones) {
-        this.agenda = new AgendaWeb(reservas.agenda());
+        this.agenda = new AgendaWeb(reservas.agenda(), reservas.avisos());
         this.avisos = new AvisosWeb(reservas.avisos());
         this.solicitudesAcceso = new SolicitudesAccesoWeb(empresas.accesos(), sesiones);
         this.solicitudesVisita = new SolicitudesVisitaWeb(reservas.solicitudes());
@@ -171,8 +171,12 @@ public final class Router implements HttpHandler {
             return;
         }
         String id = cookie(intercambio);
-        Sesion sesion = (ruta.equals("/notas/nuevas") || ruta.equals("/avisos/nuevos")) ? sesiones.consultar(
-                id) : sesiones.obtener(id);
+        // RF-033: actualizar una conversación en segundo plano no prolonga la sesión.
+        boolean sondeoAgenda = "1".equals(intercambio.getRequestHeaders().getFirst("X-Alineo-Sondeo")) &&
+                ruta.matches("/agenda/(citas|evaluadores)/[1-9][0-9]*(/leidos)?") &&
+                (metodo.equals("GET") || metodo.equals("POST") && ruta.endsWith("/leidos"));
+        Sesion sesion = (ruta.equals("/notas/nuevas") || ruta.equals("/avisos/nuevos") || sondeoAgenda) ?
+                sesiones.consultar(id) : sesiones.obtener(id);
         if (sesion != null && sesion.cuenta() != null) {
             Cuenta cuenta2 = auth.actual(sesion.cuenta().id());
             if (!vigente(sesion.cuenta(), cuenta2)) {

@@ -2411,3 +2411,26 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
 .detalle-identidad{flex-wrap:nowrap}.detalle-identidad h1{flex:1;min-width:0}
 /* Centrar el trazo visible, no el espacio vacío del viewBox de la marca. */
 .alineo .riel-izq .marca-v,.alineo .deco-der{top:calc(50% - min(12.26px,1.226vh))}
+/* RF-033 · Conversación junto a la agenda, sin alterar los enlaces de reserva. */
+.agenda-panel{position:fixed;inset:0 0 0 auto;margin:0;width:420px;max-width:100vw;height:100vh;height:100dvh;
+ max-height:100dvh;box-sizing:border-box;padding:20px;background:var(--card);color:var(--ivory);
+ border:0;border-left:1px solid var(--line2);overflow-y:auto}
+.agenda-panel::backdrop{background:#0008}.agenda-panel-cierre{display:flex;justify-content:flex-end;margin-bottom:16px}
+.agenda-panel h2{font:400 24px/1.2 var(--serif);margin:0}.agenda-panel h3{font:600 18px/1.3 Inter,sans-serif;margin:0}
+.agenda-panel p{margin:0}.agenda-panel .muted{font-size:15px}.agenda-panel .small,.agenda-panel small{font-size:13px}
+.agenda-panel .field{font-size:15px}.agenda-panel textarea{font-size:15px;resize:vertical;min-height:96px}
+.cita-mensajes{display:flex;flex-direction:column;gap:12px;list-style:none;padding:0;margin:0;min-width:0}
+.cita-burbuja{align-self:flex-start;max-width:90%;padding:12px;border:1px solid var(--line);border-radius:12px;
+ overflow-wrap:anywhere;background:var(--bg)}
+.cita-burbuja.mia{align-self:flex-end;background:#e3cda014;border-color:#e3cda040}
+.cita-burbuja p{font-size:15px;white-space:pre-wrap;margin-top:6px}
+.cal-equipo-persona{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.cal-equipo-persona .btn.sm{white-space:nowrap;flex:none}
+.aviso-responder>form{display:grid;gap:12px;padding-top:12px}
+@media(max-width:899px){.agenda-panel{width:100vw;border-left:0}}
+@media(prefers-reduced-motion:reduce){.agenda-panel,.cita-burbuja{animation:none;transition:none}}
+@media(max-width:899px){.agenda-panel{left:0;right:0;width:100%;max-width:100%}}
+/* La lista del día conserva hora y empresa cuando las citas del mes se reducen a puntos. */
+.alineo .cal-dia-seleccionado .cal-cita b,.alineo .cal-dia-seleccionado .cal-cita small{display:block}
+.alineo .cal-equipo-persona .btn.sm{height:36px!important;min-height:36px!important;padding:0 14px!important;
+ font-size:13px!important}

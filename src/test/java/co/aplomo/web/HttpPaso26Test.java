@@ -191,6 +191,8 @@ class HttpPaso26Test extends HttpPrueba {
         int evaluador = evaluador(List.of(empresa));
         var agenda = new Reservas(tx, reloj).agenda();
         agenda.guardarNota(cuenta(admin), escenario.reservaAbierta, "Revisar \"apoyos\"\n<script>");
+        int evaluadorAjeno = evaluadorTrabajo(escenario.empresaB).id();
+        Sql.actualizar(con, "UPDATE reserva SET id_evaluador=? WHERE id_reserva=?", evaluadorAjeno, escenario.reservaB);
         agenda.guardarNota(cuenta(admin), escenario.reservaB, "NOTA AJENA");
         entrar(evaluador);
         var respuesta = get("/notas/nuevas");

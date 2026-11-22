@@ -142,11 +142,12 @@ public final class Calendario {
     private static String evaluador(Evaluador evaluador, Vista vista) {
         long cantidad = vista.citas().stream().filter(cita -> Integer.valueOf(evaluador.id()).equals(cita.evaluador()))
                 .count();
-        return "<label class=\"cal-evaluador color-" +
+        return "<div class=\"cal-equipo-persona\"><label class=\"cal-evaluador color-" +
                 (evaluador.color() == null ? -1 : ColoresAgenda.PALETA.indexOf(evaluador.color())) +
                 "\"><input type=\"checkbox\" data-filtrar-evaluador=\"" + evaluador.id() + "\" checked><i></i><span>" +
                 Html.escapar(evaluador.nombre()) + "<small>" + Html.plural(Math.toIntExact(cantidad), "cita") +
-                "</small></span></label>";
+                "</small></span></label><a class=\"btn sm\" data-agenda-evaluador=\"" + evaluador.id() +
+                "\" href=\"/agenda/evaluadores/" + evaluador.id() + "\">Escribir</a></div>";
     }
 
     private static String proxima(Cita cita) {

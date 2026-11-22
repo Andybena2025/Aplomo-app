@@ -71,7 +71,7 @@
       const saludo = objetivo.closest('[data-ver-aviso-saludo]');
       const ver = objetivo.closest('[data-ver-mensaje]');
       const tarjeta = objetivo.closest('[data-mensaje]');
-      if (saludo || ver || tarjeta && !objetivo.closest('a,button,textarea,input,form')) {
+      if (saludo || ver || tarjeta && !objetivo.closest('a,button,summary,textarea,input,form')) {
         event.preventDefault(); lanzador = saludo || ver || tarjeta;
         if (saludo) abrirNota(notas[0]);
         else {

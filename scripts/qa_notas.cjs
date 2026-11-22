@@ -67,3 +67,13 @@ test('el aviso se abre localmente y Entendido actualiza servidor, burbuja y cont
   assert.equal(elementos.get('[data-contador-avisos]').hidden,true);
   assert.equal(elementos.get('[data-avisos-saludo]').hidden,true);
 });
+test('Responder despliega su formulario sin que la tarjeta abra otro aviso encima',()=>{
+ const eventos={};let prevenidos=0,abiertos=0;
+ const nodo={dataset:{notasCsrf:'token'},querySelector:()=>({textContent:'Mensaje',focus(){}}),
+  showModal(){abiertos++;},classList:{contains:()=>false}};
+ const tarjeta={...nodo,dataset:{mensaje:'9'}};
+ montar({querySelector:()=>nodo,addEventListener:(n,f)=>eventos[n]=f},async()=>{});
+ eventos.click({target:{closest:s=>s==='[data-mensaje]'?tarjeta:s.includes('summary')?{}:null},
+  preventDefault(){prevenidos++;}});
+ assert.equal(prevenidos,0);assert.equal(abiertos,0);
+});

@@ -72,6 +72,27 @@ public final class MensajeDao {
         }
     }
 
+    /**
+     * RF-033: conversación cronológica del actor con el Evaluador actual, nunca de otros destinatarios.
+     */
+    public List<Mensaje> conversacion(Connection con, int reserva, int actor, int evaluador) throws SQLException {
+        return Sql.listar(con, SELECT + "WHERE m.id_reserva=? AND (m.id_remitente=? OR m.id_destinatario=?) " +
+                "AND ((m.tipo='NOTA_ADMIN' AND q.rol='ADMINISTRADOR' AND m.id_destinatario=?) " +
+                "OR (m.tipo='RESPUESTA' AND q.rol='EVALUADOR' AND m.id_remitente=? " +
+                "AND EXISTS(SELECT 1 FROM cuenta a WHERE a.id_cuenta=m.id_destinatario AND a.rol='ADMINISTRADOR'))) " +
+                "ORDER BY m.creado,m.id_mensaje", MensajeDao::leer, reserva, actor, actor, evaluador, evaluador);
+    }
+
+    /**
+     * RF-033: historial general de dos cuentas concretas; no incluye avisos del Usuario ni otras citas.
+     */
+    public List<Mensaje> general(Connection con, int administrador, int evaluador) throws SQLException {
+        return Sql.listar(con, SELECT + "WHERE m.id_reserva IS NULL AND " +
+                "((m.tipo='AVISO' AND m.id_remitente=? AND m.id_destinatario=?) OR " +
+                "(m.tipo='RESPUESTA' AND m.id_remitente=? AND m.id_destinatario=?)) " +
+                "ORDER BY m.creado,m.id_mensaje", MensajeDao::leer, administrador, evaluador, evaluador, administrador);
+    }
+
     private static Mensaje leer(java.sql.ResultSet fila) throws SQLException {
         return new Mensaje(fila.getInt("id_mensaje"), Sql.enteroOpcional(fila, "id_reserva"),
                 fila.getInt("id_remitente"), fila.getInt("id_destinatario"), fila.getString("tipo"),

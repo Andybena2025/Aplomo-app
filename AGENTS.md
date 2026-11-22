@@ -354,3 +354,28 @@ Luego ESPERA el OK de Andy.
   Hardware físico, navegadores externos y 810/1080 exactos no repetidos. Informe docs/informe_paso31.md.
 - Al entregar: app normal reiniciada en 8080, /ayuda comprobada con curl; commit/push a origin/main verificado.
   Detenerse y esperar revisión de Andy.
+
+
+### Paso 30C · mensajes de Agenda (después del Paso 31)
+- Andy autorizó un commit «Paso 30C» y push a main sobre b344140. Sin capturas, migraciones ni demo real.
+- Agenda mes/semana abre cita en diálogo lateral 420 px, ancho útil completo <900; enlace reserva conservado.
+  Contexto/áreas autorizadas, conversación cronológica, burbujas, 500 caracteres y chips editables de A.
+- Guardar nota sigue Agenda.guardarNota/NOTA_ADMIN y nota_vista. E responde al último A de la cita o principal.
+  El Administrador ve su hilo; E ve los mensajes que le corresponden. GET no acusa; POST/CSRF marca solo
+  lo dirigido al actor. Otros E, incluso de la misma empresa, y U reciben 403 en rutas nuevas.
+- Leyenda A: Escribir a E activo, AVISO sin reserva. Bandeja permite ida/vuelta E RESPUESTA → A AVISO;
+  con cita vuelve por los métodos autorizados de Agenda. Destinatario de cita siempre resuelto en servidor.
+  Cada envío nuevo tiene bitácora; sin destinatarios arbitrarios ni borrados.
+- JS conserva borrador ante fallo y entre sondeos, previene dobles envíos y respuestas tardías. Lectura fallida
+  no se confunde con envío fallido. Eventos en captura evitan que progreso.js bloquee los enlaces/formularios.
+  notas.js no intercepta summary Responder. Lista del día muestra hora/empresa también en celular.
+- Sondeo GET/acuse con X-Alineo-Sondeo usa sesiones.consultar: no alarga los 30 minutos. Envíos normales sí
+  cuentan como interacción. Prueba con reloj a 20+11 minutos confirma caducidad.
+- 1129 casos Maven verificados (suite única 1128 aprobados y un fixture antiguo corregido; cierre dirigido
+  22/22), 161/161 JS. Suites completas una sola vez al cierre. Ocho casos HTTP y once JS nuevos.
+  14 medidas de paneles a 1920/1366/1080/900/899/810/390 con 0 px de desborde. Botones 44/Escribir 36.
+  Ida/vuelta de cita y general comprobadas en navegador integrado; cero errores de consola capturados.
+- QA temporal solo en rula_ergonomia_pruebas y ROLLBACK; sin cargar demo. Motor/cálculo/IA/imágenes/esquema
+  intactos. Tacto y Safari/iPad/iPhone físicos, Windows y otros navegadores no certificados.
+  Informe docs/informe_paso30c.md; ENDPOINTS y solo fila 30/número de pruebas de README actualizados.
+- Al entregar: commit/push verificado, app normal reiniciada en 8080 sin tocar la demo; esperar revisión de Andy.

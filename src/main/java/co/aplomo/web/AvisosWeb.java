@@ -125,15 +125,21 @@ public final class AvisosWeb {
         }
         if (m.reserva() != null) {
             String destino = (m.tipo().equals("SOLICITUD_VISITA") ||
-                    m.tipo().equals("RESPUESTA")) ? "/solicitudes-visita/" : "/reservas/";
+                    m.tipo().equals("RESPUESTA") && m.rol().equals("USUARIO")) ? "/solicitudes-visita/" : "/reservas/";
             html.append("<a class=\"aviso-cita\" href=\"").append(destino).append(m.reserva()).append("\">")
                     .append(Html.escapar(m.cita())).append("</a>");
         }
-        if (m.tipo().equals("PEDIR_INFORMACION") && !m.respondido()) {
-            html.append("<form method=\"post\" action=\"/avisos/").append(m.id()).append("/responder\">")
+        boolean equipo =
+                sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.EVALUADOR && m.rol().equals("ADMINISTRADOR") &&
+                        (m.tipo().equals("AVISO") || m.tipo().equals("NOTA_ADMIN")) ||
+                        sesion.cuenta().rol() == co.aplomo.modelo.Cuenta.Rol.ADMINISTRADOR &&
+                                m.rol().equals("EVALUADOR") && m.tipo().equals("RESPUESTA");
+        if (equipo || m.tipo().equals("PEDIR_INFORMACION") && !m.respondido()) {
+            html.append("<details class=\"aviso-responder\"><summary class=\"btn\">Responder</summary>" +
+                            "<form method=\"post\" action=\"/avisos/").append(m.id()).append("/responder\">")
                     .append(Html.csrf(sesion)).append("<label class=\"field\">Tu respuesta<textarea class=\"input\" " +
                             "name=\"texto\" maxlength=\"500\" required></textarea></label>" +
-                            "<button class=\"btn p\">Enviar respuesta</button></form>");
+                            "<button class=\"btn p\">Enviar respuesta</button></form></details>");
         }
         if (!m.leido()) html.append("<form method=\"post\" action=\"/avisos/").append(m.id()).append("/entendido\">")
                 .append(Html.csrf(sesion)).append("<button class=\"btn\">Entendido</button></form>");

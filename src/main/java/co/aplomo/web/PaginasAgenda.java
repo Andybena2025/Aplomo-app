@@ -33,7 +33,11 @@ public final class PaginasAgenda {
                 Html.encabezado(etiqueta, titulo, Calendario.filtros(sesion, vista) + accion));
         pagina.append(controles(vista)).append("<div class=\"calendario-layout\"><section>")
                 .append(Calendario.cuadricula(vista)).append("</section>").append("</div>")
-                .append("<script src=\"/static/js/agenda.js\" defer></script>");
+                .append("<dialog class=\"agenda-panel\" data-agenda-panel aria-label=\"Mensajes de agenda\">" +
+                        "<div class=\"agenda-panel-cierre\"><button class=\"btn\" type=\"button\" " +
+                        "data-agenda-cerrar>Cerrar</button></div><div data-agenda-contenido></div></dialog>")
+                .append("<script src=\"/static/js/agenda.js\" defer></script>" +
+                        "<script src=\"/static/js/agenda-mensajes.js\" defer></script>");
         return Html.pagina(etiqueta, pagina.toString(), sesion, false, false);
     }
 

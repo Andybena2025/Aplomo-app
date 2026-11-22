@@ -185,27 +185,103 @@ public final class Agenda {
     }
 
     /**
-     * Guarda nota privada y reinicia el acuse aun si su texto es igual. RNF-011.
+     * RF-033: guarda nota privada y reinicia el acuse aun si su texto es igual. RNF-011.
      */
     public String guardarNota(Cuenta actor, int reserva, String texto) throws SQLException {
-        return tx.ejecutar(conexion2 -> {
-            var cuenta2 = AccesoDatos.vigente(conexion2, actor);
-            Permisos.administrador(cuenta2);
-            exigir(conexion2, cuenta2, reserva);
-            String texto2 = Validacion.opcional(texto, "nota para el evaluador", 500);
-            dao.guardarNota(conexion2, reserva, texto2);
-            var destinatario = dao.responsableReserva(conexion2, reserva);
-            if (destinatario == null && !texto2.isBlank()) {
-                throw new IllegalArgumentException("Asigna un ingeniero a la cita antes de enviarle una nota.");
-            }
-            if (destinatario != null && !texto2.isBlank()) {
-                new co.aplomo.dao.MensajeDao().enviar(conexion2, reserva, cuenta2.id(), destinatario.getKey(),
-                        "NOTA_ADMIN", texto2, LocalDateTime.now(reloj));
-            }
-            new BitacoraDao().registrar(conexion2, cuenta2.id(), LocalDateTime.now(reloj), "reserva", reserva, "EDITAR",
-                    null, null, "Nota del Administrador");
-            return destinatario == null ? "el ingeniero" : destinatario.getValue();
+        return tx.ejecutar(con -> guardarNotaEn(con, AccesoDatos.vigente(con, actor), reserva, texto));
+    }
+
+    String guardarNotaEn(Connection con, Cuenta cuenta, int reserva, String texto) throws SQLException {
+        Permisos.administrador(cuenta);
+        var ficha = exigir(con, cuenta, reserva);
+        String nota = Validacion.opcional(texto, "nota para el evaluador", 500);
+        Cuenta destinatario = ficha.reserva().evaluador() == null ? null : new co.aplomo.dao.CuentaDao().porId(con,
+                ficha.reserva().evaluador(), true);
+        if (!nota.isBlank() && (destinatario == null || destinatario.rol() != Cuenta.Rol.EVALUADOR ||
+                destinatario.estado() != Cuenta.Estado.ACTIVA)) {
+            throw new IllegalArgumentException("Asigna un evaluador activo a la cita antes de enviarle un mensaje.");
+        }
+        dao.guardarNota(con, reserva, nota);
+        if (destinatario != null && !nota.isBlank()) {
+            int mensaje = new co.aplomo.dao.MensajeDao().enviar(con, reserva, cuenta.id(), destinatario.id(),
+                    "NOTA_ADMIN", nota, LocalDateTime.now(reloj));
+            new BitacoraDao().registrar(con, cuenta.id(), LocalDateTime.now(reloj), "mensaje", mensaje, "CREAR", null,
+                    null, "Nota del Administrador");
+        }
+        new BitacoraDao().registrar(con, cuenta.id(), LocalDateTime.now(reloj), "reserva", reserva, "EDITAR", null,
+                null, "Nota del Administrador");
+        return destinatario == null ? "el evaluador" : destinatario.nombre();
+    }
+
+    /**
+     * RF-033: datos y conversación de una cita autorizada; el Usuario y otro Evaluador no acceden.
+     */
+    public record Conversacion(ReservaDao.Ficha ficha, Cuenta evaluador, String areas,
+                               List<co.aplomo.dao.MensajeDao.Mensaje> mensajes) {
+    }
+
+    /**
+     * RF-033: consulta sin marcar leído; el acuse se realiza después de abrir con POST y CSRF.
+     */
+    public Conversacion conversacion(Cuenta actor, int reserva) throws SQLException {
+        return tx.ejecutar(con -> {
+            Cuenta cuenta = AccesoDatos.vigente(con, actor);
+            Permisos.trabajo(cuenta);
+            var ficha = exigir(con, cuenta, reserva);
+            Cuenta evaluador = ficha.reserva().evaluador() == null ? null : new co.aplomo.dao.CuentaDao().porId(con,
+                    ficha.reserva().evaluador(), false);
+            String areas = String.join(" · ", co.aplomo.db.Sql.listar(con,
+                    "SELECT DISTINCT a.nombre FROM puesto_trabajo p JOIN area a ON a.id_area=p.id_area " +
+                            "WHERE p.id_salon=? AND a.id_empresa=? ORDER BY a.nombre", f -> f.getString(1),
+                    ficha.reserva().salon(), ficha.empresa()));
+            var mensajes = evaluador ==
+                    null ? List.<co.aplomo.dao.MensajeDao.Mensaje>of() : new co.aplomo.dao.MensajeDao().conversacion(
+                    con, reserva, cuenta.id(), evaluador.id());
+            return new Conversacion(ficha, evaluador, areas, mensajes);
         });
+    }
+
+    /**
+     * RF-033: el panel acusa solo mensajes dirigidos al actor, dentro de su cita vigente.
+     */
+    public void leerConversacion(Cuenta actor, int reserva) throws SQLException {
+        tx.ejecutar(con -> {
+            Cuenta cuenta = AccesoDatos.vigente(con, actor);
+            Permisos.trabajo(cuenta);
+            var ficha = exigir(con, cuenta, reserva);
+            if (ficha.reserva().evaluador() != null) {
+                var mensajes = new co.aplomo.dao.MensajeDao();
+                for (var mensaje : mensajes.conversacion(con, reserva, cuenta.id(), ficha.reserva().evaluador())) {
+                    if (mensaje.destinatario() == cuenta.id()) mensajes.entender(con, mensaje);
+                }
+            }
+            return null;
+        });
+    }
+
+    /**
+     * RF-033: el Evaluador responde al último Administrador de la cita; no recibe destinatario del navegador.
+     */
+    public void responder(Cuenta actor, int reserva, String texto) throws SQLException {
+        tx.ejecutar(con -> {
+            responderEn(con, AccesoDatos.vigente(con, actor), reserva, texto);
+            return null;
+        });
+    }
+
+    void responderEn(Connection con, Cuenta cuenta, int reserva, String texto) throws SQLException {
+        if (cuenta.rol() != Cuenta.Rol.EVALUADOR) throw new SecurityException("Acceso denegado.");
+        exigir(con, cuenta, reserva);
+        Integer destino = co.aplomo.db.Sql.uno(con,
+                "SELECT m.id_remitente FROM mensaje m JOIN cuenta a ON a.id_cuenta=m.id_remitente " +
+                        "WHERE m.id_reserva=? AND m.id_destinatario=? AND m.tipo='NOTA_ADMIN' " +
+                        "AND a.rol='ADMINISTRADOR' ORDER BY m.creado DESC,m.id_mensaje DESC LIMIT 1", f -> f.getInt(1),
+                reserva, cuenta.id());
+        if (destino == null) destino = Avisos.principalEn(con).id();
+        int id = new co.aplomo.dao.MensajeDao().enviar(con, reserva, cuenta.id(), destino, "RESPUESTA",
+                Validacion.texto(texto, "mensaje", 500), LocalDateTime.now(reloj));
+        new BitacoraDao().registrar(con, cuenta.id(), LocalDateTime.now(reloj), "mensaje", id, "CREAR", null, null,
+                "Respuesta de la cita");
     }
 
     /**
@@ -254,12 +330,13 @@ public final class Agenda {
         });
     }
 
-    private static void exigir(Connection conexion2, Cuenta cuenta2, int id) throws SQLException {
-        var ficha = new ReservaDao().buscar(conexion2, id, AccesoDatos.empresaPermitida(cuenta2), false);
+    private static ReservaDao.Ficha exigir(Connection conexion2, Cuenta cuenta2, int id) throws SQLException {
+        var ficha = new ReservaDao().buscar(conexion2, id, AccesoDatos.empresaPermitida(cuenta2), true);
         if (ficha == null ||
                 cuenta2.rol() == Cuenta.Rol.EVALUADOR && !Objects.equals(ficha.reserva().evaluador(), cuenta2.id())) {
             throw new SecurityException("La reserva no está disponible para tu cuenta.");
         }
+        return ficha;
     }
 
     private Nota notaEn(Connection conexion2, int id) throws SQLException {

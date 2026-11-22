@@ -330,3 +330,21 @@ Paso 28C: `GET /static/img/logo_alineo.svg` se sirve como `image/svg+xml`; la ma
 se incorpora en línea desde `Marca.logo()` con las marcas de regla generadas en Java.
 `POST /avisos/{id}/entendido` con `X-Alineo-Panel: 1` y CSRF devuelve 200 JSON con `ok` y `nuevos`;
 sin ese encabezado conserva la redirección de formularios. Solo el destinatario vigente puede confirmar.
+
+### Paso 30C · conversaciones de agenda (RF-033)
+
+| Método y ruta | Acceso y comportamiento |
+| --- | --- |
+| GET `/agenda/citas/{id}` | A: conversación propia con el Evaluador actual. E: solo su cita dentro de su alcance vigente. U/otro E: 403. No acusa lectura. |
+| POST `/agenda/citas/{id}/leidos` | A/E autorizados y CSRF. Solo marca mensajes de esa conversación dirigidos al actor; conserva nota_vista. 200 JSON. |
+| POST `/reservas/{id}/nota-administrador` | A, CSRF y Evaluador asignado activo. Sigue NOTA_ADMIN. Con `X-Alineo-Agenda: 1` devuelve panel actualizado, valida texto obligatorio hasta 500; el formulario anterior conserva su respuesta. |
+| POST `/agenda/citas/{id}/responder` | Solo E asignado, CSRF, texto 1–500. Destinatario: último Administrador que le envió NOTA_ADMIN en esa cita o principal. No toma destinatario del cuerpo. |
+| GET `/agenda/evaluadores/{id}` | Solo A y Evaluador destinatario activo. Panel de mensaje/historial general, sin reserva. |
+| POST `/agenda/evaluadores/{id}` | Solo A, CSRF, Evaluador activo y texto 1–500. Crea AVISO con id_reserva NULL. |
+| POST `/agenda/evaluadores/{id}/leidos` | Solo A y CSRF; acusa respuestas generales dirigidas a esa cuenta. |
+| POST `/avisos/{id}/responder` | Conserva U/PEDIR_INFORMACION. Añade E destinatario de AVISO/NOTA_ADMIN de A y A destinatario de RESPUESTA de E. Revalida asignación si hay cita y actividad del E al enviarle; usa RESPUESTA o AVISO/NOTA_ADMIN según el contexto. |
+
+`X-Alineo-Agenda: 1` solicita el fragmento HTML del panel; no concede permisos. Sin él se conserva la navegación HTML.
+Los POST requieren CSRF. Los mensajes se registran en bitácora y su texto se escapa al mostrarlo.
+El sondeo usa `X-Alineo-Sondeo: 1` solo para GET de estos paneles y POST de acuse: consulta la sesión sin prolongarla.
+El envío y la apertura por interacción conservan la renovación normal. El cierre por inactividad sigue siendo 30 minutos.
