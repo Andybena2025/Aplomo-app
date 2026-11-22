@@ -27,7 +27,8 @@ final class TablaUsuarios {
             long cantidad = cuentas.stream().filter(c -> c.rol() == rol && c.estado() != Cuenta.Estado.INACTIVA)
                     .count();
             html.append("<button class=\"chip\" type=\"button\" data-rol-elegir=\"").append(rol.name())
-                    .append("\" aria-pressed=\"false\">").append(Formularios.etiqueta(rol.name())).append(" · ")
+                    .append("\" aria-pressed=\"false\"><i class=\"rol-punto\" aria-hidden=\"true\"></i>")
+                    .append(Formularios.etiqueta(rol.name())).append(" · ")
                     .append(cantidad).append(" cuentas</button>");
         }
         html.append("</div><div class=\"lista-herramientas\"><label class=\"field\">Buscar" +
@@ -49,7 +50,9 @@ final class TablaUsuarios {
                 "<table class=\"resp alineo-table usuarios-table\"><thead><tr><th scope=\"col\">Nombre y correo</th>" +
                 "<th scope=\"col\">Rol</th><th scope=\"col\">Empresa</th><th scope=\"col\">Estado</th>" +
                 "<th scope=\"col\">Acciones</th></tr></thead><tbody>");
-        for (Cuenta cuenta : cuentas) {
+        // RNF-007: agrupadas por rol (Administrador, Evaluador, Usuario) sin cambiar el orden dentro de cada grupo.
+        var ordenadas = cuentas.stream().sorted(java.util.Comparator.comparingInt(c -> c.rol().ordinal())).toList();
+        for (Cuenta cuenta : ordenadas) {
             var ids = asignadas.getOrDefault(cuenta.id(), List.of());
             var nombresEmpresas = ids.stream().map(nombres::get).filter(java.util.Objects::nonNull).toList();
             String vinculadas =
@@ -70,7 +73,8 @@ final class TablaUsuarios {
                     .append(cuenta.id()).append("/editar\"><strong title=\"").append(Html.escapar(cuenta.nombre()))
                     .append("\">").append(Html.escapar(cuenta.nombre())).append("</strong><small>")
                     .append(Html.escapar(cuenta.correo())).append("</small></a></td><td data-label=\"Rol\">")
-                    .append(Formularios.etiqueta(cuenta.rol().name())).append("</td><td data-label=\"Empresa\">")
+                    .append(rolPill(cuenta.rol()))
+                    .append("</td><td data-label=\"Empresa\">")
                     .append(resumen).append("</td><td data-label=\"Estado\">")
                     .append(SistemaVisual.estado(cuenta.estado().name())).append("</td><td data-label=\"Acciones\">")
                     .append("<a class=\"btn\" href=\"/usuarios/").append(cuenta.id())
@@ -80,5 +84,13 @@ final class TablaUsuarios {
                 ListasCortas.boton() + "</section>" + "<script src=\"/static/js/usuarios.js\" defer></script>");
         return Html.pagina("Usuarios", html.toString(), sesion, "Gestión · Usuarios",
                 "<a class=\"btn p\" href=\"/usuarios/nuevo\">Nuevo usuario</a>", false);
+    }
+
+    /**
+     * RF-003, RNF-007: el rol se reconoce por su color (Administrador champán, Evaluador lila, Usuario aguamarina).
+     */
+    static String rolPill(Rol rol) {
+        return "<span class=\"rol-pill rol-pill-" + rol.name().toLowerCase(java.util.Locale.ROOT) +
+                "\"><i aria-hidden=\"true\"></i>" + Formularios.etiqueta(rol.name()) + "</span>";
     }
 }

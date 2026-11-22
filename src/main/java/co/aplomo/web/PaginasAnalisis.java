@@ -198,7 +198,8 @@ public final class PaginasAnalisis {
                 "js\" defer></script><script src=\"/static/js/posturas-campo.js\" defer></scr" +
                 "ipt><script src=\"/static/js/galeria-ejemplos.js\" defer></script><script sr" +
                 "c=\"/static/js/conversacion-evaluacion.js\" defer></script>" +
-                "<script src=\"/static/js/revision-visual.js\" defer></script>";
+                "<script src=\"/static/js/revision-visual.js\" defer></script>" +
+                "<script src=\"/static/js/aviso-salida.js\" defer></script>";
     }
 
     /**

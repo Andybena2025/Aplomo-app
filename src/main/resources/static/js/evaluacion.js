@@ -110,10 +110,10 @@
     if(corporal&&(paso===9||paso===10)){const n=esfuerzo.atras();if(n===ANGULOS)cuerpo.ultimo();mostrar(n);return;}
     if(corporal&&paso===RESULTADO){esfuerzo.ultimo();mostrar(10);return;}
     if(continuar&&paso===ANGULOS) {
-      if(confirm('¿Volver a la evaluación? Los análisis que todavía no guardaste se perderán.'))location.assign('/evaluaciones/'+continuar);
+      if(confirm('¿Volver a la evaluación? Los análisis que todavía no guardaste se perderán.'))window.AlineoSalida?.limpiar(),location.assign('/evaluaciones/'+continuar);
     }else if(paso===RESULTADO&&!continuar&&form.querySelector('[name="registro"]:checked')?.value==='SIN_REGISTRO_FOTOGRAFICO')mostrar(FOTOS);
     else if(paso>inicio){mostrar(paso-1);if(paso===ANGULOS)analizador.iniciar();}
-    else if(confirm('¿Salir del asistente? Los datos que todavía no guardaste se perderán.'))location.assign(continuar?'/evaluaciones/'+continuar:'/visitas/'+form.elements.visita.value);
+    else if(confirm('¿Salir del asistente? Los datos que todavía no guardaste se perderán.'))window.AlineoSalida?.limpiar(),location.assign(continuar?'/evaluaciones/'+continuar:'/visitas/'+form.elements.visita.value);
   });
   form.querySelectorAll('.opt input').forEach(c => c.addEventListener('change', () => c.closest('.opt').classList.toggle('on', c.checked)));
   form.querySelectorAll('[name="registro"]').forEach(r => r.addEventListener('change', () => {

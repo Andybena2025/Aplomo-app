@@ -2755,3 +2755,15 @@ outline-offset:3px}
  overflow-wrap:anywhere;
 }
 .contacto-ficha .contacto-botones>.btn:last-child{flex:2 1 0!important}
+
+/* Paso 37: color por rol en Usuarios (RF-003, RNF-007). Solo para roles: no se usa en semáforo ni estados. */
+.usuarios-table tr[data-rol="ADMINISTRADOR"],[data-rol-elegir="ADMINISTRADOR"],.rol-pill-administrador{--rol:#E3CDA0;--rol-fondo:#E3CDA01F}
+.usuarios-table tr[data-rol="EVALUADOR"],[data-rol-elegir="EVALUADOR"],.rol-pill-evaluador{--rol:#B9A7FF;--rol-fondo:#B9A7FF1F}
+.usuarios-table tr[data-rol="USUARIO"],[data-rol-elegir="USUARIO"],.rol-pill-usuario{--rol:#7FD1E0;--rol-fondo:#7FD1E01F}
+.rol-pill{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:3px 11px 3px 9px;font-size:13px;
+ font-weight:600;white-space:nowrap;color:var(--rol);background:var(--rol-fondo);border:1px solid var(--rol)}
+.rol-pill i,.rol-punto{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--rol);flex-shrink:0}
+.usuarios-roles .chip{display:inline-flex;align-items:center;gap:8px}
+.usuarios-roles .chip[aria-pressed="true"] .rol-punto{box-shadow:0 0 0 2px var(--ink,#0E0E10)}
+.usuarios-table tbody tr[data-rol]>td:first-child{box-shadow:inset 3px 0 0 var(--rol)}
+.usuarios-table tbody tr[data-rol] .fila-enlace strong{color:var(--rol)}
