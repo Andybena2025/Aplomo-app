@@ -30,11 +30,27 @@ public final class SolicitudesVisitaWeb {
      * RF-002: estas rutas preceden las consultas generales de reservas.
      */
     public boolean atender(HttpExchange intercambio, Sesion sesion,
-            Map<String, String> datos) throws SQLException, IOException {
+                           Map<String, String> datos) throws SQLException, IOException {
         String ruta = intercambio.getRequestURI().getPath();
-        if (!ruta.equals("/solicitar-visita") && !ruta.startsWith("/solicitudes-visita/")) return false;
+        if (!ruta.equals("/solicitar-visita") && !ruta.equals("/solicitar-visita/horas") &&
+                !ruta.startsWith("/solicitudes-visita/")) return false;
         if (sesion.cuenta().temporal()) throw new SecurityException("Cambia tu contraseña para continuar.");
         boolean post = intercambio.getRequestMethod().equals("POST");
+        if (ruta.equals("/solicitar-visita/horas")) {
+            if (post) {
+                Router.enviar(intercambio, 405, "Método no permitido.");
+                return true;
+            }
+            var consulta = Router.consulta(intercambio);
+            servicio.lugares(sesion.cuenta());
+            var horas = servicio.horas(sesion.cuenta(), entero(consulta, "ingeniero"), fecha(consulta),
+                    entero(consulta, "duracion"), consulta.containsKey("salon") ? entero(consulta, "salon") : null);
+            String json = horas.stream().map(h -> NotasWeb.texto(h.toString()))
+                    .collect(java.util.stream.Collectors.joining(",", "[", "]"));
+            intercambio.getResponseHeaders().set("Cache-Control", "no-store");
+            Router.responder(intercambio, 200, "application/json; charset=UTF-8", json);
+            return true;
+        }
         if (ruta.equals("/solicitar-visita")) {
             if (!post) datos = Router.consulta(intercambio);
             servicio.lugares(sesion.cuenta());
@@ -77,7 +93,7 @@ public final class SolicitudesVisitaWeb {
     }
 
     private String formulario(Sesion sesion, Map<String, String> datos, String error,
-            boolean cruce) throws SQLException {
+                              boolean cruce) throws SQLException {
         var lugares = servicio.lugares(sesion.cuenta());
         if (lugares.isEmpty()) {
             return Html.pagina("Solicitar una visita", Html.vacio(
@@ -85,95 +101,11 @@ public final class SolicitudesVisitaWeb {
                             "Contacta a tu ingeniero para prepararlos.",
                     "<a class=\"btn\" href=\"/ayuda\">Ver ayuda</a>"), sesion, "Reservas · Solicitud", "");
         }
-        var sedes = lugares.stream().collect(java.util.stream.Collectors.toMap(SolicitudesVisita.Lugar::sede,
-                l -> l.empresaNombre() + " · " + l.sedeNombre(), (a, b) -> a, java.util.LinkedHashMap::new));
-        int sede = numero(datos.get("sede"));
-        if (sede == 0 && !sedes.isEmpty()) sede = sedes.keySet().iterator().next();
-        int elegida = sede;
-        var salones = lugares.stream().filter(l -> l.sede() == elegida).toList();
-        int empresa = salones.isEmpty() ? 0 : salones.get(0).empresa();
-        var ingenieros =
-                empresa == 0 ? List.<SolicitudesVisita.Ingeniero>of() : servicio.ingenieros(sesion.cuenta(), empresa);
-        var seleccion = new java.util.HashMap<>(datos);
-        seleccion.put("sede", Integer.toString(sede));
-        StringBuilder html = new StringBuilder(Html.aviso(error, false));
-        html.append("<form class=\"card stack solicitar-visita\" method=\"post\" action=\"/solicitar-visita\" ")
-                .append("data-solicitar-visita>").append(Html.csrf(sesion))
-                .append(Formularios.selector(seleccion, "sede", "Sede",
-                        sedes.entrySet().stream().map(e -> new Formularios.Opcion(e.getKey().toString(), e.getValue()))
-                                .toList(), true))
-                .append(Formularios.selector(datos, "salon", "Salón", opcionesSalones(salones), true));
-        html.append(
-                        "<div class=\"field\"><label for=\"ingeniero\">Ingeniero</label><select id=\"ingeniero\" " +
-                                "class=\"input\" name=\"ingeniero\" required>")
-                .append("<option value=\"\">Elige un ingeniero</option><optgroup label=\"De tu empresa\">");
-        for (boolean asignado : new boolean[]{true, false}) {
-            if (!asignado) html.append("</optgroup><optgroup label=\"Otro ingeniero\">");
-            for (var ingeniero : ingenieros)
-                if (ingeniero.asignado() == asignado) {
-                    html.append("<option value=\"").append(ingeniero.id()).append("\" data-color=\"")
-                        .append(ingeniero.color() != null &&
-                                co.aplomo.servicio.ColoresAgenda.PALETA.contains(ingeniero.color()) ?
-                                ingeniero.color() : "#C9CCD2").append("\"")
-                            .append(Integer.toString(ingeniero.id()).equals(datos.get("ingeniero")) ? " selected" : "")
-                            .append(">").append(Html.escapar(ingeniero.nombre())).append("</option>");
-                }
-        }
-        html.append("</optgroup></select><span class=\"small muted\" data-ingeniero-color></span></div>" +
-                "<div class=\"grid3\" data-fecha-hora>")
-                .append(Formularios.campo(datos, "fecha", "Fecha", "date", 10, true))
-                .append(Formularios.campo(datos, "inicio", "Hora de inicio", "time", 8, true))
-                .append(Formularios.campo(datos, "fin", "Hora de fin", "time", 8, true)).append("</div>")
-                .append(Formularios.texto(datos, "motivo", "Motivo (opcional)", 255, false));
-        if (cruce) html.append(alternativas(sesion, datos, ingenieros));
-        html.append("<button class=\"btn p\">Solicitar una visita</button></form>")
-                .append("<script src=\"/static/js/solicitar-visita.js\" defer></script>");
-        return Html.pagina("Solicitar una visita", html.toString(), sesion, "Reservas · Solicitud", "");
-    }
-
-    private static List<Formularios.Opcion> opcionesSalones(List<SolicitudesVisita.Lugar> lugares) {
-        var opciones = new ArrayList<Formularios.Opcion>();
-        opciones.add(new Formularios.Opcion("", "Elige un salón"));
-        lugares.forEach(l -> opciones.add(new Formularios.Opcion(Integer.toString(l.id()), l.nombre())));
-        return opciones;
-    }
-
-    private String alternativas(Sesion sesion, Map<String, String> datos,
-            List<SolicitudesVisita.Ingeniero> ingenieros) throws SQLException {
-        var fecha = fecha(datos);
-        var inicio = hora(datos, "inicio");
-        var fin = hora(datos, "fin");
-        int id = entero(datos, "ingeniero");
-        long minutos = java.time.Duration.between(inicio, fin).toMinutes();
-        StringBuilder html = new StringBuilder("<details><summary class=\"btn\">Elegir otra hora</summary>" +
-                "<p class=\"hint\">Horas libres para la misma duración.</p><div class=\"chips\">");
-        int libres = 0;
-        for (LocalTime hora = LocalTime.of(8, 0); !hora.plusMinutes(minutos).isAfter(LocalTime.of(18, 0)) &&
-                hora.isBefore(LocalTime.of(18, 0)); hora = hora.plusMinutes(30)) {
-            if (servicio.libre(sesion.cuenta(), id, fecha, hora, hora.plusMinutes(minutos))) {
-                html.append("<button class=\"chip\" type=\"button\" data-elegir-hora=\"").append(hora)
-                        .append("\" data-fin=\"").append(hora.plusMinutes(minutos)).append("\">").append(hora)
-                        .append("</button>");
-                libres++;
-            }
-        }
-        if (libres == 0) html.append("No hay horas libres este día.");
-        html.append("</div></details><details><summary class=\"btn\">Elegir otro ingeniero</summary>" +
-                "<div class=\"chips\">");
-        libres = 0;
-        for (var ingeniero : ingenieros) {
-            if (ingeniero.id() != id && servicio.libre(sesion.cuenta(), ingeniero.id(), fecha, inicio, fin)) {
-                html.append("<button class=\"chip\" type=\"button\" data-elegir-ingeniero=\"").append(ingeniero.id())
-                        .append("\">").append(Html.escapar(ingeniero.nombre())).append("</button>");
-                libres++;
-            }
-        }
-        if (libres == 0) html.append("No hay otro ingeniero libre a esta hora.");
-        return html.append("</div></details>").toString();
+        return SolicitudGuiada.formulario(sesion, servicio, lugares, datos, error, cruce);
     }
 
     private static String detalle(Sesion sesion, SolicitudesVisita.Peticion p, String error,
-            Map<String, String> datos) {
+                                  Map<String, String> datos) {
         var ficha = p.ficha();
         int id = ficha.reserva().id();
         String telefono = p.telefono() == null ? "" : p.telefono().replaceAll("[^0-9+]", "");

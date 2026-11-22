@@ -193,13 +193,11 @@ public final class InicioWeb {
                     .orElseThrow());
         }
         ultimos.stream().sorted(Comparator.comparing((Fila f) -> f.valor("fecha")).reversed()).limit(4).forEach(f -> {
-            long posturas = porPuesto.get(f.valor("puesto")).stream()
-                    .filter(p -> p.valor("visita").equals(f.valor("visita"))).count();
             html.append("<a class=\"lista-fila resultado-puesto\" href=\"/evaluaciones/").append(f.id())
                     .append("\"><span class=\"lista-identidad\"><strong title=\"")
                     .append(Html.escapar(TextoLista.puesto(f))).append("\">").append(Html.escapar(TextoLista.puesto(f)))
                     .append("</strong><small>Puesto ").append(Html.escapar(f.valor("numero"))).append(" · ")
-                    .append(Html.plural((int) posturas, "postura")).append("</small></span>").append(riesgo(f))
+                    .append(Html.escapar(f.valor("puesto_descripcion"))).append("</small></span>").append(riesgo(f))
                     .append("</a>");
         });
         if (resultados.isEmpty()) html.append(Html.vacio("Aún no hay resultados de visitas Finalizadas.", ""));

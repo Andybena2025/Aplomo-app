@@ -21,3 +21,36 @@ Checklist: ✅ comprobaciones del servidor y escape; ✅ mensajes en español; �
 Para probar: ingresar como Usuario → Inicio → Escribir al evaluador → enviar → ingresar como ese Evaluador y Responder → regresar al Usuario. Abrir Nuevo mensaje para comprobar ambos destinos. Revisar indicadores, próxima visita y cierre de ayuda. Las visitas En curso siguen fuera de los resultados.
 
 32B continúa autorizado después del commit/push A; no se adelanta ningún paso posterior.
+
+## 32B · puntos 3 y 6
+
+Solicitud de visita en tres etapas en la misma página: sede única como texto, salones táctiles, Evaluadores con color y asignado primero, calendario lunes–domingo propio, duración inicial 2 h, horas libres y resumen editable. El motivo tiene cuatro atajos. POST /solicitar-visita y SolicitudesVisita.solicitar conservan su validación original. Un Cruce conserva lo escrito y abre la etapa 2; vuelve a consultar horas. Hay campos nativos de fecha/hora en noscript para enviar sin JS. La nueva consulta de horas exige Usuario vigente con lugares propios; comprueba salón si se envía y Evaluador activo; no entrega datos de las citas ocupadas.
+
+| Requisito | Archivo y método | Prueba |
+|---|---|---|
+| RF-011: solicitud y cruces | SolicitudGuiada.formulario; SolicitudesVisitaWeb.atender | HttpSolicitud32Test: solicitud ESPERANDO, cruce vuelve a etapa 2, mismo POST |
+| RF-011/002: disponibilidad privada | SolicitudesVisita.horas/libre | JSON excluye 09:30/10:00 cuando existe 10–12; 08/12/16 disponibles para 2 h; otro rol, salón ajeno, Evaluador inválido y Usuario sin lugares 403 |
+| RNF-007/008: calendario | solicitar-visita.js | qa_solicitud_calendario: lunes–domingo, día pasado, hoy, año nuevo, bisiesto y fin con media hora |
+| RF-020/022/025: demo variada | ResultadosDemo.caso/finalizar; DemoCompleta.entrada; marca DEMO-32-PLAN | DemoVariada32Test: ocho nombres, cero duplicados y seis empresas mejoran; DemoPlan28Test conserva conteos de visitas, agenda y pendientes |
+| RF-024: subtítulos | InicioWeb.representante; PaginasArchivo | Puesto N · descripción registrada, sin empresa redundante |
+| RNF-009: cuentas conservadas | Demo.reiniciar y VinculosDemo existentes | DemoReinicio29Test; comparación real por identidad y vínculo/NIT, sin extraer hashes ni contraseñas |
+
+Los casos ficticios se distribuyen por fecha, índice del puesto y postura dentro de CASOS; nunca se asigna directamente un puntaje. Los dos casos verdes tienen ángulos diferentes y pueden dar el mismo puntaje; el motor decide. Se añadió únicamente una entrada ficticia al generador de demo, sin tocar co.aplomo.rula ni tablas RULA. Los ocho nombres rotan sin repetirse dentro del mismo puesto/visita. La distribución antigua fija 9/7/7 se reemplaza por comprobaciones de variedad y mejora.
+
+### Comprobación del navegador
+
+Recorrido real con cuenta ficticia en rula_ergonomia_pruebas: lugar → Evaluador asignado → 27/11 → 11:00–13:00 → chip Seguimiento → resumen → Solicitud enviada. A 1366×950, 1180×820, 820×1100 y 390×844: **0 px de desborde horizontal** en calendario y 0 px en resumen móvil; días de 48 px. Días anteriores desactivados y 2 h seleccionadas al llegar. Cero errores de consola capturados. La transacción de QA se revirtió antes de la suite completa. No hubo capturas ni descargas.
+
+### Recarga real autorizada en el encargo
+
+Ejecutada la clase equivalente de reiniciar_demo en el iMac con la confirmación REINICIAR DEMO y administrador de MySQL, dentro de una transacción con reversión ante diferencias. Base rula_ergonomia: **13 cuentas y 13 vínculos conservados**, **1 empresa ajena intacta**, **0 duplicados** por visita/puesto/postura/puntaje, **8 nombres de postura**, **6 empresas que mejoran**. La rutina existente ya desvincula/restaura por NIT; no hizo falta cambiarla. Las claves no se imprimieron ni se extrajeron para auditar. Los 184 archivos anteriores permanecen; no se hizo limpieza física de fotos. La marca de carga ahora es DEMO-32-PLAN. No se cambió config/db.properties.
+
+### Cierre
+
+Base 32A: 1141 Maven / 168 JS. 32B: **1144 Maven y 171 JS verificados**. Suites completas una vez al final de cada commit. Ajuste geométrico final: el contenido conserva los 1180 px del Paso 29; el borde de herramientas usa su semiancho real (590 px) + 24 px. El límite externo de ancho sigue la fórmula de 1240 indicada por Andy. Maven B encontró una expectativa antigua de los dos plegables de alternativas; se adaptó a volver a etapa 2 con calendario y horas, y se comprobó con cierre dirigido. JS B encontró una expectativa antigua que limitaba cualquier clase chip a 32 px: se acotó la regla para permitir las acciones táctiles de Solicitud a 44 px, conservando filtros de tabla a 32 px; cierre dirigido 15/15, sin repetir toda la suite.
+
+✅ Servidor, CSRF y HTML escapado; ✅ datos QA revertidos; ✅ español; ✅ sin cambios de esquema, motor, endpoint de cálculo, IA o tablas RULA; ✅ sin archivos sensibles preparados; ✅ cuatro tamaños del formulario sin desborde. ❌ Tacto físico, Safari/iPad/iPhone físicos, Windows y otros navegadores no se certifican. El envío nativo se prueba por HTTP y el respaldo noscript está presente; no se hizo un recorrido con JavaScript desactivado en navegador.
+
+Para Andy: refrescar → ingresar como Usuario → ver Inicio y contacto asignado → Solicitar una visita → elegir salón, Evaluador, día y hora → motivo → Enviar solicitud. Como Evaluador, revisar la solicitud en la bandeja. En Archivo revisar nombres distintos y la mejora de los resultados de demo.
+
+Git: 32A bf2553a subido antes de B; B se entrega como un único commit Paso 32B y push a origin/main verificado. App normal reiniciada en 8080 al terminar. Se espera revisión de Andy.

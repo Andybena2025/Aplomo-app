@@ -172,7 +172,7 @@ public final class Demo {
         if (ajenas > 0) throw new IllegalArgumentException("Hay un código demo en otra empresa. No se cambió nada.")
                 ;
         int anteriores = Sql.uno(con, "SELECT COUNT(*) FROM empresa WHERE " + EMPRESAS, fila -> fila.getInt(1));
-        int plan = Sql.uno(con, "SELECT COUNT(*) FROM bitacora WHERE tabla='empresa' " + "AND detalle='DEMO-28-PLAN'",
+        int plan = Sql.uno(con, "SELECT COUNT(*) FROM bitacora WHERE tabla='empresa' " + "AND detalle='DEMO-32-PLAN'",
                 fila -> fila.getInt(1));
         if (anteriores > 0 && plan == 0) throw new IllegalArgumentException(
                 "La demo conserva cargas anteriores. Ejecuta scripts/reiniciar_demo.sh y confirma el reinicio.");

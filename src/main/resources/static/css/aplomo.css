@@ -2461,7 +2461,7 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
  .marca-cabecera-a svg{display:block;height:96px;width:auto}.marca-cabecera-a *{animation:none!important}}
 @media(min-width:1600px){.deco-herramientas{display:block;position:fixed;pointer-events:none;z-index:0;opacity:.3;
  height:min(520px,52vh);width:auto;max-width:calc((100vw - 1240px)/2 - 48px);
- left:calc(50% + 620px + 24px);top:calc(50% - min(12.26px,1.226vh) + 6vh);transform:translateY(-50%)} }
+ left:calc(50% + 590px + 24px);top:calc(50% - min(12.26px,1.226vh) + 6vh);transform:translateY(-50%)} }
 .alineo main{position:relative;z-index:1}.inicio-gracias{margin:0 0 24px;line-height:1.5}
 .usuario-proxima{margin-bottom:24px}.usuario-proxima h2{margin:0}.cita-check{border:1px solid var(--marca);border-radius:50%;
  width:32px;height:32px;display:grid;place-items:center;color:var(--marca)}
@@ -2479,3 +2479,25 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
 @media(max-width:719px){.tendencia-visitas{grid-template-columns:repeat(2,minmax(0,1fr))}.proxima-acciones{justify-content:flex-start}}
 @media print{.deco-herramientas,.marca-cabecera-a,.usuario-ayuda{display:none!important}}
 @media(min-width:1440px){.cabecera-unica .nav{grid-column:1}}
+/* Paso 32B · Solicitud en tres etapas, sin librerías. */
+.solicitud-guiada{max-width:960px;margin-inline:auto}.solicitud-guiada [hidden]{display:none!important}
+.solicitud-indicador{list-style:none;display:flex;gap:20px;padding:0;margin:0 0 12px;color:var(--muted);font-size:15px}
+.solicitud-indicador [aria-current]{color:var(--marca);font-weight:600}.solicitud-guiada fieldset{border:0;padding:0;margin:0;min-width:0}
+.solicitud-guiada legend{margin-bottom:12px;font-size:15px}.solicitud-guiada h2{margin:0}
+.solicitud-opciones{flex-wrap:wrap}.solicitud-opcion{min-height:44px;padding:10px 16px;border:1px solid var(--persona,var(--line2));
+ border-radius:12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-sizing:border-box}
+.solicitud-opcion:has(input:checked){background:var(--card2);outline:2px solid var(--marca)}
+.solicitud-opcion:has(input:focus-visible){outline:2px solid var(--ivory);outline-offset:4px}
+.solicitud-opcion small{font-size:13px;color:var(--muted)}.solicitud-personas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.solicitud-personas .solicitud-opcion{flex-wrap:wrap;align-content:center;min-height:72px}
+.solicitud-personas .solicitud-opcion span::before{content:'●';color:var(--persona);margin-right:8px}
+.solicitud-personas small{display:block;width:100%;padding-left:24px}.solicitud-calendario{max-width:520px}
+.calendario-dias{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center;margin-top:8px}
+.calendario-dias>span{font-size:13px;color:var(--muted);padding:4px}.dia-solicitud{height:44px;min-width:0;border:1px solid transparent;
+ border-radius:8px;background:transparent;color:var(--ivory);font:15px Inter,sans-serif;cursor:pointer}
+.dia-solicitud:disabled{opacity:.3;cursor:default}.dia-solicitud[aria-current]{border-color:var(--marca)}
+.dia-solicitud[aria-pressed=true],[data-hora][aria-pressed=true]{background:var(--marca);color:var(--bg)}
+.solicitud-guiada [data-horas]{flex-wrap:wrap}.solicitud-guiada [data-horas] .chip,.solicitud-motivos .chip{min-height:44px}
+.solicitud-motivos{flex-wrap:wrap}.solicitud-guiada [data-solicitud-resumen] p{margin:0;overflow-wrap:anywhere}
+@media(max-width:719px){.solicitud-personas{grid-template-columns:1fr}.solicitud-indicador{gap:12px;font-size:13px}
+ .solicitud-guiada{padding:16px!important}.dia-solicitud{font-size:14px}.solicitud-calendario .row{gap:8px}}

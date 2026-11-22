@@ -27,6 +27,7 @@ final class DemoCompleta {
      */
     static Entrada entrada(int caso) {
         double[] grados = caso == 0 || caso == 3 ? new double[]{0, 90, 0, 0, 0} : new double[]{61, 47, 0, 37, 17};
+        if (caso == 7) grados = new double[]{10, 90, 0, 0, 0};
         if (caso == 6) grados[0] = 0;
         var mediciones = new EnumMap<Segmento, Medicion>(Segmento.class);
         for (Segmento segmento : Segmento.values()) {

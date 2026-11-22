@@ -25,7 +25,10 @@ import java.util.List;
  */
 final class ResultadosDemo {
     private static final ZoneId ZONA = ZoneId.of("America/Bogota");
-    private static final int[] CASOS = {3, 1, 2, 3, 4, 6, 3, 1, 5, 3, 4, 3, 2, 1, 3, 6, 3, 4, 5, 3, 1, 2, 3};
+    private static final int[] CASOS = {2, 5, 6, 2, 1, 4, 0, 7};
+    private static final String[] POSTURAS = {"Alcance a la repisa alta", "Digitación en pantalla",
+            "Levantamiento de caja", "Inspección de pieza", "Atención al público", "Empaque en mesa",
+            "Uso del celular", "Pesaje en báscula"};
     private static final int[][] DIAS_OCTUBRE = {{2, 7, 13, 19, 22, 28}, {1, 6, 9, 14, 20, 26}, {5, 8, 15, 21, 23, 29}};
     private static final int[] DESFASES_LIMITE = {-2, 3, 8, 15, 25};
 
@@ -33,7 +36,7 @@ final class ResultadosDemo {
     }
 
     static void preparar(Connection con, Path fotos, int admin, List<Integer> empresas,
-            List<Integer> evaluadores) throws SQLException, IOException {
+                         List<Integer> evaluadores) throws SQLException, IOException {
         int[] responsables = {1, 0, 0, 1, 2, 2, 1};
         int[] turnos = new int[3];
         for (int i = 0; i < empresas.size(); i++) {
@@ -58,14 +61,24 @@ final class ResultadosDemo {
         }
     }
 
-    static int caso(Connection con, int puesto) throws SQLException {
-        int anteriores = Sql.uno(con, "SELECT COUNT(*) FROM visita v JOIN reserva r USING(id_reserva) " +
-                "WHERE v.estado='FINALIZADA' AND (r.codigo LIKE 'D28-%' OR r.codigo LIKE 'V2%')", f -> f.getInt(1));
-        return CASOS[Math.floorMod(anteriores, CASOS.length)];
+    static int caso(Connection con, int puesto, int postura, LocalDate fecha) throws SQLException {
+        int indice = indice(con, puesto);
+        // RF-022: la demo mejora por fecha; casos distintos por puesto y postura, calculados por el motor real.
+        int inicio = fecha.isBefore(LocalDate.of(2026, 11, 8)) ? 0 :
+                fecha.isBefore(LocalDate.of(2026, 11, 17)) ? 4 : 6;
+        int cantidad = inicio == 0 ? 4 : 2;
+        return CASOS[inicio + Math.floorMod(indice + postura, cantidad)];
+    }
+
+    private static int indice(Connection con, int puesto) throws SQLException {
+        return Sql.uno(con, "SELECT COUNT(*) FROM puesto_trabajo p JOIN puesto_trabajo elegido " +
+                        "ON p.id_salon=elegido.id_salon WHERE elegido.id_puesto=? AND " +
+                        "(p.numero<elegido.numero OR p.numero=elegido.numero AND p.id_puesto<elegido.id_puesto)",
+                f -> f.getInt(1), puesto);
     }
 
     static void finalizar(Connection con, Path fotos, int evaluador, int reserva, int salon, LocalDate fecha,
-            LocalTime hora, int duracion) throws SQLException, IOException {
+                          LocalTime hora, int duracion) throws SQLException, IOException {
         CuentaDao cuentas = new CuentaDao();
         var original = cuentas.porId(con, evaluador, false);
         cuentas.contrasena(con, evaluador, original.hash(), false);
@@ -86,14 +99,15 @@ final class ResultadosDemo {
                     f -> f.getInt(1), salon)) {
                 for (int postura = 0; postura < 2; postura++) {
                     servicio.guardar(actor, visita, new Evaluaciones.Datos(puesto,
-                                    postura == 0 ? "Alcance durante la tarea" : "Trabajo habitual",
+                                    POSTURAS[Math.floorMod(indice(con, puesto) * 2 + postura, POSTURAS.length)],
                                     postura == 0 ? "MAS_INADECUADA" : "MAYOR_EXPOSICION", "Observación del turno",
                                     120, false,
                                     false, false, false, false, false,
                                     "Demostración: caso manual simulado; no corresponde a una medición de la foto.",
                                     true,
                                     false), List.of(new Fotos.Entrada(imagen, "PERFIL", "Foto de demostración")),
-                            List.of(new Analisis.Solicitud(0, DemoCompleta.entrada(caso(con, puesto)))));
+                            List.of(new Analisis.Solicitud(0,
+                                    DemoCompleta.entrada(caso(con, puesto, postura, fecha)))));
                 }
             }
             new Visitas(tx, reloj).finalizar(actor, visita, "Revisión de las tareas del turno.");

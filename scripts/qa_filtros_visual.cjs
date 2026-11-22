@@ -88,12 +88,13 @@ test('Próximas excluye reservas a más de 14 días', () => {
   assert.deepEqual(e.filas.map(f=>f.hidden),[false,true]);
 });
 
-test('ningún selector de chip de filtro declara más de 32 px de alto mínimo', () => {
+test('chips de filtro hasta 32 px y opciones de la solicitud hasta 44 px', () => {
   const css=fs.readFileSync('src/main/resources/static/css/aplomo.css','utf8');
   for(const regla of css.matchAll(/([^{}]+)\{([^{}]+)\}/g)) {
     if(!/(?:^|[^\w-])\.chip(?![\w-])/.test(regla[1])) continue;
     for(const altura of regla[2].matchAll(/min-height\s*:\s*(\d+)px/g))
-      assert.ok(+altura[1]<=32,regla[1]);
+      // RF-011: en la solicitud son acciones táctiles, no filtros de tabla.
+      assert.ok(+altura[1] <= (/\.solicitud-(?:guiada|motivos)/.test(regla[1]) ? 44 : 32), regla[1]);
   }
 });
 

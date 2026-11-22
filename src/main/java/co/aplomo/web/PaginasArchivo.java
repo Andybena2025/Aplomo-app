@@ -207,7 +207,7 @@ public final class PaginasArchivo {
                             .append(Html.escapar(TextoLista.puesto(f))).append("\">")
                             .append(Html.escapar(TextoLista.puesto(f))).append("</strong><small>Puesto ")
                             .append(Html.escapar(f.valor("numero"))).append(" · ")
-                            .append(Html.plural(puesto.size(), "evaluación"))
+                            .append(Html.escapar(f.valor("puesto_descripcion")))
                             .append("</small></a></td><td data-label=\"Último resultado\">").append(resultado(f))
                             .append("</td><td data-label=\"Última evaluación\">Última ")
                             .append(TextoLista.fecha(f.valor("fecha"))).append("</td>");

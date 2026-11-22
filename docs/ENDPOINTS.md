@@ -287,6 +287,7 @@ GET `/reservas/horas-libres`: recibe `fecha` y `omitir` según la tabla del Paso
 | POST `/avisos/{id}/entendido` | Destinatario, CSRF. Acuse explícito, sin borrar. |
 | POST `/avisos/{id}/responder` | U destinatario de PEDIR_INFORMACION; CSRF, texto de 500, una respuesta por mensaje. |
 | GET/POST `/solicitar-visita` | U vigente. Sede/salón de su empresa, ingeniero activo, fecha/horas y motivo opcional. Cruce validado otra vez en el POST. |
+| GET `/solicitar-visita/horas?ingeniero=&fecha=&duracion=&salon=` | Solo U vigente con lugares propios activos; salón opcional validado si se envía. Evaluador activo, duración 1–3 h y día no pasado. JSON de inicios libres cada 30 minutos entre 08:00 y 18:00; no-store; el POST vuelve a verificar cruces. |
 | GET `/solicitudes-visita/{id}` | E responsable de esa petición, acceso mínimo al contacto antes de asignación. |
 | POST `/solicitudes-visita/{id}/aceptar` | E responsable, CSRF. EN_COLA y asignación de empresa en una transacción. |
 | POST `/solicitudes-visita/{id}/llamada` | E responsable, CSRF. Avisa al contacto sin cambiar el estado. |
@@ -358,3 +359,5 @@ U ignora cualquier para y usa principal. E solo envía a A activo; A solo envía
 Guarda AVISO, id_reserva NULL y bitácora. Formulario normal: 303 a bandeja con confirmación escapada.
 Panel: 200 con bandeja y confirmación; 400 conserva selector y texto. GET nunca envía ni acusa mensajes.
 `POST /avisos/{id}/responder` añade A destinatario de AVISO general de E, conservando las reglas del Paso 30C.
+
+Paso 32: Usuario puede elegir en `/avisos/nuevo?para=ID` a un Evaluador activo asignado a sus empresas o a la Administradora principal; cualquier destino ajeno devuelve 403. Las respuestas generales conservan la pareja y revalidan la asignación.

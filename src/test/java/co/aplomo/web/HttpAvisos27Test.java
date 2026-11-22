@@ -59,7 +59,7 @@ class HttpAvisos27Test extends HttpPrueba {
     }
 
     @Test
-    void solicitarConCruceConservaCamposYDaLasDosAlternativas() throws Exception {
+    void solicitarConCruceConservaCamposYVuelveAlCalendario() throws Exception {
         Sql.actualizar(con, "UPDATE cuenta SET contrasena_temporal=FALSE WHERE id_cuenta=?", usuario);
         int salon = crearSalon().id();
         int ev = evaluadorTrabajo().id();
@@ -72,8 +72,9 @@ class HttpAvisos27Test extends HttpPrueba {
                 "inicio", "09:00", "fin", "10:00", "motivo", "Quiero revisar la mesa");
         var respuesta = post("/solicitar-visita", datos);
         assertEquals(400, respuesta.statusCode());
-        assertTrue(respuesta.body().contains("Elegir otra hora"));
-        assertTrue(respuesta.body().contains("Elegir otro ingeniero"));
+        assertTrue(respuesta.body().contains("data-paso=\"2\""));
+        assertTrue(respuesta.body().contains("data-horas"));
+        assertTrue(respuesta.body().contains("Cuándo y con quién"));
         assertTrue(respuesta.body().contains("Quiero revisar la mesa"));
         assertEquals(403, post("/solicitar-visita", Map.of("salon", "" + salon)).statusCode());
     }

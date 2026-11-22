@@ -90,7 +90,7 @@ public final class SolicitudesVisita {
      * RF-011: cruces por ingeniero de la cita; bloqueo de la cuenta serializa solicitudes simultáneas.
      */
     public int solicitar(Cuenta actor, int salon, int ingeniero, LocalDate fecha, LocalTime inicio, LocalTime fin,
-            String motivo) throws SQLException {
+                         String motivo) throws SQLException {
         return tx.ejecutar(con -> {
             Cuenta actual = usuario(con, actor);
             Lugar lugar = lugares(actual).stream().filter(l -> l.id() == salon).findFirst()
@@ -129,7 +129,7 @@ public final class SolicitudesVisita {
      * RF-011: alternativas sin ocupar la agenda ni guardar una solicitud rechazada por cruce.
      */
     public boolean libre(Cuenta actor, int ingeniero, LocalDate fecha, LocalTime inicio,
-            LocalTime fin) throws SQLException {
+                         LocalTime fin) throws SQLException {
         return tx.ejecutar(con -> {
             usuario(con, actor);
             return Sql.uno(con, "SELECT COUNT(*) FROM reserva WHERE id_evaluador=? AND fecha=? " +
@@ -137,6 +137,33 @@ public final class SolicitudesVisita {
                     fecha, fin,
                     inicio) == 0;
         });
+    }
+
+    /**
+     * RF-011/002: horarios de un Evaluador activo; solo Usuario con lugares propios disponibles.
+     */
+    public List<LocalTime> horas(Cuenta actor, int ingeniero, LocalDate fecha, int duracion, Integer salon)
+            throws SQLException {
+        var lugares = lugares(actor);
+        if (lugares.isEmpty() || salon != null && lugares.stream().noneMatch(l -> l.id() == salon))
+            throw new SecurityException("Acceso denegado.");
+        if (ingenieros(actor, lugares.get(0).empresa()).stream().noneMatch(i -> i.id() == ingeniero))
+            throw new SecurityException("Acceso denegado.");
+        if (fecha == null || fecha.isBefore(hoy()) || duracion < 1 || duracion > 3)
+            throw new IllegalArgumentException("Revisa el día y la duración.");
+        var horas = new java.util.ArrayList<LocalTime>();
+        for (LocalTime inicio = LocalTime.of(8, 0); !inicio.plusHours(duracion).isAfter(LocalTime.of(18, 0));
+             inicio = inicio.plusMinutes(30)) {
+            if (libre(actor, ingeniero, fecha, inicio, inicio.plusHours(duracion))) horas.add(inicio);
+        }
+        return List.copyOf(horas);
+    }
+
+    /**
+     * RF-011: fecha local del mismo reloj que valida la solicitud.
+     */
+    public LocalDate hoy() {
+        return LocalDate.now(reloj.withZone(java.time.ZoneId.of("America/Bogota")));
     }
 
     /**

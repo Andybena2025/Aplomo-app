@@ -423,3 +423,20 @@ Luego ESPERA el OK de Andy.
   Ayuda cerrada conserva estado al recargar. Sin capturas ni descargas; tacto/otros navegadores pendientes.
 - 1141 casos Maven distintos verificados y 168 JS; suite A una vez, fallos corregidos con cierre dirigido.
   Informe docs/informe_paso32.md. QA visual en pruebas revertida; demo real reservada para B.
+
+### Paso 32B · solicitud guiada y demo variada
+- Después de subir 32A bf2553a: puntos 3/6 implementados, sin nuevo OK intermedio por autorización del encargo.
+- Solicitud en tres etapas; Evaluadores con color, calendario propio L–D, duración 2 h inicial, horas de media
+  hora entre 08–18 según duración y libre; POST y validación solicitar originales. Cruce abre etapa 2, conserva
+  datos y recarga horas; respaldo noscript. Endpoint nuevo horas solo U con lugares propios, rol/salón/fecha validados.
+- Demo por fecha/índice de puesto/postura, ocho títulos sin repetición en mismo puesto; puntajes siempre del motor.
+  Subtítulos de Archivo e Inicio U: Puesto N · descripción. Marca DEMO-32-PLAN; reinicio existente conserva por NIT.
+- Andy pidió ejecutar la recarga en el encargo: hecha en rula_ergonomia con transacción/administrador MySQL.
+  13 cuentas y 13 vínculos iguales; una empresa ajena intacta; 0 filas duplicadas; 8 posturas; 6 empresas mejoran.
+  Sin extraer hashes/claves; 184 archivos viejos conservados. No se cambió la configuración ni se borraron cuentas.
+- Solicitud completa en navegador QA y confirmación; cuatro ventanas 1366/1180/820/390 sin desborde; cero errores
+  de consola; días de 48 px, 2 h iniciales. QA en pruebas revertida antes de suite; sin capturas ni descargas.
+- 1144 Maven / 171 JS verificados; una suite completa por commit y cierres dirigidos para fallos de expectativas.
+  Informe docs/informe_paso32.md. Motor/cálculo/IA/tablas RULA/esquema intactos. Hardware/tacto/Windows/otros
+  navegadores y recorrido con JS apagado en navegador no certificados. App normal en 8080 al entregar.
+- Commit/push único 32B al repo verificado, esperar revisión de Andy; no iniciar otro paso.

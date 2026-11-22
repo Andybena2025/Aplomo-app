@@ -53,15 +53,16 @@ class DemoPlan28Test extends BasePrueba {
         long amarillos = distribucion.stream().filter(p -> p >= 3 && p <= 4).count();
         long rojos = distribucion.stream().filter(p -> p >= 5).count();
         assertEquals(23, distribucion.size());
-        assertEquals(9, verdes);
-        assertEquals(7, amarillos);
-        assertEquals(7, rojos);
-        assertTrue(distribucion.containsAll(List.of(2, 3, 4, 5, 6, 7)));
+        // Paso 32: distribución por puesto/postura y progreso por fecha; ya no una mezcla fija por visita.
+        assertTrue(verdes > 0, distribucion.toString());
+        assertTrue(amarillos > 0, distribucion.toString());
+        assertTrue(rojos > 0, distribucion.toString());
+        assertTrue(distribucion.containsAll(List.of(1, 4, 7)));
         assertEquals(5,
                 contar("SELECT COUNT(DISTINCT fecha_limite) FROM pendiente_arreglo " + "WHERE estado='ABIERTO'"));
         assertEquals(0, contar("SELECT COUNT(*) FROM (SELECT fecha FROM reserva WHERE fecha='2026-11-30' " +
                 "AND codigo LIKE 'D28-%' GROUP BY fecha HAVING COUNT(DISTINCT id_evaluador)>1) q"));
-        System.out.println("DEMO29: 23 visitas; 9 Verde, 7 Amarillo, 7 Rojo; puntajes 2–7; " +
+        System.out.println("DEMO32: 23 visitas; colores variados y tendencia; " +
                 "5 pendientes abiertos con fechas diferentes; 24 citas mensuales.");
     }
 
