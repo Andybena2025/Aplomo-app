@@ -96,3 +96,18 @@ test('ningún selector de chip de filtro declara más de 32 px de alto mínimo',
       assert.ok(+altura[1]<=32,regla[1]);
   }
 });
+
+test('la cita destacada cuenta en los chips pero no se repite entre las filas', () => {
+  const e=entorno('RESERVAS',[{estado:'EN_COLA',fecha:'2026-11-27',destacada:'true'},
+    {estado:'EN_COLA',fecha:'2026-11-28'}]);
+  assert.deepEqual(e.filas.map(f=>f.hidden),[true,false]);
+  assert.equal(e.contador.textContent,'2 resultados');
+  assert.equal(e.chips[0].textContent,'PROXIMAS · 2');
+});
+
+test('permite buscar el nombre corto visible y también el nombre completo', () => {
+  const e=entorno('USUARIOS',[{estado:'ACTIVA',busqueda:'Ing. Laura Gabriella Romero',texto:'Laura Romero'}]);
+  for(const nombre of ['Laura Romero','Laura Gabriella Romero']) {
+    e.buscar.value=nombre;e.buscar.eventos.input();assert.equal(e.filas[0].hidden,false);
+  }
+});

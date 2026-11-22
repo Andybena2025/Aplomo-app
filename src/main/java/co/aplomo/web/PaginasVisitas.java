@@ -67,9 +67,9 @@ public final class PaginasVisitas {
                 .append(claseEstado(ficha.visita().estado())).append("\">").append(estado(ficha.visita().estado()))
                 .append("</span></div><p class=\"muted\">").append(escapar(ficha.sedeNombre())).append(" · ")
                 .append(escapar(ficha.salonNombre())).append("</p><dl class=\"datos-cuenta\">")
-                .append(dato("Inicio real", fecha(ficha.visita().inicio())))
-                .append(ficha.visita().fin() == null ? "" : dato("Fin real", fecha(ficha.visita().fin())))
-                .append(dato("Calificación", calificacion(ficha)))
+                .append(dato("Horario real", Html.fecha(ficha.visita().inicio().toLocalDate()) + " · " +
+                        TextoLista.hora(ficha.visita().inicio().toString()) +
+                        (ficha.visita().fin() == null ? "" : " a " + TextoLista.hora(ficha.visita().fin().toString()))))
                 .append(ficha.visita().notas() == null || ficha.visita().notas().isBlank() ? "" : dato("Notas",
                         ficha.visita().notas())).append("</dl>")
                 .append(enlace("/reservas/" + ficha.visita().reserva(), "Ver reserva", false)).append("</section>")
@@ -87,21 +87,31 @@ public final class PaginasVisitas {
         if (evaluaciones.isEmpty())
             html.append("<p class=\"muted\">Todavía no hay evaluaciones registradas en esta visita.</p>");
         else if (!enCursoAdmin) {
-            html.append("<div class=\"tablewrap\"><table class=\"resp\"><thead><tr><th>Puesto</th><th" +
-                    ">Fecha</th><th>Postura</th><th>Puntaje</th></tr></thead><tbody>");
-            for (Evaluacion evaluacion : evaluaciones) {
-                html.append("<tr><td data-label=\"Puesto\"><div class=\"cell-value\"><strong>")
+            html.append("<div class=\"table-scroll\"><table class=\"resp alineo-table visita-evaluaciones\">" +
+                    "<thead><tr><th>Puesto</th><th>Fecha</th><th>Resultado</th>" +
+                    (admin(sesion) ? "<th>Acciones</th>" : "") + "</tr></thead><tbody>");
+            var grupos = evaluaciones.stream().collect(
+                    java.util.stream.Collectors.groupingBy(Evaluacion::puesto, java.util.LinkedHashMap::new,
+                            java.util.stream.Collectors.toList()));
+            for (var grupo : grupos.values()) {
+                Evaluacion evaluacion = grupo.stream()
+                        .max(java.util.Comparator.comparingInt(e -> e.puntaje() == null ? -1 : e.puntaje()))
+                        .orElseThrow();
+                html.append("<tr data-puesto-visita=\"").append(evaluacion.puesto())
+                        .append("\"><td data-label=\"Puesto\"><div class=\"fila-enlace\"><strong title=\"")
+                        .append(escapar(TextoLista.puesto(evaluacion.cargo(), evaluacion.descripcion()))).append("\">")
                         .append(escapar(TextoLista.puesto(evaluacion.cargo(), evaluacion.descripcion())))
-                        .append("</strong><small>Puesto ").append(evaluacion.numero()).append("</small>")
-                        .append("</div></td><td data-label=\"Fecha\"><div class=\"cell-value\">")
-                        .append(Html.fecha(evaluacion.fecha()))
-                        .append("</div></td><td data-label=\"Postura\"><div class=\"cell-value\">")
-                        .append(escapar(evaluacion.postura())).append(admin(sesion) ?
-                                "<br>" + enlace("/evaluaciones/" + evaluacion.id(), "Ver evaluación", false) : "")
-                        .append("</div></td><td data-label=\"Puntaje\"><div class=\"cell-value\">")
+                        .append("</strong><small>Puesto ").append(evaluacion.numero()).append(" · ")
+                        .append(Html.plural(grupo.size(), "postura")).append("</small></div></td>")
+                        .append("<td data-label=\"Fecha\">").append(Html.fecha(evaluacion.fecha())).append("</td>")
+                        .append("<td data-label=\"Resultado\">")
                         .append(evaluacion.puntaje() == null ? "Sin puntaje disponible" : Html.riesgo(
-                                evaluacion.puntaje(), evaluacion.color(), evaluacion.nivel()))
-                        .append("</div></td></tr>");
+                                evaluacion.puntaje(), evaluacion.color(), evaluacion.nivel())).append("</td>");
+                if (admin(sesion))
+                    html.append("<td data-label=\"Acciones\"><a class=\"btn sm\" href=\"/evaluaciones?visita=")
+                            .append(ficha.visita().id()).append("&amp;puesto=").append(evaluacion.puesto())
+                            .append("\">Ver evaluación</a></td>");
+                html.append("</tr>");
             }
             html.append("</tbody></table></div>");
         }
@@ -116,8 +126,9 @@ public final class PaginasVisitas {
     private static String puestos(Ficha ficha, List<co.aplomo.modelo.Puesto> puestos, List<Evaluacion> evaluaciones) {
         Map<Integer, Evaluacion> ultima = new HashMap<>();
         for (Evaluacion evaluacion2 : evaluaciones)
-            ultima.merge(evaluacion2.puesto(), evaluacion2,
-                    (evaluacion3, evaluacion4) -> evaluacion3.id() > evaluacion4.id() ? evaluacion3 : evaluacion4);
+            ultima.merge(evaluacion2.puesto(), evaluacion2, (evaluacion3, evaluacion4) ->
+                    (evaluacion3.puntaje() == null ? -1 : evaluacion3.puntaje()) >=
+                            (evaluacion4.puntaje() == null ? -1 : evaluacion4.puntaje()) ? evaluacion3 : evaluacion4);
         StringBuilder contenido = new StringBuilder(
                 "<div class=\"tour-puestos\" aria-label=\"Puestos de esta visita\">");
         for (var elemento : puestos) {

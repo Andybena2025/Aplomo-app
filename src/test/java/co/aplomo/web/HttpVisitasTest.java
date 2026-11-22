@@ -68,8 +68,10 @@ class HttpVisitasTest extends co.aplomo.soporte.HttpPrueba {
         assertEquals(303, fin.statusCode(), fin.body());
         var detalle = get("/visitas/" + visita);
         assertTrue(detalle.body().contains("&lt;script&gt;alert(1)&lt;/script&gt;"));
-        assertTrue(detalle.body().contains("Postura &lt;b&gt;de prueba&lt;/b&gt;"));
-        assertTrue(detalle.body().contains("4.0"));
+        assertTrue(get("/evaluaciones?visita=" + visita).body().contains("Postura &lt;b&gt;de prueba&lt;/b&gt;"));
+        assertEquals("4.0",
+                new Visitas(tx, reloj).consultar(cuenta(admin), visita).visita().calificacion().toPlainString());
+        assertFalse(detalle.body().contains("<dt>Calificación</dt>"));
         assertFalse(detalle.body().contains(">Finalizar visita</a>"));
         assertTrue(get("/reservas/" + reserva).body().contains("Finalizada"));
         assertEquals(400, post("/visitas/" + visita + "/finalizar",

@@ -24,7 +24,13 @@ public final class Sesiones {
     /**
      * Datos exclusivamente del servidor; cuenta null representa el formulario de ingreso. RNF-011.
      */
-    public record Sesion(String id, String csrf, Cuenta cuenta, Instant ultimoAcceso) {
+    public record Sesion(String id, String csrf, Cuenta cuenta, Instant ultimoAcceso, String etiquetaEmpresa) {
+        /**
+         * RF-002: conserva la sesión original; la etiqueta opcional es solo contexto de presentación.
+         */
+        public Sesion(String id, String csrf, Cuenta cuenta, Instant ultimoAcceso) {
+            this(id, csrf, cuenta, ultimoAcceso, null);
+        }
     }
 
     /**

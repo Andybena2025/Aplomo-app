@@ -36,8 +36,9 @@ final class TablasTrabajo {
                         titulo, contexto != null && sesion.cuenta().rol() != Rol.USUARIO ?
                                 "<a class=\"btn p\" href=\"/sugerencias/nueva?evaluacion=" + contexto.evaluacion() +
                                 "\">Escribir sugerencia</a>" : accion(sesion, seccion)));
-        if (seccion == SeccionConsulta.PENDIENTES) html.append("<p class=\"muted\">Aquí encontrarás los resultados " +
-                "de evaluación de alto riesgo que necesitan mejoras.</p>");
+        if (seccion == SeccionConsulta.PENDIENTES) html.append(
+                "<p class=\"muted pendientes-intro\">Aquí encontrarás los resultados " +
+                        "de evaluación de alto riesgo que necesitan mejoras.</p>");
         if (contexto != null) html.append(PaginasConsultas.contexto(contexto, pagina.contextoEvaluacion(),
                 sesion.cuenta().rol() == Rol.ADMINISTRADOR));
         html.append("<section class=\"trabajo-lista" + (contexto != null ? " sugerencias-contexto" : "") +
@@ -54,21 +55,36 @@ final class TablasTrabajo {
                             "<h2>Necesitan tu respuesta · <span data-respuestas-contador></span></h2>")
                     .append(tabla(sesion, seccion, visibles,
                             filas.stream().filter(f -> f.valor("estado").equals("ESPERANDO")).toList()))
-                    .append("</section><h2>Próximas</h2>");
+                    .append("</section><h2 class=\"proximas-titulo\">Próximas</h2>");
+            int destacada = evaluador ? filas.stream()
+                                        .filter(f -> List.of("EN_COLA", "EN_CURSO").contains(f.valor("estado")) &&
+                                                     f.valor("fecha").compareTo(Html.hoy().toString()) >= 0)
+                                        .mapToInt(Fila::id).findFirst().orElse(0) : 0;
             var grupos = filas.stream().filter(f -> !evaluador || !f.valor("estado").equals("ESPERANDO")).collect(
                     Collectors.groupingBy(f -> f.valor("fecha").substring(0, 10), LinkedHashMap::new,
                             Collectors.toList()));
+            html.append("<div class=\"table-scroll\"><table class=\"resp alineo-table consultas-table\">")
+                    .append(FilasTrabajo.cabecera(seccion, sesion.cuenta().rol()));
             for (var grupo : grupos.entrySet()) {
                 String dia = LocalDate.parse(grupo.getKey()).format(DateTimeFormatter.ofPattern("EEEE dd/MM/yyyy",
                         java.util.Locale.forLanguageTag("es-CO"))).toUpperCase(java.util.Locale.ROOT);
-                html.append("<section data-lista-grupo><h2 class=\"lista-grupo\">").append(dia).append("</h2>")
-                        .append(tabla(sesion, seccion, visibles, grupo.getValue())).append("</section>");
+                html.append("<tbody data-lista-grupo><tr class=\"dia-reserva\"><td colspan=\"5\"><h2 " +
+                        "class=\"lista-grupo\">").append(dia).append("</h2></td></tr>");
+                for (Fila fila : grupo.getValue()) {
+                    String registro = FilasTrabajo.fila(sesion, fila, seccion,
+                            visibles.contains(fila.id()) && fila.id() != destacada);
+                    if (fila.id() == destacada) registro = registro.replace("<tr ", "<tr data-destacada=\"true\" ");
+                    html.append(registro);
+                }
+                html.append("</tbody>");
             }
+            html.append("</table></div>");
             if (evaluador) html.append("<details class=\"historial-reservas\"><summary>Ver historial</summary>" +
                     "<div class=\"chips\"><button class=\"chip\" type=\"button\" data-abrir-historial=\"PASADAS\">" +
                     "Pasadas</button><button class=\"chip\" type=\"button\" " +
                     "data-abrir-historial=\"CANCELADA\">Canceladas</button></div></details>");
-        } else html.append(tabla(sesion, seccion, visibles, filas));
+        } else html.append(tabla(sesion, seccion, visibles, filas,
+                seccion == SeccionConsulta.EVALUACIONES && pagina.filtros().containsKey("visita")));
         html.append("<p class=\"vacio-lista\" data-lista-vacia hidden>No hay resultados con estos filtros.</p>");
         if (lateral) html.append("</div>").append(PanelAgenda.mostrar(sesion, filas)).append("</div>");
         html.append(ListasCortas.boton()).append("</section>");
@@ -80,14 +96,20 @@ final class TablasTrabajo {
 
     private static String tabla(Sesion sesion, SeccionConsulta seccion, java.util.Set<Integer> visibles,
             List<Fila> filas) {
+        return tabla(sesion, seccion, visibles, filas, false);
+    }
+
+    private static String tabla(Sesion sesion, SeccionConsulta seccion, java.util.Set<Integer> visibles,
+            List<Fila> filas, boolean posturas) {
         StringBuilder html = new StringBuilder(
                 "<div class=\"table-scroll\"><table class=\"resp alineo-table consultas-table\">").append(
                 FilasTrabajo.cabecera(seccion, sesion.cuenta().rol())).append("<tbody>");
         for (Fila fila : filas) {
             if (seccion == SeccionConsulta.VISITAS && !fila.valor("estado").equals("FINALIZADA")) continue;
-            html.append(FilasTrabajo.fila(sesion, fila, seccion, visibles.contains(fila.id())));
+            html.append(FilasTrabajo.fila(sesion, fila, seccion, visibles.contains(fila.id()), posturas));
         }
-        return html.append("</tbody></table></div>").toString();
+        return html.append("</tbody></table></div>").toString().replace("<th scope=\"col\">Puesto</th>",
+                "<th scope=\"col\">" + (posturas ? "Postura" : "Puesto") + "</th>");
     }
 
     private static String herramientas(Sesion sesion, Pagina pagina, List<Fila> filas, boolean contexto) {
@@ -104,7 +126,8 @@ final class TablasTrabajo {
                 .append(contexto ? "?evaluacion=" + pagina.filtros().getOrDefault("evaluacion", "") : "")
                 .append("\">Limpiar filtros</a></div><div class=\"fila-chips\">").append(chips(pagina.seccion()));
         if (sesion.cuenta().rol() == Rol.ADMINISTRADOR) html.append(leyenda(filas));
-        return html.append("</div><p class=\"hint\" data-lista-contador role=\"status\">")
+        return html.append("</div><p class=\"hint\" data-lista-contador role=\"status\"" +
+                        (pagina.seccion() == SeccionConsulta.VISITAS ? " hidden" : "") + ">")
                 .append(Html.plural(pagina.filas().size(), pagina.seccion().singular())).append("</p>").toString();
     }
 
@@ -190,8 +213,8 @@ final class TablasTrabajo {
 
     private static String enCurso(Sesion sesion, List<Fila> filas) {
         var abiertas = filas.stream().filter(f -> f.valor("estado").equals("EN_CURSO")).toList();
-        StringBuilder html = new StringBuilder(
-                "<section class=\"visitas-destacadas\" id=\"en-curso\"><h2>En curso</h2>");
+        StringBuilder html = new StringBuilder("<section class=\"visitas-destacadas\" id=\"en-curso\">" +
+                (abiertas.isEmpty() ? "" : "<h2>En curso</h2>"));
         int indice = 0;
         for (Fila f : abiertas) {
             int total = Integer.parseInt(f.valor("puestos_total"));

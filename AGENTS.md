@@ -280,3 +280,31 @@ Luego ESPERA el OK de Andy.
   bash scripts/reiniciar_demo.sh, root sin contraseña, manteniendo la confirmación del script. Hasta entonces,
   no reiniciar demo real ni dar los conteos de pruebas como reales. Tras confirmar: recuentos SQL solicitados,
   reiniciar app normal y entregar cifras en el chat. No hace falta otro commit para datos de la base real.
+
+
+### Paso 29 · reinicio real confirmado y terminado (actualiza la nota pendiente anterior)
+- Andy escribió exactamente REINICIAR DEMO. Se ejecutó el script en rula_ergonomia, root sin contraseña,
+  conservando su confirmación interactiva; app reiniciada y login 200. Mismas 13 cuentas y vínculos activos
+  por NIT (9 cuentas activas). No se extrajeron contraseñas ni hashes: revisión automática rechazó guardar
+  derivados y se compararon solo cuentas/vínculos. No hace falta repetir esa comprobación ni el reinicio.
+- Datos reales después: 25 visitas totales, 23 Finalizadas, 13 en noviembre; 8 reservas de noviembre por cada E;
+  máximos 9 Verde/7 Amarillo/7 Rojo. Cinco pendientes demo con plazos variados y uno de práctica conservado.
+  Compañeros inactivos y sus vínculos se conservan. No reiniciar demo en el Paso 30.
+
+### Paso 30A · cierre; 30B autorizado después del push de A
+- Encargo de Andy en adjunto 70ad85c6-66a1-4119-b32f-eae8c972e766/Pasted text.txt: dos commits/push,
+  «Paso 30A» partes 1–4 y «Paso 30B» partes 5–6. No pedir otro OK entre A/B: ambos están autorizados.
+- Header único con título, etiqueta y menú; Atrás encima, herramientas a la derecha y marca de franja <1440.
+  Enfoque intacto. Aviso en línea de 40 px. Empresa única U se obtiene de Empresas.listar autorizado por
+  petición y viaja como campo opcional de presentación en Sesion; tokens y caducidad originales conservados.
+- Rieles 520/520 px a 1920×1080, 0 % de diferencia. Archivo sin overlay en tablas: clic real abre su id,
+  filtro de una fila conserva la lista. Cuenta usa dos iniciales; nombres cortos con completo en title.
+- Visita finalizada: una fila por puesto con peor resultado, número y posturas; enlace a lista de posturas
+  del puesto/visita para A/E; U sin botón/fotos. Promedio real del servicio sigue intacto aunque ya no se muestre.
+- Mis reservas: una cabecera por sección; próxima cita contada pero no repetida. Inicio E vacío compacto;
+  Inicio U sin tarjeta redundante ni sede repetida. Escala del 29 y permisos existentes conservados.
+- 90 combinaciones DOM iniciales de A/E/U a 1920/1180/1024/820/390×1080; cortes corregidos con medidas
+  posteriores, 0 px de desbordamiento exterior/tablas, un header y menú de una fila. Cero errores de consola.
+  QA en pruebas revertida; no capturas/descargas. Hardware físico y navegadores externos no comprobados.
+- 1109/1109 Maven en suite única; 144 JS distintos verificados (143 completos + caso de búsqueda, 12/12 dirigidos). Ver docs/informe_paso30.md. Motor/cálculo/IA/imágenes/demo/esquema sin cambios.
+  Después de subir A, continuar B; al finalizar B, reiniciar app normal sin reiniciar demo.

@@ -102,7 +102,7 @@ public final class CuentaWeb {
     private String pagina(Sesion sesion, String mensaje) throws SQLException {
         Cuenta cuenta = sesion.cuenta();
         List<String> empresas = perfil.empresas(cuenta);
-        String inicial = cuenta.nombre().isBlank() ? "" : cuenta.nombre().substring(0, 1);
+        String inicial = Html.iniciales(cuenta.nombre());
         StringBuilder html = new StringBuilder(Html.aviso(mensaje, "Datos guardados.".equals(mensaje)));
         html.append("<div class=\"cuenta-ajustes\"><section class=\"card cuenta-perfil\"><span class=\"iniciales\">")
                 .append(Html.escapar(inicial)).append("</span><div><h2>").append(Html.escapar(cuenta.nombre()))

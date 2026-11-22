@@ -53,14 +53,16 @@
           (estadoEmpresa.value === 'INACTIVAS' ? fila.dataset.empresaActiva === 'false' : fila.dataset.empresaActiva !== 'false'))
         && selectores.every(c => !c.value || (c.value === '__SIN__' ? !fila.dataset[c.dataset.filtroLocal]
           : (fila.dataset[c.dataset.filtroLocal] || '') === c.value))
-        && normalizar(fila.dataset.busqueda || fila.textContent).includes(texto);
-      let visibles = 0;
+        && normalizar((fila.dataset.busqueda || '') + ' ' + fila.textContent).includes(texto);
+      let visibles = 0, total = 0;
       filas.forEach(fila => {
         const responder = lista.dataset.seccion === 'RESERVAS' &&
           fila.closest?.('.respuestas-reservas') && filtro === 'PROXIMAS' && fila.dataset.estado === 'ESPERANDO';
         const cumple = coincideTexto(fila) && (coincide(fila, filtro) || responder);
-        fila.hidden = !cumple || visibles >= limite;
-        if (cumple) visibles++;
+        if (cumple) total++;
+        const destacada = fila.dataset.destacada === 'true';
+        fila.hidden = destacada || !cumple || visibles >= limite;
+        if (cumple && !destacada) visibles++;
       });
       chips.forEach(chip => {
         chip.setAttribute('aria-pressed', String(chip.dataset.listaFiltro === filtro));
@@ -81,7 +83,7 @@
       if (contador) {
         const unidad = lista.dataset.unidad || 'resultado';
         const plural = unidad.endsWith('ón') ? unidad.replace(/ón$/, 'ones') : unidad + 's';
-        contador.textContent = `${visibles} ${visibles === 1 ? unidad : plural}`;
+        contador.textContent = `${total} ${total === 1 ? unidad : plural}`;
       }
       if (mas) { mas.hidden = visibles <= limite; mas.textContent = `Ver 10 más · quedan ${Math.max(0,visibles-limite)}`; }
       const tituloVisitas = lista.querySelector('[data-visitas-titulo]');

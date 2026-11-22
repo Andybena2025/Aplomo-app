@@ -203,7 +203,8 @@ public final class PaginasConsultas {
         if (key.equals("desde") || key.equals("hasta"))
             return Formularios.campo(parametros2, key, titulo, "date", 10, false);
         List<Formularios.Opcion> opciones = new ArrayList<>();
-        opciones.add(new Formularios.Opcion(Set.of("estado", "registros").contains(key) ? "TODOS" : "", "Todos"));
+        opciones.add(new Formularios.Opcion(Set.of("estado", "registros").contains(key) ? "TODOS" : "",
+                Set.of("empresa", "sede").contains(key) ? "Todas" : "Todos"));
         if (elemento.catalogos().containsKey(key)) for (var elemento2 : elemento.catalogos().get(key)) {
             if (!key.equals("empresa") && !key.equals("evaluador") &&
                     !parametros2.getOrDefault("empresa", "").isEmpty() &&

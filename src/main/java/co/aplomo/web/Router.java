@@ -27,6 +27,7 @@ public final class Router implements HttpHandler {
     private final Sesiones sesiones;
     private final UsuariosWeb usuarios;
     private final EmpresasWeb empresas;
+    private final co.aplomo.servicio.Empresas empresasCabecera;
     private final ReservasWeb reservas;
     private final AvisosWeb avisos;
     private final SolicitudesAccesoWeb solicitudesAcceso;
@@ -109,6 +110,7 @@ public final class Router implements HttpHandler {
         this.sesiones = sesiones;
         this.usuarios = new UsuariosWeb(usuarios, sesiones);
         this.empresas = new EmpresasWeb(empresas);
+        this.empresasCabecera = empresas;
         this.reservas = new ReservasWeb(reservas, empresas);
         this.visitas = new VisitasWeb(visitas, reservas);
         this.evaluaciones = new EvaluacionesWeb(evaluaciones);
@@ -177,6 +179,13 @@ public final class Router implements HttpHandler {
                 sesiones.cerrar(id);
                 sesion = null;
             }
+        }
+        if (metodo.equals("GET") && sesion != null && sesion.cuenta() != null &&
+                sesion.cuenta().rol() == Cuenta.Rol.USUARIO && !sesion.cuenta().temporal()) {
+            var empresasVisibles = empresasCabecera.listar(sesion.cuenta());
+            if (empresasVisibles.size() == 1)
+                sesion = new Sesion(sesion.id(), sesion.csrf(), sesion.cuenta(), sesion.ultimoAcceso(),
+                        empresasVisibles.get(0).nombre());
         }
         if (solicitudesAcceso.publica(intercambio, sesion)) return;
         if (ruta.equals("/login")) {

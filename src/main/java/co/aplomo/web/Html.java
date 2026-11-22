@@ -235,12 +235,19 @@ public final class Html {
                                                                                      .toLowerCase(Locale.ROOT);
         boolean enfoque = java.util.regex.Pattern.compile("<form\\b[^>]*\\bdata-(?:conversacion|evaluacion)(?:[=>\\s])")
                 .matcher(contenido).find();
-        String cabecera = enfoque ? cabeceraEnfoque(contenido) : cabecera(sesion2, atras);
+        String pagehead = conPagehead ? encabezado(seccion(titulo), titulo, "") : "";
+        boolean unificada = !enfoque && sesion2 != null && sesion2.cuenta() != null;
+        CabeceraPagina.Datos datos = unificada ? CabeceraPagina.extraer(titulo,
+                pagehead + contenido) : new CabeceraPagina.Datos(contenido, "", escapar(titulo), "", "");
+        String cabecera = enfoque ? cabeceraEnfoque(contenido) : cabecera(sesion2, atras, datos);
+        if (unificada) {
+            contenido = datos.cuerpo();
+            pagehead = "";
+        }
 
         // Una sola salida de navegación; los pasos internos del asistente se conservan.
         if (!cabecera.isEmpty())
             contenido = contenido.replaceAll("<a\\b[^>]*>\\s*(?:←[^<]*|Volver (?:a |al )[^<]*)</a>", "");
-        String pagehead = conPagehead ? encabezado(seccion(titulo), titulo, "") : "";
         return "<!doctype html><html lang=\"es\"><head><meta charset=\"UTF-8\">" +
                 "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewpor" + "t-fit=cover\">" +
                 "<title>" + escapar(titulo) + " · ALINEO.</title>" +
@@ -269,7 +276,7 @@ public final class Html {
                 "</span><a class=\"btn\" href=\"" + volver + "\">Salir</a></div></header>";
     }
 
-    private static String cabecera(Sesion sesion2, boolean atras) {
+    private static String cabecera(Sesion sesion2, boolean atras, CabeceraPagina.Datos datos) {
         String cabecera = "";
         if (sesion2 != null && sesion2.cuenta() != null) {
             Cuenta cuenta = sesion2.cuenta();
@@ -278,16 +285,17 @@ public final class Html {
 
             // Pestañas de texto con la activa resaltada, como en el mock
             String nav = menu(cuenta);
-            cabecera = "<header class=\"top\"><div class=\"wrap\">"
-
-                    // Botón Atrás + logo con ícono
-                    + "<div class=\"row\" style=\"gap:10px;flex-wrap:nowrap\">" + (atras ?
-                    "<button class=\"btn\" onclick=\"history.back()\" aria-label=\"Atrás\">← <spa" +
-                    "n>Atrás</span></button>" : "") +
-                    "<a class=\"logo-cabecera\" href=\"/\" style=\"text-decoration:none\">" + logo(26) + "</a></div>"
-
-                    // Pestañas de navegación
-                    + "<nav class=\"nav\" aria-label=\"Menú principal\">" + nav + "</nav>"
+            String etiqueta = datos.etiqueta().isBlank() ? escapar(rolTexto) : datos.etiqueta();
+            if (cuenta.rol() == Rol.USUARIO && sesion2.etiquetaEmpresa() != null) {
+                etiqueta = escapar(sesion2.etiquetaEmpresa());
+            }
+            cabecera = "<header class=\"top cabecera-unica\"><div class=\"wrap\">" + "<div class=\"cabecera-titulo\">" +
+                    (atras ? "<button class=\"btn cabecera-atras\" onclick=\"history.back()\" aria-label=\"Atrás\">← " +
+                             "Atrás</button>" : "") + "<span class=\"eyebrow\">" + datos.rotulo() +
+                    "</span><div class=\"titulo-con-rol\"><h1>" + datos.titulo() +
+                    "</h1><span class=\"cabecera-rol\">" + etiqueta + "</span></div></div>" +
+                    "<nav class=\"nav\" aria-label=\"Menú principal\">" + nav + "</nav>" +
+                    "<a class=\"marca-cabecera\" href=\"/\" aria-label=\"ALINEO.\">" + Marca.logo() + "</a>"
 
                     // Nombre + rol + avatar + Salir (Cambiar contraseña dentro del menú de cuenta)
                     + "<div class=\"who\"><a class=\"btn ayuda-cabecera\" href=\"/ayuda\">Ayuda</a>" +
@@ -298,7 +306,11 @@ public final class Html {
                     "<a href=\"/cuenta\" class=\"avatar\" title=\"" + escapar(cuenta.nombre() + " · " + rolTexto) +
                     "\" aria-label=\"Mi cuenta · " + escapar(cuenta.nombre() + " · " + rolTexto) + "\">" +
                     escapar(iniciales) + "</a>" + "<form method=\"post\" action=\"/logout\" style=\"margin:0\">" +
-                    csrf(sesion2) + "<button class=\"btn\">Salir</button></form></div>" + "</div></header>";
+                    csrf(sesion2) + "<button class=\"btn\">Salir</button></form></div>" + datos.acciones() +
+                    "</div></header>" +
+                    "<aside class=\"avisos-saludo aviso-franja wrap\" data-avisos-saludo hidden aria-live=\"polite\">" +
+                    "<button type=\"button\" data-ver-aviso-saludo></button>" +
+                    "<button type=\"button\" data-ocultar-aviso aria-label=\"Ocultar aviso\">×</button></aside>";
         }
 
         return cabecera;

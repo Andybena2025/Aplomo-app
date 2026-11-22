@@ -85,9 +85,13 @@ public final class TextoLista {
      * RNF-002: el punto personal tiene el nombre al lado y solo admite la paleta conocida.
      */
     public static String persona(String nombre, String color) {
-        return "<span class=\"persona-lista\" style=\"--persona:" + color(color) + "\"><i aria-hidden=\"true\"></i>" +
-                Html.escapar(nombre == null || nombre.isBlank() ? "Sin evaluador" : Html.nombreSinTitulo(nombre)) +
-                "</span>";
+        String completo = nombre == null || nombre.isBlank() ? "Sin evaluador" : Html.nombreSinTitulo(nombre);
+        String[] partes = completo.split("\\s+");
+        String corto = partes.length < 2 ? completo :
+                partes[0] + " " + partes[partes.length > 3 ? partes.length - 2 : partes.length - 1];
+        return "<span class=\"persona-lista\" title=\"" + Html.escapar(completo) + "\" style=\"--persona:" +
+                color(color) + "\"><i aria-hidden=\"true\"></i><span class=\"persona-nombre\">" + Html.escapar(corto) +
+                "</span></span>";
     }
 
     /**

@@ -37,7 +37,11 @@ final class FilasTrabajo {
     }
 
     static String fila(Sesion sesion, Fila f, SeccionConsulta seccion, boolean visible) {
-        String titulo = switch (seccion) {
+        return fila(sesion, f, seccion, visible, false);
+    }
+
+    static String fila(Sesion sesion, Fila f, SeccionConsulta seccion, boolean visible, boolean postura) {
+        String titulo = postura ? f.valor("postura") : switch (seccion) {
             case PENDIENTES, PUESTOS, EVALUACIONES -> TextoLista.puesto(f);
             case RESERVAS, VISITAS -> f.valor("empresa_nombre");
             default -> f.valor("nombre");

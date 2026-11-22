@@ -64,20 +64,13 @@ public final class InicioWeb {
 
     private void saludo(Cuenta cuenta, List<Empresa> companias, StringBuilder html) {
         String nombre = Html.nombreSinTitulo(cuenta.nombre()).split("\\s+")[0];
-        String subtitulo = cuenta.rol() == Cuenta.Rol.ADMINISTRADOR ? "Administración de ALINEO" :
-                cuenta.rol() == Cuenta.Rol.EVALUADOR ? "Tu jornada de evaluación" : companias.stream()
-                                                                                    .map(Empresa::nombre)
-                                                                                    .collect(Collectors.joining(" · "));
+        String etiqueta = cuenta.rol() == Cuenta.Rol.USUARIO && companias.size() == 1 ? companias.get(0)
+                                                                                        .nombre() :
+                Formularios.etiqueta(
+                cuenta.rol().name());
         String fecha = reservas.hoy().format(DateTimeFormatter.ofPattern("EEEE dd/MM/yyyy", new Locale("es", "CO")));
-        html.append("<div class=\"pagehead\"><div><span class=\"eyebrow\">")
-                .append(Html.escapar(fecha.toUpperCase(Locale.ROOT)))
-                .append("</span><div class=\"saludo-linea\"><h1>Hola, ").append(Html.escapar(nombre)).append("</h1>")
-                .append(cuenta.rol() == Cuenta.Rol.EVALUADOR ?
-                        "<aside class=\"avisos-saludo\" data-avisos-saludo hidden aria-live=\"polite\">" +
-                        "<button type=\"button\" data-ver-aviso-saludo></button>" +
-                        "<button type=\"button\" data-ocultar-aviso aria-label=\"Ocultar aviso\">×</button></aside>"
-                        : "")
-                .append("</div><p class=\"muted\">").append(Html.escapar(subtitulo)).append("</p></div></div>");
+        html.append(Html.encabezado(fecha.toUpperCase(Locale.ROOT), "Hola, " + nombre, "").replace("class=\"pagehead\"",
+                "class=\"pagehead\" data-cabecera-etiqueta=\"" + Html.escapar(etiqueta) + "\""));
     }
 
     private List<Fila> filas(Cuenta cuenta, SeccionConsulta seccion) throws SQLException {
@@ -167,11 +160,13 @@ public final class InicioWeb {
         List<Fila> resultados = filas(cuenta, SeccionConsulta.EVALUACIONES);
         html.append("<div class=\"solicitar-desde-inicio\">")
                 .append(enlace("/solicitar-visita", "Solicitar una visita", true)).append("</div>");
-        html.append("<h2>").append(companias.size() == 1 ? "Tu empresa" : "Tus empresas").append("</h2>");
-        for (Empresa empresa : companias) {
-            html.append("<a class=\"lista-fila\" href=\"/empresas/").append(empresa.id()).append("\"><strong>")
-                    .append(Html.escapar(empresa.nombre())).append("</strong>")
-                    .append(SistemaVisual.estado(empresa.activo() ? "ACTIVO" : "INACTIVO")).append("</a>");
+        if (companias.size() > 1) {
+            html.append("<h2>Tus empresas</h2>");
+            for (Empresa empresa : companias) {
+                html.append("<a class=\"lista-fila\" href=\"/empresas/").append(empresa.id()).append("\"><strong>")
+                        .append(Html.escapar(empresa.nombre())).append("</strong>")
+                        .append(SistemaVisual.estado(empresa.activo() ? "ACTIVO" : "INACTIVO")).append("</a>");
+            }
         }
         html.append("<div class=\"inicio-indicadores\">").append(kpi("Puestos", puestos.size(), "/puestos"));
         for (String color : List.of("VERDE", "AMARILLO", "ROJO")) {
@@ -189,13 +184,14 @@ public final class InicioWeb {
                             f -> f.valor("puntaje").isBlank() ? 0 : Integer.parseInt(f.valor("puntaje"))))
                     .orElseThrow());
         }
-        ultimos.stream().sorted(Comparator.comparing((Fila f) -> f.valor("fecha")).reversed()).limit(4).forEach(
-                f -> html.append("<a class=\"lista-fila\" href=\"/evaluaciones/").append(f.id())
-                        .append("\"><strong title=\"").append(Html.escapar(TextoLista.puesto(f))).append("\">")
-                        .append(Html.escapar(TextoLista.puesto(f))).append("</strong><small>").append(Html.escapar(
-                                (companias.size() == 1 ? "" : f.valor("empresa_nombre") + " · ") +
-                                        f.valor("sede_nombre") + " · " + f.valor("salon_nombre"))).append("</small>")
-                        .append(riesgo(f)).append("</a>"));
+        ultimos.stream().sorted(Comparator.comparing((Fila f) -> f.valor("fecha")).reversed()).limit(4).forEach(f -> {
+            long posturas = porPuesto.get(f.valor("puesto")).stream()
+                    .filter(p -> p.valor("visita").equals(f.valor("visita"))).count();
+            html.append("<a class=\"lista-fila\" href=\"/evaluaciones/").append(f.id()).append("\"><strong title=\"")
+                    .append(Html.escapar(TextoLista.puesto(f))).append("\">").append(Html.escapar(TextoLista.puesto(f)))
+                    .append("</strong><small>Puesto ").append(Html.escapar(f.valor("numero"))).append(" · ")
+                    .append(Html.plural((int) posturas, "postura")).append("</small>").append(riesgo(f)).append("</a>");
+        });
         if (resultados.isEmpty()) html.append(Html.vacio("Aún no hay resultados de visitas Finalizadas.", ""));
         html.append("</section><section class=\"stack\"><h2>Próximas visitas</h2>");
         proximas(reservas.listar(cuenta), html);
@@ -208,8 +204,8 @@ public final class InicioWeb {
         html.append("<div class=\"row between\"><h2>Visitas en curso</h2>")
                 .append(enlace("/visitas?estado=EN_CURSO", "Ver todas", false)).append("</div>");
         if (actuales.isEmpty()) {
-            html.append(
-                    Html.vacio("No hay una visita en curso.", enlace("/reservas", "Iniciar desde una reserva", false)));
+            html.append("<div class=\"visita-vacia\"><span class=\"muted\">No hay una visita en curso.</span>" +
+                    enlace("/reservas", "Iniciar desde una reserva", false) + "</div>");
         }
         for (var ficha : actuales) {
             var puestos = visitas.puestos(cuenta, ficha.visita().id());
