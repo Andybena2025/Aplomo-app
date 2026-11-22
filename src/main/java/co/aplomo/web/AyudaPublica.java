@@ -26,13 +26,13 @@ final class AyudaPublica {
                         pregunta("Me pide cambiar la contraseña",
                                 "Es una contraseña temporal. Crea una nueva de mínimo 8 caracteres, con una letra y " +
                                         "un número.") +
-                        "<details class=\"guia\"><summary>Mi empresa no tiene cuenta</summary><div " +
+                        "<details class=\"guia tarjeta-dorada\"><summary>Mi empresa no tiene cuenta</summary><div " +
                         "class=\"ayuda-respuesta\">" +
                         "<p>Solicita acceso con los datos de tu empresa y su contacto.</p><a class=\"btn\" " +
                         "href=\"/solicitar-acceso\">Solicitar acceso</a>" +
                         "</div></details></div></section><aside class=\"stack\">" +
                         ContactoAyuda.tarjeta(contenido.contacto(), sesion) +
-                        "<section id=\"acerca\" class=\"card stack\"><h2>¿Qué es ALINEO?</h2>" +
+                        "<section id=\"acerca\" class=\"card stack tarjeta-dorada\"><h2>¿Qué es ALINEO?</h2>" +
                         "<p>Evaluamos posturas de trabajo con el método RULA.<br>Te guiamos desde la observación " +
                         "hasta las mejoras.</p>" +
                         "<a href=\"/nosotros\">Conoce ALINEO ›</a><p class=\"hint\">Proyecto Nuclear " +
@@ -42,7 +42,7 @@ final class AyudaPublica {
     }
 
     private static String pregunta(String titulo, String texto) {
-        return "<details class=\"guia\"><summary>" + Html.escapar(titulo) +
+        return "<details class=\"guia tarjeta-dorada\"><summary>" + Html.escapar(titulo) +
                 "</summary><div class=\"ayuda-respuesta\"><p>" + Html.escapar(texto) + "</p></div></details>";
     }
 }

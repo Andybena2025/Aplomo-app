@@ -31,8 +31,8 @@ final class DemoPresentacion {
     }
 
     static void citas(Connection con, Path fotos, int admin, List<Integer> empresas, List<Integer> evaluadores,
-            LocalDate presentacion) throws SQLException, IOException {
-        int existe = Sql.uno(con, "SELECT COUNT(*) FROM bitacora WHERE tabla='empresa' AND detalle='DEMO-32-PLAN'",
+                      LocalDate presentacion) throws SQLException, IOException {
+        int existe = Sql.uno(con, "SELECT COUNT(*) FROM bitacora WHERE tabla='empresa' AND detalle='DEMO-33-PLAN'",
                 f -> f.getInt(1));
         if (existe > 0) return;
         ResultadosDemo.preparar(con, fotos, admin, empresas, evaluadores);
@@ -65,7 +65,7 @@ final class DemoPresentacion {
         ResultadosDemo.seguimiento(con, admin, empresas);
         Sql.actualizar(con, "UPDATE empresa SET activo=FALSE WHERE id_empresa=?", empresas.get(6));
         new BitacoraDao().registrar(con, admin, java.time.LocalDateTime.now(ZoneId.of("America/Bogota")), "empresa",
-                empresas.get(0), "EDITAR", null, null, "DEMO-32-PLAN");
+                empresas.get(0), "EDITAR", null, null, "DEMO-33-PLAN");
     }
 
     static void actualizarMarca(Connection con) throws SQLException {

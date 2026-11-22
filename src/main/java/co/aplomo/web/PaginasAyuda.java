@@ -240,7 +240,7 @@ public final class PaginasAyuda {
     private static String contacto(Contacto elemento) {
         var contenido2 = new StringBuilder(
                 "<h3>¿Necesitas ayuda de una persona?</h3><p class=\"marca-contacto\">ALINEO.</p>");
-        contenido2.append("<p>Laura Gabriella Romero Gómez · Administradora principal de ALINEO.</p>");
+        contenido2.append("<p>Laura Romero · Administradora principal de ALINEO.</p>");
         if (!elemento.correo().isBlank())
             contenido2.append("<p><a href=\"mailto:").append(escapar(elemento.correo())).append("\">")
                     .append(escapar(elemento.correo())).append("</a></p>");

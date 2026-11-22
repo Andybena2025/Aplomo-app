@@ -140,14 +140,14 @@ public final class Demo {
     }
 
     /**
-     * Carga idempotente en la transacción del llamador; no confirma ni crea bases. RNF-011.
+     * RF-003, RNF-009: carga idempotente; no confirma ni crea bases.
      */
     public static void cargar(Connection con, Path sql) throws IOException, SQLException {
         cargar(con, sql, Config.carpetaFotos());
     }
 
     /**
-     * Permite aislar los archivos de pruebas sin tocar la carpeta real. RNF-011.
+     * RF-003, RNF-009: aísla los archivos de pruebas sin tocar la carpeta real.
      */
     public static void cargar(Connection con, Path sql, Path fotos) throws IOException, SQLException {
         if (con.getAutoCommit()) throw new IllegalArgumentException("La demostración requiere una transacción.");
@@ -172,8 +172,20 @@ public final class Demo {
         if (ajenas > 0) throw new IllegalArgumentException("Hay un código demo en otra empresa. No se cambió nada.")
                 ;
         int anteriores = Sql.uno(con, "SELECT COUNT(*) FROM empresa WHERE " + EMPRESAS, fila -> fila.getInt(1));
-        int plan = Sql.uno(con, "SELECT COUNT(*) FROM bitacora WHERE tabla='empresa' " + "AND detalle='DEMO-32-PLAN'",
+        int plan = Sql.uno(con, "SELECT COUNT(*) FROM bitacora WHERE tabla='empresa' " + "AND detalle='DEMO-33-PLAN'",
                 fila -> fila.getInt(1));
+        if (plan == 0) {
+            Integer compatible = Sql.uno(con, "SELECT b.id_registro FROM bitacora b JOIN empresa e " +
+                    "ON e.id_empresa=b.id_registro WHERE b.tabla='empresa' AND b.detalle='DEMO-32-PLAN' " +
+                    "AND " + EMPRESAS + " ORDER BY b.id_bitacora LIMIT 1", fila -> fila.getInt(1));
+            if (compatible != null) {
+                // RF-003, RNF-009: Paso 33 cambia nombres; conserva resultados y marca anterior de auditoría.
+                new co.aplomo.dao.BitacoraDao().registrar(con, admin,
+                        java.time.LocalDateTime.now(java.time.ZoneId.of("America/Bogota")), "empresa",
+                        compatible, "EDITAR", null, null, "DEMO-33-PLAN");
+                plan = 1;
+            }
+        }
         if (anteriores > 0 && plan == 0) throw new IllegalArgumentException(
                 "La demo conserva cargas anteriores. Ejecuta scripts/reiniciar_demo.sh y confirma el reinicio.");
         DemoRoles.cargar(con, fotos, admin);
@@ -184,7 +196,7 @@ public final class Demo {
      * RNF-009: desvincula y restaura las mismas cuentas por NIT, sin confirmar fuera de la transacción.
      */
     public static List<String> reiniciar(Connection con, String confirmacion, Path sql,
-            Path fotos) throws SQLException, IOException {
+                                         Path fotos) throws SQLException, IOException {
         if (!CONFIRMACION.equals(confirmacion))
             throw new IllegalArgumentException("Falta la confirmación REINICIAR DEMO.");
         if (con.getAutoCommit()) throw new IllegalArgumentException("El reinicio requiere una transacción.");
@@ -268,7 +280,7 @@ public final class Demo {
     }
 
     private static List<Integer> hijos(Connection con, String tabla, String id, String fk,
-            List<Integer> padres) throws SQLException {
+                                       List<Integer> padres) throws SQLException {
         return padres.isEmpty() ? List.of() : Sql.listar(con,
                 "SELECT " + id + " FROM " + tabla + " WHERE " + fk + " IN (" + marcas(padres) + ") FOR UPDATE",
                 fila -> fila.getInt(1), padres.toArray());

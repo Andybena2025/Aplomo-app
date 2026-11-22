@@ -52,7 +52,7 @@ class HttpPaso31Test extends HttpPrueba {
             if (autenticada) entrar(admin);
             var respuesta = get("/ayuda");
             assertEquals(200, respuesta.statusCode());
-            for (String dato : List.of("Laura Gabriela Romero", "Administradora principal", "gabriela.romero@alineo.co",
+            for (String dato : List.of("Laura Romero", "Administradora principal", "laura.romero@alineo.co",
                     "+57 300 000 0000", "https://wa.me/573000000000"))
                 assertTrue(respuesta.body().contains(dato), dato);
         }
@@ -60,9 +60,9 @@ class HttpPaso31Test extends HttpPrueba {
         Files.writeString(archivo, "contacto.nombre=Persona de ejemplo\ncontacto.cargo=Responsable de ejemplo\n" +
                 "contacto.correo=correo@ejemplo.com\ncontacto.telefono=+57 321 222 3333\n");
         Contacto contacto = Contacto.leer(archivo);
-        assertEquals("Laura Gabriela Romero", contacto.nombre());
+        assertEquals("Laura Romero", contacto.nombre());
         assertEquals("Administradora principal", contacto.cargo());
-        assertEquals("gabriela.romero@alineo.co", contacto.correo());
+        assertEquals("laura.romero@alineo.co", contacto.correo());
         assertEquals("+57 321 222 3333", contacto.telefono());
         assertEquals("573000000000", contacto.whatsapp());
     }

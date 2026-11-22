@@ -82,6 +82,33 @@ public final class Avisos {
     }
 
     /**
+     * RF-033/002: datos de contacto mínimos, exclusivamente para sus destinos autorizados.
+     */
+    public record ContactoEquipo(int id, String nombre, String cargo, String correo, String telefono,
+                                 String color, boolean principal) {
+    }
+
+    /**
+     * RF-033/002: solo Usuario vigente; jamás se leen contactos de Evaluadores de otra empresa.
+     */
+    public List<ContactoEquipo> contactos(Cuenta actor) throws SQLException {
+        return tx.ejecutar(con -> {
+            Cuenta actual = AccesoDatos.vigente(con, actor);
+            if (actual.rol() != Cuenta.Rol.USUARIO) throw new SecurityException("Acceso denegado.");
+            var contactos = new java.util.ArrayList<ContactoEquipo>();
+            for (Destinatario destino : destinatarios(actual)) {
+                ContactoEquipo contacto = co.aplomo.db.Sql.uno(con,
+                        "SELECT id_cuenta,nombre,cargo,correo,telefono,color_agenda FROM cuenta " +
+                                "WHERE id_cuenta=? AND estado='ACTIVA'", f -> new ContactoEquipo(f.getInt(1),
+                                f.getString(2), f.getString(3), f.getString(4), f.getString(5),
+                                f.getString(6), destino.principal()), destino.id());
+                if (contacto != null) contactos.add(contacto);
+            }
+            return List.copyOf(contactos);
+        });
+    }
+
+    /**
      * RF-033: mensaje nuevo con destino validado por rol y asignación vigente del Usuario.
      */
     public Cuenta enviarNuevo(Cuenta actor, Integer para, String texto) throws SQLException {
@@ -177,7 +204,7 @@ public final class Avisos {
                 java.nio.file.Path.of(System.getProperty("aplomo.contacto.archivo", "config/contacto.properties")));
         Integer id = co.aplomo.db.Sql.uno(con,
                 "SELECT id_cuenta FROM cuenta WHERE rol='ADMINISTRADOR' AND estado='ACTIVA' " +
-                        "ORDER BY (correo=?) DESC, " +
+                        "ORDER BY (correo=?) DESC,(correo='gabby@rula.local') DESC, " +
                         "(LOWER(nombre) LIKE ? OR LOWER(nombre) LIKE ?) DESC,id_cuenta LIMIT 1", f -> f.getInt(1),
                 contacto.correo(), "%gabriela%", "%gabriella%");
         if (id == null) throw new IllegalArgumentException("No está disponible el contacto de la Administradora.");

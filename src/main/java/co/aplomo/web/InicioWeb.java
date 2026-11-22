@@ -165,13 +165,16 @@ public final class InicioWeb {
     private void representante(Cuenta cuenta, List<Empresa> companias, StringBuilder html) throws SQLException {
         List<Fila> puestos = filas(cuenta, SeccionConsulta.PUESTOS);
         List<Fila> resultados = filas(cuenta, SeccionConsulta.EVALUACIONES);
-        var destinos = reservas.avisos().destinatarios(cuenta);
+        var contactos = reservas.avisos().contactos(cuenta);
         var personas = new java.util.LinkedHashMap<Integer, co.aplomo.servicio.SolicitudesVisita.Ingeniero>();
         for (Empresa empresa : companias) {
             for (var persona : reservas.solicitudes().ingenieros(cuenta, empresa.id()))
                 personas.merge(persona.id(), persona, (a, b) -> a.asignado() ? a : b);
         }
+        html.append("<div class=\"usuario-cabecera-grid\">");
         InicioUsuario.proxima(futuras(reservas.listar(cuenta)), personas, reservas.hoy(), html);
+        InicioUsuario.ayuda(contactos, html);
+        html.append("</div>");
         html.append("<div class=\"inicio-indicadores\">").append(kpi("Puestos", puestos.size(), "/puestos"));
         for (String color : List.of("VERDE", "AMARILLO", "ROJO")) {
             html.append(kpi(nombreColor(color), puestos.stream().filter(p -> p.valor("color").equals(color)).count(),
@@ -180,7 +183,7 @@ public final class InicioWeb {
                             color.toLowerCase(Locale.ROOT) + ")\""));
         }
         html.append("</div>");
-        InicioUsuario.tendencia(filas(cuenta, SeccionConsulta.VISITAS), html);
+        InicioUsuario.tendencia(filas(cuenta, SeccionConsulta.VISITAS), resultados, html);
         html.append("<div class=\"inicio-columnas\"><section class=\"stack\"><h2>Últimos resultados</h2>");
         var porPuesto = resultados.stream().collect(Collectors.groupingBy(f -> f.valor("puesto")));
         var ultimos = new java.util.ArrayList<Fila>();
@@ -203,7 +206,6 @@ public final class InicioWeb {
         if (resultados.isEmpty()) html.append(Html.vacio("Aún no hay resultados de visitas Finalizadas.", ""));
         html.append("</section><section class=\"stack\"><h2>Próximas visitas</h2>");
         proximas(reservas.listar(cuenta), html);
-        InicioUsuario.ayuda(destinos, personas, html);
         html.append("</section></div><script src=\"/static/js/inicio-usuario.js\" defer></script>");
     }
 

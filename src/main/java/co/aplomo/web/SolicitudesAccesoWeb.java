@@ -78,7 +78,7 @@ public final class SolicitudesAccesoWeb {
      * RF-002: la Administradora revisa; Evaluador y Usuario reciben 403 también con dirección directa.
      */
     public boolean atender(HttpExchange intercambio, Sesion sesion,
-            Map<String, String> datos) throws SQLException, IOException {
+                           Map<String, String> datos) throws SQLException, IOException {
         String ruta = intercambio.getRequestURI().getPath();
         if (!ruta.equals("/solicitudes-acceso") && !ruta.startsWith("/solicitudes-acceso/")) return false;
         servicio.pendientes(sesion.cuenta());
@@ -128,9 +128,11 @@ public final class SolicitudesAccesoWeb {
     }
 
     private static String formulario(Sesion sesion, Map<String, String> datos, String mensaje) {
-        StringBuilder html = new StringBuilder(Html.aviso(mensaje, false));
+        StringBuilder html = new StringBuilder(
+                "<div class=\"acceso-volver\"><a class=\"btn\" href=\"/login\">← Volver a iniciar sesión</a></div>" +
+                        Html.aviso(mensaje, false));
         html.append("<p class=\"muted\">Cuéntanos de tu empresa. La Administradora revisará la solicitud antes de " +
-                "habilitar el acceso.</p><form class=\"card stack solicitar-visita\" method=\"post\" " +
+                "habilitar el acceso.</p><form class=\"card stack solicitar-visita tarjeta-dorada\" method=\"post\" " +
                 "action=\"/solicitar-acceso\">").append(Html.csrf(sesion));
         for (String[] campo : new String[][]{{"nombre", "Nombre", "100"}, {"cargo", "Cargo", "80"}, {"correo",
                 "Correo", "120"}, {"telefono", "Teléfono", "20"}, {"empresa", "Empresa", "120"}, {"nit", "NIT", "20"}

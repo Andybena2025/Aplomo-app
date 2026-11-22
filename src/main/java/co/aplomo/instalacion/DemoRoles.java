@@ -25,14 +25,14 @@ final class DemoRoles {
     static void cargar(Connection conexion, Path fotos, int administrador) throws SQLException, IOException {
         LocalDate presentacion = LocalDate.parse(System.getProperty("aplomo.demo.fecha", "2026-11-27"));
         List<Integer> empresas = DemoPresentacion.empresas(conexion, administrador);
-        String[] administradores = {"Andrés Benavides", "Johan Zapata", "Laura Gabriella Romero"};
+        String[] administradores = {"Andrés Benavides", "Johan Zapata", "Laura Romero"};
         String[] correosAdmin = {"andres@rula.local", "johan@rula.local", "gabby@rula.local"};
         for (int indice = 0; indice < administradores.length; indice++) {
             cuenta(conexion, administradores[indice], correosAdmin[indice], Cuenta.Rol.ADMINISTRADOR);
         }
         desactivarGenericas(conexion, administrador);
         List<Integer> evaluadores = new ArrayList<>();
-        String[] nombres = {"Andrés Benavides", "Johan Zapata", "Laura Gabriella Romero"};
+        String[] nombres = {"Andrés Benavides", "Johan Zapata", "Gabriela Romero"};
         String[] correos = {"andres", "johan", "gabriella"};
         int[][] asignaciones = {{2, 1}, {0, 3}, {4, 5}};
         int[] empresasUsuario = {4, 2, 0};
@@ -46,7 +46,8 @@ final class DemoRoles {
             ColoresAgenda.guardar(conexion, evaluador, ColoresAgenda.PALETA.get(indice));
             evaluadores.add(evaluador);
             String usuario = correos[indice] + (indice == 2 ? ".usuaria@rula.local" : ".usuario@rula.local");
-            int cuenta = cuenta(conexion, "Rep. " + nombres[indice], usuario, Cuenta.Rol.USUARIO);
+            int cuenta = cuenta(conexion, "Rep. " + (indice == 2 ? "Laura Gabriela Romero" : nombres[indice]), usuario,
+                    Cuenta.Rol.USUARIO);
             new CuentaEmpresaDao().sincronizar(conexion, administrador, cuenta,
                     List.of(empresas.get(empresasUsuario[indice])), false);
         }
@@ -65,25 +66,29 @@ final class DemoRoles {
             boolean conocido = anterior.equals(esperado) ||
                     anterior.equals("Andrés Eduardo Benavides") && esperado.equals("Andrés Benavides") ||
                     anterior.equals("Johan Andrés Zapata Quintero") && esperado.equals("Johan Zapata") ||
-                    anterior.equals("Laura Gabriella Romero Gómez") && esperado.equals("Laura Gabriella Romero");
+                    List.of("gabby@rula.local", "gabriella.evaluadora@rula.local", "gabriella.usuaria@rula.local")
+                            .contains(correo) && List.of("Laura Gabriella Romero", "Laura Gabriella Romero Gómez",
+                            "Laura Romero", "Laura Gabriela Romero", "Gabriela Romero").contains(anterior);
             if (!conocido || existente.rol() != rol) {
                 throw new IllegalArgumentException(
                         "Un correo de demostración pertenece a otra cuenta. No se modificó.");
             }
-            Sql.actualizar(conexion, "UPDATE cuenta SET nombre=?,cargo=? WHERE id_cuenta=?", nombre, cargo(rol, nombre),
+            Sql.actualizar(conexion, "UPDATE cuenta SET nombre=?,cargo=? WHERE id_cuenta=?", nombre, cargo(rol, correo),
                     existente.id());
             return existente.id();
         }
-        return cuentas.crear(conexion, nombre, correo, "0000000000", cargo(rol, nombre), rol, null,
+        return cuentas.crear(conexion, nombre, correo, "0000000000", cargo(rol, correo), rol, null,
                 Contrasenas.cifrar("Cambiar2026"));
     }
 
-    private static String cargo(Cuenta.Rol rol, String nombre) {
+    private static String cargo(Cuenta.Rol rol, String correo) {
         return switch (rol) {
             case ADMINISTRADOR ->
-                    nombre.contains("Gabriella") ? "Coordinadora de evaluaciones" : "Coordinador de evaluaciones";
-            case EVALUADOR -> "Ingeniero(a) Industrial · Evaluador RULA";
-            case USUARIO -> nombre.contains("Gabriella") ? "Coordinadora de SST" : "Coordinador de SST";
+                    correo.equals("gabby@rula.local") ? "Coordinadora de evaluaciones" : "Coordinador de evaluaciones";
+            case EVALUADOR -> correo.equals("gabriella.evaluadora@rula.local") ?
+                    "Ingeniera Industrial · Evaluadora RULA" : "Ingeniero(a) Industrial · Evaluador RULA";
+            case USUARIO ->
+                    correo.equals("gabriella.usuaria@rula.local") ? "Coordinadora de SST" : "Coordinador de SST";
         };
     }
 

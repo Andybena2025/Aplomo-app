@@ -15,7 +15,7 @@ public record Contacto(String nombre, String cargo, String correo, String telefo
 
     /**
      * Lee UTF-8; respalda cada campo vacío o de ejemplo e impide enlaces con esquemas o consultas inesperados.
-     * RNF-011.
+     * RF-033, RNF-011.
      */
     public static Contacto leer(Path archivo) {
         var elemento = new Properties();
@@ -26,9 +26,9 @@ public record Contacto(String nombre, String cargo, String correo, String telefo
                 elemento.clear();
             }
         }
-        String nombre = respaldo(texto(elemento, "nombre"), "Laura Gabriela Romero");
+        String nombre = respaldo(texto(elemento, "nombre"), "Laura Romero");
         String cargo = respaldo(texto(elemento, "cargo"), "Administradora principal");
-        String correo = respaldo(texto(elemento, "correo"), "gabriela.romero@alineo.co");
+        String correo = respaldo(texto(elemento, "correo"), "laura.romero@alineo.co");
         String telefono = respaldo(texto(elemento, "telefono"), "+57 300 000 0000");
         String wa = respaldo(texto(elemento, "whatsapp"), "573000000000");
         if (!correo.matches("[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}")) correo = "";
@@ -39,7 +39,7 @@ public record Contacto(String nombre, String cargo, String correo, String telefo
     }
 
     /**
-     * RNF-007: enlace de contacto con mensaje sencillo y parámetros codificados, sin datos de la evaluación.
+     * RF-033, RNF-007: enlace de contacto con mensaje sencillo y parámetros codificados, sin datos de la evaluación.
      */
     public String enlaceWhatsapp() {
         if (whatsapp.isBlank()) return "";
@@ -50,7 +50,7 @@ public record Contacto(String nombre, String cargo, String correo, String telefo
     }
 
     /**
-     * RNF-007: correo de ayuda con asunto, sin adjuntar datos personales ni enviar mensajes automáticamente.
+     * RF-033, RNF-007: correo de ayuda con asunto, sin adjuntar datos personales ni enviar mensajes automáticamente.
      */
     public String enlaceCorreo() {
         return correo.isBlank() ? "" : "mailto:" + correo + "?subject=Ayuda%20con%20ALINEO";

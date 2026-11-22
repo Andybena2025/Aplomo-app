@@ -440,3 +440,24 @@ Luego ESPERA el OK de Andy.
   Informe docs/informe_paso32.md. Motor/cálculo/IA/tablas RULA/esquema intactos. Hardware/tacto/Windows/otros
   navegadores y recorrido con JS apagado en navegador no certificados. App normal en 8080 al entregar.
 - Commit/push único 32B al repo verificado, esperar revisión de Andy; no iniciar otro paso.
+
+### Paso 33 · retoques de Andy
+- Un commit/push autorizado sobre 9336e84; sin capturas, descargas ni migración. Motor/cálculo/IA/RULA intactos.
+- Saludo A/E con rol simple debajo; U sin rol. Botón principal 700, secundarios 600 con las mismas medidas.
+- Tendencia enlaza evaluación Finalizada autorizada (peor de su visita), fecha dd/MM/yyyy y 403 ajeno.
+- Ayuda de Inicio arriba en columnas 1–3/4, apilada <1024; fichas de contactos de sus Evaluadores activos y principal.
+  Género por cargo; una abierta, teclado/aria; sin teléfono falso ni X/ocultamiento por sesión. DTO sin contraseñas.
+- Centro con contacto arriba y botones en fila, temas iguales y Sobre ALINEO; público con volver, ayuda 16 px
+  y CSS dorado exacto de una ejecución con reduced-motion/print. Copyright ™; créditos reales conservados.
+- Gabby: Laura Romero / Ing. Gabriela Romero / Rep. Laura Gabriela Romero, cargos por correo, alias viejos admitidos.
+  Contacto privado actualizado sin subirlo. Principal conserva prioridad del correo configurado y resuelve cuenta gabby.
+- Recarga compatible 32→33 sin borrar historia ni fotos; agrega marca nueva conservando auditoría anterior.
+- Suite completa una vez: 1149/1149 Maven, 171/171 JS; cierre dirigido adicional de compatibilidad sin borrados.
+  Se sustituyó prueba de hashes rechazada por revisión automática por ingreso con cuentas ficticias, sin leer hashes.
+- QA Inicio en ocho ventanas 1920/1366/1180/1080/1024/1023/810/390: 0 px de desborde; desde 1024, igual alto
+  y X con Rojo; debajo se apila. Ayuda/público sin desborde, contactos con teclado y cero errores de consola capturados.
+  QA en pruebas revertida; hardware, tacto, Windows y navegadores externos pendientes. Informe docs/informe_paso33.md.
+- Al entregar: recarga real comprobada, app normal reiniciada en 8080, commit/push verificados y esperar revisión de Andy.
+
+- Recarga real Paso 33 confirmada: 13 cuentas, 13 vínculos y 397 registros históricos conservados por ID;
+  0 duplicados demo y tres nombres verificados. Ningún hash/contraseña real extraído. Cierre dirigido 6/6.

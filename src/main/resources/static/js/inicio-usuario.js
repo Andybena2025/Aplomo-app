@@ -1,11 +1,16 @@
+/* RF-033: ficha en línea; un contacto abierto, con botones nativos utilizables con teclado. */
 (() => {
  'use strict';
  const tarjeta = document.querySelector('[data-ayuda-inicio]');
  if (!tarjeta) return;
- const clave = 'alineo-ayuda-inicio-oculta';
- try { tarjeta.hidden = sessionStorage.getItem(clave) === '1'; } catch (_) { /* La ayuda sigue disponible. */ }
- tarjeta.querySelector('[data-cerrar-ayuda-inicio]')?.addEventListener('click', () => {
-  tarjeta.hidden = true;
-  try { sessionStorage.setItem(clave, '1'); } catch (_) { /* Se oculta hasta volver a cargar. */ }
- });
+ const botones = [...tarjeta.querySelectorAll('[data-contacto-inicio]')];
+ botones.forEach(boton => boton.addEventListener('click', () => {
+  const abrir = boton.getAttribute('aria-expanded') !== 'true';
+  botones.forEach(otro => {
+   const ficha = document.getElementById(otro.getAttribute('aria-controls'));
+   const activo = otro === boton && abrir;
+   otro.setAttribute('aria-expanded', String(activo));
+   if (ficha) ficha.hidden = !activo;
+  });
+ }));
 })();

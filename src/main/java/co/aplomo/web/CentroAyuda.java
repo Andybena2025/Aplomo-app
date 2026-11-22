@@ -62,7 +62,8 @@ final class CentroAyuda {
     private static String inicio(Sesion sesion, Contenido contenido, List<Articulo> articulos) {
         String nombre = Html.nombreSinTitulo(sesion.cuenta().nombre()).split("\\s+")[0];
         StringBuilder html = new StringBuilder(
-                "<section class=\"ayuda-inicio\"><label class=\"ayuda-buscador\">").append(
+                "<section class=\"ayuda-inicio\"><div class=\"ayuda-superior\"><div>" +
+                        "<label class=\"ayuda-buscador\">").append(
                         "<span class=\"sr-only\">Buscar ayuda</span><input type=\"search\" class=\"input " + "ayuda" +
                                 "-buscar\" ")
                 .append("data-ayuda-buscar aria-label=\"Buscar ayuda\" placeholder=\"¿Qué necesitas hacer?\"></label>")
@@ -72,7 +73,8 @@ final class CentroAyuda {
             html.append("<a class=\"chip\" href=\"/ayuda?tema=").append(id).append("\">")
                     .append(Html.escapar(a.titulo())).append("</a>");
         }
-        html.append("</nav><section data-ayuda-grupo><h2>¿Qué quieres hacer?</h2><div class=\"ayuda-tareas\">");
+        html.append("</nav></div>").append(ContactoAyuda.tarjeta(contenido.contacto(), sesion))
+                .append("</div><section data-ayuda-grupo><h2>¿Qué quieres hacer?</h2><div class=\"ayuda-tareas\">");
         for (String[] tarea : GuiaAyuda.tareas(sesion.cuenta().rol()))
             html.append("<a class=\"card ayuda-tarea\" data-ayuda-pregunta href=\"/ayuda?tema=").append(tarea[0])
                     .append("\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" " +
@@ -82,23 +84,30 @@ final class CentroAyuda {
                     .append(Html.escapar(tarea[2])).append("\">").append(Html.escapar(tarea[2])).append("</span></a>");
         html.append("</div></section><h2 class=\"ayuda-todos-titulo\">Todos los temas</h2><div class=\"ayuda-todos\">");
         for (String grupo : GuiaAyuda.SECCIONES) {
-            html.append("<section data-ayuda-grupo><h3>").append(Html.escapar(grupo)).append("</h3>");
+            html.append("<section data-ayuda-grupo><h3>").append(Html.escapar(nombreGrupo(grupo, articulos))).append(
+                    "</h3>");
             for (Articulo articulo : articulos)
                 if (GuiaAyuda.seccion(articulo.id()).equals(grupo)) html.append(enlace(articulo, true));
             html.append("</section>");
         }
         html.append("</div><p data-ayuda-vacia hidden role=\"status\">No encontramos temas con esas palabras.</p>")
-                .append(ContactoAyuda.tarjeta(contenido.contacto(), sesion)).append("</section>")
+                .append("</section>")
                 .append("<script src=\"/static/js/ayuda.js\" defer></script><script src=\"/static/js/centro-ayuda" +
                         ".js\" defer></script>");
         return Html.pagina("¿En qué te ayudamos, " + nombre + "?", html.toString(), sesion, "Ayuda · Inicio", "",
                 false);
     }
 
+    private static String nombreGrupo(String grupo, List<Articulo> articulos) {
+        boolean soloAcerca = articulos.stream().filter(a -> GuiaAyuda.seccion(a.id()).equals(grupo))
+                .allMatch(a -> a.id().equals("acerca"));
+        return grupo.equals("Tu trabajo") && soloAcerca ? "Sobre ALINEO" : grupo;
+    }
+
     private static String indice(List<Articulo> articulos, String actual) {
         StringBuilder html = new StringBuilder("<nav class=\"ayuda-navegacion\" aria-label=\"Temas de ayuda\">");
         for (String seccion : GuiaAyuda.SECCIONES) {
-            html.append("<section><h3>").append(Html.escapar(seccion)).append("</h3>");
+            html.append("<section><h3>").append(Html.escapar(nombreGrupo(seccion, articulos))).append("</h3>");
             for (Articulo articulo : articulos)
                 if (GuiaAyuda.seccion(articulo.id()).equals(seccion)) {
                     html.append("<a href=\"/ayuda?tema=").append(articulo.id()).append("\"")

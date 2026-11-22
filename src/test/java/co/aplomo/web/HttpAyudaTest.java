@@ -69,8 +69,8 @@ class HttpAyudaTest extends HttpPrueba {
         assertTrue(texto2.contains("id=\"entrar\""));
         assertTrue(texto2.contains("id=\"acerca\""));
         for (int i = 2; i <= 9; i++) assertFalse(texto2.contains("data-tema=\"" + i + "\""));
-        assertTrue(texto2.contains("Tu Administradora"));
-        assertTrue(texto2.contains("mailto:gabriela.romero@alineo.co"));
+        assertTrue(texto2.contains("Tu administradora"));
+        assertTrue(texto2.contains("mailto:laura.romero@alineo.co"));
         assertTrue(texto2.contains("wa.me/573000000000"));
         assertTrue(respuesta.headers().allValues("Set-Cookie").isEmpty());
     }
@@ -151,7 +151,7 @@ class HttpAyudaTest extends HttpPrueba {
         String texto2 = get("/ayuda").body();
         assertTrue(texto2.contains("Persona QA"));
         assertFalse(texto2.contains("javascript:"));
-        assertTrue(texto2.contains("Tu Administradora"));
+        assertTrue(texto2.contains("Tu administradora"));
     }
 
     @Test
@@ -161,7 +161,7 @@ class HttpAyudaTest extends HttpPrueba {
         System.setProperty("aplomo.contacto.archivo", archivo.toString());
         String texto2 = get("/ayuda").body();
         assertTrue(texto2.contains("mailto:solo@prueba.invalid"));
-        assertTrue(texto2.contains("Tu Administradora"));
+        assertTrue(texto2.contains("Tu administradora"));
     }
 
     @Test

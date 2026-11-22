@@ -29,7 +29,7 @@ class InicioUsuario32Test extends HttpPrueba {
         assertTrue(tendencia(2, 5).contains("▼ De 2 a 5"));
         assertFalse(tendencia(2, 2).contains("tendencia-cambio"));
         StringBuilder html = new StringBuilder();
-        InicioUsuario.tendencia(List.of(fila(1, 7)), html);
+        InicioUsuario.tendencia(List.of(fila(1, 7)), List.of(evaluacion(1, 7)), html);
         assertFalse(html.toString().contains("tendencia-cambio"));
         assertTrue(html.toString().contains("· última"));
     }
@@ -42,6 +42,7 @@ class InicioUsuario32Test extends HttpPrueba {
         String html = get("/").body();
         assertTrue(html.contains("Bienvenido,"));
         assertFalse(html.contains("class=\"cabecera-rol\""));
+        assertFalse(html.contains("class=\"cabecera-rol-texto\""));
         assertTrue(html.contains("data-ayuda-inicio"));
         assertTrue(html.contains("/avisos/nuevo?para=" + evaluador.id()));
         assertTrue(html.contains("/avisos/nuevo?para=" + new co.aplomo.servicio.Avisos(tx,reloj)
@@ -56,8 +57,13 @@ class InicioUsuario32Test extends HttpPrueba {
 
     private static String tendencia(int antes, int despues) {
         StringBuilder html = new StringBuilder();
-        InicioUsuario.tendencia(List.of(fila(1, antes), fila(2, despues)), html);
+        InicioUsuario.tendencia(List.of(fila(1, antes), fila(2, despues)),
+                List.of(evaluacion(1, antes), evaluacion(2, despues)), html);
         return html.toString();
+    }
+    private static Fila evaluacion(int visita, int puntos) {
+        return new Fila(Map.of("id", "" + visita, "visita", "" + visita, "estado", "FINALIZADA",
+                "puntaje", "" + puntos));
     }
     private static Fila fila(int id, int puntos) {
         return new Fila(Map.of("id", "" + id, "estado", "FINALIZADA", "fecha", "2026-11-0" + id,

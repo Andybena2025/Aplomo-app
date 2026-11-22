@@ -45,9 +45,9 @@ class HttpPaso30BTest extends HttpPrueba {
         assertEquals(200, respuesta.statusCode());
         assertTrue(respuesta.headers().allValues("Set-Cookie").isEmpty());
         assertEquals(4, Pattern.compile("<summary>").matcher(html).results().count());
-        for (String texto : List.of("Laura Gabriela Romero", "Volver a iniciar sesión", "Solicitar acceso",
+        for (String texto : List.of("Laura Romero", "Volver a iniciar sesión", "Solicitar acceso",
                 "https://wa.me/573000000000?text=Hola%20Laura%2C%20necesito%20ayuda%20con%20ALINEO.",
-                "mailto:gabriela.romero@alineo.co?subject=Ayuda%20con%20ALINEO"))
+                "mailto:laura.romero@alineo.co?subject=Ayuda%20con%20ALINEO"))
             assertTrue(html.contains(texto), texto);
         var archivo = carpetaFotos.resolve("privado.properties");
         Files.writeString(archivo, "contacto.nombre=Contacto local\ncontacto.correo=local@prueba.invalid\n");

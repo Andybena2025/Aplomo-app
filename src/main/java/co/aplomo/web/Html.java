@@ -323,7 +323,8 @@ public final class Html {
                     "</span><div class=\"titulo-con-rol\">" + (detalle ?
                     "<p class=\"cabecera-seccion\">" + datos.titulo() + "</p>" : "<h1>" + datos.titulo() + "</h1>") +
                     (inicio && cuenta.rol() != Rol.USUARIO ?
-                            "<span class=\"cabecera-rol\">" + etiqueta + "</span>" : "") + "</div></div>" +
+                            "<p class=\"cabecera-rol-texto\">" + escapar(cuenta.rol().name()) + "</p>" : "") +
+                    "</div></div>" +
                     "<nav class=\"nav\" aria-label=\"Menú principal\">" + nav + "</nav>" +
                     "<a class=\"marca-cabecera\" href=\"/\" aria-label=\"ALINEO.\">" + Marca.logo() + "</a>" +
                     "<a class=\"marca-cabecera-a\" href=\"/\" aria-label=\"ALINEO. Inicio\">" + Marca.lateral() + "</a>"
@@ -389,14 +390,14 @@ public final class Html {
 
     private static String pie() {
         return "<footer class=\"pie\"><div class=\"wrap\"><span class=\"lema\">Ergonomía con precisión · Método " +
-                "RULA</span>" + "<span>© 2026 ALINEO</span></div></footer>";
+                "RULA</span>" + "<span>© 2026 ALINEO™ · Todos los derechos reservados.</span></div></footer>";
     }
 
     private static String laterales() {
         return "<div class=\"riel riel-izq\" aria-hidden=\"true\"><span class=\"marca-v\">" + Marca.logo() +
                 "</span><span class=\"lema-v\">Ergonomía con precisión</span></div>" +
                 "<img class=\"deco-herramientas\" src=\"/static/img/herramientas_mesa.svg\" alt=\"\" " +
-                        "aria-hidden=\"true\">";
+                "aria-hidden=\"true\">";
     }
 
     /**

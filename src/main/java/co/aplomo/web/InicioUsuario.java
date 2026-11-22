@@ -2,7 +2,7 @@ package co.aplomo.web;
 
 import co.aplomo.dao.ConsultaDao.Fila;
 import co.aplomo.dao.ReservaDao.Ficha;
-import co.aplomo.servicio.Avisos.Destinatario;
+import co.aplomo.servicio.Avisos.ContactoEquipo;
 import co.aplomo.servicio.SolicitudesVisita.Ingeniero;
 
 import java.time.LocalDate;
@@ -73,7 +73,7 @@ final class InicioUsuario {
         html.append("</div></section>");
     }
 
-    static void tendencia(List<Fila> visitas, StringBuilder html) {
+    static void tendencia(List<Fila> visitas, List<Fila> evaluaciones, StringBuilder html) {
         List<Fila> ultimas = visitas.stream().filter(f -> f.valor("estado").equals("FINALIZADA"))
                 .filter(f -> !f.valor("puntaje").isBlank())
                 .sorted(Comparator.comparing((Fila f) -> f.valor("fecha")).thenComparingInt(Fila::id).reversed())
@@ -93,12 +93,19 @@ final class InicioUsuario {
         for (int i = 0; i < ultimas.size(); i++) {
             Fila fila = ultimas.get(i);
             String color = fila.valor("color").toLowerCase(Locale.ROOT);
-            html.append("<div class=\"tendencia-visita kpi-riesgo\" style=\"--riesgo:var(--")
+            Fila destino = evaluaciones.stream().filter(e -> e.valor("visita").equals(fila.valor("id")))
+                    .filter(e -> e.valor("estado").equals("FINALIZADA") && !e.valor("puntaje").isBlank())
+                    .max(Comparator.comparingInt((Fila e) -> Integer.parseInt(e.valor("puntaje")))
+                            .thenComparingInt(Fila::id)).orElse(null);
+            if (destino == null) continue;
+            html.append("<a class=\"tendencia-visita kpi-riesgo\" href=\"/evaluaciones/")
+                    .append(destino.id()).append("\" style=\"--riesgo:var(--")
                     .append(List.of("verde", "amarillo", "rojo").contains(color) ? color : "muted").append(")\">")
                     .append("<strong>").append(Html.escapar(fila.valor("puntaje"))).append("</strong><span>")
                     .append(Html.escapar(Formularios.etiqueta(fila.valor("color")))).append("</span><small>")
-                    .append(Html.escapar(fila.valor("fecha").substring(0, 10)))
-                    .append(i == ultimas.size() - 1 ? " · última" : "").append("</small></div>");
+                    .append(LocalDate.parse(fila.valor("fecha").substring(0, 10))
+                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                    .append(i == ultimas.size() - 1 ? " · última" : "").append("</small></a>");
         }
         if (ultimas.isEmpty()) html.append("<p class=\"muted\">Aún no hay visitas Finalizadas.</p>");
         html.append("</div></section>");
@@ -110,19 +117,7 @@ final class InicioUsuario {
         return dias >= 28 && dias <= 31 ? " en un mes" : dias == 1 ? " en un día" : " en " + dias + " días";
     }
 
-    static void ayuda(List<Destinatario> destinos, Map<Integer, Ingeniero> personas, StringBuilder html) {
-        html.append("<section class=\"card stack usuario-ayuda\" data-ayuda-inicio><div class=\"row between\">")
-                .append("<h2>¿Podemos ayudarte en algo?</h2><button type=\"button\" class=\"btn\" ")
-                .append("data-cerrar-ayuda-inicio aria-label=\"Ocultar ayuda durante esta sesión\">×</button></div>")
-                .append("<p>Si tienes una pregunta o algo que contarnos, escríbenos. Te respondemos aquí mismo.</p>");
-        for (Destinatario destino : destinos) {
-            Ingeniero persona = personas.get(destino.id());
-            html.append("<div class=\"ayuda-persona\">").append(persona == null ? Html.escapar(destino.nombre()) :
-                            TextoLista.persona(persona.nombre(), persona.color())).append("<small class=\"muted\">")
-                    .append(destino.principal() ? "Administradora principal" : "Tu evaluador asignado")
-                    .append("</small><a href=\"/avisos/nuevo?para=").append(destino.id()).append(
-                            "\">Escribir →</a></div>");
-        }
-        html.append("<p>O visita el <a href=\"/ayuda\">Centro de ayuda</a>.</p></section>");
+    static void ayuda(List<ContactoEquipo> contactos, StringBuilder html) {
+        html.append(ContactoInicio.tarjeta(contactos));
     }
 }

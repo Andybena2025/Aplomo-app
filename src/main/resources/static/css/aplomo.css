@@ -2501,3 +2501,246 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
 .solicitud-motivos{flex-wrap:wrap}.solicitud-guiada [data-solicitud-resumen] p{margin:0;overflow-wrap:anywhere}
 @media(max-width:719px){.solicitud-personas{grid-template-columns:1fr}.solicitud-indicador{gap:12px;font-size:13px}
  .solicitud-guiada{padding:16px!important}.dia-solicitud{font-size:14px}.solicitud-calendario .row{gap:8px}}
+/* Paso 33 · saludo y acceso directo a contactos. */
+.titulo-con-rol{
+flex-direction:column;
+align-items:flex-start;
+gap:0}
+
+.cabecera-rol-texto{
+font:13px Inter,sans-serif;
+text-transform:uppercase;
+letter-spacing:.2em;
+color:var(--marca);
+
+ margin:6px 0 0;
+border:0;
+background:none;
+border-radius:0}
+
+.btn.p,
+.alineo .inicio-acciones .btn.p{
+font-weight:700!important}
+
+.usuario-cabecera-grid{
+display:grid;
+grid-template-columns:repeat(4,minmax(0,1fr));
+gap:12px;
+align-items:stretch;
+margin-bottom:24px}
+
+.usuario-cabecera-grid>.usuario-proxima{
+grid-column:1/4;
+margin:0}
+
+.usuario-cabecera-grid>.usuario-ayuda{
+grid-column:4;
+margin:0;
+min-width:0}
+
+.usuario-ayuda h2{
+font-family:var(--serif);
+font-size:26px}
+.usuario-ayuda p{
+margin:0;
+font-size:15px}
+
+.inicio-contacto{
+min-width:0}
+.inicio-contacto>small{
+display:block;
+font-size:13px;
+margin-bottom:4px}
+
+.contacto-nombre{
+display:flex;
+align-items:center;
+gap:8px;
+min-height:44px;
+border:0;
+background:transparent;
+
+ color:var(--marca);
+font:600 15px Inter,sans-serif;
+text-align:left;
+padding:0;
+cursor:pointer;
+max-width:100%}
+
+.contacto-nombre .persona-color{
+flex-shrink:0}
+.contacto-ficha{
+margin-top:8px;
+padding:12px;
+border:1px solid var(--line);
+
+ border-radius:12px;
+background:var(--card2);
+overflow-wrap:anywhere;
+font-size:15px}
+
+.contacto-ficha[hidden]{
+display:none!important}
+.contacto-ficha small{
+font-size:13px}
+
+.tendencia-visita{
+text-decoration:none;
+border-radius:12px;
+transition:background .2s,border-color .2s}
+
+.tendencia-visita:hover{
+border-color:var(--line2)}
+.tendencia-visita:focus-visible{
+outline:2px solid var(--marca);
+outline-offset:3px}
+
+.ayuda-superior{
+display:grid;
+grid-template-columns:repeat(3,minmax(0,1fr));
+gap:16px;
+align-items:start;
+margin-bottom:32px}
+
+.ayuda-superior>*{
+min-width:0}
+.ayuda-superior>div{
+grid-column:1/3}
+.ayuda-superior>.ayuda-contacto{
+grid-column:3}
+.ayuda-superior .ayuda-buscador{
+max-width:none}
+.ayuda-superior .ayuda-populares{
+margin-bottom:0}
+
+.ayuda-todos>section{
+background:var(--card);
+border:1px solid var(--line);
+border-radius:16px;
+padding:20px;
+min-width:0}
+
+.ayuda-todos h3{
+font:600 15px Inter,sans-serif;
+color:var(--marca)}
+
+.ayuda-todos a{
+display:flex;
+align-items:center;
+min-height:44px;
+border-bottom:1px solid var(--line);
+padding:10px 0}
+
+.ayuda-todos a:last-child{
+border-bottom:0}
+
+.ayuda-contacto .contacto-botones,
+.ayuda-inicio>.ayuda-contacto .contacto-botones{
+display:flex;
+flex-direction:row;
+flex-wrap:nowrap;
+
+ align-items:stretch;
+gap:6px}
+.ayuda-contacto .contacto-botones .btn{
+min-width:0;
+flex:1;
+padding:0 6px;
+font-size:14px!important;
+
+ white-space:normal;
+line-height:1.2;
+min-height:44px;
+height:auto;
+text-align:center}
+
+.ayuda-contacto .contacto-botones .btn:last-child{
+flex:2}
+.acceso-volver{
+display:flex;
+justify-content:flex-end;
+margin:0 0 24px}
+
+.login-pie a[href="/ayuda"],
+.acceso-nuevo a{
+color:var(--marca);
+font:600 16px Inter,sans-serif;
+text-decoration:underline;
+
+ text-decoration-thickness:1px;
+text-underline-offset:4px}
+
+.tarjeta-dorada .field label,
+.tarjeta-dorada label.field,
+.tarjeta-dorada .field>label{
+color:var(--marca);
+font-size:13px;
+
+ font-weight:600;
+letter-spacing:.06em}
+
+@media(max-width:1023px){
+.usuario-cabecera-grid{
+grid-template-columns:minmax(0,1fr)}
+
+ .usuario-cabecera-grid>.usuario-proxima,
+.usuario-cabecera-grid>.usuario-ayuda{
+grid-column:1}
+
+ .ayuda-superior{
+grid-template-columns:minmax(0,1fr)}
+.ayuda-superior>div,
+.ayuda-superior>.ayuda-contacto{
+grid-column:1}
+ }
+
+.tarjeta-dorada{position:relative;background:linear-gradient(180deg,#18171a,#141416);border-radius:18px;
+box-shadow:0 0 0 1px rgba(227,205,160,.16),0 18px 50px -20px rgba(227,205,160,.16)}
+.tarjeta-dorada::before,.tarjeta-dorada::after{content:"";position:absolute;inset:0;border-radius:inherit;
+pointer-events:none;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+-webkit-mask-composite:xor;mask-composite:exclude}
+.tarjeta-dorada::before{padding:1px;background:linear-gradient(160deg,rgba(227,205,160,.55),
+rgba(227,205,160,.08) 45%,rgba(227,205,160,.3))}
+@property --brillo{syntax:'<percentage>';inherits:false;initial-value:-30%}
+.tarjeta-dorada::after{padding:1.5px;background:linear-gradient(105deg,transparent calc(var(--brillo) - 14%),
+rgba(255,240,205,.95) var(--brillo),transparent calc(var(--brillo) + 14%));
+animation:brillo-dorado 1.8s ease-in-out .6s 1 both}
+@keyframes brillo-dorado{from{--brillo:-30%}to{--brillo:130%}}
+@media (prefers-reduced-motion:reduce){.tarjeta-dorada::after{animation:none;opacity:0}}
+@media print{.tarjeta-dorada::after{display:none}}
+
+/* Evitar el margen heredado entre secciones hermanas dentro de las nuevas rejillas. */
+.usuario-cabecera-grid>section.card.stack{
+margin:0}
+
+.ayuda-superior>.ayuda-contacto,
+.ayuda-publica-grid .ayuda-contacto{
+margin:0}
+
+.ayuda-contacto .contacto-botones .btn:first-child{
+flex:1.15}
+
+.ayuda-contacto .contacto-botones .btn:nth-child(2){
+flex:.85}
+
+.ayuda-contacto .contacto-botones .btn:first-child{
+flex:0 0 86px;
+min-width:86px}
+
+.ayuda-contacto .contacto-botones .btn:nth-child(2){
+flex:0 0 64px;
+min-width:64px}
+
+.ayuda-contacto .contacto-botones .btn:last-child{
+flex:1}
+
+.ayuda-todos{
+grid-auto-rows:1fr;
+align-items:stretch}
+
+.inicio-indicador:hover{
+border-color:var(--line2)}
+
+.inicio-indicador:focus-visible{
+outline:2px solid var(--marca);
+outline-offset:3px}
