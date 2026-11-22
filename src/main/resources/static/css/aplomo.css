@@ -2767,3 +2767,13 @@ outline-offset:3px}
 .usuarios-roles .chip[aria-pressed="true"] .rol-punto{box-shadow:0 0 0 2px var(--ink,#0E0E10)}
 .usuarios-table tbody tr[data-rol]>td:first-child{box-shadow:inset 3px 0 0 var(--rol)}
 .usuarios-table tbody tr[data-rol] .fila-enlace strong{color:var(--rol)}
+
+/* Paso 38C: las dos invitaciones del ingreso caben en una línea; el enlace nunca se parte. */
+.acceso-nuevo{
+margin:0;
+white-space:nowrap}
+.acceso-invitaciones{
+display:grid;
+gap:10px}
+.acceso-nuevo a{
+white-space:nowrap}
