@@ -2071,19 +2071,15 @@ h1,h2,h3,.step-num,.paso-numero{color:var(--titulo)}
  24%{transform:rotate(1.7deg)}32%{transform:rotate(-.6deg)}}
 .marca-llegada{position:relative;color:var(--marca);isolation:isolate}
 .marca-llegada>.logo-alineo{overflow:hidden}
-.marca-llegada .lg-regla>line:first-child{stroke-dasharray:319;animation:marcaRegla 2.1s ease-out both}
-.marca-llegada .lg-regla>line:not(:first-child){animation:marcaMarca .4s ease-out both;
- animation-delay:calc(var(--i)*.02s)}
 .lg-sec-a{display:none}
-/* Paso 36: secuencia punteada A -> L -> eje X (se divide en la E) -> centro de la O -> arco. */
+/* Paso 36: secuencia punteada A -> L -> eje X (se divide en la E) -> centro de la O -> arco.
+   Una sola vez (~6 s) y queda completa; la regla no se anima. */
 .marca-llegada .lg-a>path[stroke-dasharray]{display:none}.marca-llegada .lg-sec-a{display:inline}
-.marca-llegada .lg-sec [style*="--t"]{animation:marcaPunto .18s ease-out both;animation-delay:calc(2000ms + var(--t)*1ms)}
+.marca-llegada .lg-sec [style*="--t"]{animation:marcaPunto .3s ease-out both;animation-delay:calc(600ms + var(--t)*1ms)}
 @keyframes marcaPunto{from{opacity:0}to{opacity:1}}
 .marca-llegada::after{content:"";pointer-events:none;position:absolute;inset:18% auto 26% 0;width:12%;
  background:linear-gradient(90deg,transparent,#E3CDA02B,transparent);opacity:0;mix-blend-mode:screen;
  animation:marcaBrillo 20s ease-in-out 3s infinite}
-@keyframes marcaRegla{from{stroke-dashoffset:319}to{stroke-dashoffset:0}}
-@keyframes marcaMarca{from{opacity:0}to{opacity:1}}
 @keyframes marcaBrillo{0%{left:0;opacity:0}3%{opacity:.7}17%{left:88%;opacity:.7}20%,100%{left:88%;opacity:0}}
 .riel-izq .marca-v::after{content:"";position:absolute;left:3%;top:73%;width:5px;height:5px;border-radius:50%;
  background:var(--marca);box-shadow:0 0 9px 3px #E3CDA066;opacity:0;animation:marcaLuz 14s linear infinite}

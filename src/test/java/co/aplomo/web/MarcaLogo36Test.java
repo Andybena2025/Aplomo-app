@@ -34,7 +34,7 @@ class MarcaLogo36Test {
         int trazo = minimo(seccion(logo, "lg-trazo"));
         assertEquals(0, minimo(seccion(logo, "lg-sec-a")));
         assertTrue(a < l && l < ejes && ejes < trazo, "orden A, L, ejes, O");
-        assertTrue(maximo(logo) <= 3100, "la secuencia dura unos 3 segundos");
+        assertTrue(maximo(logo) >= 5500 && maximo(logo) <= 6200, "la secuencia dura unos 6 segundos");
     }
 
     @Test
