@@ -101,4 +101,13 @@
     <text x="76.2" y="125">L</text><text x="117.5" y="125">I</text><text x="142.4" y="125">N</text>
     <text x="196.4" y="125">E</text><text x="241.7" y="125">O</text><text x="295.7" y="125">.</text>
   </g>
+  <!-- Destellos tipo joya: solo se ven en .marca-llegada (login y Sobre ALINEO). -->
+  <defs><radialGradient id="alineo-halo"><stop offset="0" stop-color="#FFF6E2" stop-opacity=".9"/><stop offset=".35" stop-color="#E3CDA0" stop-opacity=".35"/><stop offset="1" stop-color="#E3CDA0" stop-opacity="0"/></radialGradient></defs>
+  <g class="destellos" aria-hidden="true">
+    <g transform="translate(42.6,53) scale(1.0)"><g class="destello" style="--d:0s"><circle r="14" fill="url(#alineo-halo)"/><line x1="-22" y1="0" x2="22" y2="0" class="rayo"/><path d="M0,-10 C.9,-2.2 2.2,-.9 10,0 C2.2,.9 .9,2.2 0,10 C-.9,2.2 -2.2,.9 -10,0 C-2.2,-.9 -.9,-2.2 0,-10Z" fill="#FFF6E2"/></g></g>
+    <g transform="translate(217.5,44) scale(0.7)"><g class="destello" style="--d:1.1s"><circle r="14" fill="url(#alineo-halo)"/><line x1="-22" y1="0" x2="22" y2="0" class="rayo"/><path d="M0,-10 C.9,-2.2 2.2,-.9 10,0 C2.2,.9 .9,2.2 0,10 C-.9,2.2 -2.2,.9 -10,0 C-2.2,-.9 -.9,-2.2 0,-10Z" fill="#FFF6E2"/></g></g>
+    <g transform="translate(286,60) scale(0.85)"><g class="destello" style="--d:2.0s"><circle r="14" fill="url(#alineo-halo)"/><line x1="-22" y1="0" x2="22" y2="0" class="rayo"/><path d="M0,-10 C.9,-2.2 2.2,-.9 10,0 C2.2,.9 .9,2.2 0,10 C-.9,2.2 -2.2,.9 -10,0 C-2.2,-.9 -.9,-2.2 0,-10Z" fill="#FFF6E2"/></g></g>
+    <g transform="translate(301,118) scale(1.0)"><g class="destello" style="--d:2.9s"><circle r="14" fill="url(#alineo-halo)"/><line x1="-22" y1="0" x2="22" y2="0" class="rayo"/><path d="M0,-10 C.9,-2.2 2.2,-.9 10,0 C2.2,.9 .9,2.2 0,10 C-.9,2.2 -2.2,.9 -10,0 C-2.2,-.9 -.9,-2.2 0,-10Z" fill="#FFF6E2"/></g></g>
+    <g transform="translate(327,133) scale(0.6)"><g class="destello" style="--d:3.9s"><circle r="14" fill="url(#alineo-halo)"/><line x1="-22" y1="0" x2="22" y2="0" class="rayo"/><path d="M0,-10 C.9,-2.2 2.2,-.9 10,0 C2.2,.9 .9,2.2 0,10 C-.9,2.2 -2.2,.9 -10,0 C-2.2,-.9 -.9,-2.2 0,-10Z" fill="#FFF6E2"/></g></g>
+  </g>
 </svg>
