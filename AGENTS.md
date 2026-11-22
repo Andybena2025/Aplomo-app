@@ -461,3 +461,18 @@ Luego ESPERA el OK de Andy.
 
 - Recarga real Paso 33 confirmada: 13 cuentas, 13 vínculos y 397 registros históricos conservados por ID;
   0 duplicados demo y tres nombres verificados. Ningún hash/contraseña real extraído. Cierre dirigido 6/6.
+
+### Paso 34 · login y botones de contacto
+- Encargo sobre 9d291ce; un commit/push Paso 34. Sin capturas, migración ni recarga de demo.
+- SVG literal de Andy en pzOverlay: 5 lb/ld/ldp, 8 jt; 21/22/65/19/4 grados, sin 108/162. Solo ese bloque
+  cambia en login.html; fit() y resto de plantilla idénticos. CSS ld/ldp exacto, gd conservado.
+- Fichas U reutilizan ContactoAyuda.botones, asunto Ayuda con ALINEO y para=id autorizado; email/teléfono
+  como texto, sin Escribir. Sin número válido no hay WhatsApp. Avisos.contactos/permisos intactos.
+- Vista con DTO ficticios sin base: 1920/1366/1180/1080/1024/810/390, botones de 44 px, misma fila y 0 px
+  de corte/desborde. Cero errores de consola capturados, sin envíos ni apertura de servicios externos.
+- Base 1149/171; cuatro casos Maven nuevos; dirigidas 9/9; suites completas una sola vez al cierre.
+  Informe docs/informe_paso34.md. Motor/cálculo/IA/RULA/esquema intactos; hardware/tacto/otros navegadores pendientes.
+- Al entregar: commit/push verificado, app normal en 8080 y esperar revisión de Andy.
+
+- Cierre Paso 34: 1153 casos Maven distintos verificados; suite única con dos expectativas antiguas de x=1020
+  corregidas a 988 y cierre dirigido 17/17. JS 171/171 en suite única. Sin recarga ni cambios de datos reales.

@@ -165,11 +165,11 @@ class HttpAyudaTest extends HttpPrueba {
     }
 
     @Test
-    void marcaNoCambiaIdentificadoresNiIconoNiEncuadre() throws Exception {
+    void marcaConservaIdentificadoresYEncuadreConPlomadaActualizada() throws Exception {
         var respuesta = get("/login");
         assertTrue(respuesta.headers().allValues("Set-Cookie").get(0).startsWith("APLOMO_SESION="));
         assertTrue(respuesta.body().contains("viewBox=\"0 0 1400 933\""));
-        assertTrue(respuesta.body().contains("x1=\"1020\" y1=\"20\""));
+        assertTrue(respuesta.body().contains("x1=\"988\" y1=\"20\""));
         assertTrue(respuesta.body().contains("/static/css/aplomo.css"));
         assertEquals("DEMO-APLOMO-PRACTICA", co.aplomo.modelo.Demostracion.NIT_PRACTICA);
         assertEquals("ALINEO · Práctica de evaluación", Html.escapar(co.aplomo.servicio.PracticaEvaluacion.NOMBRE));

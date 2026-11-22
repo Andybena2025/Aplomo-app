@@ -33,7 +33,7 @@ class HttpMarca28Test extends HttpPrueba {
         assertTrue(login.contains("marca-llegada"));
         assertTrue(login.contains("lg-iplomo"));
         assertTrue(login.contains("id=\"pzOverlay\""));
-        assertTrue(login.contains("x1=\"1020\" y1=\"20\""));
+        assertTrue(login.contains("x1=\"988\" y1=\"20\""));
         assertTrue(login.contains("mostrar-clave.js"));
         assertFalse(login.contains("{{logo}}"));
         assertTrue(get("/favicon.svg").body().contains("#E3CDA0"));

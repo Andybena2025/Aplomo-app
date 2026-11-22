@@ -40,18 +40,14 @@ final class ContactoInicio {
             html.append(Html.escapar(nombre)).append("</button><div class=\"contacto-ficha stack\" id=\"")
                     .append(id).append("\" hidden><strong>").append(Html.escapar(nombre)).append("</strong><small>")
                     .append(Html.escapar(cargo)).append("</small>");
-            if (correo != null && correo.matches("[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}"))
-                html.append("<a href=\"mailto:").append(Html.escapar(correo)).append("\">")
-                        .append(Html.escapar(correo)).append("</a>");
-            if (!numero.isEmpty()) {
-                html.append("<a href=\"tel:+").append(numero).append("\">").append(Html.escapar(telefono)).append(
-                        "</a>");
-                String wa = persona.principal() ? numero(principal.whatsapp()) : numero;
-                if (!wa.isEmpty()) html.append("<a class=\"btn\" target=\"_blank\" rel=\"noopener noreferrer\" ")
-                        .append("href=\"https://wa.me/").append(wa).append("\">WhatsApp</a>");
-            }
-            html.append("<a class=\"btn\" href=\"/avisos/nuevo?para=").append(persona.id())
-                    .append("\">Escribir</a></div></div>");
+            boolean correoValido = correo != null &&
+                    correo.matches("[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}");
+            if (correoValido) html.append("<p class=\"contacto-dato\">").append(Html.escapar(correo)).append("</p>");
+            if (!numero.isEmpty()) html.append("<p>").append(Html.escapar(telefono)).append("</p>");
+            String wa = numero.isEmpty() ? "" : persona.principal() ? numero(principal.whatsapp()) : numero;
+            Contacto ficha = new Contacto(nombre, cargo, correoValido ? correo : "",
+                    numero.isEmpty() ? "" : telefono, wa, false);
+            html.append(ContactoAyuda.botones(ficha, persona.id())).append("</div></div>");
         }
         return html.append("<p class=\"small muted\">Siempre estamos aquí para ayudarte.</p>")
                 .append("<a class=\"small\" href=\"/ayuda\">Centro de ayuda</a></section>").toString();
