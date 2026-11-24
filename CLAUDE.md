@@ -47,7 +47,7 @@ Lee este archivo completo antes de escribir código. Es la memoria del proyecto:
 - Las fotos se guardan en una **carpeta del servidor** con nombre único; la base guarda solo la ruta. Solo los roles con permiso pueden abrirlas; un Usuario nunca ve fotos (RNF-006).
 - Textos de la interfaz en **español**, claros y sin códigos técnicos (RNF-007).
 - El informe PDF (RF-026) se hace con una página HTML preparada para imprimir y "Guardar como PDF" del navegador. No hace falta ninguna librería de PDF.
-- La interfaz **se ve como el mock app**: estética "Obsidian & Ivory", modo oscuro, tipografías Instrument Serif + Inter. Copia los tokens de `docs/07_estilo_visual.md`.
+- La interfaz **se ve como el mock app**: estética "Obsidian & Ivory", modo oscuro, tipografías Barlow (títulos, propia en `static/fonts/`) + Inter; Instrument Serif solo en la palabra ALINEO. del logo. Copia los tokens de `docs/07_estilo_visual.md`.
 
 ## Diferencias entre el mock app y lo que hay que programar
 

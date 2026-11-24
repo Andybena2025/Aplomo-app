@@ -14,16 +14,18 @@ El docente quiere que el software se vea como el prototipo. Las capturas están 
   --bg:#0B0B0C; --card:#151517; --card2:#1C1C1F; --line:#2B2B2F; --line2:#3A3A40;
   --ivory:#EDE6D8; --plat:#C9CCD2; --muted:#9E998F; --ink:#0B0B0C;
   --verde:#34C759; --amarillo:#FFCC00; --rojo:#FF453A;
-  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --display:'Barlow','Inter',system-ui,-apple-system,'Segoe UI',sans-serif; /* títulos y cifras */
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif; /* solo la palabra ALINEO. */
   --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   color-scheme:dark;
 }
 ```
 
-- Fuentes de Google Fonts: `Instrument Serif` (títulos) e `Inter` (300 a 600, texto).
+- Títulos y cifras grandes: `Barlow` (400 y 500), guardada en `static/fonts/` para que funcione sin internet (licencia OFL). Texto: `Inter` (300 a 600). `Instrument Serif` queda solo para la palabra ALINEO. del logo.
+- Cambio de noviembre de 2026: la docente pidió una letra menos formal y más técnica, de ingeniería industrial.
 - Fondo obsidiana, texto marfil, tarjetas con borde fino y radio de 14 px.
 - Botón principal: píldora marfil con texto negro (`.btn.p`). Botones secundarios: píldora con borde.
-- Títulos grandes en serif; etiquetas pequeñas en mayúsculas con espaciado amplio.
+- Títulos grandes en Barlow 500, champán; etiquetas pequeñas en mayúsculas con espaciado amplio.
 
 ## Semáforo (RF-020)
 
@@ -45,13 +47,13 @@ Una compañera propuso una versión clara, "Perla": fondo `#F3EFE8`, tarjetas `#
 ## Paso 27 · Sistema visual vigente (21/11/2026)
 
 Este apartado sustituye las indicaciones visuales anteriores cuando se contradigan. Conserva Obsidian & Ivory,
-Instrument Serif e Inter. Los cambios de propiedad, avisos y solicitudes se validan en el servidor; el aspecto
+Barlow (títulos), Inter (texto) e Instrument Serif (solo la marca). Los cambios de propiedad, avisos y solicitudes se validan en el servidor; el aspecto
 nunca concede permisos.
 
 | Componente | Regla vigente |
 | --- | --- |
 | Fondo y superficies | Carbón `#0E0E10`; tarjetas opacas; filas alternas `#18181B`. |
-| Títulos | Instrument Serif, champán `#E3CDA0`; texto normal marfil y secundario `#9E998F`. La marca sigue marfil. |
+| Títulos | Barlow 500, champán `#E3CDA0`; texto normal marfil y secundario `#9E998F`. La marca sigue marfil. |
 | Anchos | Paneles hasta 1180 px; formularios, lectura y Mi cuenta hasta 720 px. |
 | Acción principal | Marfil, texto oscuro; una acción principal por sección. |
 | Acción secundaria | Fondo `#242429`, borde de 1,5 px `#CFC8BA`, texto 600. Enlaces champán subrayados. |
