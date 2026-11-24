@@ -183,7 +183,7 @@
    const f=fila(k),p=propuesta(d,k),manual=d.estado.manual[k],valor=k==='GIRO'?d.estado.giro:k==='PIERNAS'?(d.estado.piernas===null?'':d.estado.piernas?'si':'no'):manual??p?.rango;
    const r=[...f.querySelectorAll('[data-rango]')].find(x=>(angulares.includes(k)?Number(x.value)===Number(valor):String(x.value)===String(valor)));for(const x of f.querySelectorAll('[data-rango]'))x.checked=x===r;
    const texto=r?.closest('label').querySelector('.tour-franja>span').textContent||'Elige por observación';
-   f.querySelector('[data-resumen-segmento]').textContent=angulares.includes(k)?(manual!==undefined?Number(manual).toLocaleString('es-CO'):p?p.grados.toLocaleString('es-CO',{maximumFractionDigits:2}):'—')+'° · '+texto+(manual===undefined&&p?' · Según la foto':''):texto;
+   f.querySelector('[data-resumen-segmento]').textContent=angulares.includes(k)?(manual!==undefined?Math.round(Number(manual)).toLocaleString('es-CO'):p?Math.round(p.grados).toLocaleString('es-CO'):'—')+'° · '+texto+(manual===undefined&&p?' · Según la foto':''):texto;
    const pendiente=revisar(d,k);f.dataset.pendiente=String(pendiente);f.querySelector('[data-revisar]').hidden=!pendiente;
    const fuente=fuentes.get(d.foto.indiceFoto+':'+lado+':'+k);f.querySelector('[data-fuente]').textContent=fuente?(angulares.includes(k)&&manual===undefined?'Perfil · ajuste: '+fuente:fuente):'Perfil';
    if(pendiente&&!f.dataset.pulsado){f.dataset.pulsado='si';f.classList.add('revision-pulso');}

@@ -45,6 +45,7 @@ final class TablasTrabajo {
                         "\" data-lista data-seccion=\"").append(seccion.name()).append("\" data-inicial=\"")
                 .append(Html.escapar(pagina.filtros().getOrDefault("estado", ""))).append("\" data-unidad=\"")
                 .append(Html.escapar(seccion.singular())).append("\">")
+                .append(seccion == SeccionConsulta.VISITAS ? MesesVisitas.conteos(filas) : "")
                 .append(herramientas(sesion, pagina, filas, contexto != null));
         if (seccion == SeccionConsulta.RESERVAS && evaluador) html.append(proxima(filas));
         if (seccion == SeccionConsulta.VISITAS) html.append(enCurso(sesion, filas));
@@ -63,27 +64,13 @@ final class TablasTrabajo {
             var grupos = filas.stream().filter(f -> !evaluador || !f.valor("estado").equals("ESPERANDO")).collect(
                     Collectors.groupingBy(f -> f.valor("fecha").substring(0, 10), LinkedHashMap::new,
                             Collectors.toList()));
-            html.append("<div class=\"table-scroll\"><table class=\"resp alineo-table consultas-table\">")
-                    .append(FilasTrabajo.cabecera(seccion, sesion.cuenta().rol()));
-            for (var grupo : grupos.entrySet()) {
-                String dia = LocalDate.parse(grupo.getKey()).format(DateTimeFormatter.ofPattern("EEEE dd/MM/yyyy",
-                        java.util.Locale.forLanguageTag("es-CO"))).toUpperCase(java.util.Locale.ROOT);
-                html.append("<tbody data-lista-grupo><tr class=\"dia-reserva\"><td colspan=\"5\"><h2 " +
-                        "class=\"lista-grupo\">").append(dia).append("</h2></td></tr>");
-                for (Fila fila : grupo.getValue()) {
-                    String registro = FilasTrabajo.fila(sesion, fila, seccion,
-                            visibles.contains(fila.id()) && fila.id() != destacada);
-                    if (fila.id() == destacada) registro = registro.replace("<tr ", "<tr data-destacada=\"true\" ");
-                    html.append(registro);
-                }
-                html.append("</tbody>");
-            }
-            html.append("</table></div>");
+            html.append(dias(sesion, grupos, visibles, destacada));
             if (evaluador) html.append("<details class=\"historial-reservas\"><summary>Ver historial</summary>" +
                     "<div class=\"chips\"><button class=\"chip\" type=\"button\" data-abrir-historial=\"PASADAS\">" +
                     "Pasadas</button><button class=\"chip\" type=\"button\" " +
                     "data-abrir-historial=\"CANCELADA\">Canceladas</button></div></details>");
-        } else html.append(tabla(sesion, seccion, visibles, filas,
+        } else if (seccion == SeccionConsulta.VISITAS) html.append(MesesVisitas.mostrar(sesion, filas));
+        else html.append(tabla(sesion, seccion, visibles, filas,
                 seccion == SeccionConsulta.EVALUACIONES && pagina.filtros().containsKey("visita")));
         html.append("<p class=\"vacio-lista\" data-lista-vacia hidden>No hay resultados con estos filtros.</p>");
         if (lateral) html.append("</div>").append(PanelAgenda.mostrar(sesion, filas)).append("</div>");
@@ -219,7 +206,15 @@ final class TablasTrabajo {
         for (Fila f : abiertas) {
             int total = Integer.parseInt(f.valor("puestos_total"));
             int hechos = Integer.parseInt(f.valor("puestos_evaluados"));
-            html.append("<article class=\"visita-en-curso\" data-en-curso").append(indice++ < 3 ? "" : " hidden")
+            html.append("<article class=\"visita-en-curso\" data-visita-curso data-estado=\"EN_CURSO\" ")
+                    .append("data-fecha=\"").append(Html.escapar(f.valor("fecha")))
+                    .append("\" data-nivel=\"").append(Html.escapar(f.valor("nivel")))
+                    .append("\" data-puntaje=\"").append(Html.escapar(f.valor("puntaje")))
+                    .append("\" data-color=\"").append(Html.escapar(f.valor("color")))
+                    .append("\" data-evaluador=\"").append(Html.escapar(f.valor("evaluador")))
+                    .append("\" data-busqueda=\"").append(Html.escapar(f.valor("empresa_nombre") + " " +
+                            f.valor("sede_nombre") + " " + f.valor("salon_nombre")))
+                    .append("\" data-en-curso").append(indice++ < 3 ? "" : " hidden")
                     .append("><div><strong title=\"").append(Html.escapar(f.valor("empresa_nombre"))).append("\">")
                     .append(Html.escapar(f.valor("empresa_nombre"))).append("</strong><small>")
                     .append(Html.escapar(f.valor("sede_nombre") + " · " + f.valor("salon_nombre")))
@@ -234,12 +229,40 @@ final class TablasTrabajo {
         if (abiertas.size() > 3)
             html.append("<button class=\"btn\" type=\"button\" data-ver-curso>" + "Ver todas las en curso (")
                     .append(abiertas.size()).append(")</button>");
-        int finalizadas = (int) filas.stream().filter(f -> f.valor("estado").equals("FINALIZADA") &&
-                f.valor("fecha").startsWith(Html.hoy().toString().substring(0, 7))).count();
-        return html.append("</section><h2 data-visitas-titulo>Finalizadas · " +
-                Html.hoy().format(DateTimeFormatter.ofPattern("MMMM yyyy", java.util.Locale.forLanguageTag("es-CO"))) +
-                "</h2><p class=\"hint\" data-visitas-total>" + Html.plural(finalizadas, "visita") + " este " +
-                "mes</p>").toString();
+        return html.append("</section>").toString();
+    }
+
+    /** RF-024, RNF-007: cada fecha se presenta como una tarjeta independiente. */
+    private static String dias(Sesion sesion, Map<String, List<Fila>> grupos,
+            java.util.Set<Integer> visibles, int destacada) {
+        StringBuilder html = new StringBuilder("<div class=\"reservas-dias\">");
+        var idioma = java.util.Locale.forLanguageTag("es-CO");
+        for (var grupo : grupos.entrySet()) {
+            LocalDate fecha = LocalDate.parse(grupo.getKey());
+            boolean hoy = fecha.equals(Html.hoy());
+            String etiqueta = hoy ? "Hoy" : fecha.equals(Html.hoy().plusDays(1)) ? "Mañana" : "";
+            String titulo = fecha.format(DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", idioma));
+            titulo = titulo.substring(0, 1).toUpperCase(idioma) + titulo.substring(1);
+            html.append("<section data-lista-grupo data-dia-reservas class=\"dia-tarjeta")
+                    .append(hoy ? " es-hoy" : "").append("\"><header class=\"dia-cabecera\">")
+                    .append("<div class=\"dia-cuadro\"><small>")
+                    .append(fecha.format(DateTimeFormatter.ofPattern("EEE", idioma)).toUpperCase(idioma))
+                    .append("</small><strong>").append(fecha.getDayOfMonth()).append("</strong></div><h2>")
+                    .append(Html.escapar(titulo)).append("</h2>");
+            if (!etiqueta.isEmpty()) html.append("<span class=\"dia-etiqueta\">").append(etiqueta).append("</span>");
+            html.append("<span data-dia-contador>").append(Html.plural(grupo.getValue().size(), "reserva"))
+                    .append("</span></header><div class=\"table-scroll\"><table class=\"resp alineo-table ")
+                    .append("consultas-table\">").append(FilasTrabajo.cabecera(SeccionConsulta.RESERVAS,
+                            sesion.cuenta().rol())).append("<tbody>");
+            for (Fila fila : grupo.getValue()) {
+                String registro = FilasTrabajo.fila(sesion, fila, SeccionConsulta.RESERVAS,
+                        visibles.contains(fila.id()) && fila.id() != destacada);
+                if (fila.id() == destacada) registro = registro.replace("<tr ", "<tr data-destacada=\"true\" ");
+                html.append(registro);
+            }
+            html.append("</tbody></table></div></section>");
+        }
+        return html.append("</div>").toString();
     }
 
     private static String accion(Sesion sesion, SeccionConsulta seccion) {

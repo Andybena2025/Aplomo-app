@@ -139,7 +139,12 @@ public final class Empresas {
     /**
      * RF-004/024: metadatos registrados para la lista de empresas.
      */
-    public record Resumen(Empresa empresa, String ciudad, List<Persona> equipo) {
+    public record Resumen(Empresa empresa, String ciudad, List<Persona> equipo,
+                          java.time.LocalDateTime proximaVisita) {
+        /** RF-024: mantiene los consumidores que no presentan próximas citas. */
+        public Resumen(Empresa empresa, String ciudad, List<Persona> equipo) {
+            this(empresa, ciudad, equipo, null);
+        }
     }
 
     /**
@@ -176,8 +181,20 @@ public final class Empresas {
                     acceso.valor())) {
                 equipos.computeIfAbsent(fila.getKey(), ignorado -> new java.util.ArrayList<>()).add(fila.getValue());
             }
+            var proximas = new java.util.HashMap<Integer, java.time.LocalDateTime>();
+            for (var fila : co.aplomo.db.Sql.listar(conexion,
+                    "SELECT em.id_empresa,MIN(TIMESTAMP(r.fecha,r.hora_inicio)) proxima " +
+                            "FROM reserva r JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) " +
+                            "JOIN empresa em USING(id_empresa) WHERE " + acceso.sql("em.id_empresa") +
+                            " AND r.estado IN ('ESPERANDO','EN_COLA') AND TIMESTAMP(r.fecha,r.hora_inicio)>=? " +
+                            "GROUP BY em.id_empresa", f -> java.util.Map.entry(f.getInt(1),
+                            f.getTimestamp(2).toLocalDateTime()), acceso.todas(), acceso.valor(),
+                    java.time.LocalDateTime.now(java.time.ZoneId.of("America/Bogota")))) {
+                proximas.put(fila.getKey(), fila.getValue());
+            }
             return registros.stream().map(empresa -> new Resumen(empresa, ciudades.getOrDefault(empresa.id(), ""),
-                    List.copyOf(equipos.getOrDefault(empresa.id(), new java.util.ArrayList<>())))).toList();
+                    List.copyOf(equipos.getOrDefault(empresa.id(), new java.util.ArrayList<>())),
+                    proximas.get(empresa.id()))).toList();
         });
     }
 

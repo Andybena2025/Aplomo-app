@@ -100,7 +100,9 @@ class HttpCierreTest extends HttpPrueba {
                 tiempos++;
                 continue;
             }
-            assertFalse(opcion.contains("<small class=\"tour-ayuda\""));
+            if (opcion.contains("name=\"acepta\""))
+                assertTrue(opcion.contains("Por escrito, antes de empezar."));
+            else assertFalse(opcion.contains("<small class=\"tour-ayuda\""));
         }
         assertEquals(8, cantidad);
         assertEquals(0, tiempos);

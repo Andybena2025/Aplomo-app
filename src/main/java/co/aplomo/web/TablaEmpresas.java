@@ -29,10 +29,9 @@ final class TablaEmpresas {
                 .append(selector("sector", "Sector",
                         empresas.stream().map(r -> r.empresa().sector()).filter(java.util.Objects::nonNull)
                                 .filter(s -> !s.isBlank()).distinct().sorted().toList()))
-                .append("<label class=\"field\">Orden<select class=\"input\" data-lista-orden>" +
-                        "<option value=\"nombre\">A-Z</option><option value=\"recientes\">Más " +
-                        "recientes</option></select></label>" +
-                        "<a class=\"btn\" data-lista-limpiar hidden href=\"/empresas\">Limpiar filtros</a></div>")
+                .append("<a class=\"btn\" data-lista-limpiar hidden href=\"/empresas\">Limpiar filtros</a></div>")
+                .append(VerPor.mostrar("EVALUADOR", new String[][]{{"EVALUADOR", "Evaluador"},
+                        {"PROXIMA", "Próxima visita"}, {"CIUDAD", "Ciudad"}, {"AZ", "A-Z"}}))
                 .append("<nav class=\"chips\" aria-label=\"Estado\">");
         for (var estado : List.of(Map.entry("ACTIVO", "Activas"), Map.entry("INACTIVO", "Inactivas"),
                 Map.entry("TODOS", "Todas"))) {
@@ -42,10 +41,13 @@ final class TablaEmpresas {
         }
         html.append("</nav>");
         if (sesion.cuenta().rol() == Rol.ADMINISTRADOR) html.append(personas(empresas));
-        html.append("<p class=\"hint\" data-lista-contador role=\"status\"></p><div class=\"table-scroll\">" +
+        html.append(metadatos(empresas));
+        html.append("<p class=\"hint\" data-lista-contador role=\"status\"></p><div data-ver-por-grupos></div>" +
+                "<div class=\"table-scroll\" data-tabla-base>" +
                 "<table class=\"resp alineo-table\"><thead><tr><th scope=\"col\">Empresa</th>" +
                 (sesion.cuenta().rol() == Rol.EVALUADOR ? "" : "<th scope=\"col\">Evaluador(es)</th>") +
-                "<th scope=\"col\">Estado</th>" + "<th scope=\"col\"></th></tr></thead><tbody>");
+                "<th scope=\"col\">Próxima visita</th><th scope=\"col\">Estado</th>" +
+                "<th scope=\"col\"></th></tr></thead><tbody>");
         for (Resumen r : empresas.stream()
                 .sorted(java.util.Comparator.comparing(x -> x.empresa().nombre(), String.CASE_INSENSITIVE_ORDER))
                 .toList())
@@ -65,6 +67,7 @@ final class TablaEmpresas {
                 .append(e.activo() ? "ACTIVO" : "INACTIVO").append("\" data-evaluadores=\"").append(ids)
                 .append("\" data-evaluador=\"").append(ids.isBlank() ? "SIN_ASIGNAR" : "").append("\" data-ciudad=\"")
                 .append(Html.escapar(r.ciudad())).append("\" data-sector=\"").append(Html.escapar(e.sector()))
+                 .append("\" data-proxima=\"").append(r.proximaVisita() == null ? "" : r.proximaVisita().toString())
                 .append("\" data-busqueda=\"").append(Html.escapar(e.nombre() + " " + e.nit() + " " + lugar))
                 .append("\" style=\"--persona:")
                 .append(r.equipo().isEmpty() ? "#C9CCD2" : TextoLista.color(r.equipo().get(0).color())).append("\">")
@@ -78,9 +81,32 @@ final class TablaEmpresas {
             int inicio = html.indexOf("<td data-label=\"Evaluador(es)\">");
             html.delete(inicio, html.length());
         } else html.append("</td>");
-        return html.append("<td data-label=\"Estado\">")
+        return html.append("<td data-label=\"Próxima visita\">").append(proxima(r))
+                .append("</td><td data-label=\"Estado\">")
                 .append(SistemaVisual.estado(e.activo() ? "ACTIVO" : "INACTIVO"))
                 .append("</td><td aria-hidden=\"true\">›</td></tr>").toString();
+    }
+
+    /** RF-002/024: fecha de la próxima reserva que el servicio ya autorizó. */
+    private static String proxima(Resumen resumen) {
+        var fecha = resumen.proximaVisita();
+        if (fecha == null) return "<span class=\"muted\">Sin visita programada</span>";
+        String dia = fecha.toLocalDate().equals(Html.hoy().plusDays(1)) ? "Mañana" : fecha.format(
+                java.time.format.DateTimeFormatter.ofPattern("EEE dd MMM", java.util.Locale.forLanguageTag("es")));
+        return "<small class=\"muted\">Próxima visita</small><strong class=\"proxima-empresa\">" +
+                Html.escapar(dia + " · " + fecha.format(java.time.format.DateTimeFormatter.ofPattern("H:mm"))) +
+                "</strong>";
+    }
+
+    /** RF-024: identidades públicas para agrupar; nunca contacto ni credenciales. */
+    private static String metadatos(List<Resumen> empresas) {
+        var personas = new TreeMap<Integer, co.aplomo.servicio.Empresas.Persona>();
+        empresas.forEach(e -> e.equipo().forEach(p -> personas.put(p.id(), p)));
+        StringBuilder html = new StringBuilder("<div hidden data-personas-grupo>");
+        personas.forEach((id, p) -> html.append("<span data-persona-id=\"").append(id)
+                .append("\" data-nombre=\"").append(Html.escapar(p.nombre())).append("\" data-color=\"")
+                .append(TextoLista.color(p.color())).append("\"></span>"));
+        return html.append("</div>").toString();
     }
 
     private static String personas(List<Resumen> empresas) {

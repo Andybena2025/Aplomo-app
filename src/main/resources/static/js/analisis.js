@@ -28,7 +28,7 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     detectarBoton.hidden=false;
     detectarBoton.disabled=s.ia==='cargando'||f.vista==='OTRA';
     detectarBoton.textContent=s.ia==='cargando'?'Detectando puntos… la primera vez tarda unos segundos':'Detectar puntos';
-    estadoDeteccion.hidden=!s.mensajeIA;estadoDeteccion.textContent=s.mensajeIA||'';
+    estadoDeteccion.hidden=!s.mensajeIA;estadoDeteccion.textContent=form.dataset.conversacion&&s.ia==='ok'?'Puntos detectados. Arrastra uno si está mal.':s.mensajeIA||'';estadoDeteccion.toggleAttribute('data-puntos-detectados',form.dataset.conversacion&&s.ia==='ok');
     const ajuste=form.querySelector('[data-lado-ajustado]');if(ajuste){ajuste.hidden=!s.avisoLado;ajuste.textContent=s.avisoLado||'';}
     actualizarGuia();
   }

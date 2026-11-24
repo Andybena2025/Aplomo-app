@@ -41,9 +41,13 @@ class FichasAngulosTest {
     }
 
     @Test
-    void elDibujoDeLaFichaTieneAlturaVisibleEnLaRevision() throws Exception {
-        String img = bloque(css(), ".modo-enfoque form.revision-grupos .campo-opcion img");
-        assertTrue(img.contains("height:110px"), "el dibujo usa los 110 px previstos, no los 72 px de la lista");
+    void elDibujoDeLaFichaEsCuadradoYCompletoEnLaRevision() throws Exception {
+        String css = css();
+        int inicio = css.lastIndexOf(".modo-enfoque form.revision-grupos .campo-opcion img{");
+        String img = css.substring(inicio, css.indexOf('}', inicio));
+        assertTrue(img.contains("aspect-ratio:1/1"));
         assertTrue(img.contains("object-fit:contain"), "el dibujo se ve entero, sin recortes");
+        assertTrue(img.contains("height:auto"));
+        assertTrue(img.contains("padding:10px"));
     }
 }

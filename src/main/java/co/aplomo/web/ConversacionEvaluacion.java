@@ -74,12 +74,7 @@ final class ConversacionEvaluacion {
         contenido.append("</ol><progress max=\"5\" value=\"1\" aria-label=\"Avance de la evaluación\">" +
                 "</progress></header>");
         abrir(contenido, 1, "Consentimiento");
-        contenido.append("<h3>¿La persona aceptó ser evaluada?</h3>")
-                .append(PaginasEvaluacion.opcion("acepta", "si", "Sí, firmó el consentimiento", "", true, "required",
-                        "")).append("<p class=\"hint\">Por escrito, antes de la evaluación.</p>");
-        pregunta(contenido, "registro", "", "¿Permite que le tomemos fotos?",
-                new String[][]{{"CON_FOTOS", "Sí, permite fotos", "", "Medimos sobre la foto"}, {
-                    "SIN_REGISTRO_FOTOGRAFICO", "No permite fotos", "", "Sin puntaje RULA"}});
+        contenido.append(FotosGuiadas.consentimiento()).append(FotosGuiadas.permiso(true));
         contenido.append("</section>");
         abrir(contenido, 2, "Datos del puesto");
         String[][] tiempos = {{"MENOS_2", "Menos de 2 horas"}, {"DE_2_A_4", "De 2 a 4 horas"}, {"DE_4_A_6",
@@ -142,10 +137,12 @@ final class ConversacionEvaluacion {
         contenido.append("<p>Si no marcas nada, se cuenta como que no hay ajuste.</p>");
         contenido.append("<fieldset class=\"campo-muneca\"><legend>Muñeca</legend><input type=\"hidden" +
                 "\" name=\"muneca_campo\"><div class=\"campo-chips\">");
-        for (var texto6 : new String[][]{{"RECTA", "Recta"}, {"POCO", "Un poco doblada"}, {"MUCHO", "Muy doblada"}})
-            contenido.append("<button type=\"button\" class=\"campo-chip\" data-muneca=\"")
-                    .append(MapeosCampo.MUNECA.get(texto6[0])).append("\" aria-pressed=\"false\">").append(texto6[1])
-                    .append("</button>");
+        for (var texto6 : new String[][]{{"RECTA", "Recta", "muneca_neutra.png"},
+                {"POCO", "Un poco doblada", "muneca_15.png"}, {"MUCHO", "Muy doblada", "muneca_mas_15.png"}})
+            contenido.append("<button type=\"button\" class=\"campo-chip campo-opcion muneca-rango\" data-muneca=\"")
+                    .append(MapeosCampo.MUNECA.get(texto6[0])).append("\" aria-pressed=\"false\"><img src=\"")
+                    .append("/static/img/tour/").append(texto6[2]).append("\" alt=\"\"><span>").append(texto6[1])
+                    .append("</span></button>");
         chip(contenido, "munecaDesviada", "Torcida hacia un lado");
         chip(contenido, "giro_extremo", "Giro hasta el límite");
         contenido.append("</div></fieldset></div><h3>Esfuerzo y carga</h3>");

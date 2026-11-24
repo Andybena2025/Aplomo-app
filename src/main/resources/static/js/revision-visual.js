@@ -9,10 +9,12 @@
   const pie = uno('.wizfoot');
   const seguir = uno('[data-siguiente]');
   const atras = uno('[data-atras-evaluacion]');
+  atras.setAttribute('aria-label','Atrás');
   const aviso = uno('[data-falta]');
   let estado = {paso: 1, ocupada: false, indice: 0};
   let parte = 0;
-  let ultimaPostura = -1;
+  let ultimaPostura = -1, ultimaFoto = null;
+  const hechas = new Set();
   const definiciones = [
     ['BRAZO', 'Brazo', 'rango_BRAZO', ['hombroElevado', 'brazoSeparado', 'brazoApoyado']],
     ['ANTEBRAZO', 'Antebrazo', 'rango_ANTEBRAZO', ['antebrazoCruza']],
@@ -45,13 +47,26 @@
     if (chips.length) {
       const texto = document.createElement('p');
       texto.className = 'hint';
-      texto.textContent = clave === 'PIERNAS' ? 'Revisa cómo apoya los pies.' : `¿Algo más en ${nombre.toLowerCase()}?`;
+      texto.className = 'ajustes-titulo';
+      texto.textContent = clave === 'PIERNAS' ? 'Revisa cómo apoya los pies.' :
+        `¿Algo más en ${clave === 'BRAZO' ? 'el brazo' : nombre.toLowerCase()}?`;
       ajustes.append(texto);
+      if (['BRAZO','ANTEBRAZO'].includes(clave)) {
+        const ayuda = document.createElement('small');ayuda.className = 'hint';
+        ayuda.textContent = 'Solo el brazo que hace el esfuerzo';ajustes.append(ayuda);
+      }
     }
     chips.forEach(chip => {
       const entrada = uno(`[data-chip="${chip}"]`);
       const etiqueta = entrada?.closest('label');
-      if (etiqueta) ajustes.append(etiqueta);
+      if (etiqueta) {
+        const cortos = {hombroElevado:'Hombro subido',brazoSeparado:'Brazo separado del cuerpo',
+          brazoApoyado:'Brazo apoyado',antebrazoCruza:'Antebrazo cruza o sale hacia un lado',
+          cuelloGirado:'Cabeza torcida',cuelloInclinado:'Cabeza inclinada a un lado',
+          troncoGirado:'Espalda torcida',troncoInclinado:'Espalda inclinada a un lado',
+          pies_sin_apoyo:'Pies sin buen apoyo'};
+        etiqueta.querySelector('span').textContent = cortos[chip];ajustes.append(etiqueta);
+      }
     });
     if (clave === 'PIERNAS') ajustes.append(uno('[data-ayuda-pies]'));
     grupo.append(ajustes);
@@ -68,6 +83,58 @@
     return {grupo, campo, nombre};
   });
   panel.querySelectorAll(':scope > h3,:scope > .campo-ajustes').forEach(elemento => { elemento.hidden = true; });
+  // RF-017: reorganiza los controles existentes, conservando sus manejadores.
+  const detectar = uno('[data-detectar-puntos]');
+  const controlesFoto = detectar.parentElement;
+  controlesFoto.classList.add('foto-controles-claros');
+  const statusFoto = uno('[data-estado-deteccion]');controlesFoto.before(statusFoto);
+  const deshacer = uno('[data-puntos-deshacer]');deshacer.className = 'link';
+  const masFoto = document.createElement('details');masFoto.className = 'foto-mas';
+  const resumenFoto = document.createElement('summary');resumenFoto.textContent = 'Más ⋯';
+  const opcionesFoto = document.createElement('div');opcionesFoto.className = 'foto-mas-opciones';
+  masFoto.append(resumenFoto,opcionesFoto);controlesFoto.append(masFoto);
+  for (const selector of ['[data-puntos-borrar]','[data-cambiar-foto]','[data-quitar-foto]','[data-calcular-manual]']) {
+    const boton = uno(selector);if (boton) {boton.className = 'link';opcionesFoto.append(boton);}
+  }
+  statusFoto.parentElement.querySelector(':scope > span.hint')?.setAttribute('hidden','');
+  // RF-017, RNF-007: tarjeta visual; no transforma el valor utilizado en el cálculo.
+  grupos.slice(0,6).forEach(({grupo,nombre},i) => {
+    const medida = grupo.querySelector('[data-medida]');
+    const pregunta = grupo.querySelector('[data-pregunta]');
+    if (medida) {
+      grupo.querySelector(':scope > h3').hidden = true;
+      const cabecera = nodo('div','medida-resumen');
+      const angulo = medida.querySelector('[data-angulo]');cabecera.append(angulo);
+      const identidad = nodo('div','medida-identidad');
+      identidad.append(nodo('span','medida-etiqueta',nombre.toUpperCase()),nodo('strong','medida-origen','Medido sobre la foto'));
+      const sugerencia = nodo('span','medida-sugerencia');cabecera.append(identidad,sugerencia);medida.prepend(cabecera);
+      const actualizar = () => {
+        const elegida = pregunta?.querySelector('[data-sugerido]');
+        sugerencia.hidden = !elegida;
+        if (elegida) sugerencia.textContent = 'Sugerencia: ' + elegida.querySelector('span').textContent;
+        const origen = identidad.querySelector('.medida-origen');
+        origen.textContent = angulo.dataset.origenMedida === 'manual' ? 'Escrito a mano' : 'Medido sobre la foto';
+        pregunta?.querySelectorAll('.campo-opcion').forEach(b => {
+          let etiqueta = b.querySelector('.rango-sugerido');
+          if (!etiqueta) {etiqueta=nodo('small','rango-sugerido','SUGERIDO');b.append(etiqueta);}
+          etiqueta.hidden = b.dataset.sugerido !== 'true';
+        });
+      };
+      new MutationObserver(actualizar).observe(angulo,{childList:true,attributes:true,subtree:true});
+      if (pregunta) new MutationObserver(actualizar).observe(pregunta,{attributes:true,subtree:true,
+        attributeFilter:['aria-pressed','data-sugerido']});
+      actualizar();
+    }
+    if (pregunta) {
+      pregunta.querySelector(':scope > p').hidden = true;
+      const ayuda = nodo('div','rangos-titulo');
+      ayuda.append(nodo('strong','','¿Cuál dibujo se parece más?'),nodo('small','hint',
+        'Marcamos la sugerencia. Cámbiala si no coincide.'));pregunta.prepend(ayuda);
+      const lista = pregunta.querySelector('.campo-lista');
+      const fichas = [...lista.querySelectorAll('.campo-opcion')].sort((a,b)=>Number(a.dataset.valor)-Number(b.dataset.valor));
+      fichas.forEach(b=>lista.append(b));lista.style.setProperty('--opciones',String(fichas.length));
+    }
+  });
   pie.prepend(atras);
   const contador = document.createElement('span');
   contador.className = 'hint revision-contador';
@@ -119,13 +186,14 @@
     });
     navegacion.querySelectorAll('button').forEach((boton, indice) => {
       boton.setAttribute('aria-pressed', String(indice === parte));
+      boton.classList.toggle('parte-hecha',hechas.has(indice));
       boton.disabled = estado.ocupada;
     });
     if (revision) {
       seguir.disabled = estado.ocupada;
       seguir.style.pointerEvents = '';
-      seguir.textContent = estado.ocupada ? 'Cargando…' : 'Continuar →';
-      contador.textContent = parte < 6 ? `${parte + 1} de 6 partes` : `Esfuerzo ${parte - 5} de 3`;
+      seguir.textContent = estado.ocupada ? 'Cargando…' : parte < 5 ? `Siguiente: ${grupos[parte+1].nombre} →` : 'Continuar →';
+      contador.textContent = parte < 6 ? `${grupos[parte].nombre} · Parte ${parte + 1} de 6` : `${grupos[parte].nombre} · Esfuerzo ${parte - 5} de 3`;
     } else contador.textContent = uno('#pasoActual').textContent;
     exportar.hidden = estado.paso !== 5 || !empresa;
     if (estado.paso === 5) seguir.textContent = estado.ocupada ? 'Guardando…' : 'Guardar y terminar';
@@ -135,13 +203,14 @@
   }
   form.addEventListener('alineo:presentacion', evento => {
     estado = evento.detail;
-    if (ultimaPostura !== estado.indice) { ultimaPostura = estado.indice; parte = 0; }
+    if (ultimaPostura !== estado.indice || ultimaFoto !== estado.foto) { ultimaPostura = estado.indice; ultimaFoto = estado.foto; parte = 0; hechas.clear(); }
     dibujar();
   });
   const continuarOriginal = seguir.onclick;
   seguir.onclick = evento => {
     if (activa() && !estado.ocupada) {
       if (!respondida(parte)) { errorActual(); return; }
+      hechas.add(parte);
       if (parte < grupos.length - 1) { parte++; dibujar(); return; }
     }
     return continuarOriginal.call(seguir, evento);

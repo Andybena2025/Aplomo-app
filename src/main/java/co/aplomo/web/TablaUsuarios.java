@@ -46,7 +46,10 @@ final class TablaUsuarios {
                     .append("\" data-etiqueta=\"").append(estado.getValue()).append("\" aria-pressed=\"false\">")
                     .append(estado.getValue()).append(" · 0</button>");
         }
-        html.append("</div><p class=\"hint\" role=\"status\" data-lista-contador></p><div class=\"table-scroll\">" +
+        html.append("</div>").append(VerPor.mostrar("ROL", new String[][]{{"ROL", "Rol"},
+                {"EMPRESA", "Empresa"}, {"AZ", "A-Z"}}));
+        html.append("<p class=\"hint\" role=\"status\" data-lista-contador></p><div data-ver-por-grupos></div>" +
+                "<div class=\"table-scroll\" data-tabla-base>" +
                 "<table class=\"resp alineo-table usuarios-table\"><thead><tr><th scope=\"col\">Nombre y correo</th>" +
                 "<th scope=\"col\">Rol</th><th scope=\"col\">Empresa</th><th scope=\"col\">Estado</th>" +
                 "<th scope=\"col\">Acciones</th></tr></thead><tbody>");

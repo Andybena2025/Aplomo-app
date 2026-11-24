@@ -9,16 +9,9 @@ final class FotosGuiadas {
 
     static String pantallas() {
         StringBuilder contenido = new StringBuilder(
-                "<section class=\"card stack tour-pregunta fotos-guiadas\" data-paso=\"6\" da" +
-                        "ta-fotos-guiadas hidden><div class=\"stack\" data-foto-pantalla=\"permiso\">" +
-                        "<h2>¿La persona permite que le tomes fotos?</h2><div class=\"tour-opciones\"" +
-                        " role=\"radiogroup\" aria-label=\"Registro fotográfico\">");
-        contenido.append(PaginasEvaluacion.opcion("registro", "CON_FOTOS", "Sí, permite fotos", "", false, "",
-                "Tomas de 1 a 10 fotos. Con ellas se miden los ángulos y se calcula el puntaje."));
-        contenido.append(
-                PaginasEvaluacion.opcion("registro", "SIN_REGISTRO_FOTOGRAFICO", "No permite fotos", "", false, "",
-                        "Se guarda la evaluación sin fotos y sin puntaje RULA."));
-        contenido.append("</div></div>");
+                "<section class=\"card stack tour-pregunta fotos-guiadas\" data-paso=\"6\" " +
+                        "data-fotos-guiadas hidden><div class=\"stack\" data-foto-pantalla=\"permiso\">")
+                .append(permiso(false)).append("</div>");
         for (String[] toma : new String[][]{{"perfil", "Foto de perfil"}, {"frente", "Foto de frente"}, {"detalle",
                 "Detalle de mano y muñeca"}}) {
             contenido.append("<div class=\"stack foto-pregunta\" data-foto-pantalla=\"").append(toma[0])
@@ -46,5 +39,48 @@ final class FotosGuiadas {
                         "\"file\" accept=\"image/jpeg,image/png\" multiple data-foto-extra hidden></d" + "iv" +
                         "></section>")
                 .toString();
+    }
+
+    /** RF-016: casilla original con su ayuda dentro de una tarjeta. */
+    static String consentimiento() {
+        return "<div class=\"permiso-pregunta\"><h3><span class=\"pregunta-numero\">1</span>" +
+                "¿La persona aceptó ser evaluada?</h3>" +
+                PaginasEvaluacion.opcion("acepta", "si", "Sí, firmó el consentimiento", "", true, "required",
+                        "Por escrito, antes de empezar.").replace("tour-opcion", "tour-opcion permiso-consentimiento") +
+                "</div>";
+    }
+
+    /** RF-016, RNF-007: dos tarjetas; los nombres y valores conservan el contrato de fotos. */
+    static String permiso(boolean conversacion) {
+        StringBuilder html = new StringBuilder("<div class=\"permiso-pregunta campo-pregunta\" " +
+                (conversacion ? "data-pregunta=\"registro\"" : "") + "><h3 id=\"pregunta-registro\">" +
+                "<span class=\"pregunta-numero\">2</span><em>¿Permite que le tomemos fotos?</em></h3>");
+        if (conversacion) html.append("<input type=\"hidden\" name=\"registro\" value=\"\">" +
+                "<button type=\"button\" class=\"campo-respuesta\" data-abrir=\"registro\" hidden>" +
+                "<span>Elige una opción</span></button>");
+        html.append("<div class=\"permiso-fotos ").append(conversacion ? "campo-lista" : "tour-opciones")
+                .append("\" id=\"opciones-registro\">");
+        for (boolean conFotos : new boolean[]{true, false}) {
+            String valor = conFotos ? "CON_FOTOS" : "SIN_REGISTRO_FOTOGRAFICO";
+            String titulo = conFotos ? "Sí, permite fotos" : "No permite fotos";
+            String ayuda = conFotos ? "Medimos sobre la foto" : "Sin puntaje RULA";
+            html.append(conversacion ? "<button type=\"button\" class=\"campo-opcion permiso-opcion\" " +
+                    "data-respuesta=\"registro\" data-valor=\"" + valor + "\" aria-pressed=\"false\">" :
+                    "<label class=\"permiso-opcion\"><input type=\"radio\" name=\"registro\" value=\"" +
+                            valor + "\">")
+                    .append("<i class=\"permiso-marca\" aria-hidden=\"true\"></i><div><span class=\"permiso-titulo\">")
+                    .append(titulo).append("</span><small>").append(ayuda).append("</small></div>")
+                    .append(camara(conFotos)).append(conversacion ? "</button>" : "</label>");
+        }
+        return html.append("</div><p class=\"permiso-nota\"><span aria-hidden=\"true\">ⓘ</span> " +
+                "Guardamos los datos del puesto, sin fotos ni puntaje.</p></div>").toString();
+    }
+
+    /** RF-016: iconos de línea decorativos, acompañados por texto. */
+    private static String camara(boolean permitida) {
+        return "<svg class=\"permiso-icono\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" " +
+                "stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M3 7h5l2-3h4l2 3h5v13H3z\"/>" +
+                "<circle cx=\"12\" cy=\"13\" r=\"3.5\"/>" +
+                (permitida ? "" : "<path d=\"M2 2l20 20\"/>") + "</svg>";
     }
 }

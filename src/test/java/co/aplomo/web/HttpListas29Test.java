@@ -52,8 +52,8 @@ class HttpListas29Test extends HttpPrueba {
             var filas = Pattern.compile("<tr\\b(?=[^>]*data-registro=)[^>]*>").matcher(html);
             int visibles = 0;
             while (filas.find()) if (!filas.group().contains(" hidden")) visibles++;
-            assertEquals(10, visibles, ruta);
-            assertTrue(html.contains("Ver 10 más"), ruta);
+            assertEquals(ruta.equals("/visitas") ? 5 : 10, visibles, ruta);
+            assertTrue(html.contains(ruta.equals("/visitas") ? "data-ver-mes" : "Ver 10 más"), ruta);
             assertFalse(html.contains("class=\"metaNameRole\""));
             assertFalse(html.contains(">Más filtros<"));
             assertFalse(html.contains(" evaluados"));
@@ -63,10 +63,9 @@ class HttpListas29Test extends HttpPrueba {
                 while (grises.find()) assertFalse(grises.group(1).contains("Empresa de prueba sin confirmar"));
             }
             if (ruta.equals("/visitas")) {
-                assertTrue(html.contains("50 visitas este mes"));
-                assertTrue(html.contains("Finalizadas · " + hoy.format(
-                        java.time.format.DateTimeFormatter.ofPattern("MMMM yyyy",
-                                java.util.Locale.forLanguageTag("es-CO")))));
+                assertTrue(html.contains("50 visitas ·"));
+                assertTrue(html.contains("data-mes-visitas=\"" + hoy.toString().substring(0, 7) + "\""));
+                assertTrue(html.contains("Ver las 45 visitas restantes"));
             }
         }
         assertTrue(get("/").body().contains("Hola, Andrés"));

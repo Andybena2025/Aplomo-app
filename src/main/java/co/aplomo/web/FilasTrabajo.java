@@ -17,7 +17,7 @@ final class FilasTrabajo {
     static String cabecera(SeccionConsulta seccion, Rol rol) {
         List<String> columnas = switch (seccion) {
             case RESERVAS -> List.of("Hora", "Empresa y lugar", "Evaluador", "Estado");
-            case VISITAS -> List.of("Fecha", "Empresa y lugar", "Puestos", "Resultado", "Evaluador");
+            case VISITAS -> List.of("Fecha", "Empresa y lugar", "Puestos", "Resultado más alto", "Evaluador");
             case PENDIENTES -> List.of("Puesto", "Resultado", "Prioridad", "Fecha límite", "Evaluador", "Estado");
             case PUESTOS -> List.of("Puesto", "Empresa y lugar", "Resultado", "Estado");
             case EVALUACIONES -> List.of("Puesto", "Fecha", "Resultado", "Evaluador", "Estado");
@@ -61,7 +61,10 @@ final class FilasTrabajo {
                 .append(true).append("\" data-estado=\"").append(Html.escapar(estado(f))).append("\" data-fecha=\"")
                 .append(Html.escapar(f.valor("fecha"))).append("\" data-evaluador=\"")
                 .append(Html.escapar(f.valor("evaluador"))).append("\" data-color=\"")
-                .append(Html.escapar(f.valor("color"))).append("\" data-empresa-activa=\"")
+                 .append(Html.escapar(f.valor("color"))).append("\" data-nivel=\"")
+                .append(Html.escapar(f.valor("nivel")))
+                .append("\" data-puntaje=\"").append(Html.escapar(f.valor("puntaje")))
+                .append("\" data-empresa-activa=\"")
                 .append(!List.of("0", "false").contains(f.valor("empresa_activa"))).append("\" data-busqueda=\"")
                 .append(Html.escapar(titulo + " " + detalle + " " + f.valor("evaluador_nombre")))
                 .append("\" style=\"--persona:").append(TextoLista.color(f.valor("evaluador_color"))).append("\"")
@@ -78,7 +81,7 @@ final class FilasTrabajo {
                     html.append(f.valor("estado").equals("ESPERANDO") ? acciones(sesion, f) : td("Respuesta", ""));
             }
             case VISITAS -> {
-                html.append(td("Fecha", TextoLista.fecha(f.valor("fecha")))).append(td("Empresa y lugar", enlace))
+                html.append(td("Fecha", fechaVisita(f.valor("fecha")))).append(td("Empresa y lugar", enlace))
                         .append(td("Puestos", Html.plural(numero(f.valor("puestos_evaluados")), "puesto")))
                         .append(td("Resultado", riesgo(f)));
                 persona(html, sesion, f);
@@ -114,6 +117,17 @@ final class FilasTrabajo {
                     .append(td("Estado", SistemaVisual.estado(f.valor("estado"))));
         }
         return html.append("<td aria-hidden=\"true\">›</td></tr>").toString();
+    }
+
+    /** RF-024: día y fecha en dos líneas, sin modificar la fecha del registro. */
+    private static String fechaVisita(String valor) {
+        if (valor.length() < 10) return Html.escapar(valor);
+        var fecha = java.time.LocalDate.parse(valor.substring(0, 10));
+        var idioma = java.util.Locale.forLanguageTag("es-CO");
+        return "<span class=\"fecha-visita\"><small>" + fecha.format(
+                java.time.format.DateTimeFormatter.ofPattern("EEE", idioma)).toUpperCase(idioma) +
+                "</small><strong>" + fecha.format(java.time.format.DateTimeFormatter.ofPattern("dd MMM", idioma)) +
+                "</strong></span>";
     }
 
     private static String inactivos(Fila f) {

@@ -476,3 +476,20 @@ Luego ESPERA el OK de Andy.
 
 - Cierre Paso 34: 1153 casos Maven distintos verificados; suite única con dos expectativas antiguas de x=1020
   corregidas a 988 y cierre dirigido 17/17. JS 171/171 en suite única. Sin recarga ni cambios de datos reales.
+
+
+## Paso 39 · 24 nov 2026
+
+- PR #7/#8/#9 fusionadas; conflicto de Router resuelto conservando modelo local, caché y woff2.
+- Permiso en tarjetas independientes; revisión por partes con medida redondeada solo en pantalla,
+  fichas completas y controles de foto reorganizados. Manual y cálculo del servidor conservados.
+- Reservas por día, Visitas por mes con cinco filas y expansión, indicadores filtrados y Ver por
+  persistente en Empresas/Usuarios. Próxima visita mediante SELECT limitado al alcance autorizado.
+- Suite completa única: 1182 Maven, 1181 aprobadas, 1 fallo, 0 errores/omitidas. Único fallo:
+  DemoPlan28Test:55, expected 23 but was 24; Andy autorizó continuar con esa excepción de fecha.
+  JavaScript: 178/178. Pruebas previas obligatorias: 17/17; dirigidas finales: 6/6 Maven.
+- Navegador integrado: 20 medidas de listas a 390/810/1080/1366/1920 sin desborde; permiso y ángulos
+  a 390/1366, detección real con muestra y salida manual, sin errores de consola capturados.
+  Sin capturas por instrucción de Andy; tacto/iPad físico y navegadores externos no comprobados.
+- QA solo en rula_ergonomia_pruebas, ROLLBACK confirmado. Base real, permisos, motor RULA y POST
+  calcular intactos. Informe docs/informe_paso39.md; commit/push a main autorizados para la entrega.
