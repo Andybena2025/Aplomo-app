@@ -516,3 +516,29 @@ Luego ESPERA el OK de Andy.
   0 textos recortados medidos, botones del pie de 44 px y 0 errores de consola. QA en pruebas revertida.
 - No se certificó tacto/iPad físico, Windows ni navegadores externos; no se generaron imágenes/evidencias.
   Informe docs/informe_paso40.md. Commit/push y reinicio autorizados al entregar; esperar revisión de Andy.
+
+
+## Paso 41 · 24 nov 2026
+
+- Densidad en hoja separada static/css/densidad.css, enlazada después del estilo base en Html y login.
+  Desde 900 px: base 15 px, auxiliares mínimo 13 px (pie 12 px pedido), cabecera medida 128,30 px,
+  acciones 42 px desde 1280 / 44 px en tableta; pie sticky de 34 px. Sin zoom ni cambio de coordenadas.
+- Resultado con tablist, tres tab/tabpanel, flechas y foco, sesión con try/catch, parámetro pestana=plan,
+  todos los paneles visibles al imprimir. Guardar un estado vuelve al mismo Resultado, con Plan abierto.
+  El render base conserva las tres secciones; generar el resultado del asistente sigue requiriendo JS.
+- Trabajador con texto multilínea y altura automática: 0 botones/etiquetas recortados en Puesto a
+  1440×900 y 1180×820. Inicio móvil 390×844 conserva 2108 px antes/después; sin nueva densidad móvil.
+- QA integrada sin capturas: 1440×900, alturas antes→después Inicio 1209→944, Empresas 975→900,
+  Visitas 1116→900, Reservas 1110→900, Usuarios 1192→942, Archivo 900→900. Datos ficticios iguales.
+  El pie está visible en las seis páginas a 1440×900 / 1180×820 / 2240×1260; login también en las tres.
+- Resultado real de dos posturas con MediaPipe y cuatro filas: pestañas 1 y 3 miden 900 px en portátil;
+  en 1180×820 aún miden 886 / 967 px (66 / 147 px de desplazamiento). Inicio y Usuarios conservan
+  44 / 42 px de desplazamiento en portátil. No ocultar contenido para certificar que todo cabe.
+- Suite completa final: 1195 Maven, 1194 aprobadas, 1 fallo conocido DemoPlan28Test:55 de fecha,
+  0 errores/omitidas; 190/190 JS. Dirigidas finales 7/7. Excepción de fecha autorizada en el encargo.
+  La primera dirigida tuvo bloqueo MySQL por la QA concurrente: cerrar/revertir QA antes de probar.
+- Motor, servicios/reglas Java, POST calcular, esquema, datos reales y PDF sin cambios. QA de pruebas
+  revertida; no se descargaron navegadores. Playwright/Chromium independiente no disponible: mediciones
+  con navegador integrado y sus controles Playwright. Sin certificar tacto, otros navegadores o impresión física.
+- Informe docs/informe_paso41.md; commit main con el nombre pedido y app reiniciada al entregar.
+  Esperar revisión de Andy; no comenzar otro paso.

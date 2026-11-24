@@ -310,6 +310,7 @@
     destino.innerHTML = window.AlineoResultado40.render(posturas.map(p => ({
       titulo:p.titulo,analisis:p.explicaciones || []
     })));
+    window.AlineoResultado40.iniciar(destino);
     dibujar();
   }
   window.AlineoRevision = {resultado};

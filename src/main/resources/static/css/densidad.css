@@ -1,0 +1,212 @@
+/* Paso 41 · RNF-007/008: capa de presentación; no escala la página ni las coordenadas de las fotos. */
+:root body .trabajador-opciones button{
+ height:auto;min-height:56px;max-height:none;white-space:normal;line-height:1.25;
+ padding:10px 12px;text-align:center;overflow-wrap:normal
+}
+/* RNF-008: las tres secciones existen antes de activar las pestañas. */
+.r40-pestanas{display:flex;gap:4px;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.r40-pestanas[hidden]{display:none}
+:root body .r40-pestanas [role=tab]{
+ flex:1;display:flex;align-items:center;justify-content:center;gap:10px;height:42px;min-height:42px;
+ padding:0 12px;border:1.5px solid transparent;border-radius:12px;background:transparent;
+ color:var(--muted);font:600 16px/1.2 var(--display);white-space:normal
+}
+.r40-pestanas [role=tab]>span{
+ display:grid;place-items:center;flex-shrink:0;width:26px;height:26px;border:1px solid var(--line2);border-radius:50%;font-size:14px
+}
+:root body .r40-pestanas [aria-selected=true]{background:rgba(227,205,160,.14);border-color:var(--marca);color:var(--ivory)}
+.r40-pestanas [aria-selected=true]>span{background:var(--marca);color:var(--ink);border-color:var(--marca)}
+.resultado40.r40-con-pestanas>[role=tabpanel][hidden]{display:none}
+.resultado40.r40-con-pestanas>[role=tabpanel]>.r40-seccion{display:none}
+.r40-pestanas [role=tab]:focus-visible,.resultado40 [role=tabpanel]:focus-visible{outline:2px solid var(--marca);outline-offset:3px}
+@media(max-width:719px){
+ :root body .r40-pestanas [role=tab]{min-height:58px;height:auto;padding:8px 4px;font-size:14px;gap:5px;flex-direction:column}
+}
+@media screen and (min-width:900px){
+ body.alineo,body.login-nuevo{font-size:15px}
+ .alineo :is(small,.small,.hint,.eyebrow,th,.tag,.r40-critica,.r40-pesa,.r40-tramo small,.r40-cambio-estado,.r40-cuerpo figcaption){font-size:13px!important}
+ .alineo .cabecera-unica>.wrap{
+  grid-template-columns:minmax(0,1fr) auto 38px;grid-template-rows:auto auto;
+  gap:6px 16px;padding-block:10px;min-height:0
+ }
+ .cabecera-unica .cabecera-titulo{grid-column:1;grid-row:1}
+ .cabecera-titulo>.eyebrow{margin-bottom:3px;line-height:1.3}
+ .cabecera-unica .titulo-con-rol{gap:4px 12px}
+ .cabecera-unica .titulo-con-rol h1{font-size:34px;line-height:1.1}
+ .cabecera-unica .cabecera-rol-texto{font-size:13px;flex-basis:auto;margin:0;line-height:1.3}
+ .cabecera-unica .who{grid-column:2;grid-row:1;gap:8px}
+ .cabecera-unica .nav{grid-column:1;grid-row:2;padding:0;gap:15px;align-self:end}
+ .cabecera-unica .nav a{padding-block:4px!important;min-height:44px;font-size:14px!important}
+ .cabecera-unica .pagehead-acciones{grid-column:2;grid-row:2;flex-wrap:wrap;gap:8px;margin:0;align-self:end}
+ .cabecera-unica .marca-cabecera{display:none}
+ .cabecera-unica .marca-cabecera-a{display:block;grid-column:3;grid-row:1/3;height:44px;align-self:center;justify-self:end}
+ .cabecera-unica .marca-cabecera-a svg{height:44px;width:auto}
+ .cabecera-titulo:has(.cabecera-atras){position:relative;padding-left:100px}
+ .cabecera-titulo .cabecera-atras{position:absolute;left:0;top:50%;transform:translateY(-50%);margin:0}
+ .alineo main.wrap{padding-block:18px 62px}
+ .alineo .pagehead{margin-bottom:16px;gap:12px}
+ .alineo .pagehead h1{font-size:35px}
+ .alineo main h2{font-size:26px}
+ .alineo .card{padding:18px}
+ .alineo .stack{gap:12px}
+ .alineo .grid{gap:18px}
+ .alineo :is(.lista-fila,.empresa-fila,.archivo-empresa){padding-block:12px}
+ .alineo .alineo-table td{padding-block:10px}
+ .alineo .alineo-table th{padding-block:9px}
+ .alineo .inicio-indicador{min-height:72px;padding:12px 14px;gap:5px}
+ .alineo .inicio-indicador strong{font-size:30px}
+ .alineo .visita-en-curso{padding:10px 12px;gap:12px}
+ .alineo .inicio-columnas{gap:18px}
+ .alineo :is(.lista-mas,.usuarios-roles){margin-block:14px}
+ :root body.alineo :is(.btn,button.btn),:root body.login-nuevo .btn{height:44px!important;min-height:44px!important;font-size:15px!important;padding-inline:16px!important}
+ /* Un pie visible incluso cuando las listas necesitan seguir hacia abajo. */
+ body.alineo>footer.pie{
+  display:block;position:sticky;bottom:0;z-index:95;flex-shrink:0;margin:0;
+  height:34px;min-height:34px;border-top:1px solid var(--line);background:var(--bg)
+ }
+ body.alineo>footer.pie .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:33px;height:33px;font-size:12px;white-space:nowrap;letter-spacing:0}
+ body.alineo>footer.pie .lema{font-size:12px!important;line-height:1;letter-spacing:.08em!important}
+ .login-nuevo .form{gap:8px;padding-block:12px;justify-content:center}
+ .login-nuevo .login-marca{padding-bottom:8px}
+ .login-nuevo .login-marca .logo-alineo{max-height:180px}
+ .login-nuevo .login-cuerpo{gap:8px}
+ .login-nuevo .login-cuerpo h2{font-size:28px}
+ .login-nuevo .login-nosotros{padding-top:8px}
+ .login-nuevo .login-nosotros h3{font-size:21px;margin-block:4px 8px}
+ .login-nuevo .login-pie{padding-top:4px;gap:6px;font-size:13px}
+ .login-nuevo .login-pie a{min-height:36px}
+ /* Resultado: sin alturas fijas ni recorte; se compacta el contenido real. */
+ .resultado40{gap:10px;line-height:1.3}
+ .resultado40 .r40-card{padding:14px 18px}
+ .resultado40 h2{font-size:24px}
+ .resultado40 h3{font-size:18px}
+ .resultado40 p{margin-top:5px}
+ .resultado40 .r40-anillo.grande{width:78px;height:78px;font-size:40px;border-width:4px}
+ .r40-cabecera{grid-template-columns:78px minmax(0,1fr);gap:16px}
+ .r40-cabecera p{font-size:14px;line-height:1.35}
+ .r40-nivel{padding:2px 8px;margin-bottom:4px}
+ .r40-posturas{gap:8px;margin:0}
+ .r40-postura{padding:8px 10px}
+ .r40-postura-cabecera{gap:10px}
+ .r40-postura-cabecera h3{font-size:16px}
+ .r40-critica{margin-top:2px}
+ .r40-desglose{margin-top:2px}
+ .r40-desglose>summary{min-height:30px;font-size:13px}
+ .r40-escala{gap:4px;margin:10px 0}
+ .r40-tramo{gap:2px;padding:5px 8px;border-top-width:3px;font-size:13px}
+ .r40-tramo strong{font-size:19px}
+ .r40-trabajador{padding:8px 12px;gap:10px;flex-wrap:nowrap;line-height:1.3}
+ .r40-trabajador>div{gap:6px;flex-wrap:wrap}
+ .r40-trabajador .tag{font-size:13px;padding:2px 7px}
+ .r40-trabajador small{margin-left:auto;font-size:13px;white-space:nowrap}
+ .r40-antes{padding:6px 12px;font-size:14px}
+ .resultado40 .r40-antes strong{font-size:20px}
+ .r40-desglose-cuerpo{grid-template-columns:160px minmax(0,1fr);gap:24px}
+ .r40-cuerpo{gap:6px}
+ .r40-cuerpo svg{height:260px;width:139px}
+ .r40-segmento{padding:6px 12px;margin-block:4px;gap:12px}
+ .r40-segmento p{margin:2px 0 5px;font-size:13px;line-height:1.3}
+ .r40-segmento>strong{font-size:18px}
+ .r40-barra{height:4px}
+ .r40-efectos{gap:12px}
+ .r40-efectos article{padding:14px}
+ .r40-plazo{padding:7px 10px;margin-bottom:8px!important;font-size:13.5px}
+ .r40-plan{font-size:13.5px;line-height:1.3}
+ .r40-plan :is(td,th){padding:7px 8px}
+ .r40-plan th{font-size:13px;letter-spacing:.02em}
+ .r40-meta{margin-top:3px}
+ .r40-numero{width:28px;height:28px}
+ .r40-proyeccion{padding:10px 0;gap:12px}
+ .r40-proyeccion p{font-size:13px}
+ .r40-avance{gap:5px;margin-bottom:6px}
+ .r40-avance .input{font-size:13.5px!important}
+ .modo-enfoque .enfoque-cabecera,.modo-enfoque .enfoque-cabecera>.wrap{min-height:54px}
+ .modo-enfoque .enfoque-cabecera>.wrap{padding-block:5px}
+ .modo-enfoque .campo-cabecera{margin-bottom:10px}
+ .modo-enfoque .campo-progreso{padding-block:0;margin-block:0 6px;gap:18px}
+ .modo-enfoque .campo-progreso li{font-size:13px}
+ .modo-enfoque .campo-progreso li::before{width:24px;height:24px}
+ body.modo-enfoque.viendo-resultado main.wrap{padding-top:10px;padding-bottom:108px}
+ .modo-enfoque.viendo-resultado form[data-conversacion]{padding-bottom:0}
+ .modo-enfoque.viendo-resultado [data-resumen-titulo]{margin-block:0 8px;font-size:24px}
+ .modo-enfoque form[data-conversacion] .wizfoot{bottom:34px;min-height:62px;padding-block:8px}
+ .modo-enfoque.viendo-resultado form[data-conversacion] .wizfoot{min-height:62px;padding-block:8px}
+}
+@media screen and (min-width:1280px){
+ :root body.alineo :is(.btn,button.btn),:root body.login-nuevo .btn{height:42px!important;min-height:42px!important}
+ .r40-principal{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:0 20px;align-items:center}
+ .r40-principal>.r40-posturas{grid-column:2;grid-row:1;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .r40-principal>.r40-escala{grid-column:1/-1;grid-row:2;margin-bottom:0}
+ .r40-principal>.hint{grid-column:1/-1;font-size:13px}
+}
+@media print{
+ .r40-pestanas{display:none!important}
+ .resultado40 [role=tabpanel],.resultado40 [role=tabpanel][hidden]{display:block!important;break-inside:auto}
+ .resultado40.r40-con-pestanas>[role=tabpanel]>.r40-seccion{display:flex!important}
+ footer.pie{position:static!important}
+}
+@media screen and (min-width:900px){
+ .cabecera-unica .titulo-con-rol{flex-direction:row;align-items:center}
+ .alineo .inicio-indicadores{margin-block:16px}
+ .alineo .inicio-acciones{margin-bottom:16px}
+ .alineo .inicio-columnas h3{margin-block:12px 6px;font-size:18px}
+ .alineo .inicio-columnas .lista-fila{padding-block:8px}
+ .alineo .usuarios-roles .card{padding:14px}
+}
+@media screen and (min-width:900px){
+ body.modo-enfoque.viendo-resultado:has(form[data-conversacion]) main.wrap{padding-bottom:62px!important;max-width:1280px}
+ .modo-enfoque.viendo-resultado .campo-cabecera{padding-block:2px!important;margin-bottom:6px}
+ .modo-enfoque.viendo-resultado .campo-progreso{display:flex!important;gap:18px;margin:2px 0!important}
+ .modo-enfoque.viendo-resultado .campo-progreso li{min-height:24px;height:auto;flex:1}
+ .modo-enfoque.viendo-resultado .campo-progreso li::before{width:22px;height:22px}
+ .resultado40 .r40-desglose>summary{height:28px;min-height:28px;padding:0;line-height:1.2}
+ .resultado40 .r40-tramo{grid-template-columns:auto minmax(0,1fr);gap:2px 8px;padding:4px 8px;line-height:1.15}
+ .resultado40 .r40-tramo strong{grid-row:1/3;align-self:center;font-size:20px}
+ .resultado40 .r40-tramo small{line-height:1.15}
+ .r40-segmento>div>strong{display:inline-block;min-width:90px;margin-right:8px;font-size:15px}
+ .r40-segmento p{display:inline;line-height:1.3}
+ .r40-segmento .r40-pesa{float:right;margin-left:8px;line-height:1.2}
+ .r40-segmento .r40-barra{margin-top:5px}
+ .r40-segmento{margin-block:3px;padding-block:5px}
+ .r40-antes{padding-block:4px;line-height:1.2}
+ .resultado40 .r40-antes strong{font-size:18px}
+ .r40-plan:not(:has(form)) th:nth-child(1){width:4%}
+ .r40-plan:not(:has(form)) th:nth-child(2){width:9%}
+ .r40-plan:not(:has(form)) th:nth-child(3){width:31%}
+ .r40-plan:not(:has(form)) th:nth-child(4){width:35%}
+ .r40-plan:not(:has(form)) th:nth-child(5){width:9%}
+ .r40-plan:not(:has(form)) th:nth-child(6){width:12%}
+}
+@media screen and (min-width:900px){
+ .modo-enfoque.viendo-resultado .campo-cabecera{display:grid;grid-template-columns:110px minmax(0,1fr);gap:3px 12px}
+ .modo-enfoque.viendo-resultado .campo-cabecera>.row{grid-column:1;grid-row:1}
+ .modo-enfoque.viendo-resultado .campo-cabecera>.campo-progreso{grid-column:2;grid-row:1;gap:12px}
+ .modo-enfoque.viendo-resultado .campo-cabecera>progress{grid-column:1/-1;height:3px}
+ .modo-enfoque.viendo-resultado .campo-progreso li{min-height:24px!important;padding-block:0!important}
+ .enfoque-cabecera .marca-completa>.logo-alineo{height:38px}
+ .resultado40{grid-template-columns:minmax(0,1fr) auto;gap:8px 10px}
+ .resultado40>.r40-card,.resultado40>.r40-pestanas{grid-column:1/-1}
+ .resultado40>.r40-trabajador{grid-column:1}
+ .resultado40>.r40-antes{grid-column:2;align-self:stretch;display:flex;align-items:center;white-space:nowrap}
+ .resultado40:not(:has(>.r40-antes))>.r40-trabajador{grid-column:1/-1}
+ .resultado40:not(:has(>.r40-trabajador))>.r40-antes{grid-column:1/-1}
+ .resultado40 .r40-card{padding:10px 14px}
+ .resultado40 .r40-postura{padding:4px 8px}
+ :root body .resultado40 .r40-desglose>summary{height:28px!important;min-height:28px!important;line-height:1.2}
+ .resultado40 .r40-tramo{padding:3px 6px;gap:1px 6px}
+ .r40-escala{margin-top:7px}
+ .r40-trabajador{padding-block:6px;gap:7px}
+ .r40-trabajador .tag{padding:1px 6px}
+ .r40-cuerpo svg{height:224px;width:120px}
+ .r40-cuerpo{gap:4px}
+ .r40-segmento{padding-block:4px;margin-block:2px}
+ .r40-segmento .r40-barra{margin-top:3px}
+ .r40-plan{line-height:1.15}
+ .r40-plan :is(td,th){padding-block:6px}
+ .r40-proyeccion{padding-block:6px}
+ .resultado40 .r40-anillo.proyeccion{width:42px;height:42px;font-size:23px}
+}
+
+@media screen and (min-width:1280px){
+ :root body.alineo .wizfoot [data-agregar-postura]{height:42px!important;min-height:42px!important}
+}

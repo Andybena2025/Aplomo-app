@@ -280,6 +280,7 @@ public final class Html {
                 "<link href=\"https://fonts.googleapis.com/css2?family=Instrument+Serif&famil" +
                 "y=Inter:wght@300;400;500;600&display=swap\" rel=\"stylesheet\">" +
                 "<link rel=\"stylesheet\" href=\"/static/css/aplomo.css\">" +
+                "<link rel=\"stylesheet\" href=\"/static/css/densidad.css?v=41\">" +
                 "<script src=\"/static/js/interfaz.js\" defer></script><script src=\"/static/" +
                 "js/progreso.js\" defer></script><script src=\"/static/js/cuenta.js\" defer><" +
                 "/script><script src=\"/static/js/reservas.js\" defer></script>" +

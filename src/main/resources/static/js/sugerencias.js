@@ -8,7 +8,12 @@
     e.preventDefault();if(enviando)return;enviando=true;boton.disabled=true;boton.textContent='Guardando…';aviso('');const terminarProgreso=window.AplomoProgreso?.iniciar('Guardando sugerencia…');
     try{
       const r=await fetch(form.action,{method:'POST',body:new URLSearchParams(new FormData(form)),credentials:'same-origin',redirect:'manual',headers:{Accept:'text/plain'}});
-      if(r.status===201){location.assign(r.headers.get('Location'));return;}
+      if(r.status===201){
+        // Paso 41 · RNF-007: el estado del plan vuelve al mismo Resultado, sin salir a la ficha de sugerencia.
+        const regreso=form.closest('.resultado40')?new URL(location.href):null;
+        if(regreso)regreso.searchParams.set('pestana','plan');
+        location.assign(regreso?.href||r.headers.get('Location'));return;
+      }
       if(r.status===403){
         const pagina=await fetch(location.href,{credentials:'same-origin',cache:'no-store'});
         const dom=pagina.ok?new DOMParser().parseFromString(await pagina.text(),'text/html'):null;

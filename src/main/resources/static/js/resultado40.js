@@ -69,11 +69,49 @@
   const extras=otras.map((a,i)=>`<tr><td data-label="#">${plan.length+i+1}</td><td data-label="Parte">Otra</td><td data-label="Hoy → Meta">—</td><td data-label="Cambio en el puesto">${e(a.texto)}</td><td data-label="Puntos">No cambia el puntaje</td><td data-label="Estado">${estado(a,d,csrf)}</td></tr>`).join('');
   const faltantes=tarjetas.filter(p=>p.datos.sinSugerencias).map(p=>`<p class="r40-sin-sugerencias">El análisis de ${e(p.titulo)} está guardado. Aún necesita una sugerencia.${p.datos.editable?` <a class="link" href="/sugerencias/nueva?evaluacion=${Number(p.datos.evaluacion)}">Escribir sugerencia ›</a>`:''}</p>`).join('');
   const pro=d.proyeccion,proyectado=pro?`<div class="r40-proyeccion">${anillo(d,'proyeccion')}<span aria-hidden="true">→</span>${anillo(pro,'proyeccion')}<div><strong>${pro.puntaje<d.puntaje?'Si se cumple el plan, el puesto bajaría a':'Con estos cambios, el puntaje se mantiene en'} ${e(pro.puntaje)} · ${etiqueta(pro.color)}</strong><p>Estimación con la misma actividad y carga; debe confirmarse en una reevaluación.</p></div></div>`:'';
-  return `<div class="resultado40"><section class="r40-card r40-principal ${color(d.color)}"><div class="r40-cabecera">${anillo(d,'grande')}<div><span class="r40-nivel">${etiqueta(d.color)} · Nivel ${e(d.nivel)} de 4</span><h2>${e(d.accion)}</h2><p>${e(significado)}</p></div></div><div class="r40-escala" aria-label="Escala RULA de 1 a 7">${tramos}</div><div class="r40-posturas">${post}</div><p class="hint">El puesto toma el puntaje de la postura más crítica.</p></section>${trabajador(d.trabajador)}${antes}<section class="r40-card"><header class="r40-seccion"><span>1</span><div><h2>¿Por qué salió ${e(d.puntaje)}?</h2><p>${e(critica.titulo)} · Lado ${d.lado==='IZQUIERDO'?'izquierdo':'derecho'}</p></div></header><div class="r40-desglose-cuerpo">${figura(segmentos)}<div>${filas}<p class="hint">${d.actividad||d.carga?'Se suma: '+(d.actividad?'actividad muscular +'+e(d.actividad):'')+(d.actividad&&d.carga?' · ':'')+(d.carga?'carga o fuerza +'+e(d.carga):'')+' en ambos grupos.':'Sin incremento por actividad muscular ni carga.'}</p></div></div></section><section class="r40-card"><header class="r40-seccion"><span>2</span><h2>¿Por qué importa?</h2></header><div class="r40-efectos">${efectos}<article>${icono(2)}<h3>Con el tiempo</h3><p>Más riesgo de lesiones de músculos y tendones (trastornos musculoesqueléticos).</p></article></div><p class="hint">RULA mide el riesgo de la postura. No es un diagnóstico médico.</p></section><section class="r40-card"><header class="r40-seccion"><span>3</span><h2>Plan de atención</h2></header><p class="r40-plazo ${color(d.color)}">Nivel ${etiqueta(d.color).toLowerCase()}: ${e(d.accion)} · ${d.puntaje>=5?'Hacer estos cambios, en orden, antes de seguir trabajando en esta postura.':d.puntaje>=3?'Revisar el puesto y organizar los cambios en este orden.':'Mantener las condiciones y revisar la postura durante la jornada.'}</p>${plan.length||otras.length?`<div class="r40-plan-scroll"><table class="r40-plan"><thead><tr>${['#','Parte','Hoy → Meta','Cambio en el puesto','Puntos','Estado'].map(t=>'<th>'+t+'</th>').join('')}</tr></thead><tbody>${rows}${extras}</tbody></table></div>`:`<p>${d.puntaje>2?'Los segmentos ya tienen su puntaje mínimo. Revisa la actividad muscular y la carga con el evaluador.':'Los segmentos ya tienen su puntaje mínimo. Mantén las condiciones del puesto.'}</p>`}${faltantes}${proyectado}${d.reserva?`<a class="btn" href="${e(d.reserva)}">Agendar reevaluación ›</a>`:''}</section></div>`;
+  const id='resultado41-'+(++secuencia);
+  const titulos=['¿Por qué salió '+d.puntaje+'?','¿Por qué importa?','Plan de atención'];
+  const pestanas=`<div class="r40-pestanas" role="tablist" aria-label="Entender el resultado" hidden>${titulos.map((t,i)=>`<button type="button" role="tab" id="${id}-tab-${i}" aria-controls="${id}-panel-${i}" aria-selected="${i===0}" tabindex="${i===0?0:-1}"><span aria-hidden="true">${i+1}</span>${e(t)}</button>`).join('')}</div>`;
+  const panel=i=>`role="tabpanel" id="${id}-panel-${i}" aria-labelledby="${id}-tab-${i}" tabindex="0"`;
+  return `<div class="resultado40"><section class="r40-card r40-principal ${color(d.color)}"><div class="r40-cabecera">${anillo(d,'grande')}<div><span class="r40-nivel">${etiqueta(d.color)} · Nivel ${e(d.nivel)} de 4</span><h2>${e(d.accion)}</h2><p>${e(significado)}</p></div></div><div class="r40-escala" aria-label="Escala RULA de 1 a 7">${tramos}</div><div class="r40-posturas">${post}</div><p class="hint">El puesto toma el puntaje de la postura más crítica.</p></section>${trabajador(d.trabajador)}${antes}${pestanas}<section class="r40-card" ${panel(0)}><header class="r40-seccion"><span>1</span><div><h2>¿Por qué salió ${e(d.puntaje)}?</h2><p>${e(critica.titulo)} · Lado ${d.lado==='IZQUIERDO'?'izquierdo':'derecho'}</p></div></header><div class="r40-desglose-cuerpo">${figura(segmentos)}<div>${filas}<p class="hint">${d.actividad||d.carga?'Se suma: '+(d.actividad?'actividad muscular +'+e(d.actividad):'')+(d.actividad&&d.carga?' · ':'')+(d.carga?'carga o fuerza +'+e(d.carga):'')+' en ambos grupos.':'Sin incremento por actividad muscular ni carga.'}</p></div></div></section><section class="r40-card" ${panel(1)}><header class="r40-seccion"><span>2</span><h2>¿Por qué importa?</h2></header><div class="r40-efectos">${efectos}<article>${icono(2)}<h3>Con el tiempo</h3><p>Más riesgo de lesiones de músculos y tendones (trastornos musculoesqueléticos).</p></article></div><p class="hint">RULA mide el riesgo de la postura. No es un diagnóstico médico.</p></section><section class="r40-card" ${panel(2)}><header class="r40-seccion"><span>3</span><h2>Plan de atención</h2></header><p class="r40-plazo ${color(d.color)}">Nivel ${etiqueta(d.color).toLowerCase()}: ${e(d.accion)} · ${d.puntaje>=5?'Hacer estos cambios, en orden, antes de seguir trabajando en esta postura.':d.puntaje>=3?'Revisar el puesto y organizar los cambios en este orden.':'Mantener las condiciones y revisar la postura durante la jornada.'}</p>${plan.length||otras.length?`<div class="r40-plan-scroll"><table class="r40-plan"><thead><tr>${['#','Parte','Hoy → Meta','Cambio en el puesto','Puntos','Estado'].map(t=>'<th>'+t+'</th>').join('')}</tr></thead><tbody>${rows}${extras}</tbody></table></div>`:`<p>${d.puntaje>2?'Los segmentos ya tienen su puntaje mínimo. Revisa la actividad muscular y la carga con el evaluador.':'Los segmentos ya tienen su puntaje mínimo. Mantén las condiciones del puesto.'}</p>`}${faltantes}${proyectado}${d.reserva?`<a class="btn" href="${e(d.reserva)}">Agendar reevaluación ›</a>`:''}</section></div>`;
  }
- const api={render,trabajador,contorno,EFECTOS};
+ // RNF-007/008: mejora progresiva; el HTML base y la impresión mantienen las tres secciones.
+ function iniciar(contenedor,entorno=typeof window==='undefined'?{}:window){
+  contenedor.querySelectorAll('.resultado40').forEach(resultado=>{
+   const barra=resultado.querySelector('.r40-pestanas');
+   if(!barra||barra.dataset.lista)return;
+   const botones=[...barra.querySelectorAll('[role="tab"]')];
+   const paneles=[...resultado.querySelectorAll('[role="tabpanel"]')];
+   if(botones.length!==3||paneles.length!==3)return;
+   const parametros=new URLSearchParams(entorno.location?.search||'');parametros.delete('pestana');
+   const clave='alineo:resultado:pestana:'+(entorno.location?.pathname||'')+(parametros.size?'?'+parametros:'');
+   const recordar=indice=>{try{entorno.sessionStorage?.setItem(clave,String(indice));}catch(_){}};
+   const seleccionar=(indice,enfocar=false)=>{
+    botones.forEach((b,i)=>{b.setAttribute('aria-selected',String(i===indice));b.tabIndex=i===indice?0:-1;paneles[i].hidden=i!==indice;});
+    if(enfocar)botones[indice].focus();
+    recordar(indice);
+   };
+   let inicial=0;
+   try{const guardada=Number(entorno.sessionStorage?.getItem(clave));if(Number.isInteger(guardada)&&guardada>=0&&guardada<3)inicial=guardada;}catch(_){}
+   if(new URLSearchParams(entorno.location?.search||'').get('pestana')==='plan')inicial=2;
+   botones.forEach((b,i)=>{
+    b.addEventListener('click',()=>seleccionar(i));
+    b.addEventListener('keydown',evento=>{
+     const desplazamiento={ArrowRight:1,ArrowLeft:-1}[evento.key];
+     if(desplazamiento){evento.preventDefault();seleccionar((i+desplazamiento+3)%3,true);}
+     else if(evento.key==='Home'||evento.key==='End'){evento.preventDefault();seleccionar(evento.key==='Home'?0:2,true);}
+    });
+   });
+   resultado.addEventListener('submit',evento=>{
+    if(evento.target.matches('[data-sugerencia-form]'))recordar(2);
+   },true);
+   barra.dataset.lista='si';resultado.classList.add('r40-con-pestanas');
+   seleccionar(inicial);barra.hidden=false;
+  });
+ }
+ const api={render,trabajador,contorno,EFECTOS,iniciar};
  if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.AlineoResultado40=api;
  if(typeof document!=='undefined')document.querySelectorAll('[data-resultado40-json]').forEach(script=>{
-  const destino=script.previousElementSibling;destino.innerHTML=render(JSON.parse(script.textContent),script.dataset.csrf||'');
+  const destino=script.previousElementSibling;destino.innerHTML=render(JSON.parse(script.textContent),script.dataset.csrf||'');iniciar(destino);
  });
 })(typeof window==='undefined'?{}:window);

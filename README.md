@@ -68,6 +68,7 @@ El Ingeniero Industrial visita la empresa, toma fotos del puesto, marca los áng
 | 34 | Puntos y rótulos del login; botones de contacto compartidos | ✅ 1153 Maven y 171 JS; [informe](docs/informe_paso34.md) |
 | 39 | Evaluación más clara y listas por día, mes y «Ver por» | ✅ Implementado; 1182 Maven (1 fallo de fecha conocido), 178 JS aprobadas; [informe](docs/informe_paso39.md) |
 | 40 | Resultado explicado, plan de atención y contexto del trabajador | ✅ Implementado; 1194 Maven (1 fallo de fecha conocido), 185 JS aprobadas; [informe](docs/informe_paso40.md) |
+| 41 | Sitio compacto y Resultado con pestañas accesibles | ✅ Implementado; 1195 Maven (1 fallo de fecha conocido), 190 JS aprobadas; medidas y límites en el [informe](docs/informe_paso41.md) |
 
 **Entrega del PMV:** 27 de noviembre de 2026. Los informes de cada paso, con pruebas y capturas, están en [`docs/`](docs/) (`informe_paso7.md` a `informe_paso11.md`).
 
@@ -139,7 +140,7 @@ Usa la base configurada; no crea bases ni cambia la configuración. Si hay cuent
 ./mvnw test        # Windows: mvnw.cmd test
 ```
 
-**1194 pruebas Maven ejecutadas (1193 aprobadas; un fallo de fecha conocido en DemoPlan28Test) y 185 pruebas JS aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
+**1195 pruebas Maven ejecutadas (1194 aprobadas; un fallo de fecha conocido en DemoPlan28Test) y 190 pruebas JS aprobadas.** Usan una base aparte, `rula_ergonomia_pruebas`, nunca la real. Para crearla, mira la sección "Pruebas" de [INSTALAR.md](INSTALAR.md).
 
 ## Estructura
 
