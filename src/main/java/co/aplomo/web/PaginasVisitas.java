@@ -61,6 +61,14 @@ public final class PaginasVisitas {
      */
     public static String detalle(Sesion sesion, Ficha ficha, List<Evaluacion> evaluaciones,
             List<co.aplomo.modelo.Puesto> puestos, String aviso, boolean exito) {
+        return detalle(sesion, ficha, evaluaciones, puestos, aviso, exito, false);
+    }
+
+    /**
+     * RNF-007: igual que el detalle normal; en la práctica no muestra "Ver reserva" (no hay cita real que abrir).
+     */
+    public static String detalle(Sesion sesion, Ficha ficha, List<Evaluacion> evaluaciones,
+            List<co.aplomo.modelo.Puesto> puestos, String aviso, boolean exito, boolean practica) {
         String estado =
                 "<span class=\"" + claseEstado(ficha.visita().estado()) + "\">" + estado(ficha.visita().estado()) +
                         "</span>";
@@ -76,7 +84,8 @@ public final class PaginasVisitas {
                         (ficha.visita().fin() == null ? "" : " a " + TextoLista.hora(ficha.visita().fin().toString()))))
                 .append(ficha.visita().notas() == null || ficha.visita().notas().isBlank() ? "" : dato("Notas",
                         ficha.visita().notas())).append("</dl>")
-                .append(enlace("/reservas/" + ficha.visita().reserva(), "Ver reserva", false)).append("</section>")
+                .append(practica ? "" : enlace("/reservas/" + ficha.visita().reserva(), "Ver reserva", false))
+                .append("</section>")
                 .append("<section class=\"stack\"><div class=\"row between\"><h2>" + (admin(sesion) &&
                         ficha.visita().estado().equals("EN_CURSO") ? "Puestos de esta visita" : "Evaluaciones") +
                         "</h2><span class=\"muted\">").append(Html.plural(evaluaciones.size(), "registrada"))

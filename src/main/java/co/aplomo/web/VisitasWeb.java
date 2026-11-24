@@ -87,7 +87,8 @@ public final class VisitasWeb {
             Router.enviar(intercambio, 200, PaginasVisitas.detalle(sesion, ficha, evaluaciones,
                     sesion.cuenta().rol() != co.aplomo.modelo.Cuenta.Rol.USUARIO &&
                             ficha.visita().estado().equals("EN_CURSO") ? visitas.puestos(sesion.cuenta(),
-                            id) : List.of(), Router.consulta(intercambio).get("aviso"), true));
+                            id) : List.of(), Router.consulta(intercambio).get("aviso"), true,
+                    visitas.practica().esEmpresa(ficha.empresa())));
             return;
         }
         if (!finalizar) {

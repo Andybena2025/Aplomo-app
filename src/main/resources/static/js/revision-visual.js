@@ -15,6 +15,7 @@
   let parte = 0;
   let ultimaPostura = -1, ultimaFoto = null;
   const hechas = new Set();
+  let marcarPies = () => {}, copiarNota = () => {};
   const definiciones = [
     ['BRAZO', 'Brazo', 'rango_BRAZO', ['hombroElevado', 'brazoSeparado', 'brazoApoyado']],
     ['ANTEBRAZO', 'Antebrazo', 'rango_ANTEBRAZO', ['antebrazoCruza']],
@@ -68,7 +69,12 @@
         etiqueta.querySelector('span').textContent = cortos[chip];ajustes.append(etiqueta);
       }
     });
-    if (clave === 'PIERNAS') ajustes.append(uno('[data-ayuda-pies]'));
+    if (pregunta && !medida) { const repetida = pregunta.querySelector(':scope > p'); if (repetida) repetida.hidden = true; }
+    if (clave === 'PIERNAS') {
+      ajustes.querySelector('.ajustes-titulo').textContent = '¿Cómo apoya los pies?';
+      piernas(ajustes);
+      ajustes.append(uno('[data-ayuda-pies]'));
+    }
     grupo.append(ajustes);
     panel.append(grupo);
     if (indice < 6) {
@@ -88,14 +94,29 @@
   const controlesFoto = detectar.parentElement;
   controlesFoto.classList.add('foto-controles-claros');
   const statusFoto = uno('[data-estado-deteccion]');controlesFoto.before(statusFoto);
-  const deshacer = uno('[data-puntos-deshacer]');deshacer.className = 'link';
-  const masFoto = document.createElement('details');masFoto.className = 'foto-mas';
-  const resumenFoto = document.createElement('summary');resumenFoto.textContent = 'Más ⋯';
-  const opcionesFoto = document.createElement('div');opcionesFoto.className = 'foto-mas-opciones';
-  masFoto.append(resumenFoto,opcionesFoto);controlesFoto.append(masFoto);
-  for (const selector of ['[data-puntos-borrar]','[data-cambiar-foto]','[data-quitar-foto]','[data-calcular-manual]']) {
-    const boton = uno(selector);if (boton) {boton.className = 'link';opcionesFoto.append(boton);}
+  // Andy 24-nov: todas las herramientas siempre a la vista, en dos grupos (Puntos y Foto), sin menú "Más".
+  detectar.className = 'btn p';
+  const grupoHerramientas = (titulo, selectores) => {
+    const fila = nodo('div', 'foto-herramientas');
+    fila.append(nodo('span', 'foto-herramientas-titulo', titulo));
+    for (const selector of selectores) {
+      const boton = uno(selector);
+      if (boton) { if (boton !== detectar) boton.className = 'btn'; fila.append(boton); }
+    }
+    return fila;
+  };
+  const puntosFoto = grupoHerramientas('Puntos', ['[data-detectar-puntos]', '[data-calcular-manual]',
+    '[data-puntos-deshacer]', '[data-puntos-borrar]']);
+  const archivoFoto = grupoHerramientas('Foto', ['[data-cambiar-foto]', '[data-quitar-foto]']);
+  const apoyo = form.querySelector('details.campo-apoyo');
+  if (apoyo) {
+    const otra = nodo('button', 'btn', '+ Agregar otra foto');
+    otra.type = 'button';
+    otra.dataset.abrirApoyo = '';
+    otra.onclick = () => { apoyo.open = true; apoyo.scrollIntoView({block: 'start', behavior: 'smooth'}); };
+    archivoFoto.append(otra);
   }
+  controlesFoto.prepend(puntosFoto, archivoFoto);
   statusFoto.parentElement.querySelector(':scope > span.hint')?.setAttribute('hidden','');
   // RF-017, RNF-007: tarjeta visual; no transforma el valor utilizado en el cálculo.
   grupos.slice(0,6).forEach(({grupo,nombre},i) => {
@@ -174,6 +195,8 @@
   }
   function dibujar() {
     const revision = activa();
+    marcarPies();
+    copiarNota();
     form.classList.toggle('revision-grupos', revision);
     navegacion.hidden = !revision;
     grupos.forEach(({grupo, campo}, indice) => {
@@ -220,6 +243,51 @@
     if (activa() && parte > 0 && !estado.ocupada) { parte--; dibujar(); return; }
     return atrasOriginal.call(atras, evento);
   };
+  // RULA piernas (RNF-007): dos tarjetas que marcan o desmarcan la casilla original pies_sin_apoyo; no cambia el cálculo.
+  function piernas(ajustes) {
+    const casilla = ajustes.querySelector('[data-chip="pies_sin_apoyo"]') || uno('[data-chip="pies_sin_apoyo"]');
+    if (!casilla) return;
+    casilla.closest('label').hidden = true;
+    const lista = nodo('div', 'campo-lista pies-opciones');
+    const tarjeta = (texto, ayuda, sinApoyo) => {
+      const boton = nodo('button', 'campo-opcion');
+      boton.type = 'button';
+      boton.dataset.piesApoyo = sinApoyo ? 'no' : 'si';
+      boton.append(nodo('span', '', texto), nodo('small', 'hint', ayuda));
+      boton.onclick = () => {
+        if (casilla.checked !== sinApoyo) {
+          casilla.checked = sinApoyo;
+          casilla.dispatchEvent(new Event('input', {bubbles: true}));
+          casilla.dispatchEvent(new Event('change', {bubbles: true}));
+        }
+        marcarPies();
+      };
+      return boton;
+    };
+    const con = tarjeta('Pies con buen apoyo', 'Los dos pies en el piso o en un apoyapiés, en equilibrio.', false);
+    const sin = tarjeta('Pies sin buen apoyo', 'Pies colgando, de puntillas o con el peso en un solo pie.', true);
+    lista.append(con, sin);
+    marcarPies = () => {
+      con.setAttribute('aria-pressed', String(!casilla.checked));
+      sin.setAttribute('aria-pressed', String(casilla.checked));
+    };
+    casilla.addEventListener('change', marcarPies);
+    const nota = nodo('label', 'pies-nota');
+    nota.append(nodo('span', '', 'Otra observación (opcional)'));
+    const texto = nodo('textarea', 'input');
+    texto.rows = 2;
+    texto.maxLength = 255;
+    texto.placeholder = 'Por ejemplo: usa un apoyapiés improvisado.';
+    const original = form.elements.observaciones;
+    if (original) {
+      texto.value = original.value;
+      texto.oninput = () => { original.value = texto.value; original.dispatchEvent(new Event('input', {bubbles: true})); };
+      copiarNota = () => { if (document.activeElement !== texto) texto.value = original.value; };
+    }
+    nota.append(texto, nodo('small', 'hint', 'Se guarda con las observaciones del puesto.'));
+    ajustes.append(lista, nota);
+    marcarPies();
+  }
   function nodo(etiqueta, clase, texto) {
     const elemento = document.createElement(etiqueta);
     if (clase) elemento.className = clase;

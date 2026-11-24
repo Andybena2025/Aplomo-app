@@ -61,6 +61,11 @@ class HttpPracticaEvaluacionTest extends HttpPrueba {
                 "SELECT p.tipo FROM puesto_trabajo p JOIN salon l USING(id_salon) JOIN sede s" +
                         " USING(id_sede) JOIN empresa e USING(id_empresa) WHERE e.nit=? ORDER BY p.nu" + "mero",
                 fila2 -> fila2.getString(1), PracticaEvaluacion.NIT));
+        // RNF-007 (Andy 24-nov): la visita de práctica no ofrece "Ver reserva"; su reserva es interna.
+        String visita = ruta.replaceAll(".*visita=(\\d+).*", "$1");
+        String ficha = get("/visitas/" + visita).body();
+        assertEquals(200, get("/visitas/" + visita).statusCode());
+        assertFalse(ficha.contains(">Ver reserva</a>"));
     }
 
     @Test

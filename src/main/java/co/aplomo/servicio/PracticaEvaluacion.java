@@ -162,4 +162,12 @@ public final class PracticaEvaluacion {
             return new Destino(visita, elegido);
         });
     }
+
+    /**
+     * RNF-007: indica si la empresa es la de práctica; su reserva es interna y no se muestra como cita real.
+     */
+    public boolean esEmpresa(int empresa) throws SQLException {
+        return tx.ejecutar(conexion -> Sql.uno(conexion, "SELECT COUNT(*) FROM empresa WHERE id_empresa=? AND nit=?",
+                rs -> rs.getInt(1), empresa, NIT) > 0);
+    }
 }
