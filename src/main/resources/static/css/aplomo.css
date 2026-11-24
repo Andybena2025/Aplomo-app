@@ -2930,9 +2930,9 @@ form[data-conversacion]:not(.revision-grupos) .campo-lista .campo-opcion[aria-pr
 /* Condiciones del puesto: casilla a la izquierda y texto a su lado, no centrado abajo. */
 form[data-conversacion] .campo-condiciones .tour-opcion{min-height:60px!important}
 form[data-conversacion] .campo-condiciones .tour-opcion>input{top:50%;transform:translateY(-50%);left:16px}
-form[data-conversacion] .campo-condiciones .tour-opcion>span{display:flex!important;padding:14px 16px 14px 52px!important;
+form[data-conversacion] .campo-condiciones .tour-opcion>span{display:flex!important;flex-direction:row!important;padding:14px 16px 14px 52px!important;
   align-items:center!important;justify-content:flex-start!important;text-align:left!important;width:100%}
-form[data-conversacion] .campo-condiciones .tour-opcion .tour-franja{padding:0!important;background:transparent!important;border:0!important}
+form[data-conversacion] .campo-condiciones .tour-opcion .tour-franja{padding:0!important;margin:0!important;align-self:center!important;line-height:1.35!important;background:transparent!important;border:0!important}
 form[data-conversacion] .campo-condiciones .tour-opcion:has(input:checked){border-color:var(--marca);box-shadow:0 0 0 1px var(--marca);
   background:linear-gradient(rgba(227,205,160,.12),rgba(227,205,160,.12)),var(--card)!important;color:var(--ivory)!important}
 form[data-conversacion] .campo-condiciones .tour-opcion:has(input:checked)>span{color:var(--ivory)!important;background:transparent!important}
