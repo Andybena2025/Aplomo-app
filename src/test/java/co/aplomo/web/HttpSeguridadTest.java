@@ -55,6 +55,27 @@ public class HttpSeguridadTest extends co.aplomo.soporte.HttpPrueba {
     }
 
     @Test
+    void elModeloDeDeteccionSeSirveDesdeAlineoSinInternet() throws Exception {
+        // RNF-003: la detección no depende del wifi; ALINEO entrega su propia copia del modelo.
+        String carpeta = Router.CARPETA_MODELO;
+        var wasm = get(carpeta + "pose_solution_simd_wasm_bin.wasm");
+        assertEquals(200, wasm.statusCode());
+        assertEquals("application/wasm", wasm.headers().firstValue("Content-Type").orElseThrow());
+        assertTrue(wasm.headers().firstValue("Cache-Control").orElseThrow().contains("immutable"));
+        for (String archivo : List.of("pose.js", "pose_solution_packed_assets_loader.js",
+                "pose_solution_packed_assets.data", "pose_solution_simd_wasm_bin.js", "pose_solution_wasm_bin.js",
+                "pose_solution_wasm_bin.wasm", "pose_web.binarypb", "pose_landmark_lite.tflite"))
+            assertEquals(200, get(carpeta + archivo).statusCode(), archivo);
+        assertEquals("application/octet-stream",
+                get(carpeta + "pose_landmark_lite.tflite").headers().firstValue("Content-Type").orElseThrow());
+        // Los tipos del modelo no abren otras carpetas ni archivos sin versión.
+        assertEquals(404, get(carpeta + "LICENSE").statusCode());
+        assertEquals(404, get("/static/img/modelo.wasm").statusCode());
+        assertEquals(404, get(carpeta + "../mediapipe-pose-0.5.1675469404/pose_web.binarypb").statusCode());
+        assertEquals(null, Router.tipoModelo(carpeta + "otra/pose_web.binarypb"));
+    }
+
+    @Test
     void csrfProtegeIngresoYSalidaYSalirInvalidaLaSesion() throws Exception {
         assertEquals(403, post("/login", Map.of("correo", cuenta(admin).correo(), "clave", clave)).statusCode());
         assertEquals(303, entrar(admin).statusCode());
