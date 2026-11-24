@@ -1,6 +1,7 @@
-/* Paso 14: detección del mock, local al navegador. Solo se descargan código y modelo. */
+/* Paso 14: detección del mock, local al navegador. RNF-003: ALINEO sirve su propia copia del modelo
+   (MediaPipe Pose, Apache 2.0), así la detección no depende del wifi ni de internet. */
 (() => {
-  const MP_URL='https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/';
+  const MP_URL='/static/vendor/mediapipe-pose-0.5.1675469404/';
   const CORONILLA={arriba:1.2,atras:0.9};
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
   const LIMITES=Object.freeze({script:20000,modelo:60000,inferencia:20000,total:60000}),MAX_LADO=1280,COMPLEJIDAD=0;
@@ -105,13 +106,12 @@
     return {L:{cadera:P(I.c),hombro:P(I.h),codo:P(I.co),muneca:P(I.m),nudillos:nud,cabeza:cab},mira:nariz.x>oreja.x?'Derecho':'Izquierdo',raw,piesSinApoyo:opciones.perfil?sugerirPiesSinApoyo(L,{contexto:opciones.contexto||''}):null,revisionPerfil:opciones.perfil?revisarPerfil(L,im.naturalWidth,im.naturalHeight):null};
   }
   function detectarPuntos(src,opciones={}){
-    if(window.navigator?.onLine===false){etapa('falló al cargar el script');return Promise.reject(new Error('Marca los puntos en la foto.'));}
     const turno=generacion;
     const trabajo=cola.then(()=>conTiempo(detectar(src,turno,opciones),LIMITES.total,'La detección tardó demasiado.').catch(error=>{if(turno===generacion)cancelar();throw error;}));
     cola=trabajo.catch(()=>{});return trabajo;
   }
   // La preparación solo adelanta la descarga: un fallo no cancela ni bloquea futuros intentos.
-  function preparar(){if(window.navigator?.onLine===false)return Promise.resolve(false);return poseLista().then(()=>true).catch(()=>false);}
+  function preparar(){return poseLista().then(()=>true).catch(()=>false);}
   window.addEventListener?.('pagehide',()=>{liberar();etapa('pagina-cerrada');});
   window.AplomoDeteccion={sugerirPiesSinApoyo,APOYO_PIES,revisarPerfil,PERFIL,detectarPuntos,conTiempo,preparar,cancelar,get disponible(){return typeof WebAssembly!=='undefined';},diagnostico,LIMITES,LIMITE_MS:LIMITES.total,MAX_LADO};
 })();

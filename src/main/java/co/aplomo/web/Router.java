@@ -405,14 +405,30 @@ public final class Router implements HttpHandler {
         intercambio.sendResponseHeaders(303, -1);
     }
 
+    /** Carpeta con la copia local del modelo de detección (MediaPipe Pose, licencia Apache 2.0). */
+    static final String CARPETA_MODELO = "/static/vendor/mediapipe-pose-0.5.1675469404/";
+
+    /**
+     * RNF-003: tipo de los archivos del modelo de detección, que ALINEO sirve sin depender de internet.
+     * Solo se aceptan dentro de la carpeta del modelo; devuelve null para cualquier otra ruta.
+     */
+    static String tipoModelo(String ruta) {
+        if (!ruta.startsWith(CARPETA_MODELO) || ruta.indexOf('/', CARPETA_MODELO.length()) >= 0) return null;
+        if (ruta.endsWith(".wasm")) return "application/wasm";
+        if (ruta.endsWith(".data") || ruta.endsWith(".tflite") || ruta.endsWith(".binarypb"))
+            return "application/octet-stream";
+        return null;
+    }
+
     private static void estatico(HttpExchange intercambio, String ruta) throws IOException {
         if (!intercambio.getRequestMethod().equals("GET")) {
             enviar(intercambio, 405, "Método no permitido.");
             return;
         }
+        String modelo = tipoModelo(ruta);
         if (ruta.contains("..") ||
                 !(ruta.endsWith(".css") || ruta.endsWith(".js") || ruta.endsWith(".jpg") || ruta.endsWith(".png") ||
-                        ruta.endsWith(".svg"))) {
+                        ruta.endsWith(".svg") || modelo != null)) {
             enviar(intercambio, 404, "Archivo no disponible.");
             return;
         }
@@ -421,11 +437,14 @@ public final class Router implements HttpHandler {
                 enviar(intercambio, 404, "Archivo no disponible.");
                 return;
             }
-            String tipo = ruta.endsWith(".css") ? "text/css; charset=UTF-8" : ruta.endsWith(
+            String tipo = modelo != null ? modelo : ruta.endsWith(".css") ? "text/css; charset=UTF-8" : ruta.endsWith(
                     ".js") ? "text/javascript; charset=UTF-8" : ruta.endsWith(".svg") ? "image/svg+xml" : ruta.endsWith(
                     ".jpg") ? "image/jpeg" : "image/png";
             byte[] bytes = entrada.readAllBytes();
             intercambio.getResponseHeaders().set("Content-Type", tipo);
+            // La carpeta del modelo lleva la versión en el nombre: el navegador puede guardarla sin volver a pedirla.
+            if (ruta.startsWith(CARPETA_MODELO))
+                intercambio.getResponseHeaders().set("Cache-Control", "public, max-age=31536000, immutable");
             intercambio.sendResponseHeaders(200, bytes.length);
             intercambio.getResponseBody().write(bytes);
         }

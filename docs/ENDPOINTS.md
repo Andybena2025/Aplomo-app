@@ -156,7 +156,7 @@ Fuentes: [EvaluacionesWeb.atender](../src/main/java/co/aplomo/web/EvaluacionesWe
 
 La variante parcial de `/evaluaciones/calcular` añade `segmento` (los cinco anteriores o `GIRO`/`PIERNAS`). Para segmentos angulares: sus campos, lado, dimensiones, `ajustes_confirmados=si` y ajustes de ese segmento; para GIRO/PIERNAS, `respuesta=MEDIO|EXTREMO` o `si|no`. Devuelve un `<span data-parcial>` con medición/puntos del segmento, **sin total final**. El resultado completo puede incluir las seis condiciones para previsualizar sugerencias. Todo puntaje guardado vuelve a calcularse en el servidor con tablas MySQL y NEUTRO=5°; no se altera `POST /evaluaciones/calcular` en este paso.
 
-La detección automática corre en el navegador, no en un endpoint ALINEO: descarga el modelo MediaPipe desde CDN y procesa la foto localmente. Las fotos de ejemplo son recursos estáticos y luego entran por la misma validación de subida.
+La detección automática corre en el navegador, no en un endpoint ALINEO: carga el modelo MediaPipe Pose 0.5.1675469404 (Apache 2.0) desde la copia local `/static/vendor/mediapipe-pose-0.5.1675469404/` y procesa la foto en el navegador, sin depender de internet ni del wifi. Las fotos de ejemplo son recursos estáticos y luego entran por la misma validación de subida.
 
 ## Pendientes y sugerencias
 
