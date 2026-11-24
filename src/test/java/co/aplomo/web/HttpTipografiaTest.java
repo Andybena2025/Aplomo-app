@@ -31,9 +31,9 @@ class HttpTipografiaTest extends HttpPrueba {
     }
 
     @Test
-    void titulosUsanIbmPlexSansPropiaYLaMarcaConservaSuLetra() throws Exception {
+    void titulosUsanBarlowPropiaYLaMarcaConservaSuLetra() throws Exception {
         String css = get("/static/css/aplomo.css").body();
-        assertTrue(css.contains("font-family:'IBM Plex Sans'"));
+        assertTrue(css.contains("font-family:'Barlow'"));
         assertTrue(css.contains("h1,h2,h3{font-family:var(--display)"));
         assertTrue(css.contains(".lockup{display:inline-flex;align-items:flex-end;font-family:var(--serif)"));
         assertFalse(css.contains("'Instrument Serif',serif"));
@@ -45,7 +45,7 @@ class HttpTipografiaTest extends HttpPrueba {
     void laFuenteSeSirveDesdeElServidorSinInternet() throws Exception {
         for (int peso : new int[]{400, 500}) {
             var respuesta = cliente.send(HttpRequest.newBuilder(URI.create(raiz +
-                    "/static/fonts/ibm-plex-sans-latin-" + peso + "-normal.woff2")).GET().build(),
+                    "/static/fonts/barlow-latin-" + peso + "-normal.woff2")).GET().build(),
                     HttpResponse.BodyHandlers.ofByteArray());
             assertEquals(200, respuesta.statusCode());
             assertEquals("font/woff2", respuesta.headers().firstValue("Content-Type").orElse(""));
