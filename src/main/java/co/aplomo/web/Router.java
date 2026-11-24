@@ -412,7 +412,7 @@ public final class Router implements HttpHandler {
         }
         if (ruta.contains("..") ||
                 !(ruta.endsWith(".css") || ruta.endsWith(".js") || ruta.endsWith(".jpg") || ruta.endsWith(".png") ||
-                        ruta.endsWith(".svg"))) {
+                        ruta.endsWith(".svg") || ruta.endsWith(".woff2"))) {
             enviar(intercambio, 404, "Archivo no disponible.");
             return;
         }
@@ -423,7 +423,7 @@ public final class Router implements HttpHandler {
             }
             String tipo = ruta.endsWith(".css") ? "text/css; charset=UTF-8" : ruta.endsWith(
                     ".js") ? "text/javascript; charset=UTF-8" : ruta.endsWith(".svg") ? "image/svg+xml" : ruta.endsWith(
-                    ".jpg") ? "image/jpeg" : "image/png";
+                    ".woff2") ? "font/woff2" : ruta.endsWith(".jpg") ? "image/jpeg" : "image/png";
             byte[] bytes = entrada.readAllBytes();
             intercambio.getResponseHeaders().set("Content-Type", tipo);
             intercambio.sendResponseHeaders(200, bytes.length);

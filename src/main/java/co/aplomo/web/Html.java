@@ -145,10 +145,8 @@ public final class Html {
         String contenido = "<section class=\"card stack nosotros-marca\"><div class=\"marca-llegada\">" + Marca.logo() +
                 "</div><span class=\"eyebrow\">Ergonomía con precisión</span>" +
                 "<h1>Quiénes somos</h1><p>Evaluamos posturas de trabajo con el método RULA.</p>" +
-                "<div class=\"login-ideas\"><div><strong>Fotografía el puesto</strong>" +
-                "<small>Una foto por postura</small></div><div><strong>Mide los ángulos</strong>" +
-                "<small>Guiado, sobre la foto</small></div><div><strong>Conoce el riesgo</strong>" +
-                "<small>Semáforo y sugerencias</small></div></div>" +
+                "<div class=\"login-ideas\"><div><strong>Fotografía el puesto</strong></div>" +
+                "<div><strong>Mide los ángulos</strong></div><div><strong>Conoce el riesgo</strong></div></div>" +
                 "<a class=\"btn p\" href=\"/login\">Iniciar sesión</a></section>";
         return pagina("Quiénes somos", contenido, null, false, false);
     }
