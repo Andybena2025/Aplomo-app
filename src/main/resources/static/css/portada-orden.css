@@ -1,0 +1,8 @@
+/* RNF-007 (Andy 24-nov): el dibujo de medición de la portada se traza en orden, como una trayectoria:
+   plomada, tronco, cuello, brazo, antebrazo, muñeca y piernas. Cada punto aparece cuando la línea llega,
+   y luego su ángulo (guía, arco, línea y etiqueta). Solo cambia el ritmo; las medidas son las mismas. */
+.login .pz-svg [style*="--d"]{animation-delay:var(--d)!important}
+.login .pz-svg :is(.sk,.sk2)[style*="--d"]{animation-duration:.6s!important;animation-timing-function:cubic-bezier(.45,0,.25,1)!important}
+.login .pz-svg .arc[style*="--d"]{animation-duration:.45s!important}
+.login .pz-svg :is(.jt,.gd,.ld,.ldp,.lb)[style*="--d"]{animation-duration:.35s!important}
+.login .pz-svg .plumb[style*="--d"]{animation-duration:.5s!important}
