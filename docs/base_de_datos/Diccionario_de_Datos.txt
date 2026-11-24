@@ -583,3 +583,10 @@ no se crean sedes ni salones ficticios.
 
 Paso 38B: aprobar EVALUADOR crea cuenta activa con clave temporal, color de agenda automático
  y sin cuenta_empresa; no crea empresa ni sede. Resolución y bitácora en la misma transacción.
+
+
+Paso 40 · evaluacion · contexto opcional (no entra a RULA ni a la proyección)
+trabajador_genero ENUM(FEMENINO,MASCULINO,OTRO,NO_DICE), NULL.
+trabajador_edad TINYINT, NULL, CHECK 14 a 99 cuando se informa.
+trabajador_antiguedad ENUM(MENOS_1,DE_1_A_5,DE_6_A_10,MAS_10), NULL.
+RF-014/RF-002: solo Administrador y Evaluador ven estos campos (propuesta configurable).

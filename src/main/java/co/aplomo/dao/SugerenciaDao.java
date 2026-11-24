@@ -196,6 +196,18 @@ public final class SugerenciaDao {
                 puesto));
     }
 
+    /** RF-023/RNF-005: identidad estable de mejoras sin regla, aunque luego cambien título o descripción. */
+    public java.util.Map<Integer, String> marcasPlan(Connection con, int evaluacion) throws SQLException {
+        var filas = Sql.listar(con, "SELECT b.id_registro,b.detalle FROM bitacora b JOIN sugerencia s " +
+                "ON s.id_sugerencia=b.id_registro WHERE b.tabla='sugerencia' AND b.accion='CREAR' " +
+                "AND s.id_evaluacion=? AND s.origen='SISTEMA' AND s.id_regla IS NULL " +
+                "AND b.detalle LIKE 'Plan de atención · %' ORDER BY b.id_bitacora",
+                f -> java.util.Map.entry(f.getInt(1), f.getString(2)), evaluacion);
+        java.util.Map<Integer, String> marcas = new java.util.HashMap<>();
+        filas.forEach(f -> marcas.putIfAbsent(f.getKey(), f.getValue()));
+        return java.util.Map.copyOf(marcas);
+    }
+
     private static Contexto contexto(ResultSet fila) throws SQLException {
         return new Contexto(fila.getInt("id_evaluacion"), fila.getInt("id_puesto"), fila.getInt("numero"),
                 fila.getInt("id_visita"), fila.getInt("id_empresa"), fila.getInt("id_sede"), fila.getInt("id_salon"),

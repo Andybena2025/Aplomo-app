@@ -17,13 +17,19 @@ import java.sql.SQLException;
 public final class ConsultasWeb {
     private final Consultas consultas;
     private final Sugerencias sugerencias;
+    private final co.aplomo.servicio.Resultados40 resultados;
 
     /**
      * Comparte servicios autorizados y transacciones con Evaluaciones. RNF-011.
      */
     public ConsultasWeb(Consultas consultas, Sugerencias sugerencias) {
-        this.consultas = consultas;
-        this.sugerencias = sugerencias;
+        this(consultas, sugerencias, null);
+    }
+
+    /** RF-002/020: integra el resultado explicado en la misma consulta segura del Usuario. */
+    public ConsultasWeb(Consultas consultas, Sugerencias sugerencias,
+            co.aplomo.servicio.Resultados40 resultados) {
+        this.consultas = consultas; this.sugerencias = sugerencias; this.resultados = resultados;
     }
 
     /**
@@ -51,8 +57,9 @@ public final class ConsultasWeb {
         }
         if (detalle) {
             int id = Validacion.entero(ruta.substring(14), "evaluación", 1, Integer.MAX_VALUE);
-            Router.enviar(intercambio, 200,
-                    PaginasConsultas.evaluacion(sesion, consultas.evaluacion(sesion.cuenta(), id)));
+            String pagina = PaginasConsultas.evaluacion(sesion, consultas.evaluacion(sesion.cuenta(), id));
+            if (resultados != null) pagina = Resultado40Web.pagina(sesion, resultados, id, pagina);
+            Router.enviar(intercambio, 200, pagina);
             return true;
         }
         var parametros = Router.consulta(intercambio);

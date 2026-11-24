@@ -146,6 +146,24 @@ public final class Reservas {
                 reservas.buscar(con, id, AccesoDatos.empresaPermitida(AccesoDatos.vigente(con, actor)), false)));
     }
 
+    /** RF-011/002: prellena la reserva del plan con un puesto activo autorizado; no agrega columnas. */
+    public java.util.Map<String, String> paraReevaluar(Cuenta actor, int puesto) throws SQLException {
+        return tx.ejecutar(con -> {
+            var cuenta = AccesoDatos.vigente(con, actor); Permisos.evaluador(cuenta);
+            var alcance = AccesoDatos.empresaPermitida(cuenta);
+            var datos = co.aplomo.db.Sql.uno(con,
+                "SELECT p.numero,p.descripcion,l.id_salon,l.id_sede,s.id_empresa FROM puesto_trabajo p " +
+                "JOIN salon l USING(id_salon) JOIN sede s USING(id_sede) JOIN empresa em USING(id_empresa) " +
+                "WHERE p.id_puesto=? AND p.activo AND l.activo AND s.activo AND em.activo AND " +
+                alcance.sql("s.id_empresa"), f -> java.util.Map.of("empresa", f.getString("id_empresa"),
+                    "sede", f.getString("id_sede"), "salon", f.getString("id_salon"), "categoria", "REEVALUACION",
+                    "descripcion", "Reevaluación del Puesto " + f.getInt("numero")),
+                puesto, alcance.todas(), alcance.valor());
+            if (datos == null) throw new SecurityException("El puesto no está disponible para tu cuenta.");
+            return datos;
+        });
+    }
+
     /**
      * Lee los catálogos activos en tres consultas, evitando opciones bajo padres desactivados. RNF-011.
      */

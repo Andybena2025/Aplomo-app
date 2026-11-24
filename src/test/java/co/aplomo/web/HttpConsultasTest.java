@@ -161,7 +161,8 @@ class HttpConsultasTest extends HttpPrueba {
         assertEquals(200, particular.statusCode());
         assertFalse(particular.body().contains("data-puesto"));
         assertTrue(get("/sugerencias").body().contains("data-puesto"));
-        assertTrue(particular.body().contains("11 sugerencias"));
+        // RF-023, Paso 40: incluye la mejora de apoyo de piernas, aunque no tenga una regla inicial.
+        assertTrue(particular.body().contains("12 sugerencias"));
     }
 
     @Test

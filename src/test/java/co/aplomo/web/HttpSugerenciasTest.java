@@ -166,7 +166,7 @@ class HttpSugerenciasTest extends HttpPrueba {
     }
 
     @Test
-    void sinReglasAplicablesGuardaYExplicaQueFaltaUna() throws Exception {
+    void sinReglasAplicablesConservaAnalisisYPideSugerenciaDentroDelPlan() throws Exception {
         var evaluacion2 = new EvaluacionDao().fotos(con, evaluacion).get(0);
         int nueva = evs.guardar(cuenta(admin), visita,
                 new Evaluaciones.Datos(servicio.contexto(cuenta(admin), evaluacion).puesto(), "Solo carga",
@@ -176,8 +176,10 @@ class HttpSugerenciasTest extends HttpPrueba {
         assertTrue(servicio.listar(cuenta(admin), nueva).isEmpty());
         var respuesta = get("/evaluaciones/" + nueva);
         assertEquals(200, respuesta.statusCode());
-        assertTrue(respuesta.body().contains("El análisis está guardado."));
-        assertTrue(respuesta.body().contains("Escribe") || respuesta.body().contains("escribe una"));
+        assertTrue(respuesta.body().contains("data-resultado40-json"));
+        assertTrue(respuesta.body().contains("\"sinSugerencias\":true"));
+        assertTrue(respuesta.body().contains("\"evaluacion\":" + nueva));
+        assertEquals(1, new co.aplomo.dao.AnalisisDao().listar(con, nueva).size());
     }
 
     @Test

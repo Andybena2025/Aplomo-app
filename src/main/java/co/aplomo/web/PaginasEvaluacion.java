@@ -100,6 +100,7 @@ public final class PaginasEvaluacion {
         for (int i = 0; i < CONDICIONES.length; i++)
             contenido.append("<span class=\"tag\">").append(CONDICIONES[i][1]).append(": ")
                     .append(marcadas[i] ? "Sí" : "No").append("</span>");
+        contenido.append(TrabajadorCampos.resumen(sesion, evaluacion2));
         contenido.append("</div><p class=\"texto-notas\">").append(escapar(evaluacion2.observaciones()))
                 .append("</p><span class=\"tag\">")
                 .append(evaluacion2.sinFotos() ? "Sin registro fotográfico" : "La persona aceptó las fotos")

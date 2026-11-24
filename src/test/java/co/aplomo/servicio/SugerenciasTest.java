@@ -108,6 +108,11 @@ class SugerenciasTest extends BasePrueba {
                 Sql.<Integer>uno(con, "SELECT COUNT(*) FROM regla_sugerencia", fila2 -> fila2.getInt(1)));
         analizar(10);
         for (var sugerencia : servicio.listar(cuenta(admin), evaluacion)) {
+            if (sugerencia.sugerencia().regla() == null) {
+                assertTrue(sugerencia.sugerencia().titulo().startsWith("Plan · "));
+                assertEquals("POSTURA", sugerencia.sugerencia().tipo());
+                continue;
+            }
             var sugerencia2 = new SugerenciaDao().reglas(con).stream()
                     .filter(sugerencia3 -> sugerencia3.id() == sugerencia.sugerencia().regla()).findFirst()
                     .orElseThrow();

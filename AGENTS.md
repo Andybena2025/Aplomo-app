@@ -493,3 +493,26 @@ Luego ESPERA el OK de Andy.
   Sin capturas por instrucción de Andy; tacto/iPad físico y navegadores externos no comprobados.
 - QA solo en rula_ergonomia_pruebas, ROLLBACK confirmado. Base real, permisos, motor RULA y POST
   calcular intactos. Informe docs/informe_paso39.md; commit/push a main autorizados para la entrega.
+
+
+## Paso 40 · 24 nov 2026
+
+- Resultado ancho en asistente y ficha guardada: anillo principal, posturas de 46 px, desgloses cerrados,
+  mapa corporal curvo, partes ponderadas, efectos, plan con estados reales y proyección calculada en servidor.
+- Metas en PlanAtencion40.METAS: Andy confirmó muñeca hasta 5°, tronco hasta 5° o sentado bien apoyado,
+  cuello 0–10°, antebrazo 60–100° y brazo −20–20°, sin ajustes. Proyección conserva actividad/carga y giro.
+- JSON complementario /evaluaciones/explicacion; bloque protegido POST calcular y co.aplomo.rula idénticos.
+  Estados de sugerencias se conservan tras editar/reanalizar mediante su marca de bitácora; no se duplican.
+- Trabajador opcional, validado y guardado con PreparedStatement; política de privacidad única en Trabajador.
+  Usuario solo ve sus Finalizadas, sin datos del trabajador ni fotos. Historial propio de Evaluador ya no
+  asignado permanece de solo consulta, sin seguimiento ni reserva. PDF y nivel_riesgo sin cambios.
+- Migración aditiva/idempotente ejecutada en rula_ergonomia y rula_ergonomia_pruebas, con respaldo privado
+  previo; tres columnas comprobadas en ambas. Texto viejo de muñeca reemplazado solo por coincidencia exacta.
+- Suite final: 1194 Maven, 1193 aprobadas, 1 fallo conocido de fecha DemoPlan28Test:55 (23 frente a 24),
+  0 errores/omitidas; excepción autorizada por Andy. JavaScript 185/185. Regresiones dirigidas 39/39.
+  Hubo correcciones tras la primera suite; el resultado anterior es el cierre completo posterior.
+- Navegador integrado sin capturas: asistente completo con dos posturas, detección real y guardado;
+  cambiar una sugerencia a Hecha y reabrir. En 1440×900, 1280×800 y 390×844: 0 px de desborde exterior,
+  0 textos recortados medidos, botones del pie de 44 px y 0 errores de consola. QA en pruebas revertida.
+- No se certificó tacto/iPad físico, Windows ni navegadores externos; no se generaron imágenes/evidencias.
+  Informe docs/informe_paso40.md. Commit/push y reinicio autorizados al entregar; esperar revisión de Andy.

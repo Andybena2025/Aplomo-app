@@ -66,6 +66,10 @@ public final class EvaluacionesWeb {
             return;
         }
 
+        if (ruta.equals("/evaluaciones/explicacion") && post) {
+            Resultado40Web.atender(x, s, servicio);
+            return;
+        }
         // RNF-010: inicio del cálculo protegido.
         if(ruta.equals("/evaluaciones/calcular") && post) {
             try {
@@ -90,14 +94,8 @@ public final class EvaluacionesWeb {
             String[] ids = ruta.split("/");
             var guardado = servicio.analisis()
                     .consultar(s.cuenta(), entero(ids[2], "evaluación"), entero(ids[4], "análisis"));
-            if (!servicio.permiteTrabajo(s.cuenta(), guardado.ficha().evaluacion())) {
-                Router.enviar(x, 200, PaginasAnalisis.guardado(s, guardado));
-                return;
-            }
-            var sugerencia = servicio.sugerencias().contexto(s.cuenta(), guardado.ficha().evaluacion());
-            var lista = servicio.sugerencias().listar(s.cuenta(), sugerencia.evaluacion());
-            Router.enviar(x, 200, PaginasAnalisis.guardado(s, guardado)
-                    .replace("</main>", PaginasSugerencias.resumen(lista, sugerencia) + "</main>"));
+            Router.enviar(x, 200, Resultado40Web.pagina(s, servicio, guardado.ficha().evaluacion(),
+                    PaginasAnalisis.guardado(s, guardado)));
             return;
         }
         if (ruta.matches("/evaluaciones/[1-9][0-9]*/analizar") && !post) {
@@ -141,9 +139,7 @@ public final class EvaluacionesWeb {
             var analisis = servicio.analisis().listar(s.cuenta(), id);
             String pagina = PaginasEvaluacion.detalle(s, servicio.consultar(s.cuenta(), id), analisis,
                     Router.consulta(x).get("aviso"));
-            if (!analisis.isEmpty() && servicio.permiteTrabajo(s.cuenta(), id)) pagina = pagina.replace("</main>",
-                    PaginasSugerencias.resumen(servicio.sugerencias().listar(s.cuenta(), id),
-                            servicio.sugerencias().contexto(s.cuenta(), id)) + "</main>");
+            if (!analisis.isEmpty()) pagina = Resultado40Web.pagina(s, servicio, id, pagina);
             Router.enviar(x, 200, pagina);
             return;
         }
@@ -183,7 +179,7 @@ public final class EvaluacionesWeb {
                     si(parametros2, "escritorio"), si(parametros2, "pantalla"), si(parametros2, "pies"),
                     si(parametros2, "apoyapies"), si(parametros2, "apoyabrazos"), si(parametros2, "regulable"),
                     parametros2.get("observaciones"), si(parametros2, "acepta"),
-                    registro.equals("SIN_REGISTRO_FOTOGRAFICO"));
+                    registro.equals("SIN_REGISTRO_FOTOGRAFICO"), co.aplomo.modelo.Trabajador.leer(parametros2));
             List<Fotos.Entrada> fotos = new ArrayList<>();
             for (var elemento2 : partes)
                 if (elemento2.archivo() != null && !(elemento2.archivo().isEmpty() && elemento2.bytes().length == 0))

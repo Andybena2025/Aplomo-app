@@ -219,7 +219,12 @@
       contador.textContent = parte < 6 ? `${grupos[parte].nombre} · Parte ${parte + 1} de 6` : `${grupos[parte].nombre} · Esfuerzo ${parte - 5} de 3`;
     } else contador.textContent = uno('#pasoActual').textContent;
     exportar.hidden = estado.paso !== 5 || !empresa;
-    if (estado.paso === 5) seguir.textContent = estado.ocupada ? 'Guardando…' : 'Guardar y terminar';
+    if (estado.paso === 5) {
+      seguir.textContent = estado.ocupada ? 'Guardando…' : 'Guardar y terminar';
+      const agregar = uno('[data-agregar-postura]');
+      if (agregar) pie.insertBefore(agregar,exportar);
+      pie.insertBefore(exportar,uno('[data-seguir-zona]'));
+    }
     document.body.classList.toggle('viendo-resultado', estado.paso === 5);
     document.body.classList.toggle('en-resultado', estado.paso === 5);
     form.classList.toggle('resultado-final', estado.paso === 5);
@@ -299,62 +304,12 @@
     aro.append(nodo('b', '', String(puntaje)));
     return aro;
   }
+  // RF-020/023: el resultado explicado usa únicamente puntajes y proyección recibidos del servidor.
   function resultado(posturas, critica) {
     const destino = uno('[data-resultados]');
-    const documentos = posturas.map(postura => new DOMParser().parseFromString(postura.html || '', 'text/html'));
-    const datos = documentos.map(doc => [...doc.querySelectorAll('[data-puntaje-final]')]
-      .sort((a, b) => Number(b.dataset.puntajeFinal) - Number(a.dataset.puntajeFinal))[0]);
-    const peor = datos.map((punto, indice) => ({punto, indice})).filter(dato => dato.punto)
-      .sort((a, b) => Number(b.punto.dataset.puntajeFinal) - Number(a.punto.dataset.puntajeFinal))[0];
-    if (!peor) return;
-    destino.replaceChildren();
-    destino.className = 'resultado-final';
-    const principal = peor.punto.closest('[data-calculo]');
-    const color = ['VERDE', 'AMARILLO', 'ROJO'].find(nombre => peor.punto.classList.contains(nombre)) || '';
-    const cabecera = nodo('section', `resultado-principal riesgo-${color.toLowerCase()}`);
-    cabecera.append(anillo(peor.punto.dataset.puntajeFinal, color));
-    const texto = nodo('div', 'stack');
-    const nivel = principal.querySelector('.pill');
-    if (nivel) texto.append(nivel.cloneNode(true));
-    texto.append(nodo('h2', '', principal.querySelector('.result h3')?.textContent || 'Resultado del puesto'));
-    texto.append(nodo('p', 'hint', 'El puesto toma el puntaje de la postura más crítica.'));
-    cabecera.append(texto);
-    destino.append(cabecera);
-    const tarjetas = nodo('div', 'resultado-posturas');
-    posturas.forEach((postura, indice) => {
-      const tarjeta = nodo('article', 'card');
-      tarjeta.append(nodo('h3', '', postura.titulo));
-      const punto = datos[indice];
-      if (punto) {
-        const clase = ['VERDE', 'AMARILLO', 'ROJO'].find(nombre => punto.classList.contains(nombre)) || '';
-        tarjeta.append(anillo(punto.dataset.puntajeFinal, clase, true));
-        const etiqueta = punto.closest('[data-calculo]')?.querySelector('.pill');
-        if (etiqueta) tarjeta.append(etiqueta.cloneNode(true));
-      }
-      if (indice === critica.indice) tarjeta.append(nodo('small', 'postura-mas-critica', 'MÁS CRÍTICA'));
-      const detalle = nodo('details', 'desglose-postura');
-      detalle.append(nodo('summary', '', 'Ver desglose ›'));
-      detalle.append(...documentos[indice].body.childNodes);
-      tarjeta.append(detalle);
-      tarjetas.append(tarjeta);
-    });
-    const sugerencias = [...new Set([...tarjetas.querySelectorAll('.sug')]
-      .map(sugerencia => sugerencia.textContent.trim()))];
-    destino.append(tarjetas);
-    if (sugerencias.length) {
-      const seccion = nodo('section', 'resultado-primeros');
-      seccion.append(nodo('h3', '', 'Qué hacer primero'));
-      const lista = nodo('ol', '');
-      sugerencias.slice(0, 3).forEach(textoSugerencia => lista.append(nodo('li', '', textoSugerencia)));
-      seccion.append(lista);
-      if (sugerencias.length > 3) {
-        const ver = nodo('button', 'link', `Ver las ${sugerencias.length} sugerencias`);
-        ver.type = 'button';
-        ver.onclick = () => tarjetas.querySelectorAll('details').forEach(detalle => { detalle.open = true; });
-        seccion.append(ver);
-      }
-      destino.append(seccion);
-    }
+    destino.innerHTML = window.AlineoResultado40.render(posturas.map(p => ({
+      titulo:p.titulo,analisis:p.explicaciones || []
+    })));
     dibujar();
   }
   window.AlineoRevision = {resultado};

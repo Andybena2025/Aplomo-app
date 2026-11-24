@@ -186,7 +186,8 @@ public final class PaginasAnalisis {
      * RNF-011: operación del componente.
      */
     public static String scripts() {
-        return "<script src=\"/static/js/deteccion.js\" defer></script><script src=\"/static" +
+        return "<script src=\"/static/js/resultado40.js\" defer></script>" +
+                "<script src=\"/static/js/deteccion.js\" defer></script><script src=\"/static" +
                 "/js/marcado-manual.js\" defer></script><script src=\"/static/js/analisis.js" +
                 "\" defer></script><script src=\"/static/js/recorrido.js\" defer></script><sc" +
                 "ript src=\"/static/js/esfuerzo.js\" defer></script><script src=\"/static/js/" +

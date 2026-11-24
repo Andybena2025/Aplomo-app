@@ -81,6 +81,7 @@ final class ConversacionEvaluacion {
                 "Más de 4" + " y hasta 6"}, {"DE_6_A_8", "Más de 6 y hasta 8"}, {"MAS_8", "Más de 8 horas"}};
         for (var texto3 : tiempos) texto3[0] = "" + MapeosCampo.MINUTOS.get(texto3[0]);
         pregunta(contenido, "tiempo_campo", "Pregúntale", "¿Cuántas horas al día trabaja en este puesto?", tiempos);
+        contenido.append(TrabajadorCampos.mostrar());
         contenido.append("<h3>Condiciones del puesto</h3><div class=\"campo-condiciones\">");
         for (var texto4 : PaginasEvaluacion.CONDICIONES)
             contenido.append(PaginasEvaluacion.opcion(texto4[0], "si", texto4[1], "", true, "", ""));
@@ -316,6 +317,15 @@ final class ConversacionEvaluacion {
         html = html.replace("action=\"/evaluaciones\"",
                 "data-criterio=\"" + escapar(evaluacion3.criterio()) + "\" data-continuar=\"" + evaluacion2.id() +
                         "\" action=\"/evaluaciones/" + evaluacion2.id() + "/analisis\"");
+        var trabajador = evaluacion3.trabajador().para(sesion.cuenta());
+        html = html.replace("name=\"trabajador_genero\" value=\"\"",
+                "name=\"trabajador_genero\" value=\"" + escapar(trabajador.genero()) + "\"")
+                .replace("name=\"trabajador_antiguedad\" value=\"\"",
+                    "name=\"trabajador_antiguedad\" value=\"" + escapar(trabajador.antiguedad()) + "\"");
+        if (trabajador.edad() != null) html = html.replace("name=\"trabajador_edad\" min=",
+                "name=\"trabajador_edad\" value=\"" + trabajador.edad() + "\" min=");
+        html = html.replace("name=\"minutos\" value=\"\"",
+                "name=\"minutos\" value=\"" + evaluacion3.minutos() + "\"");
         StringBuilder fotos = new StringBuilder("<div data-fotos-existentes hidden>");
         for (var foto : evaluacion.fotos())
             if (!foto.descripcion().startsWith(co.aplomo.servicio.FotosEvaluacion.REEMPLAZADA))

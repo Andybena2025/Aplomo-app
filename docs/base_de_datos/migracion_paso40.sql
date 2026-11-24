@@ -1,0 +1,24 @@
+-- Paso 40: aditiva, idempotente y sin borrados. Respaldo primero.
+SET NAMES utf8mb4;
+SET @existe=(SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='evaluacion' AND column_name='trabajador_genero');
+SET @orden=IF(@existe=0, 'ALTER TABLE evaluacion ADD COLUMN trabajador_genero ENUM(''FEMENINO'',''MASCULINO'',''OTRO'',''NO_DICE'') NULL', 'SELECT 1');
+PREPARE migracion FROM @orden;
+EXECUTE migracion;
+DEALLOCATE PREPARE migracion;
+SET @existe=(SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='evaluacion' AND column_name='trabajador_edad');
+SET @orden=IF(@existe=0, 'ALTER TABLE evaluacion ADD COLUMN trabajador_edad TINYINT NULL', 'SELECT 1');
+PREPARE migracion FROM @orden;
+EXECUTE migracion;
+DEALLOCATE PREPARE migracion;
+SET @existe=(SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='evaluacion' AND column_name='trabajador_antiguedad');
+SET @orden=IF(@existe=0, 'ALTER TABLE evaluacion ADD COLUMN trabajador_antiguedad ENUM(''MENOS_1'',''DE_1_A_5'',''DE_6_A_10'',''MAS_10'') NULL', 'SELECT 1');
+PREPARE migracion FROM @orden;
+EXECUTE migracion;
+DEALLOCATE PREPARE migracion;
+SET @existe=(SELECT COUNT(*) FROM information_schema.table_constraints WHERE constraint_schema=DATABASE() AND table_name='evaluacion' AND constraint_name='chk_trabajador_edad');
+SET @orden=IF(@existe=0, 'ALTER TABLE evaluacion ADD CONSTRAINT chk_trabajador_edad CHECK (trabajador_edad IS NULL OR trabajador_edad BETWEEN 14 AND 99)', 'SELECT 1');
+PREPARE migracion FROM @orden;
+EXECUTE migracion;
+DEALLOCATE PREPARE migracion;
+UPDATE regla_sugerencia SET texto_sugerido='Usar herramientas y soportes que dejen la muñeca recta (por ejemplo, una prensa para sujetar la pieza).' WHERE BINARY texto_sugerido=BINARY 'Usar herramientas y sujeciones que permitan mantener la muñeca recta.';
+UPDATE sugerencia SET descripcion='Usar herramientas y soportes que dejen la muñeca recta (por ejemplo, una prensa para sujetar la pieza).' WHERE BINARY descripcion=BINARY 'Usar herramientas y sujeciones que permitan mantener la muñeca recta.';

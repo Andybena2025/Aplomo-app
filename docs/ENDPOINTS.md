@@ -361,3 +361,19 @@ Panel: 200 con bandeja y confirmación; 400 conserva selector y texto. GET nunca
 `POST /avisos/{id}/responder` añade A destinatario de AVISO general de E, conservando las reglas del Paso 30C.
 
 Paso 32: Usuario puede elegir en `/avisos/nuevo?para=ID` a un Evaluador activo asignado a sus empresas o a la Administradora principal; cualquier destino ajeno devuelve 403. Las respuestas generales conservan la pareja y revalidan la asignación.
+
+
+## Paso 40 · Resultado explicado
+
+POST `/evaluaciones/explicacion` (A/E, sesión y CSRF) recibe los datos RULA existentes, `visita`,
+`puesto`, condiciones y el contexto opcional del trabajador. Devuelve JSON con resultado, niveles
+leídos de MySQL, partes ordenadas, reglas aplicables y proyección calculada por MotorRula. No guarda
+el puntaje hipotético. Responde 400/403/503 en español. Es un complemento: el contrato HTML y el bloque
+protegido de `POST /evaluaciones/calcular` no cambian.
+
+El guardado multipart de evaluación acepta `trabajador_genero`, `trabajador_edad` y
+`trabajador_antiguedad`, todos opcionales. Se validan en servidor y no son entradas del motor.
+Las fichas guardadas usan la misma presentación; U conserva solo su empresa y visitas Finalizadas,
+sin fotos, sin datos del trabajador ni controles de edición. La política de visibilidad del contexto
+está en `Trabajador.ROLES_VISIBLES` (propuesta). Los cambios de estado del plan reutilizan
+`POST /sugerencias/{id}/estado` y sus permisos/CSRF actuales. El informe RF-026 no cambia.

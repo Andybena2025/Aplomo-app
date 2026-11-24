@@ -238,6 +238,29 @@ public final class Sugerencias {
                     "Sugerencia del sistema · regla " + sugerencia2.id() + ".");
             propuestas.add(sugerencia2.id());
         }
+        completarPlan(conexion, actor, evaluacion, calculo);
+    }
+
+    /** RF-023/020: cada parte del plan sin regla conserva una sugerencia propia y su estado al guardar. */
+    private void completarPlan(Connection con, Cuenta actor, int evaluacion,
+            MotorRula.Calculo calculo) throws SQLException {
+        var actuales = dao.actuales(con, evaluacion);
+        var reglas = dao.reglas(con);
+        var marcas = dao.marcasPlan(con, evaluacion);
+        for (String k : PlanAtencion40.orden(calculo)) {
+            var meta = PlanAtencion40.METAS.get(k);
+            if (PlanAtencion40.puntos(calculo).get(k) <= meta.minimo()) continue;
+            String titulo = "Plan · " + meta.nombre();
+            boolean existe = actuales.stream().anyMatch(s -> s.origen().equals("SISTEMA") &&
+                    (s.regla() == null ? s.titulo().equals(titulo) ||
+                        ("Plan de atención · " + meta.nombre() + ".").equals(marcas.get(s.id())) :
+                        reglas.stream().anyMatch(r -> r.id() == s.regla() && r.segmento().equals(k))));
+            if (existe) continue;
+            var mejora = new Sugerencia(0, evaluacion, null, titulo, meta.cambio(), "POSTURA",
+                    prioridad(calculo.resultado().nivel().color()), "PENDIENTE", null, "SISTEMA", true);
+            int id = dao.crear(con, mejora);
+            auditar(con, actor, id, "CREAR", null, "PENDIENTE", "Plan de atención · " + meta.nombre() + ".");
+        }
     }
 
     /**

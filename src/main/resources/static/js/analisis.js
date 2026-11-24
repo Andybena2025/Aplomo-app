@@ -182,7 +182,13 @@ window.crearAnalizadorAplomo = (form, obtenerFotos, aviso, renovarFormulario) =>
     let r=await fetch('/evaluaciones/calcular',{method:'POST',body:p,credentials:'same-origin',redirect:'manual'});
     if(r.status===403 && await renovarFormulario()){p.set('csrf',form.elements.csrf.value);r=await fetch('/evaluaciones/calcular',{method:'POST',body:p,credentials:'same-origin',redirect:'manual'});}
     if(!r.ok){const texto=(r.headers.get('Content-Type')||'').startsWith('text/plain')?await r.text():'No se pudo calcular. Comprueba tu sesión en otra pestaña y vuelve aquí; tus datos se conservan.';throw new Error(texto);}
-    const html=await r.text();if(revision!==s.revision)return;if(!html.includes('data-calculo'))throw new Error('No pudimos recibir el resultado. Vuelve a intentarlo.');s.html=html;pintarMedidas(f);
+    const html=await r.text();if(revision!==s.revision)return;if(!html.includes('data-calculo'))throw new Error('No pudimos recibir el resultado. Vuelve a intentarlo.');if(form.dataset.conversacion){
+      for(const k of ['puesto','minutos','trabajador_genero','trabajador_edad','trabajador_antiguedad'])p.set(k,form.elements[k]?.value||'');
+      const exp=await fetch('/evaluaciones/explicacion',{method:'POST',body:p,credentials:'same-origin'});
+      if(!exp.ok)throw new Error((exp.headers.get('Content-Type')||'').startsWith('text/plain')?await exp.text():'No pudimos preparar el plan. Inténtalo de nuevo.');
+      const datos=await exp.json();if(revision!==s.revision)return;s.resultado40=datos;
+    }
+    s.html=html;pintarMedidas(f);
     }catch(error){
       if(error instanceof TypeError)throw new Error('No se pudo conectar. Tus puntos y ángulos se conservan; revisa la conexión e inténtalo de nuevo.');
       throw error;

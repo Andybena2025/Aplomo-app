@@ -35,11 +35,23 @@ import java.util.Set;
 public final class Evaluaciones {
 
     /**
-     * Datos aprobados de postura, seis condiciones y consentimiento; sin datos del trabajador. RNF-011.
+     * Datos aprobados de postura, seis condiciones y consentimiento; contexto opcional del trabajador. RNF-011.
      */
     public record Datos(int puesto, String postura, String criterio, String motivo, int minutos, boolean escritorio,
                         boolean pantalla, boolean pies, boolean apoyapies, boolean apoyabrazos, boolean regulable,
-                        String observaciones, boolean aceptaFotos, boolean sinFotos) {
+                        String observaciones, boolean aceptaFotos, boolean sinFotos,
+                        co.aplomo.modelo.Trabajador trabajador) {
+        /** RF-014: compatibilidad con evaluaciones anteriores sin datos personales opcionales. */
+        public Datos(int puesto, String postura, String criterio, String motivo, int minutos, boolean escritorio,
+                boolean pantalla, boolean pies, boolean apoyapies, boolean apoyabrazos, boolean regulable,
+                String observaciones, boolean aceptaFotos, boolean sinFotos) {
+            this(puesto, postura, criterio, motivo, minutos, escritorio, pantalla, pies, apoyapies, apoyabrazos,
+                    regulable, observaciones, aceptaFotos, sinFotos, new co.aplomo.modelo.Trabajador(null, null, null));
+        }
+        /** RF-014: ausencia de objeto equivale a los tres campos sin informar. */
+        public Datos {
+            if (trabajador == null) trabajador = new co.aplomo.modelo.Trabajador(null, null, null);
+        }
     }
 
     /**
@@ -351,6 +363,9 @@ public final class Evaluaciones {
         }
     }
 
+    /** RF-020/023: comparte transacciones y permisos con la presentación explicada del Paso 40. */
+    public Resultados40 resultados() { return new Resultados40(this, tx); }
+
     private static Datos validar(Datos evaluacion) {
         if (evaluacion == null) throw new IllegalArgumentException("Completa los datos de la evaluación.");
         String postura = Validacion.texto(evaluacion.postura(), "postura o tarea", 150);
@@ -376,7 +391,7 @@ public final class Evaluaciones {
             throw new IllegalArgumentException("Otras observaciones permite hasta 255 caracteres.");
         return new Datos(evaluacion.puesto(), postura, criterio, motivo, evaluacion.minutos(), evaluacion.escritorio(),
                 evaluacion.pantalla(), evaluacion.pies(), evaluacion.apoyapies(), evaluacion.apoyabrazos(),
-                evaluacion.regulable(), obs, evaluacion.aceptaFotos(), evaluacion.sinFotos());
+                evaluacion.regulable(), obs, evaluacion.aceptaFotos(), evaluacion.sinFotos(), evaluacion.trabajador());
     }
 
     private static Cuenta admin(Connection con, Cuenta actor) throws SQLException {

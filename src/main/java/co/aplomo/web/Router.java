@@ -116,7 +116,8 @@ public final class Router implements HttpHandler {
         this.evaluaciones = new EvaluacionesWeb(evaluaciones);
         this.pendientes = new PendientesWeb(evaluaciones.pendientes());
         this.sugerencias = new SugerenciasWeb(evaluaciones.sugerencias());
-        this.consultas = new ConsultasWeb(evaluaciones.consultas(), evaluaciones.sugerencias());
+        this.consultas = new ConsultasWeb(evaluaciones.consultas(), evaluaciones.sugerencias(),
+                evaluaciones.resultados());
         this.calificaciones = new CalificacionesWeb(evaluaciones.calificaciones());
     }
 

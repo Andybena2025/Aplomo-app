@@ -218,3 +218,12 @@ Paso 27C: repite el mismo migrar_paso27 para añadir solicitud_acceso sin borrar
 1. Para reemplazar cargas antiguas, cierra la app y ejecuta `bash scripts/reiniciar_demo.sh` (Windows: `scripts\reiniciar_demo.bat`); escribe `REINICIAR DEMO` y usa el administrador de MySQL.
 2. Solo se reinician las siete empresas con su marca de demo y sus registros; se conservan cuentas, claves, práctica rápida, otras empresas y configuración. Cuentas antiguas vinculadas o solicitudes de acceso detienen el reinicio.
 3. Abre la app: 40 puestos, 16 Verde/14 Amarillo/10 Rojo, solo 2 con 7, 5 pendientes abiertos y 8 citas mensuales por Evaluador. Repetir `cargar_demo` no modifica los intentos; los puntajes se calculan en Java, no se importan a mano desde SQL.
+
+
+## Actualizar al Paso 40
+
+Antes de iniciar esta versión en una base existente, ejecuta `bash scripts/migrar_paso40.sh`
+(Mac) o `scripts\migrar_paso40.bat` (Windows), con el administrador de MySQL. El script guarda primero
+un respaldo privado en `config/respaldos/`, añade tres campos opcionales y aclara el texto de la muñeca.
+Para la base de pruebas, añade `rula_ergonomia_pruebas` como argumento. Repetirlo no borra ni duplica datos.
+Una instalación nueva ya incluye las columnas en el script inicial.

@@ -98,8 +98,10 @@ public final class ReservasWeb {
                 noDisponible(intercambio, sesion);
                 return;
             }
-            var contexto = new Contexto(null, reservas.catalogo(sesion.cuenta()),
-                    post ? Map.of() : Router.consulta(intercambio), reservas.hoy());
+            var preseleccion = new java.util.HashMap<>(post ? Map.<String, String>of() : Router.consulta(intercambio));
+            if (!post && preseleccion.containsKey("puesto")) preseleccion.putAll(
+                    reservas.paraReevaluar(sesion.cuenta(), id(preseleccion.get("puesto"))));
+            var contexto = new Contexto(null, reservas.catalogo(sesion.cuenta()), preseleccion, reservas.hoy());
             formulario(intercambio, sesion, contexto, datos, post);
             return;
         }

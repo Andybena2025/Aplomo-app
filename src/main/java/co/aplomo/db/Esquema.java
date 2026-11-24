@@ -47,6 +47,11 @@ public final class Esquema {
             throw new IllegalStateException("Falta actualizar la base. Ejecuta scripts/migrar_paso38.sh " +
                     "(Mac) o migrar_paso38.bat (Windows).");
         }
+        int trabajador = Sql.uno(conexion, "SELECT COUNT(*) FROM information_schema.columns " +
+                "WHERE table_schema=DATABASE() AND table_name='evaluacion' AND column_name IN " +
+                "('trabajador_genero','trabajador_edad','trabajador_antiguedad')", fila -> fila.getInt(1));
+        if (trabajador != 3) throw new IllegalStateException("Falta actualizar la base. Ejecuta " +
+                "scripts/migrar_paso40.sh (Mac) o migrar_paso40.bat (Windows).");
         if (color != 1) {
             throw new IllegalStateException("Falta actualizar la base de datos. Corre " +
                     "scripts/migrar_paso26.sh (Mac) o migrar_paso26.bat (Windows).");

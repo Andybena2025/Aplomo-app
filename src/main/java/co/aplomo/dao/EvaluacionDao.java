@@ -46,10 +46,12 @@ public final class EvaluacionDao {
     public int crear(Connection con, int visita, Datos evaluacion2, String motivo,
             LocalDate fecha) throws SQLException {
         return Sql.insertar(con, "INSERT INTO evaluacion (id_visita,id_puesto,fecha,postura,criterio,motivo,mi" +
-                        "nutos_jornada,persona_acepto,registro_fotografico) VALUES (?,?,?,?,?,?,?,?,?" + ")", visita,
+                        "nutos_jornada,persona_acepto,registro_fotografico,trabajador_genero,trabajador_edad," +
+                        "trabajador_antiguedad) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", visita,
                 evaluacion2.puesto(), fecha, evaluacion2.postura(), evaluacion2.criterio(), motivo,
                 evaluacion2.minutos(), evaluacion2.aceptaFotos(),
-                evaluacion2.sinFotos() ? "SIN_REGISTRO_FOTOGRAFICO" : "CON_FOTOS");
+                evaluacion2.sinFotos() ? "SIN_REGISTRO_FOTOGRAFICO" : "CON_FOTOS", evaluacion2.trabajador().genero(),
+                evaluacion2.trabajador().edad(), evaluacion2.trabajador().antiguedad());
     }
 
     /**
@@ -101,7 +103,10 @@ public final class EvaluacionDao {
                                 fila.getBoolean("pies_colgando"), fila.getBoolean("tiene_apoyapies"),
                                 fila.getBoolean("silla_con_apoyabrazos"), fila.getBoolean("silla_regulable"),
                                 fila.getString("otras_observaciones"), fila.getBoolean("persona_acepto"),
-                                fila.getString("registro_fotografico").equals("SIN_REGISTRO_FOTOGRAFICO")),
+                                fila.getString("registro_fotografico").equals("SIN_REGISTRO_FOTOGRAFICO"),
+                                new co.aplomo.modelo.Trabajador(fila.getString("trabajador_genero"),
+                                        Sql.enteroOpcional(fila, "trabajador_edad"),
+                                        fila.getString("trabajador_antiguedad"))),
                         fila.getString("responsable"), fila.getString("tipo_puesto")), id);
     }
 
