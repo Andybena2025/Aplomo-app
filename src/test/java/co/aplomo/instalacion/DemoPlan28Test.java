@@ -52,7 +52,12 @@ class DemoPlan28Test extends BasePrueba {
         long verdes = distribucion.stream().filter(p -> p <= 2).count();
         long amarillos = distribucion.stream().filter(p -> p >= 3 && p <= 4).count();
         long rojos = distribucion.stream().filter(p -> p >= 5).count();
-        assertEquals(23, distribucion.size());
+        // Las citas ya pasadas (según la fecha de hoy) se cargan finalizadas; por eso el total crece con los días.
+        int pasadas = Sql.uno(con, "SELECT COUNT(*) FROM reserva WHERE codigo LIKE 'D28-%' AND " +
+                "estado NOT IN('CANCELADA','ESPERANDO') AND fecha < ?", f -> f.getInt(1),
+                java.time.LocalDate.now(java.time.ZoneId.of("America/Bogota")));
+        assertEquals(pasadas, distribucion.size());
+        assertTrue(distribucion.size() >= 20, distribucion.toString());
         // Paso 32: distribución por puesto/postura y progreso por fecha; ya no una mezcla fija por visita.
         assertTrue(verdes > 0, distribucion.toString());
         assertTrue(amarillos > 0, distribucion.toString());
