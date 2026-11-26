@@ -44,8 +44,10 @@ final class DemoPresentacion {
                 int salon = Sql.uno(con, "SELECT l.id_salon FROM salon l JOIN sede s USING(id_sede) " +
                         "WHERE s.id_empresa=? ORDER BY l.id_salon LIMIT 1", f -> f.getInt(1), empresa);
                 boolean cancelada = persona == 0 && turno == 1 || persona == 1 && turno == 2;
-                int respuesta = presentacion.withDayOfMonth(DIAS[persona][5])
-                        .isAfter(LocalDate.now(ZoneId.of("America/Bogota"))) ? 5 : 7;
+                // La cita "Esperando respuesta" nunca puede quedar en el pasado: si ya pasaron ambas fechas, no hay.
+                LocalDate hoy = LocalDate.now(ZoneId.of("America/Bogota"));
+                int respuesta = presentacion.withDayOfMonth(DIAS[persona][5]).isAfter(hoy) ? 5 :
+                        presentacion.withDayOfMonth(DIAS[persona][7]).isBefore(hoy) ? -1 : 7;
                 boolean esperando = turno == respuesta;
                 String estado = cancelada ? "CANCELADA" : esperando ? "ESPERANDO" : "EN_COLA";
                 String codigo = turno == 6 ? (persona == 0 ? "V26" : "V27" + persona) +
@@ -56,7 +58,7 @@ final class DemoPresentacion {
                                 "VALUES(?,?,?,?,?,?,?,'EVALUACION_INICIAL',?,?,?)", salon, evaluadores.get(persona),
                         evaluadores.get(persona), codigo, fecha, inicio, inicio.plusHours(DURACION[turno]),
                         "Evaluación de las tareas del turno", estado, cancelada ? "Cambio de turno" : null);
-                if (!cancelada && fecha.isBefore(LocalDate.now(ZoneId.of("America/Bogota")))) {
+                if (!cancelada && !esperando && fecha.isBefore(hoy)) {
                     ResultadosDemo.finalizar(con, fotos, evaluadores.get(persona), reserva, salon, fecha, inicio,
                             DURACION[turno]);
                 }
